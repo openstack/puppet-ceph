@@ -7,4 +7,5 @@ summary 'Community Developed Ceph Module'
 description  'Puppet module to install and configure Ceph'
 project_page 'https://launchpad.net/puppet-ceph'
 
+dependency 'puppetlabs/inifile', '>=1.0.0 <2.0.0'
 dependency 'puppetlabs/stdlib', '>= 2.5.0'

@@ -1,4 +1,7 @@
 *.swp
+*~
+.project
+metadata.json
 spec/fixtures/modules/*
 pkg
 Gemfile.lock
