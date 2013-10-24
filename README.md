@@ -10,6 +10,7 @@ ceph
 5. [Limitations - OS compatibility, etc.](#limitations)
 6. [Development - Guide for contributing to the module](#development)
 7. [Contributors - Those with commits](#contributors)
+7. [Integration - Apply the module and test restults](#integration-tests)
 8. [Release Notes - Notes on the most recent updates to the module](#release-notes)
 
 Overview
@@ -49,6 +50,28 @@ IRC channels:
 
 * irc.freenode.net#puppet-openstack
 * irc.oftc.net#ceph-devel
+
+Integration
+-----------
+
+Relies on
+[rspec-system-puppet](https://github.com/puppetlabs/rspec-system-puppet)
+and tests are in spec/system. It runs virtual machines and requires
+4GB of free memory and 10GB of free disk space.
+
+* [Install Vagrant and Virtualbox](http://docs-v1.vagrantup.com/v1/docs/getting-started/)
+
+* bundle install --path vendor/bundle
+
+* bundle exec rake spec:system
+
+On success it should complete with
+
+    ...
+    =end=============================================================
+    Finished in 4 minutes 1.7 seconds
+    1 example, 0 failures
+
 
 Contributors
 ------------

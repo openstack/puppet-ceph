@@ -1,0 +1,6 @@
+default_set: 'ubuntu-server-12042-x64'
+sets:
+  'ubuntu-server-12042-x64':
+    nodes:
+      'main.vm':
+        prefab: 'ubuntu-server-12042-x64'
