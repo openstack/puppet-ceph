@@ -37,6 +37,13 @@ Limitations
 Development
 -----------
 
+    git clone https://github.com/stackforge/puppet-ceph.git
+    cd puppet-ceph
+    # nokogiri dependencies
+    sudo apt-get install ruby-dev libxml2-dev libxslt-dev
+    sudo gem install bundler
+    bundle install
+
 The developer documentation of the puppet-openstack project is the reference:
 
 * https://wiki.openstack.org/wiki/Puppet-openstack#Developer_documentation
@@ -80,4 +87,3 @@ Contributors
 
 Release Notes
 -------------
-
