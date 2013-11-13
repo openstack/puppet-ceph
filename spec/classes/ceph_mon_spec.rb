@@ -1,0 +1,48 @@
+#   Copyright (C) iWeb Technologies Inc.
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+#
+# Author: David Moreau Simard <dmsimard@iweb.com>
+
+require 'spec_helper'
+
+describe 'ceph::mon' do
+
+  describe 'Debian Family' do
+    let :facts do
+      {
+        :osfamily => 'Debian',
+      }
+    end
+
+    describe "with default params" do
+
+      it { should contain_ceph_config('mon/mon_data').with_value('/var/lib/ceph/mon/$cluster-$id') }
+      it { should contain_ceph_config('mon/keyring').with_value('/var/lib/ceph/mon/$cluster-$id/keyring') }
+
+    end
+
+    describe "with custom params" do
+      let :params do
+        {
+          :mon_data => '/usr/local/ceph/var/lib/mon/mon._id',
+          :keyring  => '/usr/local/ceph/var/lib/mon/mon._id/keyring',
+        }
+      end
+
+      it { should_not contain_ceph_config('mon/mon_data').with_value('/var/lib/ceph/mon/_cluster-_id') }
+      it { should_not contain_ceph_config('mon/keyring').with_value('/var/lib/ceph/mon/_cluster-_id/keyring') }
+
+    end
+  end
+end
