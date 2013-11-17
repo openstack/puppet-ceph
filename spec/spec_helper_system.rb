@@ -30,9 +30,17 @@ RSpec.configure do |c|
   c.include RSpecSystemPuppet::Helpers
 
   c.before :suite do
-    puppet_install
-    puppet_master_install
-    puppet_module_install(:source => proj_root, :module_name => 'ceph')
-    shell 'puppet module install --version 1.4.0 puppetlabs/apt'
+    [ 'first.vm', 'second.vm' ].each do |vm|
+      puppet_install(:node => vm)
+      puppet_module_install(:source => proj_root,
+                            :module_name => 'ceph',
+                            :node => vm)
+      shell(:command => 'puppet module install --version 4.1.0 puppetlabs/stdlib',
+            :node => vm)
+      shell(:command => 'puppet module install --version 1.0.0 puppetlabs/inifile',
+            :node => vm)
+      shell(:command => 'puppet module install --version 1.4.0 puppetlabs/apt',
+            :node => vm)
+    end
   end
 end

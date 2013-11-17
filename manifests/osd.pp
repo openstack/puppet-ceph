@@ -20,7 +20,8 @@
 #   Optional. Defaults provided by ceph is '/var/lib/ceph/osd/$cluster-$id'.
 #
 # [*osd_journal*] The path to the OSD’s journal.
-#   Optional. Absolute path. Defaults to '/var/lib/ceph/osd/$cluster-$id/journal'
+#   Optional. Absolute path.
+#   Defaults to '/var/lib/ceph/osd/$cluster-$id/journal'
 #
 # [*osd_journal_size*] The size of the journal in megabytes.
 #   Optional. Default provided by Ceph.

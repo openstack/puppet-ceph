@@ -74,9 +74,10 @@ and tests are in spec/system. It runs virtual machines and requires
 
 * [Install Vagrant and Virtualbox](http://docs-v1.vagrantup.com/v1/docs/getting-started/)
 
-* bundle install --path vendor/bundle
-
-* bundle exec rake spec:system
+* BUNDLE_PATH=/tmp/vendor bundle install
+* BUNDLE_PATH=/tmp/vendor bundle exec rake lint
+* BUNDLE_PATH=/tmp/vendor bundle exec rake spec
+* BUNDLE_PATH=/tmp/vendor bundle exec rake spec:system
 
 On success it should complete with
 

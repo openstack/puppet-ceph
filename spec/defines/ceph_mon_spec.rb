@@ -1,3 +1,4 @@
+#   Copyright (C) 2013 Cloudwatt <libre.licensing@cloudwatt.com>
 #   Copyright (C) iWeb Technologies Inc.
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,6 +13,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
+# Author: Loic Dachary <loic@dachary.org>
 # Author: David Moreau Simard <dmsimard@iweb.com>
 
 require 'spec_helper'
@@ -19,30 +21,38 @@ require 'spec_helper'
 describe 'ceph::mon' do
 
   describe 'Debian Family' do
-    let :facts do
-      {
-        :osfamily => 'Debian',
-      }
-    end
-
-    describe "with default params" do
-
-      it { should contain_ceph_config('mon/mon_data').with_value('/var/lib/ceph/mon/$cluster-$id') }
-      it { should contain_ceph_config('mon/keyring').with_value('/var/lib/ceph/mon/$cluster-$id/keyring') }
-
-    end
 
     describe "with custom params" do
-      let :params do
+
+      let :facts do
         {
-          :mon_data => '/usr/local/ceph/var/lib/mon/mon._id',
-          :keyring  => '/usr/local/ceph/var/lib/mon/mon._id/keyring',
+          :operatingsystem => 'Ubuntu',
         }
       end
 
-      it { should_not contain_ceph_config('mon/mon_data').with_value('/var/lib/ceph/mon/_cluster-_id') }
-      it { should_not contain_ceph_config('mon/keyring').with_value('/var/lib/ceph/mon/_cluster-_id/keyring') }
+      let :title do
+        'A'
+      end
+
+      let :params do
+        {
+          :public_addr  => '127.0.0.1',
+          :authentication_type => 'none',
+        }
+      end
+
+      it { should contain_service('ceph-mon-A').with('ensure' => "running") }
+
+#      it { p subject.resources }
 
     end
   end
 end
+
+# Local Variables:
+# compile-command: "cd ../.. ;
+#    export BUNDLE_PATH=/tmp/vendor ;
+#    bundle install ;
+#    bundle exec rake spec
+# "
+# End:

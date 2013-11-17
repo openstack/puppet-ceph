@@ -37,7 +37,7 @@ describe 'ceph' do
       'ensure' => 'present') }
 
       it { should contain_ceph_config('global/fsid').with_value('d5252e7d-75bc-4083-85ed-fe51fa83f62b') }
-      it { should contain_ceph_config('global/keyring').with_value('/etc/ceph/keyring') }
+      it { should_not contain_ceph_config('global/keyring').with_value('/etc/ceph/keyring') }
       it { should_not contain_ceph_config('global/osd_pool_default_pg_num').with_value('128') }
       it { should_not contain_ceph_config('global/osd_pool_default_pgp_num').with_value('128') }
       it { should_not contain_ceph_config('global/osd_pool_default_size').with_value('3') }

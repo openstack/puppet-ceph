@@ -83,7 +83,7 @@
 class ceph (
   $fsid,
   $authentication_type        = 'cephx',
-  $keyring                    = '/etc/ceph/keyring',
+  $keyring                    = undef,
   $osd_pool_default_pg_num    = undef,
   $osd_pool_default_pgp_num   = undef,
   $osd_pool_default_size      = undef,

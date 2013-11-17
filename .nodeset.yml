@@ -1,6 +1,17 @@
-default_set: 'ubuntu-server-12042-x64'
+default_set: 'two-ubuntu-server-12042-x64'
 sets:
-  'ubuntu-server-12042-x64':
+  'two-ubuntu-server-12042-x64':
+    default_node: 'first.vm'
     nodes:
-      'main.vm':
+      'first.vm':
+        prefab: 'ubuntu-server-12042-x64'
+        options:
+                 ip: '10.11.12.1'
+      'second.vm':
+        prefab: 'ubuntu-server-12042-x64'
+        options:
+                 ip: '10.11.12.2'
+  'one-ubuntu-server-12042-x64':
+    nodes:
+      'first.vm':
         prefab: 'ubuntu-server-12042-x64'

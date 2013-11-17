@@ -1,3 +1,5 @@
+#
+#   Copyright (C) 2013 Cloudwatt <libre.licensing@cloudwatt.com>
 #   Copyright (C) iWeb Technologies Inc.
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,24 +14,162 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
+# Author: Loic Dachary <loic@dachary.org>
 # Author: David Moreau Simard <dmsimard@iweb.com>
-
+#
 # Installs and configures MONs (ceph monitors)
 ### == Parameters
-# [*mon_data*] The monitor’s data location.
-#   Optional. Default provided by Ceph is '/var/lib/ceph/mon/$cluster-$id'.
+# [*title*] The MON id.
+#   Mandatory. An alphanumeric string uniquely identifying the MON.
 #
-# [*keyring*] The location of the keyring used by MONs
-#   Optional. Defaults to '/var/lib/ceph/mon/$cluster-$id/keyring'.
+# [*ensure*] Installs ( present ) or remove ( absent ) a MON
+#   Optional. Defaults to present.
+#   If set to absent, it will stop the MON service and remove
+#   the associated data directory.
+#
+# [*public_addr*] The bind IP address.
+#   Optional. The IPv(4|6) address on which MON binds itself.
+#
+# [*cluster*] The ceph cluster
+#   Optional. Same default as ceph.
+#
+# [*authentication_type*] Activate or deactivate authentication
+#   Optional. Default to cephx.
+#   Authentication is activated if the value is 'cephx' and deactivated
+#   if the value is 'none'. If the value is 'cephx', at least one of
+#   key or keyring must be provided.
+#
+# [*key*] Authentication key for [mon.]
+#   Optional. $key and $keyring are mutually exclusives.
+#
+# [*keyring*] Path of the [mon.] keyring file
+#   Optional. $key and $keyring are mutually exclusives.
+#
+define ceph::mon (
+  $ensure = present,
+  $public_addr = undef,
+  $cluster = undef,
+  $authentication_type = 'cephx',
+  $key = undef,
+  $keyring  = undef,
+  ) {
 
-class ceph::mon (
-  $mon_data = '/var/lib/ceph/mon/$cluster-$id',
-  $keyring  = '/var/lib/ceph/mon/$cluster-$id/keyring',
-) {
+    # a puppet name translates into a ceph id, the meaning is different
+    $id = $name
 
-  # [mon]
-  ceph_config {
-    'mon/mon_data': value => $mon_data;
-    'mon/keyring':  value => $keyring;
+    if $cluster {
+      $cluster_option = "--cluster ${cluster}"
+    }
+
+    if $::operatingsystem == 'Ubuntu' {
+      $init = 'upstart'
+      Service {
+        name     => 'ceph-mon',
+        # workaround for bug https://projects.puppetlabs.com/issues/23187
+        provider => 'init',
+        start    => "start ceph-mon id=${id}",
+        stop     => "stop ceph-mon id=${id}",
+        status   => "status ceph-mon id=${id}",
+      }
+    } elsif $::operatingsystem == 'Debian' {
+      $init = 'sysvinit'
+      Service {
+        name     => 'ceph',
+        start    => "service ceph start mon.${id}",
+        stop     => "service ceph stop mon.${id}",
+        status   => "service ceph status mon.${id}",
+      }
+    } else {
+      #
+      # TODO: create [mon.$id] in ceph.conf for init scripts that require it
+      #
+      fail("operatingsystem = ${::operatingsystem} is not supported")
+    }
+
+    $mon_service = "ceph-mon-${id}"
+
+    if $ensure == present {
+
+      $ceph_mkfs = "ceph-mkfs-${id}"
+
+      if $authentication_type == 'cephx' {
+        if ! $key and ! $keyring {
+          fail("authentication_type ${authentication_type} requires either key or keyring to be set but both are undef")
+        }
+        if $key and $keyring {
+          fail("key (set to ${key}) and keyring (set to ${keyring}) are mutually exclusive")
+        }
+        if $key {
+          $keyring_path = "/tmp/ceph-mon-keyring-${id}"
+
+          file { $keyring_path:
+            mode        => '0444',
+            content     => "[mon.]\n\tkey = ${key}\n\tcaps mon = \"allow *\"\n",
+          }
+
+          File[$keyring_path] -> Exec[$ceph_mkfs]
+
+        } else {
+          $keyring_path = $keyring
+        }
+
+      } else {
+        $keyring_path = '/dev/null'
+      }
+
+      if $public_addr {
+        $public_addr_option = "--public_addr ${public_addr}"
+      }
+
+      exec { $ceph_mkfs:
+        command   => "/bin/true # comment to satisfy puppet syntax requirements
+set -ex
+mon_data=\$(ceph-mon ${cluster_option} --id ${id} --show-config | sed -n -e 's/^mon_data = //p')
+if [ ! -d \$mon_data ] ; then
+  mkdir -p \$mon_data
+  if ceph-mon ${cluster_option} \
+        ${public_addr_option} \
+        --mkfs \
+        --id ${id} \
+        --keyring ${keyring_path} ; then
+    touch \$mon_data/done \$mon_data/${init} \$mon_data/keyring
+  else
+    rm -fr \$mon_data
+  fi
+fi
+        ",
+        logoutput => true,
+      }
+      ->
+      service { $mon_service:
+        ensure => running,
+      }
+
+
+      if $authentication_type == 'cephx' {
+        if $key {
+          Exec[$ceph_mkfs] -> Exec["rm-keyring-${id}"]
+
+          exec { "rm-keyring-${id}":
+            command => "/bin/rm ${keyring_path}",
+          }
+        }
+      }
+
+    } else {
+      service { $mon_service:
+        ensure => stopped
+      }
+      ->
+      exec { "remove-mon-${id}":
+        command   => "/bin/true  # comment to satisfy puppet syntax requirements
+set -ex
+mon_data=\$(ceph-mon ${cluster_option} --id ${id} --show-config | sed -n -e 's/mon_data = //p')
+if [ -d \"\$mon_data\" -a ! -d \"\$mon_data:removed\" ] ; then
+  mv \$mon_data \$mon_data:removed
+fi
+",
+        logoutput => true,
+      }
+    }
   }
-}
