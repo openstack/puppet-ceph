@@ -23,13 +23,13 @@
 #   Optional. Defaults to '/var/lib/ceph/mon/$cluster-$id/keyring'.
 
 class ceph::mon (
-    $mon_data = '/var/lib/ceph/mon/$cluster-$id',
-    $keyring  = '/var/lib/ceph/mon/$cluster-$id/keyring',
+  $mon_data = '/var/lib/ceph/mon/$cluster-$id',
+  $keyring  = '/var/lib/ceph/mon/$cluster-$id/keyring',
 ) {
 
-    # [mon]
-    ceph_config {
-        'mon/mon_data': value => $mon_data;
-        'mon/keyring':  value => $keyring;
-    }
+  # [mon]
+  ceph_config {
+    'mon/mon_data': value => $mon_data;
+    'mon/keyring':  value => $keyring;
+  }
 }

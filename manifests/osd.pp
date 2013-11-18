@@ -42,25 +42,25 @@
 #
 
 class ceph::osd (
-    $osd_data           = '/var/lib/ceph/osd/$cluster-$id',
-    $osd_journal        = '/var/lib/ceph/osd/$cluster-$id/journal',
-    $osd_journal_size   = undef,
-    $keyring            = '/var/lib/ceph/osd/$cluster-$id/keyring',
-    $filestore_flusher  = undef,
-    $osd_mkfs_type      = 'xfs',
-    $osd_mkfs_options   = '-f',
-    $osd_mount_options  = 'rw,noatime,inode64,nobootwait',
+  $osd_data           = '/var/lib/ceph/osd/$cluster-$id',
+  $osd_journal        = '/var/lib/ceph/osd/$cluster-$id/journal',
+  $osd_journal_size   = undef,
+  $keyring            = '/var/lib/ceph/osd/$cluster-$id/keyring',
+  $filestore_flusher  = undef,
+  $osd_mkfs_type      = 'xfs',
+  $osd_mkfs_options   = '-f',
+  $osd_mount_options  = 'rw,noatime,inode64,nobootwait',
 ) {
 
-    # [osd]
-    ceph_config {
-        'osd/osd_data':           value => $osd_data;
-        'osd/osd_journal':        value => $osd_journal;
-        'osd/osd_journal_size':   value => $osd_journal_size;
-        'osd/keyring':            value => $keyring;
-        'osd/filestore_flusher':  value => $filestore_flusher;
-        'osd/osd_mkfs_type':      value => $osd_mkfs_type;
-        'osd/osd_mkfs_options':   value => $osd_mkfs_options;
-        'osd/osd_mount_options':  value => $osd_mount_options;
-    }
+  # [osd]
+  ceph_config {
+    'osd/osd_data':           value => $osd_data;
+    'osd/osd_journal':        value => $osd_journal;
+    'osd/osd_journal_size':   value => $osd_journal_size;
+    'osd/keyring':            value => $keyring;
+    'osd/filestore_flusher':  value => $filestore_flusher;
+    'osd/osd_mkfs_type':      value => $osd_mkfs_type;
+    'osd/osd_mkfs_options':   value => $osd_mkfs_options;
+    'osd/osd_mount_options':  value => $osd_mount_options;
+  }
 }
