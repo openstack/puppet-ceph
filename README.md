@@ -59,7 +59,7 @@ IRC channels:
 * irc.oftc.net#ceph-devel
 
 Integration Tests
------------
+-----------------
 
 Relies on
 [rspec-system-puppet](https://github.com/puppetlabs/rspec-system-puppet)
