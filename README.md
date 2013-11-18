@@ -58,7 +58,7 @@ IRC channels:
 * irc.freenode.net#puppet-openstack
 * irc.oftc.net#ceph-devel
 
-Integration
+Integration Tests
 -----------
 
 Relies on
