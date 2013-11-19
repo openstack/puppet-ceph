@@ -19,15 +19,15 @@
 
 class ceph::params {
 
-    $package_name = 'ceph'
+  $package_name = 'ceph'
 
-    case $::osfamily {
-        'Debian': {
-            # Nothing here yet
-        }
-
-        default: {
-          fail("Unsupported osfamily: ${::osfamily} operatingsystem: ${::operatingsystem}, module ${module_name} only supports osfamily Debian")
-        }
+  case $::osfamily {
+    'Debian': {
+      # Nothing here yet
     }
+
+    default: {
+      fail("Unsupported osfamily: ${::osfamily} operatingsystem: ${::operatingsystem}, module ${module_name} only supports osfamily Debian")
+    }
+  }
 }

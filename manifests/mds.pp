@@ -26,21 +26,21 @@
 #   Optional. Defaults to /var/lib/ceph/mds/$cluster-$id/keyring.
 
 class ceph::mds (
-    $mds_activate = true,
-    $mds_data     = '/var/lib/ceph/mds/$cluster-$id',
-    $keyring      = '/var/lib/ceph/mds/$cluster-$id/keyring',
+  $mds_activate = true,
+  $mds_data     = '/var/lib/ceph/mds/$cluster-$id',
+  $keyring      = '/var/lib/ceph/mds/$cluster-$id/keyring',
 ) {
 
-    # [mds]
-    if $mds_activate {
-        ceph_config {
-            'mds/mds_data': value => $mds_data;
-            'mds/keyring':  value => $keyring;
-        }
-    } else {
-        ceph_config {
-            'mds/mds_data': ensure => absent;
-            'mds/keyring':  ensure => absent;
-        }
+  # [mds]
+  if $mds_activate {
+    ceph_config {
+      'mds/mds_data': value => $mds_data;
+      'mds/keyring':  value => $keyring;
     }
+  } else {
+    ceph_config {
+      'mds/mds_data': ensure => absent;
+      'mds/keyring':  ensure => absent;
+    }
+  }
 }
