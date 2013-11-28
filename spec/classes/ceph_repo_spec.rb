@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #   Copyright (C) iWeb Technologies Inc.
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
@@ -37,7 +38,7 @@ describe 'ceph::repo' do
       ) }
 
       it { should contain_apt__source('ceph').with(
-        :location => 'http://ceph.com/debian-cuttlefish/',
+        :location => 'http://ceph.com/debian-emperor/',
         :release  => 'wheezy',
         :require  => 'Apt::Key[ceph]'
       ) }
@@ -77,7 +78,7 @@ describe 'ceph::repo' do
       ) }
 
       it { should contain_apt__source('ceph').with(
-        :location => 'http://ceph.com/debian-cuttlefish/',
+        :location => 'http://ceph.com/debian-emperor/',
         :release  => 'precise',
         :require  => 'Apt::Key[ceph]'
       ) }
@@ -118,17 +119,17 @@ describe 'ceph::repo' do
       ) }
 
       it { should contain_yumrepo('ext-ceph').with(
-        :descr      => 'External Ceph cuttlefish',
-        :name       => 'ext-ceph-cuttlefish',
-        :baseurl    => 'http://ceph.com/rpm-cuttlefish/el6/${basearch}',
+        :descr      => 'External Ceph emperor',
+        :name       => 'ext-ceph-emperor',
+        :baseurl    => 'http://ceph.com/rpm-emperor/el6/${basearch}',
         :gpgcheck   => '1',
         :gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc'
      ) }
 
       it { should contain_yumrepo('ext-ceph-noarch').with(
         :descr      => 'External Ceph noarch',
-        :name       => 'ext-ceph-cuttlefish-noarch',
-        :baseurl    => 'http://ceph.com/rpm-cuttlefish/el6/noarch',
+        :name       => 'ext-ceph-emperor-noarch',
+        :baseurl    => 'http://ceph.com/rpm-emperor/el6/noarch',
         :gpgcheck   => '1',
         :gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc'
       ) }
