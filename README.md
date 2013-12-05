@@ -34,6 +34,11 @@ A [blueprint](https://wiki.openstack.org/wiki/Puppet-openstack/ceph-blueprint) c
 Limitations
 -----------
 
+Use Cases
+---------
+
+* [I want to operate a production cluster] (USECASES.md#i-want-to-operate-a-production-cluster)
+
 Development
 -----------
 
