@@ -37,6 +37,7 @@ Limitations
 Use Cases
 ---------
 
+* [I want to try this module, heard of ceph, want to see it in action] (USESCASES.md#i-want-to-try-this-module,-heard-of-ceph,-want-to-see-it-in-action)
 * [I want to operate a production cluster] (USECASES.md#i-want-to-operate-a-production-cluster)
 
 Development

@@ -1,3 +1,31 @@
+Use Cases
+=========
+
+I want to try this module, heard of ceph, want to see it in action
+------------------------------------------------------------------
+
+_Notice : Please note that the code below is a sample which may not be up to date and is not expected to work._
+
+I want to run it on my own laptop, all in one. The **ceph::conf** class will create configuration file with no authentication enabled, on my **localhost**. The **ceph::mon** resource configures and runs a monitor to which two **ceph::osd** daemon will connect to provide disk storage, using directories in **/srv** on the laptop.
+
+    /node/ {
+
+      class { 'ceph::conf':
+        auth_enable => false,
+        mon_host    => 'localhost'
+      }
+
+      ceph::mon { $hostname: };
+      ceph::osd { '/srv/osd1': };
+      ceph::osd { '/srv/osd2': };
+
+    }
+
+* install puppet,
+* paste this in site.pp and replace /node/ with the name of your current node,
+* puppet apply site.pp,
+* type **ceph -s** : it will connect to the monitor and report that the cluster is **HEALTH_OK**
+
 I want to operate a production cluster
 ---------------------------------------
 
