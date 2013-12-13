@@ -14,7 +14,7 @@
 #
 # Author: François Charlier <francois.charlier@enovance.com>
 # Author: David Moreau Simard <dmsimard@iweb.com>
-
+# Author: Andrew Woodward <xarses>
 #
 # Configures Ceph's official repository for Ubuntu LTS
 #
@@ -39,8 +39,40 @@ class ceph::repo (
       Exec['apt_update'] -> Package<||>
     }
 
+    'RedHat': {
+      yumrepo { 'ext-epel-6.8':
+        descr      => 'External EPEL 6.8',
+        name       => 'ext-epel-6.8',
+        baseurl    => absent,
+        gpgcheck   => '0',
+        gpgkey     => absent,
+        #mirrorlist => "https://mirrors.fedoraproject.org/metalink?repo=epel-6&arch=\${basearch}",
+        # This is needed to avoid warning (using double-quotes) in puppet-lint
+        # Can be removed when https://github.com/rodjek/puppet-lint/pull/234 is merged
+        mirrorlist => join(['https://mirrors.fedoraproject.org/metalink?repo=epel-6&arch=$', '{basearch}'], '')
+      }
+
+      yumrepo { 'ext-ceph':
+        descr      => "External Ceph ${release}",
+        name       => "ext-ceph-${release}",
+        baseurl    => "http://ceph.com/rpm-${release}/el6/\${basearch}",
+        gpgcheck   => '1',
+        gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc',
+        mirrorlist => absent,
+      }
+
+      yumrepo { 'ext-ceph-noarch':
+        descr      => 'External Ceph noarch',
+        name       => "ext-ceph-${release}-noarch",
+        baseurl    => "http://ceph.com/rpm-${release}/el6/noarch",
+        gpgcheck   => '1',
+        gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc',
+        mirrorlist => absent,
+      }
+    }
+
     default: {
-      fail("Unsupported osfamily: ${::osfamily} operatingsystem: ${::operatingsystem}, module ${module_name} only supports osfamily Debian")
+      fail("Unsupported osfamily: ${::osfamily} operatingsystem: ${::operatingsystem}, module ${module_name} only supports osfamily Debian and RedHat")
     }
   }
 }
