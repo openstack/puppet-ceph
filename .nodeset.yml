@@ -6,11 +6,11 @@ sets:
       'first.vm':
         prefab: 'ubuntu-server-12042-x64'
         options:
-                 ip: '10.11.12.1'
+                 ip: '10.11.12.2'
       'second.vm':
         prefab: 'ubuntu-server-12042-x64'
         options:
-                 ip: '10.11.12.2'
+                 ip: '10.11.12.3'
   'one-ubuntu-server-12042-x64':
     nodes:
       'first.vm':
