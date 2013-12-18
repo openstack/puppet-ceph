@@ -19,49 +19,57 @@ require 'spec_helper_system'
 
 describe 'ceph::repo' do
 
-  describe 'dumpling' do
-    it 'should find 0.67' do
-      pp = <<-EOS
-        class { 'ceph::repo':
-          release => 'dumpling'
-        }
-      EOS
+  release2version = {
+    'cuttlefish' => '0.61',
+    'dumpling' => '0.67',
+    'emperor' => '0.72',
+    '(default)' => '0.72',
+  }
 
-      # Run it twice and test for idempotency
-      puppet_apply(pp) do |r|
-        r.exit_code.should_not == 1
-        r.refresh
-        r.exit_code.should be_zero
+  release2version.keys.each do |release|
+
+    release_arg = release == '(default)' ? '' : "release => '#{release}'"
+
+    describe release do
+
+      version = release2version[release]
+
+      it "should find #{version}" do
+        pp = <<-EOS
+         class { 'ceph::repo':
+           ensure => absent
+         }
+        EOS
+
+        puppet_apply(pp) do |r|
+          r.exit_code.should_not == 1
+        end
+
+        shell 'apt-cache policy ceph' do |r|
+          r.stdout.should_not =~ /ceph.com/
+          r.stderr.should be_empty
+          r.exit_code.should be_zero
+        end
+
+        pp = <<-EOS
+         class { 'ceph::repo':
+           #{release_arg}
+         }
+        EOS
+
+        # Run it twice and test for idempotency
+        puppet_apply(pp) do |r|
+          r.exit_code.should_not == 1
+          r.refresh
+          r.exit_code.should be_zero
+        end
+
+        shell 'apt-cache policy ceph' do |r|
+          r.stdout.should =~ /Candidate: #{version}/
+          r.stderr.should be_empty
+          r.exit_code.should be_zero
+        end
       end
-
-    end
-
-    context shell 'apt-cache policy ceph' do
-      its(:stdout) { should =~ /Candidate: 0.67/ }
-      its(:stderr) { should be_empty }
-      its(:exit_code) { should be_zero }
-    end
-  end
-
-  describe 'cuttlefish (default)' do
-    it 'should find 0.61' do
-      pp = <<-EOS
-        class { 'ceph::repo': }
-      EOS
-
-      # Run it twice and test for idempotency
-      puppet_apply(pp) do |r|
-        r.exit_code.should_not == 1
-        r.refresh
-        r.exit_code.should be_zero
-      end
-
-    end
-
-    context shell 'apt-cache policy ceph' do
-      its(:stdout) { should =~ /Candidate: 0.61/ }
-      its(:stderr) { should be_empty }
-      its(:exit_code) { should be_zero }
     end
   end
 end

@@ -1,4 +1,5 @@
 #   Copyright (C) iWeb Technologies Inc.
+#   Copyright (C) 2013 Cloudwatt <libre.licensing@cloudwatt.com>
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -12,25 +13,27 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
+# Author: Loic Dachary <loic@dachary.org>
 # Author: François Charlier <francois.charlier@enovance.com>
 # Author: David Moreau Simard <dmsimard@iweb.com>
 # Author: Andrew Woodward <xarses>
 #
-# Configures Ceph's official repository for Ubuntu LTS
-#
 class ceph::repo (
-  $release = 'cuttlefish'
+  $ensure  = present,
+  $release = 'emperor'
 ) {
   case $::osfamily {
     'Debian': {
-      include apt::update
+      include apt
 
       apt::key { 'ceph':
+        ensure     => $ensure,
         key        => '17ED316D',
         key_source => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc',
       }
 
       apt::source { 'ceph':
+        ensure   => $ensure,
         location => "http://ceph.com/debian-${release}/",
         release  => $::lsbdistcodename,
         require  => Apt::Key['ceph'],
