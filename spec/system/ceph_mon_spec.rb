@@ -197,7 +197,7 @@ describe 'ceph::mon' do
               ->
               class { 'ceph':
                 fsid => '#{fsid}',
-                mon_host => '10.11.12.1,10.11.12.2',
+                mon_host => '10.11.12.2,10.11.12.3',
                 public_network => '10.11.12.0/24',
                 authentication_type => 'none',
               }
