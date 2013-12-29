@@ -124,7 +124,7 @@ define ceph::mon (
       exec { $ceph_mkfs:
         command   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-mon_data=\$(ceph-mon ${cluster_option} --id ${id} --show-config | sed -n -e 's/^mon_data = //p')
+mon_data=\$(ceph-mon ${cluster_option} --id ${id} --show-config-value mon_data)
 if [ ! -d \$mon_data ] ; then
   mkdir -p \$mon_data
   if ceph-mon ${cluster_option} \
