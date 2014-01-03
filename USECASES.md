@@ -74,3 +74,12 @@ _Notice : Please note that the code below is a sample which may not be up to dat
 
 * the *osd* nodes only contain disks that are used for OSD and using the discover option to automatically use new disks and provision them as part of the cluster is acceptable, there is no risk of destroying unrelated data.
 * when a hardware is decomissioned, all its disks can be placed in another machines and the OSDs will automatically be re-inserted in the cluster, even if an external journal is used
+
+I want to spawn a cluster configured with a puppetmaster as part of a continuous integration effort
+---------------------------------------
+
+Leveraging vagrant, vagrant-openstack, openstack
+
+Ceph is used as a backend storage for various use cases
+There are tests to make sure the Ceph cluster was instantiated properly
+There are tests to make sure various other infrastructure components (or products) can use the Ceph cluster
