@@ -38,7 +38,7 @@
 # [*osd_pool_default_min_size*] The default minimum num of replicas.
 #   Optional. Integer. Default provided by Ceph.
 #
-# [*osd_default_crush_rule*] The default CRUSH ruleset to use
+# [*osd_pool_default_crush_rule*] The default CRUSH ruleset to use
 #   when creating a pool.
 #   Optional. Integer. Default provided by Ceph.
 #
@@ -88,7 +88,7 @@ class ceph (
   $osd_pool_default_pgp_num   = undef,
   $osd_pool_default_size      = undef,
   $osd_pool_default_min_size  = undef,
-  $osd_default_crush_rule     = undef,
+  $osd_pool_default_crush_rule= undef,
   $mon_osd_full_ratio         = undef,
   $mon_osd_nearfull_ratio     = undef,
   $mon_initial_members        = undef,
@@ -118,7 +118,7 @@ class ceph (
     'global/osd_pool_default_pgp_num':    value => $osd_pool_default_pgp_num;
     'global/osd_pool_default_size':       value => $osd_pool_default_size;
     'global/osd_pool_default_min_size':   value => $osd_pool_default_min_size;
-    'global/osd_default_crush_rule':      value => $osd_default_crush_rule;
+    'global/osd_pool_default_crush_rule': value => $osd_pool_default_crush_rule;
     'global/mon_osd_full_ratio':          value => $mon_osd_full_ratio;
     'global/mon_osd_nearfull_ratio':      value => $mon_osd_nearfull_ratio;
     'global/mon_initial_members':         value => $mon_initial_members;
