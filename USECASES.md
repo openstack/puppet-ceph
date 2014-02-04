@@ -83,3 +83,33 @@ Leveraging vagrant, vagrant-openstack, openstack
 Ceph is used as a backend storage for various use cases
 There are tests to make sure the Ceph cluster was instantiated properly
 There are tests to make sure various other infrastructure components (or products) can use the Ceph cluster
+
+I want to run benchmarks on three new machines
+-----------------------------------------------
+
+There are four machines, 3 OSD, 1 MON and one machine that is the client from which the user runs commands.
+install puppetmaster and create site.pp with:
+
+    /ceph-default/ {
+     class { 'ceph::conf':
+        auth_enable => false,
+        mon_host    => 'node1'
+      };
+    }
+
+    /node1/ inherits ceph-default {
+     ceph::mon { $hostname: };
+     ceph::osd { 'discover': };
+    }
+
+    /node2/, /node3/ inherits ceph-default {
+     ceph::osd { 'discover': };
+    }
+
+    /client/ inherits ceph-default {
+    class { 'ceph::client' };
+    }
+
+* ssh client
+* rados bench
+* interpret the results
