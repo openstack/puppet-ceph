@@ -23,7 +23,7 @@ describe 'ceph::mon' do
    package { [
       'python-ceph',
       'ceph-common',
-      'librabos2',
+      'librados2',
       'librbd1',
      ]:
      ensure => purged

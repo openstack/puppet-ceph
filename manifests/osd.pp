@@ -1,4 +1,5 @@
-#   Copyright (C) iWeb Technologies Inc.
+#
+#   Copyright (C) 2014 Cloudwatt <libre.licensing@cloudwatt.com>
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -12,56 +13,68 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-# Author: David Moreau Simard <dmsimard@iweb.com>
-
-# Installs and configures OSDs (ceph object storage daemons)
+# Author: Loic Dachary <loic@dachary.org>
+#
 ### == Parameters
-# [*osd_data*] The OSDs data location.
-#   Optional. Defaults provided by ceph is '/var/lib/ceph/osd/$cluster-$id'.
+# [*title*] The OSD data path.
+#   Mandatory. A path in which the OSD data is to be stored.
 #
-# [*osd_journal*] The path to the OSD’s journal.
-#   Optional. Absolute path.
-#   Defaults to '/var/lib/ceph/osd/$cluster-$id/journal'
+# [*ensure*] Installs ( present ) or remove ( absent ) an OSD
+#   Optional. Defaults to present.
+#   If set to absent, it will stop the OSD service and remove
+#   the associated data directory.
 #
-# [*osd_journal_size*] The size of the journal in megabytes.
-#   Optional. Default provided by Ceph.
+# [*journal*] The OSD journal path.
+#   Optional. Defaults to co-locating the journal with the data
+#   defined by *title*.
 #
-# [*keyring*] The location of the keyring used by OSDs
-#   Optional. Defaults to '/var/lib/ceph/osd/$cluster-$id/keyring'
+# [*cluster*] The ceph cluster
+#   Optional. Same default as ceph.
 #
-# [*filestore_flusher*] Allows to enable the filestore flusher.
-#   Optional. Default provided by Ceph.
-#
-# [*osd_mkfs_type*] Type of the OSD filesystem.
-#   Optional. Defaults to 'xfs'.
-#
-# [*osd_mkfs_options*] The options used to format the OSD fs.
-#   Optional. Defaults to '-f' for XFS.
-#
-# [*osd_mount_options*] The options used to mount the OSD fs.
-#   Optional. Defaults to 'rw,noatime,inode64,nobootwait' for XFS.
-#
+define ceph::osd (
+  $ensure = present,
+  $journal = undef,
+  $cluster = undef,
+  ) {
 
-class ceph::osd (
-  $osd_data           = '/var/lib/ceph/osd/$cluster-$id',
-  $osd_journal        = '/var/lib/ceph/osd/$cluster-$id/journal',
-  $osd_journal_size   = undef,
-  $keyring            = '/var/lib/ceph/osd/$cluster-$id/keyring',
-  $filestore_flusher  = undef,
-  $osd_mkfs_type      = 'xfs',
-  $osd_mkfs_options   = '-f',
-  $osd_mount_options  = 'rw,noatime,inode64,nobootwait',
-) {
+    $data = $name
 
-  # [osd]
-  ceph_config {
-    'osd/osd_data':           value => $osd_data;
-    'osd/osd_journal':        value => $osd_journal;
-    'osd/osd_journal_size':   value => $osd_journal_size;
-    'osd/keyring':            value => $keyring;
-    'osd/filestore_flusher':  value => $filestore_flusher;
-    'osd/osd_mkfs_type':      value => $osd_mkfs_type;
-    'osd/osd_mkfs_options':   value => $osd_mkfs_options;
-    'osd/osd_mount_options':  value => $osd_mount_options;
-  }
+    if $cluster {
+      $cluster_option = "--cluster ${cluster}"
+    }
+
+    if $ensure == present {
+      $ceph_mkfs = "ceph-osd-mkfs-${name}"
+
+      # ceph-disk: prepare should be idempotent http://tracker.ceph.com/issues/7475
+      exec { $ceph_mkfs:
+        command   => "/usr/sbin/ceph-disk prepare ${cluster_option} ${data} ${journal}",
+        unless    => "/usr/sbin/ceph-disk list | grep ' *${data}.*ceph data'",
+        logoutput => true,
+      }
+
+    } else {
+
+      # ceph-disk: support osd removal http://tracker.ceph.com/issues/7454
+      exec { "remove-osd-${name}":
+        command   => "/bin/true  # comment to satisfy puppet syntax requirements
+set -ex
+if [ -z \"\$id\" ] ; then
+  id=\$(ceph-disk list | grep ' *${data}.*ceph data' | sed -ne 's/.*osd.\\([0-9][0-9]*\\).*/\\1/p')
+fi
+if [ -z \"\$id\" ] ; then
+  id=\$(ceph-disk list | grep ' *${data}.*mounted on' | sed -ne 's/.*osd.\\([0-9][0-9]*\\)\$/\\1/p')
+fi
+if [ \"\$id\" ] ; then
+  stop ceph-osd cluster=${cluster} id=\$id || true
+  ceph ${cluster_option} osd rm \$id
+  ceph auth del osd.\$id
+  umount /var/lib/ceph/osd/ceph-\$id || true
+  rm -fr /var/lib/ceph/osd/ceph-\$id
+fi
+",
+        logoutput => true,
+      }
+    }
+
 }
