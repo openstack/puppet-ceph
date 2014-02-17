@@ -207,7 +207,7 @@ describe 'ceph::mon' do
               }
           EOS
 
-          puppet_apply(:node => "#{mon}.vm", :code => pp) do |r|
+          puppet_apply(:node => "#{mon}", :code => pp) do |r|
             r.exit_code.should_not == 1
             r.refresh
             r.exit_code.should_not == 1
@@ -230,7 +230,7 @@ describe 'ceph::mon' do
             }
           EOS
 
-          puppet_apply(:node => "#{mon}.vm", :code => pp) do |r|
+          puppet_apply(:node => "#{mon}", :code => pp) do |r|
             r.exit_code.should_not == 1
           end
 
