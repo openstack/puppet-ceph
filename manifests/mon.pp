@@ -64,7 +64,7 @@ define ceph::mon (
     if $::operatingsystem == 'Ubuntu' {
       $init = 'upstart'
       Service {
-        name     => 'ceph-mon',
+        name     => "ceph-mon-${id}",
         # workaround for bug https://projects.puppetlabs.com/issues/23187
         provider => 'init',
         start    => "start ceph-mon id=${id}",
@@ -74,7 +74,7 @@ define ceph::mon (
     } elsif $::operatingsystem == 'Debian' {
       $init = 'sysvinit'
       Service {
-        name     => 'ceph',
+        name     => "ceph-mon-${id}",
         start    => "service ceph start mon.${id}",
         stop     => "service ceph stop mon.${id}",
         status   => "service ceph status mon.${id}",
@@ -90,7 +90,7 @@ define ceph::mon (
 
     if $ensure == present {
 
-      $ceph_mkfs = "ceph-mkfs-${id}"
+      $ceph_mkfs = "ceph-mon-mkfs-${id}"
 
       if $authentication_type == 'cephx' {
         if ! $key and ! $keyring {
