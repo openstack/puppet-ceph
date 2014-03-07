@@ -1,5 +1,5 @@
 #
-#  Copyright 2013 Cloudwatt <libre-licensing@cloudwatt.com>
+#  Copyright 2013,2014 Cloudwatt <libre-licensing@cloudwatt.com>
 #
 #  Author: Loic Dachary <loic@dachary.org>
 #
@@ -18,6 +18,17 @@
 require 'spec_helper_system'
 
 describe 'ceph::mon' do
+
+  purge = <<-EOS
+   package { [
+      'python-ceph',
+      'ceph-common',
+      'librabos2',
+      'librbd1',
+     ]:
+     ensure => purged
+   }
+  EOS
 
   releases = [ 'cuttlefish', 'dumpling', 'emperor' ]
   fsid = 'a4807c9a-e76f-4666-a297-6d6cbc922e3a'
@@ -68,6 +79,11 @@ describe 'ceph::mon' do
           r.stdout.should be_empty
           r.stderr.should =~ /Unknown instance: ceph.a/
           r.exit_code.should_not be_zero
+        end
+      end
+      it 'should purge all packages' do
+        puppet_apply(purge) do |r|
+          r.exit_code.should_not == 1
         end
       end
     end
@@ -127,6 +143,11 @@ describe 'ceph::mon' do
           r.exit_code.should_not be_zero
         end
       end
+      it 'should purge all packages' do
+        puppet_apply(purge) do |r|
+          r.exit_code.should_not == 1
+        end
+      end
     end
   end
 
@@ -180,6 +201,11 @@ describe 'ceph::mon' do
           r.stdout.should be_empty
           r.stderr.should =~ /Unknown instance: ceph.a/
           r.exit_code.should_not be_zero
+        end
+      end
+      it 'should purge all packages' do
+        puppet_apply(purge) do |r|
+          r.exit_code.should_not == 1
         end
       end
     end
@@ -241,6 +267,15 @@ describe 'ceph::mon' do
           end
         end
       end
+
+      it 'should purge all packages' do
+        [ 'first', 'second' ].each do |mon|
+          puppet_apply(:node => "#{mon}", :code => purge) do |r|
+            r.exit_code.should_not == 1
+          end
+        end
+      end
+
     end
   end
 
