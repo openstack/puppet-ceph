@@ -165,9 +165,7 @@ fi
         command   => "/bin/true  # comment to satisfy puppet syntax requirements
 set -ex
 mon_data=\$(ceph-mon ${cluster_option} --id ${id} --show-config | sed -n -e 's/mon_data = //p')
-if [ -d \"\$mon_data\" -a ! -d \"\$mon_data:removed\" ] ; then
-  mv \$mon_data \$mon_data:removed
-fi
+rm -fr \$mon_data
 ",
         logoutput => true,
       }
