@@ -79,9 +79,9 @@ describe 'ceph::mon' do
       it 'should install one monitor with cephx and keyring' do
 
         key = 'AQCztJdSyNb0NBAASA2yPZPuwXeIQnDJ9O8gVw=='
-        keyring = "[mon.]\\n\\tkey = ${key}\\n\\tcaps mon = \"allow *\""
+        keyring = "[mon.]\\n\\tkey = #{key}\\n\\tcaps mon = \"allow *\""
         keyring_path = "/tmp/keyring"
-        shell "echo -e '${keyring}' > ${keyring_path}"
+        shell "echo -e '#{keyring}' > #{keyring_path}"
 
         pp = <<-EOS
           class { 'ceph::repo':
@@ -95,7 +95,7 @@ describe 'ceph::mon' do
           ->
           ceph::mon { 'a':
             public_addr => $::ipaddress_eth0,
-            keyring => '${keyring_path}',
+            keyring => '#{keyring_path}',
           }
         EOS
 
