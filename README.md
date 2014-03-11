@@ -47,8 +47,6 @@ Development
 
     git clone https://github.com/stackforge/puppet-ceph.git
     cd puppet-ceph
-    # nokogiri dependencies
-    sudo apt-get install ruby-dev libxml2-dev libxslt-dev
     sudo gem install bundler
     bundle install
 
@@ -75,7 +73,9 @@ and tests are in spec/system. It runs virtual machines and requires
 4GB of free memory and 10GB of free disk space.
 
 * [Install Vagrant and Virtualbox](http://docs-v1.vagrantup.com/v1/docs/getting-started/)
-
+* # nokogiri dependencies
+  sudo apt-get install ruby-dev libxml2-dev libxslt-dev
+* mv Gemfile-rspec-system Gemfile # because of https://bugs.launchpad.net/openstack-ci/+bug/1290710
 * BUNDLE_PATH=/tmp/vendor bundle install
 * BUNDLE_PATH=/tmp/vendor bundle exec rake lint
 * BUNDLE_PATH=/tmp/vendor bundle exec rake spec
