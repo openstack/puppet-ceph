@@ -88,6 +88,19 @@ On success it should complete with
     Finished in 4 minutes 1.7 seconds
     1 example, 0 failures
 
+Example invocation of gerritexec:
+
+script='bash -c "'
+script+='mv Gemfile-rspec-system Gemfile ; bundle install ; bundle exec rake spec:system'
+script+='" > /tmp/out 2>&1 ; r=$? ; '
+script+='echo https://pypi.python.org/pypi/gerritexec output: ; '
+script+='pastebinit /tmp/out ; '
+script+='exit $r #'
+GEM_HOME=~/.gems gerritexec \
+   --hostname review.openstack.org \
+   --verbose --username puppetceph \
+   --script "$script" \
+   --project stackforge/puppet-ceph
 
 Contributors
 ------------
