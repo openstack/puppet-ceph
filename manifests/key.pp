@@ -91,7 +91,7 @@ define ceph::key (
 
   exec { "ceph-key-${name}":
     command => "ceph-authtool ${keyring_path} --name '${name}' --add-key '${secret}' ${caps}",
-    unless  => "sed -n 'N;/.*${name}.*\n\s*key = ${secret}/p' ${keyring_path} | grep ${name}",
+    unless  => "sed -n 'N;/.*${name}.*\\n\\s*key = ${secret}/p' ${keyring_path} | grep ${name}",
     require => [ Package['ceph'], File[$keyring_path], ]
   }
 
