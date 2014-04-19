@@ -103,18 +103,12 @@ define ceph::key (
   # this allows multiple defines for the same 'keyring file',
   # which is supported by ceph-authtool
   if ! defined(File[$keyring_path]) {
-    exec { "${keyring_path}-touch":
-      command => "touch ${keyring_path}",
-      creates => $keyring_path,
-      require => Package['ceph'],
-    }
-
     file { $keyring_path:
       ensure  => file,
       owner   => $user,
       group   => $group,
       mode    => $mode,
-      require => Exec["${keyring_path}-touch"],
+      require => Package['ceph'],
     }
   }
 
