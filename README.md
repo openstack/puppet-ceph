@@ -81,6 +81,13 @@ and tests are in spec/system. It runs virtual machines and requires
 * BUNDLE_PATH=/tmp/vendor bundle exec rake spec
 * BUNDLE_PATH=/tmp/vendor bundle exec rake spec:system
 
+The RELEASES environment variable contains the list of ceph releases
+for which integration tests are going to be run. The default is
+
+* BUNDLE_PATH=/tmp/vendor \
+  RELEASES='cuttlefish dumpling emperor' \
+  bundle exec rake spec:system
+
 On success it should complete with
 
     ...
