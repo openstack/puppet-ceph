@@ -90,17 +90,27 @@ define ceph::key (
   }
 
   exec { "ceph-key-${name}":
-    command => "ceph-authtool ${keyring_path} --name '${name}' --add-key '${secret}' ${caps}",
-    unless  => "sed -n 'N;/.*${name}.*\\n\\s*key = ${secret}/p' ${keyring_path} | grep ${name}",
-    require => [ Package['ceph'], File[$keyring_path], ]
+    command   => "/bin/true # comment to satisfy puppet syntax requirements
+set -ex
+ceph-authtool ${keyring_path} --name '${name}' --add-key '${secret}' ${caps}",
+    unless    => "/bin/true # comment to satisfy puppet syntax requirements
+set -ex
+sed -n 'N;/.*${name}.*\\n\\s*key = ${secret}/p' ${keyring_path} | grep ${name}",
+    require   => [ Package['ceph'], File[$keyring_path], ],
+    logoutput => true,
   }
 
   if $inject {
 
     exec { "ceph-injectkey-${name}":
-      command => "ceph auth add ${name} --in-file=${keyring_path}",
-      unless  => "ceph auth get ${name} | grep ${secret}",
-      require => [ Package['ceph'], Exec["ceph-key-${name}"], ],
+      command   => "/bin/true # comment to satisfy puppet syntax requirements
+set -ex
+ceph auth add ${name} --in-file=${keyring_path}",
+      unless    => "/bin/true # comment to satisfy puppet syntax requirements
+set -ex
+ceph auth get ${name} | grep ${secret}",
+      require   => [ Package['ceph'], Exec["ceph-key-${name}"], ],
+      logoutput => true,
     }
 
   }
