@@ -39,6 +39,8 @@ describe 'ceph::key' do
 
   releases = ENV['RELEASES'] ? ENV['RELEASES'].split : [ 'cuttlefish', 'dumpling', 'emperor' ]
   fsid = 'a4807c9a-e76f-4666-a297-6d6cbc922e3a'
+  mon_key = 'AQCztJdSyNb0NBAASA2yPZPuwXeIQnDJ9O8gVw=='
+  something_key = 'AQD44lJTqGB4LhAA3zV8mKlO9UKFNLwg2f3lvQ=='
 
   releases.each do |release|
     describe release do
@@ -150,7 +152,68 @@ describe 'ceph::key' do
         end
 
         shell 'cat /etc/ceph/ceph.client.volumes.keyring' do |r|
-          r.stdout.should =~ /.*\[client.volumes\].*key = AQA98KdSmOs9JRAArCunQAB8d9eZGRvolumesQ==.*caps mds = "".*caps mon = "allow \*".*caps osd = "allow rw".*/m
+          r.stdout.should =~ /.*\[client.volumes\].*key = AQA98KdSmOs9JRAArCunQAB8d9eZGRvolumesQ==.*caps mon = "allow \*".*caps osd = "allow rw".*/m
+          r.stderr.should be_empty
+          r.exit_code.should be_zero
+        end
+
+      end
+
+      it 'should uninstall one monitor and all packages' do
+        puppet_apply(purge) do |r|
+          r.exit_code.should_not == 1
+        end
+      end
+    end
+  end
+
+  releases.each do |release|
+    describe release do
+      it 'should install and inject client.something key' do
+        pp = <<-EOS
+          Exec { path => [ '/bin/', '/sbin/' , '/usr/bin/', '/usr/sbin/' ] }
+
+          class { 'ceph::repo':
+            release => '#{release}',
+          }
+          ->
+          class { 'ceph':
+            fsid => '#{fsid}',
+            mon_host => $::ipaddress_eth0,
+          }
+          ->
+          ceph::mon { 'a':
+            public_addr => $::ipaddress_eth0,
+            key => '#{mon_key}',
+          }
+          ->
+          ceph::key { 'client.something':
+            secret         => '#{something_key}',
+            cap_mon        => 'allow *',
+            cap_osd        => 'allow rw',
+            mode           => 0600,
+            user           => 'nobody',
+            group          => 'nogroup',
+            inject         => true,
+            inject_as_id   => 'mon.',
+            inject_keyring => '/var/lib/ceph/mon/ceph-a/keyring',
+          }
+        EOS
+
+        puppet_apply(pp) do |r|
+          r.exit_code.should_not == 1
+          r.refresh
+          r.exit_code.should_not == 1
+        end
+
+        shell 'ceph auth list' do |r|
+          r.stdout.should =~ /.*client\.something.*key:\s#{something_key}.*/m
+          # r.stderr.should be_empty # ceph auth writes to stderr!
+          r.exit_code.should be_zero
+        end
+
+        shell 'ls -l /etc/ceph/ceph.client.something.keyring' do |r|
+          r.stdout.should =~ /.*-rw-------.*nobody\snogroup.*/m
           r.stderr.should be_empty
           r.exit_code.should be_zero
         end

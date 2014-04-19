@@ -57,6 +57,16 @@
 #   Optional. Boolean value (true to inject the key).
 #   Default to false.
 #
+# [*inject_as_id*] the ceph ID used to inject the key Optional. Only
+#   taken into account if 'inject' was set to true, in which case it
+#   overrides the ceph default if set to a value other than
+#   undef. Default to undef.
+#
+# [*inject_keyring*] keyring file with injection credentials
+#   Optional. Only taken into account if 'inject' was set to true. If
+#   set to a value other than undef, it overrides the ceph default
+#   inferred from the client name. Default to undef.
+#
 define ceph::key (
   $secret,
   $keyring_path = "/etc/ceph/ceph.${name}.keyring",
@@ -67,6 +77,8 @@ define ceph::key (
   $group = 'root',
   $mode = '0600',
   $inject = false,
+  $inject_as_id = undef,
+  $inject_keyring = undef,
 ) {
 
   $caps = "--cap mon '${cap_mon}' --cap osd '${cap_osd}' --cap mds '${cap_mds}'"
@@ -102,13 +114,21 @@ sed -n 'N;/.*${name}.*\\n\\s*key = ${secret}/p' ${keyring_path} | grep ${name}",
 
   if $inject {
 
+    if $inject_as_id {
+      $inject_id_option = " --name '${inject_as_id}' "
+    }
+
+    if $inject_keyring {
+      $inject_keyring_option = " --keyring '${inject_keyring}' "
+    }
+
     exec { "ceph-injectkey-${name}":
       command   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-ceph auth add ${name} --in-file=${keyring_path}",
+ceph ${inject_id_option} ${inject_keyring_option} auth add ${name} --in-file=${keyring_path}",
       unless    => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-ceph auth get ${name} | grep ${secret}",
+ceph  ${inject_id_option} ${inject_keyring_option} auth get ${name} | grep ${secret}",
       require   => [ Package['ceph'], Exec["ceph-key-${name}"], ],
       logoutput => true,
     }

@@ -41,6 +41,7 @@ describe 'ceph::key' do
           :group   => 'nogroup',
           :cap_mon => 'allow *',
           :cap_osd => 'allow rw',
+          :inject  => true,
         }
       end
 
@@ -52,6 +53,9 @@ describe 'ceph::key' do
           'owner' => 'nobody',
           'group' => 'nogroup',
           'mode'  => '0600'
+        )
+        should contain_exec('ceph-injectkey-client.admin').with(
+           'command' => "/bin/true # comment to satisfy puppet syntax requirements\nset -ex\nceph   auth add client.admin --in-file=/etc/ceph/ceph.client.admin.keyring"
         )
       }
 
