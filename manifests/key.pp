@@ -74,9 +74,9 @@ define ceph::key (
   $secret,
   $cluster = undef,
   $keyring_path = "/etc/ceph/ceph.${name}.keyring",
-  $cap_mon = '',
-  $cap_osd = '',
-  $cap_mds = '',
+  $cap_mon = undef,
+  $cap_osd = undef,
+  $cap_mds = undef,
   $user = 'root',
   $group = 'root',
   $mode = '0600',
@@ -89,7 +89,16 @@ define ceph::key (
     $cluster_option = "--cluster ${cluster}"
   }
 
-  $caps = "--cap mon '${cap_mon}' --cap osd '${cap_osd}' --cap mds '${cap_mds}'"
+  if $cap_mon {
+    $mon_caps = "--cap mon '${cap_mon}' "
+  }
+  if $cap_osd {
+    $osd_caps = "--cap osd '${cap_osd}' "
+  }
+  if $cap_mds {
+    $mds_caps = "--cap mds '${cap_mds}' "
+  }
+  $caps = "${mon_caps}${osd_caps}${mds_caps}"
 
   # this allows multiple defines for the same 'keyring file',
   # which is supported by ceph-authtool

@@ -47,7 +47,7 @@ describe 'ceph::key' do
 
       it {
         should contain_exec('ceph-key-client.admin').with(
-          'command' => "/bin/true # comment to satisfy puppet syntax requirements\nset -ex\nceph-authtool /etc/ceph/ceph.client.admin.keyring --name 'client.admin' --add-key 'supersecret' --cap mon 'allow *' --cap osd 'allow rw' --cap mds ''"
+          'command' => "/bin/true # comment to satisfy puppet syntax requirements\nset -ex\nceph-authtool /etc/ceph/ceph.client.admin.keyring --name 'client.admin' --add-key 'supersecret' --cap mon 'allow *' --cap osd 'allow rw' "
         )
         should contain_file('/etc/ceph/ceph.client.admin.keyring').with(
           'owner' => 'nobody',
