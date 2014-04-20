@@ -30,7 +30,8 @@ RSpec.configure do |c|
   c.include RSpecSystemPuppet::Helpers
 
   c.before :suite do
-    [ 'first', 'second' ].each do |vm|
+    machines = ENV['MACHINES'] ? ENV['MACHINES'].split : [ 'first', 'second' ]
+    machines.each do |vm|
       puppet_install(:node => vm)
       puppet_module_install(:source => proj_root,
                             :module_name => 'ceph',

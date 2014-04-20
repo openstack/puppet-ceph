@@ -88,6 +88,12 @@ for which integration tests are going to be run. The default is
   RELEASES='cuttlefish dumpling emperor' \
   bundle exec rake spec:system
 
+The MACHINES environment variable contains the list of virtual
+machines that are created for integration tests to use. The default is
+
+* MACHINES='first second' \
+  bundle exec rake spec:system
+
 On success it should complete with
 
     ...
