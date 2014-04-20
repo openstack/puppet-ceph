@@ -23,8 +23,6 @@ require 'spec_helper_system'
 describe 'ceph::key' do
 
   purge = <<-EOS
-   Exec { path => [ '/bin/', '/sbin/' , '/usr/bin/', '/usr/sbin/' ] }
-
    ceph::mon { 'a': ensure => absent }
    ->
    file { '/var/lib/ceph/bootstrap-osd/ceph.keyring': ensure => absent }
@@ -48,8 +46,6 @@ describe 'ceph::key' do
     describe release do
       it 'should install and not inject client.admin key' do
         pp = <<-EOS
-          Exec { path => [ '/bin/', '/sbin/' , '/usr/bin/', '/usr/sbin/' ] }
-          
           class { 'ceph::repo':
             release => '#{release}',
           }
@@ -99,8 +95,6 @@ describe 'ceph::key' do
 
       it 'should install and inject client.volumes key' do
         pp = <<-EOS
-          Exec { path => [ '/bin/', '/sbin/' , '/usr/bin/', '/usr/sbin/' ] }
-
           class { 'ceph::repo':
             release => '#{release}',
           }
@@ -174,8 +168,6 @@ describe 'ceph::key' do
     describe release do
       it 'should install and inject client.something key' do
         pp = <<-EOS
-          Exec { path => [ '/bin/', '/sbin/' , '/usr/bin/', '/usr/sbin/' ] }
-
           class { 'ceph::repo':
             release => '#{release}',
           }
