@@ -124,6 +124,7 @@ describe 'ceph::key' do
           ->
           ceph::key { 'client.volumes':
             secret  => 'AQA98KdSmOs9JRAArCunQAB8d9eZGRvolumesQ==',
+            cluster => 'ceph',
             cap_mon => 'allow *',
             cap_osd => 'allow rw',
             mode    => 0600,

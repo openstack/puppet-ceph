@@ -28,6 +28,9 @@
 # [*secret*] Key secret.
 #   Mandatory.
 #
+# [*cluster*] The ceph cluster
+#   Optional. Same default as ceph.
+#
 # [*keyring_path*] Path to the keyring file.
 #   Optional. Absolute path to the keyring file, including the file name.
 #   Defaults to /etc/ceph/${title}keyring.
@@ -69,6 +72,7 @@
 #
 define ceph::key (
   $secret,
+  $cluster = undef,
   $keyring_path = "/etc/ceph/ceph.${name}.keyring",
   $cap_mon = '',
   $cap_osd = '',
@@ -80,6 +84,10 @@ define ceph::key (
   $inject_as_id = undef,
   $inject_keyring = undef,
 ) {
+
+  if $cluster {
+    $cluster_option = "--cluster ${cluster}"
+  }
 
   $caps = "--cap mon '${cap_mon}' --cap osd '${cap_osd}' --cap mds '${cap_mds}'"
 
@@ -125,10 +133,10 @@ sed -n 'N;/.*${name}.*\\n\\s*key = ${secret}/p' ${keyring_path} | grep ${name}",
     exec { "ceph-injectkey-${name}":
       command   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-ceph ${inject_id_option} ${inject_keyring_option} auth add ${name} --in-file=${keyring_path}",
+ceph ${cluster_option} ${inject_id_option} ${inject_keyring_option} auth add ${name} --in-file=${keyring_path}",
       unless    => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-ceph  ${inject_id_option} ${inject_keyring_option} auth get ${name} | grep ${secret}",
+ceph ${cluster_option} ${inject_id_option} ${inject_keyring_option} auth get ${name} | grep ${secret}",
       require   => [ Package['ceph'], Exec["ceph-key-${name}"], ],
       logoutput => true,
     }
