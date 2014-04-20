@@ -1,5 +1,6 @@
 #
 # Copyright (C) 2014 Catalyst IT Limited.
+# Copyright (C) 2014 Cloudwatt <libre-licensing@cloudwatt.com>
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -14,6 +15,7 @@
 #   limitations under the License.
 #
 # Author: Ricardo Rocha <ricardo@catalyst.net.nz>
+# Author: Loic Dachary <loic@dachary.org>
 #
 
 require 'spec_helper_system'
