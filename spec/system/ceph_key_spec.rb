@@ -25,7 +25,12 @@ describe 'ceph::key' do
   purge = <<-EOS
    ceph::mon { 'a': ensure => absent }
    ->
-   file { '/var/lib/ceph/bootstrap-osd/ceph.keyring': ensure => absent }
+   file { [
+      '/var/lib/ceph/bootstrap-osd/ceph.keyring',
+      '/etc/ceph/ceph.client.admin.keyring',
+     ]:
+     ensure => absent
+   }
    ->
    package { [
       'python-ceph',
