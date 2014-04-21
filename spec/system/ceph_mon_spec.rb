@@ -33,7 +33,6 @@ describe 'ceph::mon' do
   releases = ENV['RELEASES'] ? ENV['RELEASES'].split : [ 'cuttlefish', 'dumpling', 'emperor' ]
   fsid = 'a4807c9a-e76f-4666-a297-6d6cbc922e3a'
 
-#  ['emperor'].each do |release|
   releases.each do |release|
     describe release do
       it 'should install one monitor with cephx and key' do
@@ -89,7 +88,6 @@ describe 'ceph::mon' do
     end
   end
 
-#  [].each do |release|
   releases.each do |release|
     describe release do
       it 'should install one monitor with cephx and keyring' do
@@ -151,7 +149,6 @@ describe 'ceph::mon' do
     end
   end
 
-#  [].each do |release|
   releases.each do |release|
     describe release do
       it 'should install one monitor no cephx' do
@@ -211,7 +208,6 @@ describe 'ceph::mon' do
     end
   end
 
-#  [].each do |release|
   releases.each do |release|
     describe release do
       it 'should install two monitors, two hosts, no cephx' do
