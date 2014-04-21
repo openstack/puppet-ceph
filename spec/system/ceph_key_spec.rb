@@ -45,6 +45,8 @@ describe 'ceph::key' do
   releases = ENV['RELEASES'] ? ENV['RELEASES'].split : [ 'cuttlefish', 'dumpling', 'emperor' ]
   fsid = 'a4807c9a-e76f-4666-a297-6d6cbc922e3a'
   mon_key = 'AQCztJdSyNb0NBAASA2yPZPuwXeIQnDJ9O8gVw=='
+  admin_key = 'AQA0TVRTsP/aHxAAFBvntu1dSEJHxtJeFFrRsg=='
+  volume_key = 'AQAMTVRTSOHmHBAAH5d1ukHrAnxuSbrWSv9KGA=='
   something_key = 'AQD44lJTqGB4LhAA3zV8mKlO9UKFNLwg2f3lvQ=='
 
   releases.each do |release|
@@ -62,7 +64,7 @@ describe 'ceph::key' do
           }
           ->
           ceph::key { 'client.admin':
-            secret  => 'AQA98KdSmOs9JRAArCunQAB8d9eZGRfyadminQ==',
+            secret  => '#{admin_key}',
             cap_mon => 'allow *',
             cap_osd => 'allow *',
             cap_mds => 'allow *',
@@ -91,7 +93,7 @@ describe 'ceph::key' do
         end
 
         shell 'cat /etc/ceph/ceph.client.admin.keyring' do |r|
-          r.stdout.should =~ /.*\[client.admin\].*key = AQA98KdSmOs9JRAArCunQAB8d9eZGRfyadminQ==.*caps mds = "allow \*".*caps mon = "allow \*".*caps osd = "allow \*".*/m
+          r.stdout.should =~ /.*\[client.admin\].*key = #{admin_key}.*caps mds = "allow \*".*caps mon = "allow \*".*caps osd = "allow \*".*/m
           r.stderr.should be_empty
           r.exit_code.should be_zero
         end
@@ -111,7 +113,7 @@ describe 'ceph::key' do
           }
           ->
           ceph::key { 'client.admin':
-            secret  => 'AQA98KdSmOs9JRAArCunQAB8d9eZGRfyadminQ==',
+            secret  => '#{admin_key}',
             cap_mon => 'allow *',
             cap_osd => 'allow *',
             cap_mds => 'allow *',
@@ -124,7 +126,7 @@ describe 'ceph::key' do
           }
           ->
           ceph::key { 'client.volumes':
-            secret  => 'AQA98KdSmOs9JRAArCunQAB8d9eZGRvolumesQ==',
+            secret  => '#{volume_key}',
             cluster => 'ceph',
             cap_mon => 'allow *',
             cap_osd => 'allow rw',
@@ -142,7 +144,7 @@ describe 'ceph::key' do
         end
 
         shell 'ceph auth list' do |r|
-          r.stdout.should =~ /.*client\.volumes.*key:\sAQA98KdSmOs9JRAArCunQAB8d9eZGRvolumesQ==.*/m
+          r.stdout.should =~ /.*client\.volumes.*key:\s#{volume_key}.*/m
           # r.stderr.should be_empty # ceph auth writes to stderr!
           r.exit_code.should be_zero
         end
@@ -154,7 +156,7 @@ describe 'ceph::key' do
         end
 
         shell 'cat /etc/ceph/ceph.client.volumes.keyring' do |r|
-          r.stdout.should =~ /.*\[client.volumes\].*key = AQA98KdSmOs9JRAArCunQAB8d9eZGRvolumesQ==.*caps mon = "allow \*".*caps osd = "allow rw".*/m
+          r.stdout.should =~ /.*\[client.volumes\].*key = #{volume_key}.*caps mon = "allow \*".*caps osd = "allow rw".*/m
           r.stderr.should be_empty
           r.exit_code.should be_zero
         end
