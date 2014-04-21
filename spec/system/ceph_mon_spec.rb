@@ -34,7 +34,7 @@ describe 'ceph::mon' do
   fsid = 'a4807c9a-e76f-4666-a297-6d6cbc922e3a'
 
   releases.each do |release|
-    describe release do
+    describe release, :cephx do
       it 'should install one monitor with cephx and key' do
         pp = <<-EOS
           class { 'ceph::repo':
@@ -276,3 +276,20 @@ describe 'ceph::mon' do
   end
 
 end
+# Local Variables:
+# compile-command: "cd ../..
+#   (
+#     cd .rspec_system/vagrant_projects/two-ubuntu-server-12042-x64
+#     vagrant destroy --force
+#   )
+#   cp -a Gemfile-rspec-system Gemfile
+#   BUNDLE_PATH=/tmp/vendor bundle install --no-deployment
+#   RELEASES=cuttlefish \
+#   RS_DESTROY=no \
+#   BUNDLE_PATH=/tmp/vendor \
+#   bundle exec rake spec:system \
+#          SPEC=spec/system/ceph_mon_spec.rb \
+#          SPEC_OPTS='--tag cephx' &&
+#   git checkout Gemfile
+# "
+# End:
