@@ -26,14 +26,14 @@
 ### == Parameters
 #
 # [*secret*] Key secret.
-#   Mandatory.
+#   Mandatory. Can be created with ceph-authtool --gen-print-key.
 #
 # [*cluster*] The ceph cluster
 #   Optional. Same default as ceph.
 #
 # [*keyring_path*] Path to the keyring file.
 #   Optional. Absolute path to the keyring file, including the file name.
-#   Defaults to /etc/ceph/${title}keyring.
+#   Defaults to /etc/ceph/ceph.${name}.keyring.
 #
 # [*cap_mon*] cephx capabilities for MON access.
 #   Optional. e.g. 'allow *'
@@ -47,13 +47,13 @@
 #   Optional. e.g. 'allow *'
 #   Defaults to 'undef'.
 #
-# [*user*] Owner of the keyring file.
+# [*user*] Owner of the *keyring_path* file.
 #   Optional. Defaults to 'root'.
 #
-# [*group*] Group of the keyring file.
+# [*group*] Group of the *keyring_path* file.
 #   Optional. Defaults to 'root'.
 #
-# [*mode*] Mode (permissions) of the keyring file.
+# [*mode*] Mode (permissions) of the *keyring_path* file.
 #   Optional. Defaults to 0600.
 #
 # [*inject*] True if the key should be injected into the cluster.
