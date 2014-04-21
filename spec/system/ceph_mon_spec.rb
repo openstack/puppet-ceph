@@ -58,7 +58,7 @@ describe 'ceph::mon' do
           r.exit_code.should_not == 1
         end
 
-        shell 'test -f /etc/ceph/ceph.client.admin.keyring' do |r|
+        shell 'test -z "$(cat /etc/ceph/ceph.client.admin.keyring)"' do |r|
           r.exit_code.should be_zero
         end
       end

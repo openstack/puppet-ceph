@@ -42,6 +42,9 @@ describe 'ceph::mon' do
       end
 
       it { should contain_service('ceph-mon-A').with('ensure' => "running") }
+      it { should contain_exec('ceph-mon-ceph.client.admin.keyring-A').with(
+         'command' => "/usr/bin/touch /etc/ceph/ceph.client.admin.keyring"
+       ) }
 
 #      it { p subject.resources }
 

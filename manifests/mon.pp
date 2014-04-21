@@ -58,7 +58,10 @@ define ceph::mon (
     $id = $name
 
     if $cluster {
-      $cluster_option = "--cluster ${cluster}"
+      $cluster_name = $cluster
+      $cluster_option = "--cluster ${cluster_name}"
+    } else {
+      $cluster_name = 'ceph'
     }
 
     if $::operatingsystem == 'Ubuntu' {
@@ -139,6 +142,11 @@ if [ ! -d \$mon_data ] ; then
 fi
         ",
         logoutput => true,
+      }
+      ->
+      # prevent automatic creation of the client.admin key by ceph-create-keys
+      exec { "ceph-mon-${cluster_name}.client.admin.keyring-${id}":
+        command => "/usr/bin/touch /etc/ceph/${cluster_name}.client.admin.keyring",
       }
       ->
       service { $mon_service:

@@ -22,7 +22,12 @@ describe 'ceph::osd' do
   purge = <<-EOS
    ceph::mon { 'a': ensure => absent }
    ->
-   file { '/var/lib/ceph/bootstrap-osd/ceph.keyring': ensure => absent }
+   file { [
+      '/var/lib/ceph/bootstrap-osd/ceph.keyring',
+      '/etc/ceph/ceph.client.admin.keyring',
+     ]:
+     ensure => absent
+   }
    ->
    package { [
       'python-ceph',
@@ -36,6 +41,7 @@ describe 'ceph::osd' do
 
   releases = ENV['RELEASES'] ? ENV['RELEASES'].split : [ 'cuttlefish', 'dumpling', 'emperor' ]
   fsid = 'a4807c9a-e76f-4666-a297-6d6cbc922e3a'
+  admin_key = 'AQA0TVRTsP/aHxAAFBvntu1dSEJHxtJeFFrRsg=='
 
   releases.each do |release|
     describe release do
@@ -106,6 +112,7 @@ describe 'ceph::osd' do
   releases.each do |release|
     describe release do
       it 'should install one osd with cephx' do
+
         pp = <<-EOS
           class { 'ceph::repo':
             release => '#{release}',
@@ -119,6 +126,20 @@ describe 'ceph::osd' do
           ceph::mon { 'a':
             public_addr => $::ipaddress_eth0,
             key => 'AQCztJdSyNb0NBAASA2yPZPuwXeIQnDJ9O8gVw==',
+          }
+          ->
+          ceph::key { 'client.admin':
+            secret         => '#{admin_key}',
+            cap_mon        => 'allow *',
+            cap_osd        => 'allow *',
+            cap_mds        => 'allow *',
+            inject         => true,
+            inject_as_id   => 'mon.',
+            inject_keyring => '/var/lib/ceph/mon/ceph-a/keyring',
+          }
+          ->
+          exec { 'bootstrap-key':
+            command => '/usr/sbin/ceph-create-keys --id a',
           }
           ->
           ceph::osd { '/dev/sdb': }
@@ -168,7 +189,7 @@ describe 'ceph::osd' do
 
   releases.each do |release|
     describe release do
-      it 'should install one osd with external journal and cephx' do
+      it 'should install one osd with external journal and no cephx' do
         pp = <<-EOS
           class { 'ceph::repo':
             release => '#{release}',
@@ -177,11 +198,13 @@ describe 'ceph::osd' do
           class { 'ceph':
             fsid => '#{fsid}',
             mon_host => $::ipaddress_eth0,
+            authentication_type => 'none',
           }
           ->
           ceph::mon { 'a':
             public_addr => $::ipaddress_eth0,
             key => 'AQCztJdSyNb0NBAASA2yPZPuwXeIQnDJ9O8gVw==',
+            authentication_type => 'none',
           }
           ->
           ceph::osd { '/dev/sdb':
@@ -231,3 +254,19 @@ describe 'ceph::osd' do
   end
 
 end
+# Local Variables:
+# compile-command: "cd ../..
+#   (
+#     cd .rspec_system/vagrant_projects/two-ubuntu-server-12042-x64
+#     vagrant destroy --force
+#   )
+#   cp -a Gemfile-rspec-system Gemfile
+#   BUNDLE_PATH=/tmp/vendor bundle install --no-deployment
+#   MACHINES=first \
+#   RELEASES=cuttlefish \
+#   RS_DESTROY=no \
+#   BUNDLE_PATH=/tmp/vendor \
+#   bundle exec rake spec:system SPEC=spec/system/ceph_osd_spec.rb &&
+#   git checkout Gemfile
+# "
+# End:

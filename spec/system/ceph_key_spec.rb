@@ -86,6 +86,11 @@ describe 'ceph::key' do
           r.exit_code.should_not == 1
         end
 
+        shell 'ceph auth list' do |r|
+          r.stdout.should_not =~ /client.admin/
+          r.exit_code.should be_zero
+        end
+
         shell 'ls -l /etc/ceph/ceph.client.admin.keyring' do |r|
           r.stdout.should =~ /.*-rw-------.*root\sroot.*/m
           r.stderr.should be_empty
@@ -100,6 +105,16 @@ describe 'ceph::key' do
 
       end
 
+      it 'should uninstall one monitor and all packages' do
+        puppet_apply(purge) do |r|
+          r.exit_code.should_not == 1
+        end
+      end
+    end
+  end
+
+  releases.each do |release|
+    describe release do
       it 'should install and inject client.volumes key' do
         pp = <<-EOS
           class { 'ceph::repo':
@@ -109,20 +124,21 @@ describe 'ceph::key' do
           class { 'ceph':
             fsid => '#{fsid}',
             mon_host => $::ipaddress_eth0,
-            authentication_type => 'none',
-          }
-          ->
-          ceph::key { 'client.admin':
-            secret  => '#{admin_key}',
-            cap_mon => 'allow *',
-            cap_osd => 'allow *',
-            cap_mds => 'allow *',
-            inject  => false,
           }
           ->
           ceph::mon { 'a':
             public_addr => $::ipaddress_eth0,
-            authentication_type => 'none',
+            key => '#{mon_key}',
+          }
+          ->
+          ceph::key { 'client.admin':
+            secret         => '#{admin_key}',
+            cap_mon        => 'allow *',
+            cap_osd        => 'allow *',
+            cap_mds        => 'allow *',
+            inject         => true,
+            inject_as_id   => 'mon.',
+            inject_keyring => '/var/lib/ceph/mon/ceph-a/keyring',
           }
           ->
           ceph::key { 'client.volumes':
@@ -171,66 +187,6 @@ describe 'ceph::key' do
     end
   end
 
-  releases.each do |release|
-    describe release do
-      it 'should install and inject client.something key' do
-        pp = <<-EOS
-          class { 'ceph::repo':
-            release => '#{release}',
-          }
-          ->
-          class { 'ceph':
-            fsid => '#{fsid}',
-            mon_host => $::ipaddress_eth0,
-          }
-          ->
-          ceph::mon { 'a':
-            public_addr => $::ipaddress_eth0,
-            key => '#{mon_key}',
-          }
-          ->
-          ceph::key { 'client.something':
-            secret         => '#{something_key}',
-            cap_mon        => 'allow *',
-            cap_osd        => 'allow rw',
-            mode           => 0600,
-            user           => 'nobody',
-            group          => 'nogroup',
-            inject         => true,
-            inject_as_id   => 'mon.',
-            inject_keyring => '/var/lib/ceph/mon/ceph-a/keyring',
-          }
-        EOS
-
-        puppet_apply(pp) do |r|
-          r.exit_code.should_not == 1
-          r.refresh
-          r.exit_code.should_not == 1
-        end
-
-        shell 'ceph auth list' do |r|
-          r.stdout.should =~ /.*client\.something.*key:\s#{something_key}.*/m
-          # r.stderr.should be_empty # ceph auth writes to stderr!
-          r.exit_code.should be_zero
-        end
-
-        shell 'ls -l /etc/ceph/ceph.client.something.keyring' do |r|
-          r.stdout.should =~ /.*-rw-------.*nobody\snogroup.*/m
-          r.stderr.should be_empty
-          r.exit_code.should be_zero
-        end
-
-      end
-
-      it 'should uninstall one monitor and all packages' do
-        puppet_apply(purge) do |r|
-          r.exit_code.should_not == 1
-        end
-      end
-
-    end
-  end
-
 end
 # Local Variables:
 # compile-command: "cd ../..
@@ -244,7 +200,7 @@ end
 #   RELEASES=cuttlefish \
 #   RS_DESTROY=no \
 #   BUNDLE_PATH=/tmp/vendor \
-#   bundle exec rake spec:system SPEC=spec/system/ceph_key_spec.rb
+#   bundle exec rake spec:system SPEC=spec/system/ceph_key_spec.rb &&
 #   git checkout Gemfile
 # "
 # End:
