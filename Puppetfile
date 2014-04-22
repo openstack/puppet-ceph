@@ -7,3 +7,7 @@ mod 'puppetlabs/stdlib',
 mod 'puppetlabs/apt',
   :git => 'git://github.com/puppetlabs/puppetlabs-apt',
   :ref => '1.4.0'
+
+mod 'puppetlabs/inifile',
+  :git => 'git://github.com/puppetlabs/puppetlabs-inifile',
+  :ref => '1.0.3'

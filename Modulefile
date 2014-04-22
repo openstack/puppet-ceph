@@ -9,3 +9,4 @@ project_page 'https://launchpad.net/puppet-ceph'
 
 dependency 'puppetlabs/inifile', '>=1.0.0 <2.0.0'
 dependency 'puppetlabs/stdlib', '>= 2.5.0'
+dependency 'puppetlabs/apt', '>= 1.4.0'
