@@ -1,5 +1,5 @@
 #
-#  Copyright 2013 Cloudwatt <libre-licensing@cloudwatt.com>
+#  Copyright 2013,2014 Cloudwatt <libre-licensing@cloudwatt.com>
 #
 #  Author: Loic Dachary <loic@dachary.org>
 #
@@ -26,7 +26,8 @@ describe 'ceph::repo' do
     '(default)' => '0.72',
   }
 
-  release2version.keys.each do |release|
+  releases = ENV['RELEASES'] ? ENV['RELEASES'].split : release2version.keys
+  releases.each do |release|
 
     release_arg = release == '(default)' ? '' : "release => '#{release}'"
 

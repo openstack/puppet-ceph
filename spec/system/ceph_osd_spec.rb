@@ -34,7 +34,7 @@ describe 'ceph::osd' do
    }
   EOS
 
-  releases = [ 'cuttlefish', 'dumpling', 'emperor' ]
+  releases = ENV['RELEASES'] ? ENV['RELEASES'].split : [ 'cuttlefish', 'dumpling', 'emperor' ]
   fsid = 'a4807c9a-e76f-4666-a297-6d6cbc922e3a'
 
   releases.each do |release|
