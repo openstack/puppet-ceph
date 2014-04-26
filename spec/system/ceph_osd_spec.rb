@@ -269,6 +269,75 @@ describe 'ceph::osd' do
         end
       end
     end
+    releases.each do |release|
+      describe release do
+        it 'should install one OSD no cephx on a partition' do
+          shell 'sgdisk --largest-new=1 --change-name="1:ceph data" --partition-guid=1:7aebb13f-d4a5-4b94-8622-355d2b5401f1 --typecode=1:4fbd7e29-9d25-41b8-afd0-062c0ceff05d -- /dev/sdb' do |r|
+            r.exit_code.should be_zero
+          end
+
+          pp = <<-EOS
+          class { 'ceph::repo':
+            release => '#{release}',
+          }
+          ->
+          class { 'ceph':
+            fsid => '#{fsid}',
+            mon_host => $::ipaddress_eth0,
+            authentication_type => 'none',
+          }
+          ->
+          ceph::mon { 'a':
+            public_addr => $::ipaddress_eth0,
+            authentication_type => 'none',
+          }
+          ->
+          ceph::osd { '/dev/sdb1': }
+        EOS
+
+          puppet_apply(pp) do |r|
+            r.exit_code.should_not == 1
+            r.refresh
+            r.exit_code.should_not == 1
+          end
+
+          shell 'ceph osd tree' do |r|
+            r.stdout.should =~ /osd.0/
+            r.stderr.should be_empty
+            r.exit_code.should be_zero
+          end
+
+        end
+
+        it 'should uninstall one osd' do
+          shell 'ceph osd tree | grep DNE' do |r|
+            r.exit_code.should_not be_zero
+          end
+
+          pp = <<-EOS
+          ceph::osd { '/dev/sdb1':
+            ensure => absent,
+          }
+        EOS
+
+          puppet_apply(pp) do |r|
+            r.exit_code.should_not == 1
+          end
+
+          shell 'ceph osd tree | grep DNE' do |r|
+            r.exit_code.should be_zero
+          end
+          shell 'ceph-disk zap /dev/sdb'
+        end
+
+        it 'should uninstall one monitor and all packages' do
+          puppet_apply(purge) do |r|
+            r.exit_code.should_not == 1
+          end
+        end
+
+      end
+    end
   end
 end
 # Local Variables:
