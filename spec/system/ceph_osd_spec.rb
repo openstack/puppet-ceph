@@ -39,10 +39,12 @@ describe 'ceph::osd' do
    }
   EOS
 
+  datas = ENV['DATAS'] ? ENV['DATAS'].split : [ '/dev/sdb', '/srv/data' ]
   releases = ENV['RELEASES'] ? ENV['RELEASES'].split : [ 'cuttlefish', 'dumpling', 'emperor' ]
   fsid = 'a4807c9a-e76f-4666-a297-6d6cbc922e3a'
   admin_key = 'AQA0TVRTsP/aHxAAFBvntu1dSEJHxtJeFFrRsg=='
 
+  datas.each do |data|
   releases.each do |release|
     describe release do
       it 'should install one OSD no cephx' do
@@ -57,12 +59,17 @@ describe 'ceph::osd' do
             authentication_type => 'none',
           }
           ->
+          # required for cuttlefish when data dir is on ext4
+          ceph_config {
+           'global/filestore_xattr_use_omap': value => 'true';
+          }
+          ->
           ceph::mon { 'a':
             public_addr => $::ipaddress_eth0,
             authentication_type => 'none',
           }
           ->
-          ceph::osd { '/dev/sdb': }
+          ceph::osd { '#{data}': }
         EOS
 
         puppet_apply(pp) do |r|
@@ -85,7 +92,7 @@ describe 'ceph::osd' do
         end
 
         pp = <<-EOS
-          ceph::osd { '/dev/sdb':
+          ceph::osd { '#{data}':
             ensure => absent,
           }
         EOS
@@ -97,7 +104,7 @@ describe 'ceph::osd' do
         shell 'ceph osd tree | grep DNE' do |r|
           r.exit_code.should be_zero
         end
-        shell 'ceph-disk zap /dev/sdb'
+        shell "test -b #{data} && ceph-disk zap #{data}"
       end
 
       it 'should uninstall one monitor and all packages' do
@@ -123,6 +130,11 @@ describe 'ceph::osd' do
             mon_host => $::ipaddress_eth0,
           }
           ->
+          # required for cuttlefish when data dir is on ext4
+          ceph_config {
+           'global/filestore_xattr_use_omap': value => 'true';
+          }
+          ->
           ceph::mon { 'a':
             public_addr => $::ipaddress_eth0,
             key => 'AQCztJdSyNb0NBAASA2yPZPuwXeIQnDJ9O8gVw==',
@@ -142,7 +154,7 @@ describe 'ceph::osd' do
             command => '/usr/sbin/ceph-create-keys --id a',
           }
           ->
-          ceph::osd { '/dev/sdb': }
+          ceph::osd { '#{data}': }
         EOS
 
         puppet_apply(pp) do |r|
@@ -165,7 +177,7 @@ describe 'ceph::osd' do
         end
 
         pp = <<-EOS
-          ceph::osd { '/dev/sdb': ensure => absent, }
+          ceph::osd { '#{data}': ensure => absent, }
         EOS
 
         puppet_apply(pp) do |r|
@@ -176,7 +188,7 @@ describe 'ceph::osd' do
           r.exit_code.should be_zero
         end
 
-        shell 'ceph-disk zap /dev/sdb'
+        shell "test -b #{data} && ceph-disk zap #{data}"
       end
 
       it 'should uninstall one monitor and all packages' do
@@ -201,13 +213,18 @@ describe 'ceph::osd' do
             authentication_type => 'none',
           }
           ->
+          # required for cuttlefish when data dir is on ext4
+          ceph_config {
+           'global/filestore_xattr_use_omap': value => 'true';
+          }
+          ->
           ceph::mon { 'a':
             public_addr => $::ipaddress_eth0,
             key => 'AQCztJdSyNb0NBAASA2yPZPuwXeIQnDJ9O8gVw==',
             authentication_type => 'none',
           }
           ->
-          ceph::osd { '/dev/sdb':
+          ceph::osd { '#{data}':
             journal => '/tmp/journal'
           }
         EOS
@@ -232,7 +249,7 @@ describe 'ceph::osd' do
         end
 
         pp = <<-EOS
-          ceph::osd { '/dev/sdb': ensure => absent, }
+          ceph::osd { '#{data}': ensure => absent, }
         EOS
 
         puppet_apply(pp) do |r|
@@ -242,7 +259,7 @@ describe 'ceph::osd' do
         shell 'ceph osd tree | grep DNE' do |r|
           r.exit_code.should be_zero
         end
-        shell 'ceph-disk zap /dev/sdb'
+        shell "test -b #{data} && ceph-disk zap #{data}"
       end
 
       it 'should uninstall one monitor and all packages' do
@@ -251,8 +268,8 @@ describe 'ceph::osd' do
         end
       end
     end
+    end
   end
-
 end
 # Local Variables:
 # compile-command: "cd ../..
@@ -264,6 +281,7 @@ end
 #   BUNDLE_PATH=/tmp/vendor bundle install --no-deployment
 #   MACHINES=first \
 #   RELEASES=cuttlefish \
+#   DATAS=/srv/data \
 #   RS_DESTROY=no \
 #   BUNDLE_PATH=/tmp/vendor \
 #   bundle exec rake spec:system SPEC=spec/system/ceph_osd_spec.rb &&

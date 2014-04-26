@@ -54,8 +54,22 @@ define ceph::osd (
 
       # ceph-disk: prepare should be idempotent http://tracker.ceph.com/issues/7475
       exec { $ceph_mkfs:
-        command   => "/usr/sbin/ceph-disk prepare ${cluster_option} ${data} ${journal}",
-        unless    => "/usr/sbin/ceph-disk list | grep ' *${data}.*ceph data'",
+        command   => "/bin/true  # comment to satisfy puppet syntax requirements
+set -ex
+if ! test -b ${data} ; then
+  mkdir -p ${data}
+fi
+ceph-disk prepare ${cluster_option} ${data} ${journal}
+# activate happens via udev when using the entire device
+if ! test -b ${data} || ! test -b ${data}1 ; then
+  ceph-disk activate ${cluster_option} ${data} || true
+fi
+",
+        unless    => "/bin/true  # comment to satisfy puppet syntax requirements
+set -ex
+ceph-disk list | grep ' *${data}.*ceph data, active' ||
+ls -l /var/lib/ceph/osd/${cluster_name}-* | grep ' ${data}'
+",
         logoutput => true,
       }
 
@@ -70,6 +84,9 @@ if [ -z \"\$id\" ] ; then
 fi
 if [ -z \"\$id\" ] ; then
   id=\$(ceph-disk list | grep ' *${data}.*mounted on' | sed -ne 's/.*osd.\\([0-9][0-9]*\\)\$/\\1/p')
+fi
+if [ -z \"\$id\" ] ; then
+  id=\$(ls -l /var/lib/ceph/osd/${cluster_name}-* | grep ' ${data}' | sed -ne 's:.*/${cluster_name}-\\([0-9][0-9]*\\) -> .*:\\1:p' || true)
 fi
 if [ \"\$id\" ] ; then
   stop ceph-osd cluster=${cluster} id=\$id || true
