@@ -43,6 +43,12 @@ define ceph::osd (
       $cluster_option = "--cluster ${cluster}"
     }
 
+    if $cluster {
+      $cluster_name = $cluster
+    } else {
+      $cluster_name = 'ceph'
+    }
+
     if $ensure == present {
       $ceph_mkfs = "ceph-osd-mkfs-${name}"
 
@@ -69,8 +75,9 @@ if [ \"\$id\" ] ; then
   stop ceph-osd cluster=${cluster} id=\$id || true
   ceph ${cluster_option} osd rm \$id
   ceph auth del osd.\$id
-  umount /var/lib/ceph/osd/ceph-\$id || true
-  rm -fr /var/lib/ceph/osd/ceph-\$id
+  rm -fr /var/lib/ceph/osd/${cluster_name}-\$id/*
+  umount /var/lib/ceph/osd/${cluster_name}-\$id || true
+  rm -fr /var/lib/ceph/osd/${cluster_name}-\$id
 fi
 ",
         logoutput => true,
