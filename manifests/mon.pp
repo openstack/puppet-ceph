@@ -74,10 +74,18 @@ define ceph::mon (
     } elsif $::operatingsystem == 'Debian' {
       $init = 'sysvinit'
       Service {
-        name     => "ceph-mon-${id}",
-        start    => "service ceph start mon.${id}",
-        stop     => "service ceph stop mon.${id}",
-        status   => "service ceph status mon.${id}",
+        name   => "ceph-mon-${id}",
+        start  => "service ceph start mon.${id}",
+        stop   => "service ceph stop mon.${id}",
+        status => "service ceph status mon.${id}",
+      }
+    } elsif $::osfamily == 'RedHat' {
+      $init = 'sysvinit'
+      Service {
+        name   => "ceph-mon-${id}",
+        start  => "service ceph start mon.${id}",
+        stop   => "service ceph stop mon.${id}",
+        status => "service ceph status mon.${id}",
       }
     } else {
       #
