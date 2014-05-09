@@ -42,13 +42,13 @@ _Notice : Please note that the code below is a sample which may not be up to dat
       ceph::mon{ $hostname: key => $mon_key }
       ceph::key{'client.admin':
           secret => $admin_key,
-          caps_mon => '*',
-          caps_osd => '*',
+          cap_mon => 'allow *',
+          cap_osd => 'allow *',
           inject => true,
       }
       cceph::key{'client.bootstrap-osd':
           secret => $bootstrap_osd_key,
-          caps_mon => 'profile bootstrap-osd'
+          cap_mon => 'profile bootstrap-osd'
           inject => true,
       }
     }
