@@ -1,0 +1,1 @@
+include ::ceph::profile::mon
