@@ -1,0 +1,29 @@
+---
+######## Ceph.conf global
+ceph::conf::fsid: '4b5c8c0a-ff60-454b-a1b4-9747aa737d19'
+ceph::conf::authentication_type: 'cephx',
+#ceph::conf::keyring: '/etc/ceph/ceph.client.admin.keyring'
+ceph::conf::public_network: '192.168.11.0/24'
+ceph::conf::cluster_network: '172.16.33.0/24'
+
+######## Ceph.conf global mon
+ceph::conf::mon_initial_members: ['ceph0', 'ceph1', 'ceph2']
+ceph::conf::mon_host: ['192.168.11.10:6789', '192.168.11.11:6789', '192.168.11.12:6789']
+
+######## Ceph.conf global osd
+ceph::conf::osd_pool_default_pg_num: '200'
+ceph::conf::osd_pool_default_pgp_num: '200'
+ceph::conf::osd_pool_default_size: '2'
+ceph::conf::osd_pool_default_min_size: '1'
+
+######## Keys
+ceph::key::admin: 'N2M5Mzg0NmEtYzY3MC00ODJjLWJlMzAtMDhjNzM3ZjQxZDIzCg::'
+ceph::key::mon: 'ZWQ4OGFhODItMmFiMi00MTlkLTk1YWQtODE0Mzk2NGFkNDFhCg::'
+ceph::key::bootstrap_osd: 'Zjg0ZGFkNTktYjNiYi00MTdkLTgzMGUtZTY5ZmQwY2M4MDczCg::'
+
+######## OSD
+ceph::osd::osds: {
+  '/dev/sdc': {journal: '/dev/sdb1'},
+  '/dev/sdd': {journal: '/dev/sdb2'}
+}
+

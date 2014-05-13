@@ -1,0 +1,3 @@
+---
+######## OSD
+ceph::osd::osds: {'/dev/sdc': {journal: '/dev/sdb'}}
