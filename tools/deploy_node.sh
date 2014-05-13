@@ -58,17 +58,19 @@ missing_param mons $mons
 missing_param public $pub_subnet
 missing_param cluster $cluster_subnet
 
-# puppet would do it, but we need it to generate the keys:
-apt-get install -y ceph
-
 # install dependencies
-apt-get install -y git
+apt-get install -y git python-software-properties
 
 # install puppet >=3.x
 wget https://apt.puppetlabs.com/puppetlabs-release-precise.deb
 dpkg -i puppetlabs-release-precise.deb
 apt-get update
 apt-get install -y puppet
+
+# install curent ceph apt repo
+wget -q -O- 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc' | sudo apt-key add -
+apt-add-repository "deb http://ceph.com/debian-emperor/ $(lsb_release -sc) main"
+apt-get update
 
 # clean firewall
 iptables -F
