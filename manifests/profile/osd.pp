@@ -27,7 +27,7 @@ class ceph::profile::osd inherits ceph::profile::base {
   create_resources(ceph::osd, $osds)
 
   ceph::key { 'osd client.bootstrap-osd':
-    keyring => '/var/lib/ceph/bootstrap-osd/ceph.keyring',
-    secret  => $bootstrap_osd_key,
+    keyring_path => '/var/lib/ceph/bootstrap-osd/ceph.keyring',
+    secret       => $bootstrap_osd_key,
   }
 }
