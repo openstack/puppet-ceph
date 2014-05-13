@@ -26,7 +26,7 @@ class ceph::profile::mon inherits ceph::profile::base {
   ceph::mon { $hostname:
     authentication_type => $authentication_type,
     key                 => $mon_key,
-  }
+  } ->
 
   ceph::key { 'client.admin':
     secret   => $admin_key,
@@ -34,7 +34,7 @@ class ceph::profile::mon inherits ceph::profile::base {
     cap_osd => 'allow *',
     cap_mds => 'allow',
     inject   => true,
-  }
+  } ->
 
   ceph::key { 'client.bootstrap-osd':
     secret   => $bootstrap_osd_key,

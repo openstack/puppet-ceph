@@ -20,7 +20,7 @@ Usage: ${0##*/} -i mon-ips -m mons --public subnet --cluster subnet [--osd osd [
 
 -h/--help           -> this help
 
-Example: ${0##*/} -i '192.168.11.10, 192.168.11.11' -m 'ceph0, ceph1' --public 192.168.11.0/24 --cluster 172.16.33.0/24 --osd /dev/vdb4 --journal /dev/vdb3
+Example: ${0##*/} -i '192.168.11.10, 192.168.11.11' -m 'ceph0, ceph1' --public 192.168.11.0/24 --cluster 172.16.33.0/24 --osd /dev/vda4 --journal /dev/vda3
 "
 }
  
