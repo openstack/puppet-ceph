@@ -16,7 +16,7 @@ Usage: ${0##*/} -i mon-ips -m mons --public subnet --cluster subnet [--osd osd [
 
 --public subnet     -> the public subnet
 
---cluster subet     -> the cluster subnet
+--cluster subnet    -> the cluster subnet
 
 -h/--help           -> this help
 
@@ -125,19 +125,20 @@ EOF
 
 if [[ -n ${osd} ]]; then
 if [[ -n ${journal} ]]; then
-cat > /var/lib/hiera/nodes/${hostname} << EOF
+cat > /var/lib/hiera/nodes/$(hostname).yaml << EOF
 ---
 ######## OSD
-ceph::osd::osds: {'${osd}': {journal: '${osd_journal}'}}
+ceph::osd::osds: {'${osd}': {journal: '${journal}'}}
 EOF
 
-fi
-cat > /var/lib/hiera/nodes/${hostname} << EOF
+else
+cat > /var/lib/hiera/nodes/$(hostname).yaml << EOF
 ---
 ######## OSD
 ceph::osd::osds: {'${osd}': }
 EOF
 
+fi
 fi
 
 set +x
