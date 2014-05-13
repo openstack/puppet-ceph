@@ -91,7 +91,7 @@ cat > /etc/puppet/hiera.yaml << EOF
 EOF
 
 # get and configure openstack puppet module
-git clone  https://github.com/ninech/puppet-ceph.git /etc/puppet/modules/ceph
+git clone -b feature/deploytool https://github.com/ninech/puppet-ceph.git /etc/puppet/modules/ceph
 # and install dependencies using librarian-puppet
 apt-get install -y rubygems
 gem install librarian-puppet
