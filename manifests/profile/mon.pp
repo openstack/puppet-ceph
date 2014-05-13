@@ -28,7 +28,7 @@ class ceph::profile::mon inherits ceph::profile::base {
     key                 => $mon_key,
   }
 
-  ceph::key { 'mon client.admin':
+  ceph::key { 'client.admin':
     secret   => $admin_key,
     cap_mon => 'allow *',
     cap_osd => 'allow *',
@@ -36,7 +36,7 @@ class ceph::profile::mon inherits ceph::profile::base {
     inject   => true,
   }
 
-  ceph::key { 'mon client.bootstrap-osd':
+  ceph::key { 'client.bootstrap-osd':
     secret   => $bootstrap_osd_key,
     cap_mon => 'profile bootstrap-osd',
     inject   => true,
