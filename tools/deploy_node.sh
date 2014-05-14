@@ -129,14 +129,17 @@ if [[ -n ${journal} ]]; then
 cat > /var/lib/hiera/nodes/$(hostname).yaml << EOF
 ---
 ######## OSD
-ceph::osd::osds: {'${osd}': {journal: '${journal}'}}
+ceph::osd::osds:
+  '${osd}':
+    journal: '${journal}'
 EOF
 
 else
 cat > /var/lib/hiera/nodes/$(hostname).yaml << EOF
 ---
 ######## OSD
-ceph::osd::osds: {'${osd}': }
+ceph::osd::osds:
+  '${osd}':
 EOF
 
 fi

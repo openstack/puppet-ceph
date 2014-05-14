@@ -18,16 +18,21 @@
 # Profile for a Ceph osd
 #
 class ceph::profile::osd inherits ceph::profile::base {
-  $admin_key = hiera('ceph::key::admin')
-  $mon_key = hiera('ceph::key::mon')
   $bootstrap_osd_key = hiera('ceph::key::bootstrap_osd')
-
   $osds = hiera('ceph::osd::osds')
 
-  ceph::key { 'install client.bootstrap-osd':
-    keyring_path => '/var/lib/ceph/bootstrap-osd/ceph.keyring',
-    secret       => $bootstrap_osd_key,
-  } ->
+  # we need the mons before we can define osds
+  Ceph::Profile::Mon<| |> -> Ceph::Profile::Osd<| |>
 
-  create_resources(ceph::osd, $osds)
+  # if this is also a mon, the key is already defined
+  if ! defined(Ceph::Key['client.bootstrap-osd']) {
+    ceph::key { 'client.bootstrap-osd':
+      keyring_path => '/var/lib/ceph/bootstrap-osd/ceph.keyring',
+      secret       => $bootstrap_osd_key,
+    }
+  }
+
+  $defaults = { 'require' => Ceph::Key['client.bootstrap-osd'], }
+
+  create_resources(ceph::osd, $osds, $defaults)
 }

@@ -44,8 +44,9 @@ class ceph::profile::mon inherits ceph::profile::base {
   } ->
 
   ceph::key { 'client.bootstrap-osd':
-    secret   => $bootstrap_osd_key,
-    cap_mon => 'profile bootstrap-osd',
-    inject   => true,
+    secret           => $bootstrap_osd_key,
+    keyring_path => '/var/lib/ceph/bootstrap-osd/ceph.keyring',
+    cap_mon          => 'profile bootstrap-osd',
+    inject           => true,
   }
 }

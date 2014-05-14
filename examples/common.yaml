@@ -25,8 +25,9 @@ ceph::key::mon: 'AQATGHJTUCBqIBAA7M2yafV1xctn1pgr3GcKPg=='
 ceph::key::bootstrap_osd: 'AQARG3JTsDDEHhAAVinHPiqvJkUi5Mww/URupw=='
 
 ######## OSD
-ceph::osd::osds: {
-  '/dev/sdc': {journal: '/dev/sdb1'},
-  '/dev/sdd': {journal: '/dev/sdb2'}
-}
+ceph::osd::osds:
+  '/dev/sdc':
+    journal: '/dev/sdb1'
+  '/dev/sdd':
+    journal: '/dev/sdb2'
 
