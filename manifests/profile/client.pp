@@ -20,9 +20,6 @@
 class ceph::profile::client inherits ceph::profile::base {
   $admin_key = hiera('ceph::key::admin')
 
-  # we need the mons before we can define clients
-  Ceph::Profile::Mon<| |> -> Ceph::Profile::Client<| |>
-
   # if this is also a mon, the key is already defined
   if ! defined(Ceph::Key['client.admin']) {
     ceph::key { 'client.admin':

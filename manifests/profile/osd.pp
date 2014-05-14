@@ -21,9 +21,6 @@ class ceph::profile::osd inherits ceph::profile::base {
   $bootstrap_osd_key = hiera('ceph::key::bootstrap_osd')
   $osds = hiera('ceph::osd::osds')
 
-  # we need the mons before we can define osds
-  Ceph::Profile::Mon<| |> -> Ceph::Profile::Osd<| |>
-
   # if this is also a mon, the key is already defined
   if ! defined(Ceph::Key['client.bootstrap-osd']) {
     ceph::key { 'client.bootstrap-osd':
