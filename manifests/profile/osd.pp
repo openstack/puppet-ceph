@@ -17,7 +17,7 @@
 #
 # Profile for a Ceph osd
 #
-class ceph::profile::osd inherits ceph::profile::base {
+class ceph::profile::osd inherits ceph::profile::client {
   $bootstrap_osd_key = hiera('ceph::key::bootstrap_osd')
   $osds = hiera('ceph::osd::osds')
 
