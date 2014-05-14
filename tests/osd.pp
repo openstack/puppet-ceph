@@ -1,1 +1,1 @@
-include ::ceph::profile::osd
+include ::ceph::role::osd

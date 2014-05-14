@@ -149,6 +149,5 @@ set +x
 set +e
 
 # apply the relevant puppet modules
-puppet apply --report /etc/puppet/modules/ceph/tests/mon.pp
-puppet apply --report /etc/puppet/modules/ceph/tests/osd.pp
+puppet apply --report /etc/puppet/modules/ceph/tests/allinone.pp
 
