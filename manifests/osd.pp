@@ -54,7 +54,7 @@ set -ex
 /usr/sbin/ceph-disk prepare ${cluster_option} ${data} ${journal}
 /usr/sbin/ceph-disk activate ${cluster_option} ${data}
 ",
-        unless    => "/usr/sbin/ceph-disk list | grep ' *${data}.*ceph data'",
+        unless    => "/usr/sbin/ceph-disk list | grep ' *${data}.*ceph/osd.*'",
         logoutput => true,
       }
 
