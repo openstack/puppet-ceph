@@ -21,6 +21,9 @@ class ceph::profile::osd inherits ceph::profile::client {
   $bootstrap_osd_key = hiera('ceph::key::bootstrap_osd')
   $osds = hiera('ceph::osd::osds')
 
+  # ensure that we can connect to the cluster before adding osds
+  Ceph::Key['client.admin'] -> Ceph::Osd<| |>
+
   # if this is also a mon, the key is already defined
   if ! defined(Ceph::Key['client.bootstrap-osd']) {
     ceph::key { 'client.bootstrap-osd':
