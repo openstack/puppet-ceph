@@ -67,11 +67,6 @@ dpkg -i puppetlabs-release-precise.deb
 apt-get update
 apt-get install -y puppet
 
-# install curent ceph apt repo
-wget -q -O- 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc' | sudo apt-key add -
-apt-add-repository "deb http://ceph.com/debian-emperor/ $(lsb_release -sc) main"
-apt-get update
-
 # clean firewall
 iptables -F
 iptables -X
@@ -81,11 +76,12 @@ iptables -P OUTPUT ACCEPT
 
 # configure minimal hiera
 cat > /etc/puppet/hiera.yaml << EOF
----                                                                                                                                                                                                                :backends:                                                                                                                                                                                                         
-  - yaml                                                                                                                                                                                                           
-:yaml:                                                                                                                                                                                                             
-  :datadir: /var/lib/hiera                                                                                                                                                                                         
-:hierarchy:                                                                                                                                                                                                        
+---
+:backends:
+  - yaml
+:yaml:
+  :datadir: /var/lib/hiera
+:hierarchy:
   - "nodes/%{::hostname}"
   - common
 EOF
@@ -102,6 +98,9 @@ cd /etc/puppet && librarian-puppet install
 mkdir -p /var/lib/hiera/nodes
 cat > /var/lib/hiera/common.yaml << EOF
 ---
+######## Ceph
+ceph::release: 'emperor'
+
 ######## Ceph.conf global
 ceph::conf::fsid: '4b5c8c0a-ff60-454b-a1b4-9747aa737d19'
 ceph::conf::authentication_type: 'cephx'
