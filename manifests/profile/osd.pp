@@ -24,7 +24,7 @@ class ceph::profile::osd inherits ceph::profile::base {
 
   $osds = hiera('ceph::osd::osds')
 
-  ceph::key { 'client.bootstrap-osd':
+  ceph::key { 'install client.bootstrap-osd':
     keyring_path => '/var/lib/ceph/bootstrap-osd/ceph.keyring',
     secret       => $bootstrap_osd_key,
   } ->
