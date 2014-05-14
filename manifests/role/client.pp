@@ -15,21 +15,8 @@
 #
 # Author: David Gurtner <david@nine.ch>
 #
-# Profile for a Ceph osd
+# Role for a Ceph client
 #
-class ceph::profile::osd inherits ceph::profile::client {
-  $bootstrap_osd_key = hiera('ceph::key::bootstrap_osd')
-  $osds = hiera('ceph::osd::osds')
-
-  # if this is also a mon, the key is already defined
-  if ! defined(Ceph::Key['client.bootstrap-osd']) {
-    ceph::key { 'client.bootstrap-osd':
-      keyring_path => '/var/lib/ceph/bootstrap-osd/ceph.keyring',
-      secret       => $bootstrap_osd_key,
-    }
-  }
-
-  $defaults = { 'require' => Ceph::Key['client.bootstrap-osd'], }
-
-  create_resources(ceph::osd, $osds, $defaults)
+class ceph::role::client {
+  include ceph::profile::client
 }

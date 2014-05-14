@@ -23,22 +23,30 @@ class ceph::profile::mon inherits ceph::profile::base {
   $bootstrap_osd_key = hiera('ceph::key::bootstrap_osd')
   $authentication_type = hiera('ceph::conf::authentication_type')
 
-  ceph::mon { $hostname:
-    authentication_type => $authentication_type,
-    key                 => $mon_key,
-  }
+  $admin_keyring = '/etc/ceph/ceph.client.admin.keyring'
 
-  ceph::key { 'mon client.admin':
+  ceph::key { 'client.admin':
     secret   => $admin_key,
     cap_mon => 'allow *',
     cap_osd => 'allow *',
     cap_mds => 'allow',
-    inject   => true,
-  }
+  } ->
 
-  ceph::key { 'mon client.bootstrap-osd':
-    secret   => $bootstrap_osd_key,
-    cap_mon => 'profile bootstrap-osd',
-    inject   => true,
+  ceph::key { 'mon.':
+    secret => $mon_key,
+    keyring_path => $admin_keyring,
+    cap_mon => 'allow *',
+  } ->
+
+  ceph::mon { $hostname:
+    authentication_type => $authentication_type,
+    keyring             => $admin_keyring,
+  } ->
+
+  ceph::key { 'client.bootstrap-osd':
+    secret           => $bootstrap_osd_key,
+    keyring_path => '/var/lib/ceph/bootstrap-osd/ceph.keyring',
+    cap_mon          => 'allow profile bootstrap-osd',
+    inject           => true,
   }
 }

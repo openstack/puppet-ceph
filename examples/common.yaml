@@ -1,4 +1,7 @@
 ---
+######## Ceph
+ceph::release: 'emperor'
+
 ######## Ceph.conf global
 ceph::conf::fsid: '4b5c8c0a-ff60-454b-a1b4-9747aa737d19'
 ceph::conf::authentication_type: 'cephx'
@@ -22,8 +25,9 @@ ceph::key::mon: 'AQATGHJTUCBqIBAA7M2yafV1xctn1pgr3GcKPg=='
 ceph::key::bootstrap_osd: 'AQARG3JTsDDEHhAAVinHPiqvJkUi5Mww/URupw=='
 
 ######## OSD
-ceph::osd::osds: {
-  '/dev/sdc': {journal: '/dev/sdb1'},
-  '/dev/sdd': {journal: '/dev/sdb2'}
-}
+ceph::osd::osds:
+  '/dev/sdc':
+    journal: '/dev/sdb1'
+  '/dev/sdd':
+    journal: '/dev/sdb2'
 

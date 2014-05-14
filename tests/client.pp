@@ -1,1 +1,1 @@
-include ::ceph::profile::client
+include ::ceph::role::client

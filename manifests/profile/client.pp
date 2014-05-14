@@ -20,8 +20,11 @@
 class ceph::profile::client inherits ceph::profile::base {
   $admin_key = hiera('ceph::key::admin')
 
-  ceph::key { 'client client.admin':
-    keyring_path => '/etc/ceph/ceph.client.admin.keyring',
-    secret       => $admin_key,
+  # if this is also a mon, the key is already defined
+  if ! defined(Ceph::Key['client.admin']) {
+    ceph::key { 'client.admin':
+      keyring_path => '/etc/ceph/ceph.client.admin.keyring',
+      secret       => $admin_key,
+    }
   }
 }

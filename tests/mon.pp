@@ -1,1 +1,1 @@
-include ::ceph::profile::mon
+include ::ceph::role::mon
