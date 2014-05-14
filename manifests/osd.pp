@@ -14,6 +14,7 @@
 #   limitations under the License.
 #
 # Author: Loic Dachary <loic@dachary.org>
+# Author: David Gurtner <david@nine.ch>
 #
 ### == Parameters
 # [*title*] The OSD data path.
@@ -48,8 +49,12 @@ define ceph::osd (
 
       # ceph-disk: prepare should be idempotent http://tracker.ceph.com/issues/7475
       exec { $ceph_mkfs:
-        command   => "/usr/sbin/ceph-disk prepare ${cluster_option} ${data} ${journal}",
-        unless    => "/usr/sbin/ceph-disk list | grep ' *${data}.*ceph data'",
+        command   => "/bin/true  # comment to satisfy puppet syntax requirements
+set -ex
+/usr/sbin/ceph-disk prepare ${cluster_option} ${data} ${journal}
+/usr/sbin/ceph-disk activate ${cluster_option} ${data}
+",
+        unless    => "/usr/sbin/ceph-disk list | grep ' *${data}.*ceph/osd.*'",
         logoutput => true,
       }
 

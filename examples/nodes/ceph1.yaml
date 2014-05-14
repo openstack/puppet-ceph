@@ -1,0 +1,6 @@
+---
+######## OSD
+ceph::osd::osds:
+  '/dev/vda4':
+    journal: '/dev/vda3'
+
