@@ -1,6 +1,7 @@
 #
 # Copyright (C) 2014 Catalyst IT Limited.
 # Copyright (C) 2014 Cloudwatt <libre-licensing@cloudwatt.com>
+# Copyright (C) 2014 Nine Internet Solutions AG
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -16,50 +17,84 @@
 #
 # Author: Ricardo Rocha <ricardo@catalyst.net.nz>
 # Author: Loic Dachary <loic@dachary.org>
+# Author: David Gurtner <david@nine.ch>
 #
 
 require 'spec_helper_system'
 
 describe 'ceph::key' do
 
-  purge = <<-EOS
-   ceph::mon { 'a': ensure => absent }
-   ->
-   file { [
-      '/var/lib/ceph/bootstrap-osd/ceph.keyring',
-      '/etc/ceph/ceph.client.admin.keyring',
-     ]:
-     ensure => absent
-   }
-   ->
-   package { [
-      'python-ceph',
-      'ceph-common',
-      'librados2',
-      'librbd1',
-     ]:
-     ensure => purged
-   }
-  EOS
-
   releases = ENV['RELEASES'] ? ENV['RELEASES'].split : [ 'cuttlefish', 'dumpling', 'emperor' ]
+  machines = ENV['MACHINES'] ? ENV['MACHINES'].split : [ 'first', 'second' ]
   fsid = 'a4807c9a-e76f-4666-a297-6d6cbc922e3a'
   mon_key = 'AQCztJdSyNb0NBAASA2yPZPuwXeIQnDJ9O8gVw=='
   admin_key = 'AQA0TVRTsP/aHxAAFBvntu1dSEJHxtJeFFrRsg=='
   volume_key = 'AQAMTVRTSOHmHBAAH5d1ukHrAnxuSbrWSv9KGA=='
-  something_key = 'AQD44lJTqGB4LhAA3zV8mKlO9UKFNLwg2f3lvQ=='
+  mon_host = '$::ipaddress_eth1'
+  # passing it directly as unqoted array is not supported everywhere
+  packages = "[ 'python-ceph', 'ceph-common', 'librados2', 'librbd1', 'libcephfs1' ]"
 
   releases.each do |release|
+    purge = <<-EOS
+      ceph::mon { 'a': ensure => absent }
+      ->
+      file { [
+         '/var/lib/ceph/bootstrap-osd/ceph.keyring',
+         '/etc/ceph/ceph.client.admin.keyring',
+         '/etc/ceph/ceph.client.volume',
+        ]:
+        ensure => absent
+      }
+      ->
+      package { [
+         'python-ceph',
+         'ceph-common',
+         'librados2',
+         'librbd1',
+         'libcephfs1',
+        ]:
+        ensure => purged
+      }
+    EOS
+
     describe release do
-      it 'should install and not inject client.admin key' do
+      before(:all) do
         pp = <<-EOS
           class { 'ceph::repo':
             release => '#{release}',
           }
-          ->
+        EOS
+
+        machines.each do |mon|
+          puppet_apply(:node => mon, :code => pp) do |r|
+            r.exit_code.should_not == 1
+          end
+        end
+      end
+
+      after(:all) do
+        pp = <<-EOS
+          package { #{packages}:
+            ensure => purged
+          }
+          class { 'ceph::repo':
+            release => '#{release}',
+            ensure  => absent,
+          }
+        EOS
+
+        machines.each do |mon|
+          puppet_apply(:node => mon, :code => pp) do |r|
+            r.exit_code.should_not == 1
+          end
+        end
+      end
+
+      it 'should install and not inject client.admin key' do
+        pp = <<-EOS
           class { 'ceph':
             fsid => '#{fsid}',
-            mon_host => $::ipaddress_eth0,
+            mon_host => #{mon_host},
             authentication_type => 'none',
           }
           ->
@@ -75,7 +110,7 @@ describe 'ceph::key' do
           }
           ->
           ceph::mon { 'a':
-            public_addr => $::ipaddress_eth0,
+            public_addr => #{mon_host},
             authentication_type => 'none',
           }
         EOS
@@ -110,24 +145,26 @@ describe 'ceph::key' do
           r.exit_code.should_not == 1
         end
       end
-    end
-  end
 
-  releases.each do |release|
-    describe release do
       it 'should install and inject client.volumes key' do
+        osfamily = facter.facts['osfamily']
+        operatingsystem = facter.facts['operatingsystem']
+
+        if osfamily == 'Debian' && operatingsystem == 'Ubuntu'
+          nogroup = 'nogroup'
+        end
+        if osfamily == 'RedHat'
+          nogroup = 'nobody'
+        end
+
         pp = <<-EOS
-          class { 'ceph::repo':
-            release => '#{release}',
-          }
-          ->
           class { 'ceph':
             fsid => '#{fsid}',
-            mon_host => $::ipaddress_eth0,
+            mon_host => #{mon_host},
           }
           ->
           ceph::mon { 'a':
-            public_addr => $::ipaddress_eth0,
+            public_addr => #{mon_host},
             key => '#{mon_key}',
           }
           ->
@@ -148,7 +185,7 @@ describe 'ceph::key' do
             cap_osd => 'allow rw',
             mode    => 0600,
             user    => 'nobody',
-            group   => 'nogroup',
+            group   => '#{nogroup}',
             inject  => true,
           }
         EOS
@@ -166,7 +203,7 @@ describe 'ceph::key' do
         end
 
         shell 'ls -l /etc/ceph/ceph.client.volumes.keyring' do |r|
-          r.stdout.should =~ /.*-rw-------.*nobody\snogroup.*/m
+          r.stdout.should =~ /.*-rw-------.*nobody\s#{nogroup}.*/m
           r.stderr.should be_empty
           r.exit_code.should be_zero
         end
@@ -176,7 +213,6 @@ describe 'ceph::key' do
           r.stderr.should be_empty
           r.exit_code.should be_zero
         end
-
       end
 
       it 'should uninstall one monitor and all packages' do
@@ -186,12 +222,11 @@ describe 'ceph::key' do
       end
     end
   end
-
 end
 # Local Variables:
 # compile-command: "cd ../..
 #   (
-#     cd .rspec_system/vagrant_projects/two-ubuntu-server-12042-x64
+#     cd .rspec_system/vagrant_projects/one-ubuntu-server-12042-x64
 #     vagrant destroy --force
 #   )
 #   cp -a Gemfile-rspec-system Gemfile
@@ -199,7 +234,7 @@ end
 #   MACHINES=first \
 #   RELEASES=cuttlefish \
 #   RS_DESTROY=no \
-#   RS_SET=two-ubuntu-server-12042-x64 \
+#   RS_SET=one-centos-64-x64 \
 #   BUNDLE_PATH=/tmp/vendor \
 #   bundle exec rake spec:system SPEC=spec/system/ceph_key_spec.rb &&
 #   git checkout Gemfile
