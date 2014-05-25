@@ -20,3 +20,17 @@ sets:
         options:
                  ip: '10.11.12.2'
                  disk: 10
+  'two-centos-64-x64':
+    default_node: 'first'
+    nodes:
+      'first':
+        prefab: 'centos-64-x64'
+        options:
+                 ip: '10.11.12.2'
+                 disk: 10
+      'second':
+        prefab: 'centos-64-x64'
+        options:
+                 ip: '10.11.12.3'
+                 disk: 10
+

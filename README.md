@@ -88,6 +88,19 @@ for which integration tests are going to be run. The default is
   RELEASES='cuttlefish dumpling emperor' \
   bundle exec rake spec:system
 
+The RS_SET environment variable contains the resource set of linux
+distribution configurations for which integration tests are going
+to be run. Available values are
+
+* two-ubuntu-server-12042-x64
+* two-centos-64-x64
+
+The default is
+
+* BUNDLE_PATH=/tmp/vendor \
+  RS_SET=two-ubuntu-server-12042-x64 \
+  bundle exec rake spec:system
+
 The MACHINES environment variable contains the list of virtual
 machines that are created for integration tests to use. The default is
 
@@ -104,7 +117,9 @@ On success it should complete with
 Example invocation of gerritexec:
 
 script='bash -c "'
-script+='mv Gemfile-rspec-system Gemfile ; bundle install ; bundle exec rake spec:system'
+script+='mv Gemfile-rspec-system Gemfile ; bundle install ;'
+script+='RS_SET=two-ubuntu-server-12042-x64 bundle exec rake spec:system'
+script+='RS_SET=two-centos-64-x64 bundle exec rake spec:system'
 script+='" > /tmp/out 2>&1 ; r=$? ; '
 script+='echo https://pypi.python.org/pypi/gerritexec output: ; '
 script+='pastebinit /tmp/out ; '

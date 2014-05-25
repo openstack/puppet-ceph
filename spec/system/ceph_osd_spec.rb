@@ -352,6 +352,7 @@ end
 #   RELEASES=cuttlefish \
 #   DATAS=/srv/data \
 #   RS_DESTROY=no \
+#   RS_SET=two-ubuntu-server-12042-x64 \
 #   BUNDLE_PATH=/tmp/vendor \
 #   bundle exec rake spec:system SPEC=spec/system/ceph_osd_spec.rb &&
 #   git checkout Gemfile
