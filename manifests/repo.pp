@@ -1,5 +1,6 @@
 #   Copyright (C) iWeb Technologies Inc.
 #   Copyright (C) 2013 Cloudwatt <libre.licensing@cloudwatt.com>
+#   Copyright (C) 2014 Nine Internet Solutions AG
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -17,6 +18,7 @@
 # Author: François Charlier <francois.charlier@enovance.com>
 # Author: David Moreau Simard <dmsimard@iweb.com>
 # Author: Andrew Woodward <xarses>
+# Author: David Gurtner <david@nine.ch>
 #
 class ceph::repo (
   $ensure  = present,
@@ -43,34 +45,46 @@ class ceph::repo (
     }
 
     'RedHat': {
+      $enabled = $ensure ? { present => '1', absent => '0', default => absent, }
       yumrepo { 'ext-epel-6.8':
+        # puppet versions prior to 3.5 do not support ensure, use enabled instead
+        enabled    => $enabled,
         descr      => 'External EPEL 6.8',
         name       => 'ext-epel-6.8',
         baseurl    => absent,
         gpgcheck   => '0',
         gpgkey     => absent,
-        #mirrorlist => "https://mirrors.fedoraproject.org/metalink?repo=epel-6&arch=\${basearch}",
-        # This is needed to avoid warning (using double-quotes) in puppet-lint
-        # Can be removed when https://github.com/rodjek/puppet-lint/pull/234 is merged
-        mirrorlist => join(['https://mirrors.fedoraproject.org/metalink?repo=epel-6&arch=$', '{basearch}'], '')
+        mirrorlist => 'https://mirrors.fedoraproject.org/metalink?repo=epel-6&arch=$basearch',
+        priority   => '20', # prefer ceph repos over EPEL
       }
 
       yumrepo { 'ext-ceph':
+        # puppet versions prior to 3.5 do not support ensure, use enabled instead
+        enabled    => $enabled,
         descr      => "External Ceph ${release}",
         name       => "ext-ceph-${release}",
-        baseurl    => "http://ceph.com/rpm-${release}/el6/\${basearch}",
+        baseurl    => "http://ceph.com/rpm-${release}/el6/\$basearch",
         gpgcheck   => '1',
         gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc',
         mirrorlist => absent,
+        priority   => '10', # prefer ceph repos over EPEL
       }
 
       yumrepo { 'ext-ceph-noarch':
+        # puppet versions prior to 3.5 do not support ensure, use enabled instead
+        enabled    => $enabled,
         descr      => 'External Ceph noarch',
         name       => "ext-ceph-${release}-noarch",
         baseurl    => "http://ceph.com/rpm-${release}/el6/noarch",
         gpgcheck   => '1',
         gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc',
         mirrorlist => absent,
+        priority   => '10', # prefer ceph repos over EPEL
+      }
+
+      # prefer ceph repos over EPEL
+      package { 'yum-plugin-priorities':
+        ensure => present,
       }
     }
 

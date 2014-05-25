@@ -112,30 +112,37 @@ describe 'ceph::repo' do
     describe "with default params" do
 
       it { should contain_yumrepo('ext-epel-6.8').with(
+        :enabled    => '1',
         :descr      => 'External EPEL 6.8',
         :name       => 'ext-epel-6.8',
+        :baseurl    => 'absent',
         :gpgcheck   => '0',
-        :mirrorlist => 'https://mirrors.fedoraproject.org/metalink?repo=epel-6&arch=${basearch}'
+        :gpgkey     => 'absent',
+        :mirrorlist => 'https://mirrors.fedoraproject.org/metalink?repo=epel-6&arch=$basearch',
+        :priority   => '20'
       ) }
 
       it { should contain_yumrepo('ext-ceph').with(
+        :enabled    => '1',
         :descr      => 'External Ceph emperor',
         :name       => 'ext-ceph-emperor',
-        :baseurl    => 'http://ceph.com/rpm-emperor/el6/${basearch}',
+        :baseurl    => 'http://ceph.com/rpm-emperor/el6/$basearch',
         :gpgcheck   => '1',
-        :gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc'
+        :gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc',
+        :mirrorlist => 'absent',
+        :priority   => '10'
      ) }
 
       it { should contain_yumrepo('ext-ceph-noarch').with(
+        :enabled    => '1',
         :descr      => 'External Ceph noarch',
         :name       => 'ext-ceph-emperor-noarch',
         :baseurl    => 'http://ceph.com/rpm-emperor/el6/noarch',
         :gpgcheck   => '1',
-        :gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc'
+        :gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc',
+        :mirrorlist => 'absent',
+        :priority   => '10'
       ) }
-
-
-
     end
 
     describe "when overriding ceph release" do
@@ -145,22 +152,81 @@ describe 'ceph::repo' do
         }
       end
 
+      it { should contain_yumrepo('ext-epel-6.8').with(
+        :enabled    => '1',
+        :descr      => 'External EPEL 6.8',
+        :name       => 'ext-epel-6.8',
+        :baseurl    => 'absent',
+        :gpgcheck   => '0',
+        :gpgkey     => 'absent',
+        :mirrorlist => 'https://mirrors.fedoraproject.org/metalink?repo=epel-6&arch=$basearch',
+        :priority   => '20'
+      ) }
+
       it { should contain_yumrepo('ext-ceph').with(
+        :enabled    => '1',
         :descr      => 'External Ceph dumpling',
         :name       => 'ext-ceph-dumpling',
-        :baseurl    => 'http://ceph.com/rpm-dumpling/el6/${basearch}',
+        :baseurl    => 'http://ceph.com/rpm-dumpling/el6/$basearch',
         :gpgcheck   => '1',
-        :gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc'
+        :gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc',
+        :mirrorlist => 'absent',
+        :priority   => '10'
      ) }
 
       it { should contain_yumrepo('ext-ceph-noarch').with(
+        :enabled    => '1',
         :descr      => 'External Ceph noarch',
         :name       => 'ext-ceph-dumpling-noarch',
         :baseurl    => 'http://ceph.com/rpm-dumpling/el6/noarch',
         :gpgcheck   => '1',
-        :gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc'
+        :gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc',
+        :mirrorlist => 'absent',
+        :priority   => '10'
       ) }
     end
+
+    describe "with ensure => absent to disable" do
+      let :params do
+        {
+          :ensure => 'absent'
+        }
+      end
+
+      it { should contain_yumrepo('ext-epel-6.8').with(
+        :enabled    => '0',
+        :descr      => 'External EPEL 6.8',
+        :name       => 'ext-epel-6.8',
+        :baseurl    => 'absent',
+        :gpgcheck   => '0',
+        :gpgkey     => 'absent',
+        :mirrorlist => 'https://mirrors.fedoraproject.org/metalink?repo=epel-6&arch=$basearch',
+        :priority   => '20'
+      ) }
+
+      it { should contain_yumrepo('ext-ceph').with(
+        :enabled    => '0',
+        :descr      => 'External Ceph emperor',
+        :name       => 'ext-ceph-emperor',
+        :baseurl    => 'http://ceph.com/rpm-emperor/el6/$basearch',
+        :gpgcheck   => '1',
+        :gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc',
+        :mirrorlist => 'absent',
+        :priority   => '10'
+     ) }
+
+      it { should contain_yumrepo('ext-ceph-noarch').with(
+        :enabled    => '0',
+        :descr      => 'External Ceph noarch',
+        :name       => 'ext-ceph-emperor-noarch',
+        :baseurl    => 'http://ceph.com/rpm-emperor/el6/noarch',
+        :gpgcheck   => '1',
+        :gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc',
+        :mirrorlist => 'absent',
+        :priority   => '10'
+      ) }
+    end
+
 
   end
 
