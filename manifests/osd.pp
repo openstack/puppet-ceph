@@ -62,7 +62,7 @@ fi
 ceph-disk prepare ${cluster_option} ${data} ${journal}
 # activate happens via udev when using the entire device
 if ! test -b ${data} || ! test -b ${data}1 ; then
-  ceph-disk activate ${cluster_option} ${data} || true
+  ceph-disk activate ${data} || true
 fi
 ",
         unless    => "/bin/true  # comment to satisfy puppet syntax requirements
