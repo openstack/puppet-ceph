@@ -41,9 +41,6 @@ define ceph::osd (
 
     if $cluster {
       $cluster_option = "--cluster ${cluster}"
-    }
-
-    if $cluster {
       $cluster_name = $cluster
     } else {
       $cluster_name = 'ceph'
@@ -89,7 +86,8 @@ if [ -z \"\$id\" ] ; then
   id=\$(ls -l /var/lib/ceph/osd/${cluster_name}-* | grep ' ${data}' | sed -ne 's:.*/${cluster_name}-\\([0-9][0-9]*\\) -> .*:\\1:p' || true)
 fi
 if [ \"\$id\" ] ; then
-  stop ceph-osd cluster=${cluster} id=\$id || true
+  stop ceph-osd cluster=${cluster_name} id=\$id || true
+  service ceph stop osd.\$id || true
   ceph ${cluster_option} osd rm \$id
   ceph auth del osd.\$id
   rm -fr /var/lib/ceph/osd/${cluster_name}-\$id/*
