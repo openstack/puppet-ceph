@@ -80,6 +80,8 @@ and tests are in spec/system. It runs virtual machines and requires
 * BUNDLE_PATH=/tmp/vendor bundle exec rake lint
 * BUNDLE_PATH=/tmp/vendor bundle exec rake spec
 * BUNDLE_PATH=/tmp/vendor bundle exec rake spec:system
+* BUNDLE_PATH=/tmp/vendor RS_SET=two-ubuntu-server-12042-x64 bundle exec rake spec:system
+* BUNDLE_PATH=/tmp/vendor RS_SET=two-centos-64-x64 bundle exec rake spec:system
 
 The RELEASES environment variable contains the list of ceph releases
 for which integration tests are going to be run. The default is
@@ -93,7 +95,9 @@ distribution configurations for which integration tests are going
 to be run. Available values are
 
 * two-ubuntu-server-12042-x64
+* one-ubuntu-server-12042-x64
 * two-centos-64-x64
+* one-centos-64-x64
 
 The default is
 
@@ -102,7 +106,9 @@ The default is
   bundle exec rake spec:system
 
 The MACHINES environment variable contains the list of virtual
-machines that are created for integration tests to use. The default is
+machines that are used for integration tests. This needs to match
+with the RS_SET above. I.e. for a two-* RS_SET use 2 machines.
+The default is
 
 * MACHINES='first second' \
   bundle exec rake spec:system

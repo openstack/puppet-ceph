@@ -234,7 +234,7 @@ end
 #   MACHINES=first \
 #   RELEASES=cuttlefish \
 #   RS_DESTROY=no \
-#   RS_SET=one-centos-64-x64 \
+#   RS_SET=one-ubuntu-server-12042-x64 \
 #   BUNDLE_PATH=/tmp/vendor \
 #   bundle exec rake spec:system SPEC=spec/system/ceph_key_spec.rb &&
 #   git checkout Gemfile
