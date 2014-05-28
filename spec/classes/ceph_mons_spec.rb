@@ -49,6 +49,7 @@ describe 'ceph::mons' do
   describe 'Ubuntu' do
     let :facts do
       {
+        :osfamily => 'Debian',
         :operatingsystem => 'Ubuntu',
       }
     end
@@ -59,6 +60,7 @@ describe 'ceph::mons' do
   describe 'Debian' do
     let :facts do
       {
+        :osfamily => 'Debian',
         :operatingsystem => 'Debian',
       }
     end
@@ -69,6 +71,7 @@ describe 'ceph::mons' do
   describe 'RedHat' do
     let :facts do
       {
+        :osfamily => 'RedHat',
         :operatingsystem => 'RedHat',
       }
     end
