@@ -1,5 +1,6 @@
 #
 # Copyright (C) 2014 Catalyst IT Limited.
+# Copyright (C) 2014 Nine Internet Solutions AG
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -14,33 +15,38 @@
 #   limitations under the License.
 #
 # Author: Ricardo Rocha <ricardo@catalyst.net.nz>
+# Author: David Gurtner <david@nine.ch>
 #
-
 require 'spec_helper_system'
 
 describe 'ceph::pool' do
-
-  purge = <<-EOS
-   Exec { path => [ '/bin/', '/sbin/' , '/usr/bin/', '/usr/sbin/' ] }
-
-   ceph::mon { 'a': ensure => absent }
-   ->
-   file { '/var/lib/ceph/bootstrap-osd/ceph.keyring': ensure => absent }
-   ->
-   package { [
-      'python-ceph',
-      'ceph-common',
-      'librados2',
-      'librbd1',
-     ]:
-     ensure => purged
-   }
-  EOS
 
   releases = [ 'cuttlefish', 'dumpling', 'emperor' ]
   fsid = 'a4807c9a-e76f-4666-a297-6d6cbc922e3a'
 
   releases.each do |release|
+    purge = <<-EOS
+      Exec { path => [ '/bin/', '/sbin/' , '/usr/bin/', '/usr/sbin/' ] }
+
+      ceph::mon { 'a': ensure => absent }
+      ->
+      file { '/var/lib/ceph/bootstrap-osd/ceph.keyring': ensure => absent }
+      ->
+      package { [
+         'python-ceph',
+         'ceph-common',
+         'librados2',
+         'librbd1',
+         'libcephfs1',
+        ]:
+        ensure => purged
+      }
+      class { 'ceph::repo':
+        ensure => absent,
+        release => '#{release}',
+      }
+    EOS
+
     describe release do
       it 'should install and create pool volumes' do
         pp = <<-EOS
@@ -145,3 +151,20 @@ describe 'ceph::pool' do
   end
 
 end
+# Local Variables:
+# compile-command: "cd ../..
+#   (
+#     cd .rspec_system/vagrant_projects/one-centos-64-x64
+#     vagrant destroy --force
+#   )
+#   cp -a Gemfile-rspec-system Gemfile
+#   BUNDLE_PATH=/tmp/vendor bundle install --no-deployment
+#   MACHINES=first \
+#   RELEASES=cuttlefish \
+#   RS_DESTROY=no \
+#   RS_SET=one-centos-64-x64 \
+#   BUNDLE_PATH=/tmp/vendor \
+#   bundle exec rake spec:system SPEC=spec/system/ceph_pool_spec.rb &&
+#   git checkout Gemfile
+# "
+# End:
