@@ -20,14 +20,7 @@ require 'spec_helper'
 
 describe 'ceph::pool' do
 
-  describe 'Debian Family' do
-
-    let :facts do
-      {
-        :osfamily => 'Debian',
-      }
-    end
-
+  shared_examples_for 'ceph pool' do
     describe "create with custom params" do
 
       let :title do
@@ -81,7 +74,28 @@ describe 'ceph::pool' do
       }
 
     end
+  end
 
+  describe 'Debian Family' do
+
+    let :facts do
+      {
+        :osfamily => 'Debian',
+      }
+    end
+
+    it_configures 'ceph pool'
+  end
+
+  describe 'RedHat Family' do
+
+    let :facts do
+      {
+        :osfamily => 'RedHat',
+      }
+    end
+
+    it_configures 'ceph pool'
   end
 end
 
