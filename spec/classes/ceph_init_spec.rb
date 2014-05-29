@@ -18,13 +18,7 @@ require 'spec_helper'
 
 describe 'ceph' do
 
-  describe 'Debian Family' do
-    let :facts do
-      {
-        :osfamily => 'Debian',
-      }
-    end
-
+  shared_examples_for 'ceph' do
     describe "with default params and specified fsid" do
       let :params do
         {
@@ -117,5 +111,25 @@ describe 'ceph' do
       it { should contain_ceph_config('global/auth_client_required').with_value('none') }
       it { should contain_ceph_config('global/auth_supported').with_value('none') }
     end
+  end
+
+  describe 'Debian Family' do
+    let :facts do
+      {
+        :osfamily => 'Debian',
+      }
+    end
+
+    it_configures 'ceph'
+  end
+
+  describe 'RedHat Family' do
+    let :facts do
+      {
+        :osfamily => 'RedHat',
+      }
+    end
+
+    it_configures 'ceph'
   end
 end

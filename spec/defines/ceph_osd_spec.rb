@@ -38,6 +38,25 @@ describe 'ceph::osd' do
 
     end
   end
+
+  describe 'RedHat Family' do
+
+    let :facts do
+      {
+        :osfamily => 'RedHat',
+      }
+    end
+
+    describe "with custom params" do
+
+      let :title do
+        '/tmp'
+      end
+
+      it { should contain_exec('ceph-osd-mkfs-/tmp') }
+
+    end
+  end
 end
 
 # Local Variables:

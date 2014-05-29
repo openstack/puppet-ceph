@@ -20,13 +20,7 @@ require 'spec_helper'
 
 describe 'ceph::key' do
 
-  describe 'Debian Family' do
-
-    let :facts do
-      {
-        :osfamily => 'Debian',
-      }
-    end
+  shared_examples_for 'ceph key' do
 
     describe "with custom params" do
 
@@ -60,6 +54,28 @@ describe 'ceph::key' do
       }
 
     end
+  end
+
+  describe 'Debian Family' do
+
+    let :facts do
+      {
+        :osfamily => 'Debian',
+      }
+    end
+
+    it_configures 'ceph key'
+  end
+
+  describe 'RedHat Family' do
+
+    let :facts do
+      {
+        :osfamily => 'RedHat',
+      }
+    end
+
+    it_configures 'ceph key'
   end
 end
 

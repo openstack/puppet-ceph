@@ -18,13 +18,7 @@ require 'spec_helper'
 
 describe 'ceph::mds' do
 
-  describe 'Debian Family' do
-    let :facts do
-      {
-        :osfamily         => 'Debian',
-      }
-    end
-
+  shared_examples_for 'ceph mds' do
     describe "activated with default params" do
 
       it { should contain_ceph_config('mds/mds_data').with_value('/var/lib/ceph/mds/$cluster-$id') }
@@ -59,4 +53,25 @@ describe 'ceph::mds' do
 
     end
   end
+
+  describe 'Debian Family' do
+    let :facts do
+      {
+        :osfamily => 'Debian',
+      }
+    end
+
+    it_configures 'ceph mds'
+ end
+
+  describe 'RedHat Family' do
+    let :facts do
+      {
+        :osfamily => 'RedHat',
+      }
+    end
+
+    it_configures 'ceph mds'
+ end
+
 end
