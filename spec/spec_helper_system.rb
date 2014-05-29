@@ -38,6 +38,9 @@ RSpec.configure do |c|
       puppet_module_install(:source => proj_root,
                             :module_name => 'ceph',
                             :node => vm)
+      puppet_module_install(:source => File.join(proj_root, '../scenario_node_terminus'),
+                            :module_name => 'scenario_node_terminus',
+                            :node => vm)
       shell(:command => 'puppet module install --version 4.1.0 puppetlabs/stdlib',
             :node => vm)
       shell(:command => 'puppet module install --version 1.0.0 puppetlabs/inifile',

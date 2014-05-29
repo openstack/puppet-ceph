@@ -79,6 +79,7 @@ and tests are in spec/system. It runs virtual machines and requires
 * BUNDLE_PATH=/tmp/vendor bundle install
 * BUNDLE_PATH=/tmp/vendor bundle exec rake lint
 * BUNDLE_PATH=/tmp/vendor bundle exec rake spec
+* git clone https://github.com/bodepd/scenario_node_terminus.git ../scenario_node_terminus
 * BUNDLE_PATH=/tmp/vendor bundle exec rake spec:system
 
 The RELEASES environment variable contains the list of ceph releases
