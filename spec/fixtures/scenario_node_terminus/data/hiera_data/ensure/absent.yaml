@@ -4,3 +4,6 @@ ceph::mons::args:
   'second':
     ensure: absent
 ceph::keys::args: {}
+ceph::osds::args:
+  '/dev/sdb':
+    ensure: absent

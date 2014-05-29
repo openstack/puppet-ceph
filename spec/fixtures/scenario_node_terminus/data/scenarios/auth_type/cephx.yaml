@@ -2,3 +2,9 @@ roles:
   mon:
     classes:
       - ceph::keys
+  osd:
+    classes:
+      - ceph::keys
+  allinone:
+    classes:
+      - ceph::keys

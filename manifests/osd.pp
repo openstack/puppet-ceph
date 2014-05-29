@@ -49,6 +49,7 @@ define ceph::osd (
     if $ensure == present {
       $ceph_mkfs = "ceph-osd-mkfs-${name}"
 
+      Ceph::Key<| cluster == $cluster |> ->
       # ceph-disk: prepare should be idempotent http://tracker.ceph.com/issues/7475
       exec { $ceph_mkfs:
         command   => "/bin/true  # comment to satisfy puppet syntax requirements
@@ -96,7 +97,7 @@ if [ \"\$id\" ] ; then
 fi
 ",
         logoutput => true,
-      }
+      } -> Ceph::Mon<| cluster == $cluster |>
     }
 
 }

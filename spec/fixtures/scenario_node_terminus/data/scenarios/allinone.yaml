@@ -1,4 +1,10 @@
 roles:
+  allinone:
+    classes:
+      - ceph::mons
+      - ceph::osds
+    class_groups:
+      - base
   mon:
     classes:
       - ceph::mons

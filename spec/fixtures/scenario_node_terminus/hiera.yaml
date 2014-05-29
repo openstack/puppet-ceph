@@ -2,9 +2,9 @@
 :backends:
   - data_mapper
 :hierarchy:
+  - "ensure/%{ensure}"
   - user
   - "osfamily/%{osfamily}"
-  - "ensure/%{ensure}"
   - "auth_type/%{auth_type}"
   - "hostname/%{hostname}"
   - "scenario/%{scenario}"
