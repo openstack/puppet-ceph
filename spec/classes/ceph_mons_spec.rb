@@ -1,5 +1,6 @@
 #
 #   Copyright (C) 2013 Cloudwatt <libre.licensing@cloudwatt.com>
+#   Copyright (C) 2014 Nine Internet Solutions AG
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -14,41 +15,66 @@
 #   limitations under the License.
 #
 # Author: Loic Dachary <loic@dachary.org>
+# Author: David Gurtner <david@nine.ch>
 #
 require 'spec_helper'
 
 describe 'ceph::mons' do
 
-  let :facts do
-    {
-      :operatingsystem => 'Ubuntu',
+  shared_examples_for 'ceph mons' do
+    let :params do
+      {
+        :args => {
+          'A' => {
+            'public_addr' => '1.2.3.4',
+            'authentication_type' => 'none',
+          },
+          'B' => {
+            'public_addr' => '1.2.3.4',
+            'authentication_type' => 'none',
+          },
+        },
+        :defaults => {
+          'cluster' => 'CLUSTER',
+        },
+      }
+    end
+
+    it {
+      should contain_service('ceph-mon-A').with('ensure' => "running")
+      should contain_service('ceph-mon-B').with('ensure' => "running")
     }
   end
 
-  let :params do
-    {
-      :args => {
-        'A' => {
-          'public_addr' => '1.2.3.4',
-          'authentication_type' => 'none',
-        },
-        'B' => {
-          'public_addr' => '1.2.3.4',
-          'authentication_type' => 'none',
-        },
-      },
-      :defaults => {
-        'cluster' => 'CLUSTER',
-      },
-    }
+  describe 'Ubuntu' do
+    let :facts do
+      {
+        :operatingsystem => 'Ubuntu',
+      }
+    end
+
+    it_configures 'ceph mons'
   end
 
-  it {
-    should contain_service('ceph-mon-A').with('ensure' => "running")
-    should contain_service('ceph-mon-B').with('ensure' => "running")
-  }
+  describe 'Debian' do
+    let :facts do
+      {
+        :operatingsystem => 'Debian',
+      }
+    end
 
-#  it { p subject.resources }
+    it_configures 'ceph mons'
+  end
+
+  describe 'RedHat' do
+    let :facts do
+      {
+        :operatingsystem => 'RedHat',
+      }
+    end
+
+    it_configures 'ceph mons'
+  end
 
 end
 

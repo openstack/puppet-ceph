@@ -1,7 +1,9 @@
 #
 #  Copyright 2013 Cloudwatt <libre-licensing@cloudwatt.com>
+#  Copyright (C) 2014 Nine Internet Solutions AG
 #
 #  Author: Loic Dachary <loic@dachary.org>
+#  Author: David Gurtner <david@nine.ch>
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -42,6 +44,15 @@ RSpec.configure do |c|
             :node => vm)
       shell(:command => 'puppet module install --version 1.4.0 puppetlabs/apt',
             :node => vm)
+      # Flush the firewall
+      flushfw = <<-EOS
+        iptables -F
+        iptables -X
+        iptables -P INPUT ACCEPT
+        iptables -P OUTPUT ACCEPT
+        iptables -P FORWARD ACCEPT
+      EOS
+      shell(:node => vm, :command => flushfw)
     end
   end
 end

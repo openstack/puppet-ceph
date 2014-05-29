@@ -1,5 +1,6 @@
 #   Copyright (C) 2013 Cloudwatt <libre.licensing@cloudwatt.com>
 #   Copyright (C) iWeb Technologies Inc.
+#   Copyright (C) 2014 Nine Internet Solutions AG
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,7 +16,8 @@
 #
 # Author: Loic Dachary <loic@dachary.org>
 # Author: David Moreau Simard <dmsimard@iweb.com>
-
+# Author: David Gurtner <david@nine.ch>
+#
 require 'spec_helper'
 
 describe 'ceph::mon' do
@@ -43,8 +45,39 @@ describe 'ceph::mon' do
 
       it { should contain_service('ceph-mon-A').with('ensure' => "running") }
       it { should contain_exec('ceph-mon-ceph.client.admin.keyring-A').with(
-         'command' => "/usr/bin/touch /etc/ceph/ceph.client.admin.keyring"
+         'command' => "/bin/true # comment to satisfy puppet syntax requirements
+set -ex
+touch /etc/ceph/ceph.client.admin.keyring"
        ) }
+
+#      it { p subject.resources }
+
+    end
+  end
+
+  describe 'Redhat Family' do
+
+    describe "with custom params" do
+
+      let :facts do
+        {
+          :operatingsystem => 'RHEL6',
+          :hostname => 'first',
+        }
+      end
+
+      let :title do
+        'A'
+      end
+
+      let :params do
+        {
+          :public_addr  => '127.0.0.1',
+          :authentication_type => 'none',
+        }
+      end
+
+      it { should contain_service('ceph-mon-A').with('ensure' => "running") }
 
 #      it { p subject.resources }
 

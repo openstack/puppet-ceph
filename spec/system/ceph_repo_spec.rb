@@ -144,14 +144,15 @@ end
 # Local Variables:
 # compile-command: "cd ../..
 #   (
-#     cd .rspec_system/vagrant_projects/two-centos-64-x64 &&
+#     cd .rspec_system/vagrant_projects/one-ubuntu-server-12042-x64
 #     vagrant destroy --force
 #   )
 #   cp -a Gemfile-rspec-system Gemfile
 #   BUNDLE_PATH=/tmp/vendor bundle install --no-deployment
-#   RELEASES='cuttlefish dumpling' \
+#   MACHINES=first \
+#   RELEASES=cuttlefish \
 #   RS_DESTROY=no \
-#   RS_SET=two-centos-64-x64 \
+#   RS_SET=one-ubuntu-server-12042-x64 \
 #   BUNDLE_PATH=/tmp/vendor \
 #   bundle exec rake spec:system SPEC=spec/system/ceph_repo_spec.rb &&
 #   git checkout Gemfile

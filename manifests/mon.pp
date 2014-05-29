@@ -1,6 +1,7 @@
 #
 #   Copyright (C) 2013 Cloudwatt <libre.licensing@cloudwatt.com>
 #   Copyright (C) iWeb Technologies Inc.
+#   Copyright (C) 2014 Nine Internet Solutions AG
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -16,6 +17,7 @@
 #
 # Author: Loic Dachary <loic@dachary.org>
 # Author: David Moreau Simard <dmsimard@iweb.com>
+# Author: David Gurtner <david@nine.ch>
 #
 # Installs and configures MONs (ceph monitors)
 ### == Parameters
@@ -74,7 +76,7 @@ define ceph::mon (
         stop     => "stop ceph-mon id=${id}",
         status   => "status ceph-mon id=${id}",
       }
-    } elsif $::operatingsystem == 'Debian' {
+    } elsif ($::operatingsystem == 'Debian') or ($::osfamily == 'RedHat') {
       $init = 'sysvinit'
       Service {
         name     => "ceph-mon-${id}",
@@ -83,10 +85,9 @@ define ceph::mon (
         status   => "service ceph status mon.${id}",
       }
     } else {
-      #
-      # TODO: create [mon.$id] in ceph.conf for init scripts that require it
-      #
-      fail("operatingsystem = ${::operatingsystem} is not supported")
+      if ! $public_addr {
+        fail("operatingsystem = ${::operatingsystem} is not supported")
+      }
     }
 
     $mon_service = "ceph-mon-${id}"
@@ -146,7 +147,9 @@ fi
       ->
       # prevent automatic creation of the client.admin key by ceph-create-keys
       exec { "ceph-mon-${cluster_name}.client.admin.keyring-${id}":
-        command => "/usr/bin/touch /etc/ceph/${cluster_name}.client.admin.keyring",
+        command => "/bin/true # comment to satisfy puppet syntax requirements
+set -ex
+touch /etc/ceph/${cluster_name}.client.admin.keyring",
       }
       ->
       service { $mon_service:
