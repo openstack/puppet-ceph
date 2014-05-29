@@ -1,0 +1,29 @@
+---
+######## Ceph
+ceph::profile::params::release: 'firefly'
+
+######## Ceph.conf
+ceph::profile::params::fsid: '4b5c8c0a-ff60-454b-a1b4-9747aa737d19'
+ceph::profile::params::authentication_type: 'cephx'
+ceph::profile::params::mon_initial_members: 'first, second'
+ceph::profile::params::mon_host: '10.11.12.2:6789, 10.11.12.3:6789'
+ceph::profile::params::osd_pool_default_pg_num: '200'
+ceph::profile::params::osd_pool_default_pgp_num: '200'
+ceph::profile::params::osd_pool_default_size: '2'
+ceph::profile::params::osd_pool_default_min_size: '1'
+ceph::profile::params::cluster_network: '10.12.13.0/24'
+ceph::profile::params::public_network: '10.11.12.0/24'
+
+######## Keys
+ceph::profiles::params::mon_key: 'AQATGHJTUCBqIBAA7M2yafV1xctn1pgr3GcKPg=='
+ceph::profiles::params::mon_keyring: '/tmp/keyring'
+ceph::profiles::params::admin_key: 'AQBMGHJTkC8HKhAAJ7NH255wYypgm1oVuV41MA=='
+ceph::profiles::params::admin_key_mode: '0600'
+ceph::profiles::params::bootstrap_osd_key: 'AQARG3JTsDDEHhAAVinHPiqvJkUi5Mww/URupw=='
+ceph::profiles::params::bootstrap_mds_key: 'AQCztJdSyNb0NBAASA2yPZPuwXeIQnDJ9O8gVw=='
+ceph::profiles::params::osds:
+  '/dev/sdc':
+    journal: '/dev/sdb1'
+  '/dev/sdd':
+    journal: '/dev/sdb2'
+
