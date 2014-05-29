@@ -18,5 +18,6 @@
 # Class wrapper for the benefit of scenario_node_terminus
 #
 class ceph::mons($args, $defaults = {}) {
+  Ceph_Config<| |> -> Ceph::Mon<| |>
   create_resources(ceph::mon, $args, $defaults)
 }

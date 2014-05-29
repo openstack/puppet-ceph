@@ -1,0 +1,3 @@
+---
+ensure: present
+auth_type: none
