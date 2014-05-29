@@ -22,10 +22,10 @@ require 'spec_helper_system'
 describe 'ceph::repo' do
 
   release2version = {
-    'cuttlefish' => '0.61',
     'dumpling' => '0.67',
     'emperor' => '0.72',
-    '(default)' => '0.72',
+    'firefly' => '0.80',
+    '(default)' => '0.80',
   }
 
   releases = ENV['RELEASES'] ? ENV['RELEASES'].split : release2version.keys
@@ -150,7 +150,7 @@ end
 #   cp -a Gemfile-rspec-system Gemfile
 #   BUNDLE_PATH=/tmp/vendor bundle install --no-deployment
 #   MACHINES=first \
-#   RELEASES=cuttlefish \
+#   RELEASES=dumpling \
 #   RS_DESTROY=no \
 #   RS_SET=one-ubuntu-server-12042-x64 \
 #   BUNDLE_PATH=/tmp/vendor \

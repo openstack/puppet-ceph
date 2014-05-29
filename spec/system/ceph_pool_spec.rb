@@ -21,7 +21,7 @@ require 'spec_helper_system'
 
 describe 'ceph::pool' do
 
-  releases = [ 'cuttlefish', 'dumpling', 'emperor' ]
+  releases = [ 'dumpling', 'emperor', 'firefly' ]
   fsid = 'a4807c9a-e76f-4666-a297-6d6cbc922e3a'
 
   releases.each do |release|

@@ -87,7 +87,7 @@ The RELEASES environment variable contains the list of ceph releases
 for which integration tests are going to be run. The default is
 
 * BUNDLE_PATH=/tmp/vendor \
-  RELEASES='cuttlefish dumpling emperor' \
+  RELEASES='dumpling emperor firefly' \
   bundle exec rake spec:system
 
 The RS_SET environment variable contains the resource set of linux

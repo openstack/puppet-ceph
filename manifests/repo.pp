@@ -22,7 +22,7 @@
 #
 class ceph::repo (
   $ensure  = present,
-  $release = 'emperor'
+  $release = 'firefly'
 ) {
   case $::osfamily {
     'Debian': {

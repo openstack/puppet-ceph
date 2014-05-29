@@ -22,7 +22,7 @@ require 'spec_helper_system'
 describe 'ceph::osd' do
 
   datas = ENV['DATAS'] ? ENV['DATAS'].split : [ '/dev/sdb', '/srv/data' ]
-  releases = ENV['RELEASES'] ? ENV['RELEASES'].split : [ 'cuttlefish', 'dumpling', 'emperor' ]
+  releases = ENV['RELEASES'] ? ENV['RELEASES'].split : [ 'dumpling', 'emperor', 'firefly' ]
   machines = ENV['MACHINES'] ? ENV['MACHINES'].split : [ 'first', 'second' ]
   fsid = 'a4807c9a-e76f-4666-a297-6d6cbc922e3a'
   admin_key = 'AQA0TVRTsP/aHxAAFBvntu1dSEJHxtJeFFrRsg=='
@@ -88,9 +88,8 @@ describe 'ceph::osd' do
               authentication_type => 'none',
             }
             ->
-            # required for cuttlefish when data dir is on ext4
             ceph_config {
-             'global/filestore_xattr_use_omap': value => 'true';
+             'global/osd_journal_size': value => '100';
             }
             ->
             ceph::mon { 'a':
@@ -150,9 +149,8 @@ describe 'ceph::osd' do
               mon_host => #{mon_host},
             }
             ->
-            # required for cuttlefish when data dir is on ext4
             ceph_config {
-             'global/filestore_xattr_use_omap': value => 'true';
+             'global/osd_journal_size': value => '100';
             }
             ->
             ceph::mon { 'a':
@@ -224,9 +222,8 @@ describe 'ceph::osd' do
               authentication_type => 'none',
             }
             ->
-            # required for cuttlefish when data dir is on ext4
             ceph_config {
-             'global/filestore_xattr_use_omap': value => 'true';
+             'global/osd_journal_size': value => '100';
             }
             ->
             ceph::mon { 'a':
@@ -290,6 +287,10 @@ describe 'ceph::osd' do
               authentication_type => 'none',
             }
             ->
+            ceph_config {
+             'global/osd_journal_size': value => '100';
+            }
+            ->
             ceph::mon { 'a':
               public_addr => #{mon_host},
               authentication_type => 'none',
@@ -350,7 +351,7 @@ end
 #   cp -a Gemfile-rspec-system Gemfile
 #   BUNDLE_PATH=/tmp/vendor bundle install --no-deployment
 #   MACHINES=first \
-#   RELEASES=cuttlefish \
+#   RELEASES=dumpling \
 #   DATAS=/srv/data \
 #   RS_DESTROY=no \
 #   RS_SET=one-centos-64-x64 \
