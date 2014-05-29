@@ -85,9 +85,7 @@ define ceph::mon (
         status   => "service ceph status mon.${id}",
       }
     } else {
-      if ! $public_addr {
-        fail("operatingsystem = ${::operatingsystem} is not supported")
-      }
+      fail("operatingsystem = ${::operatingsystem} is not supported")
     }
 
     $mon_service = "ceph-mon-${id}"

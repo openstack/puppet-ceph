@@ -28,6 +28,7 @@ describe 'ceph::mon' do
 
       let :facts do
         {
+          :osfamily => 'Debian',
           :operatingsystem => 'Ubuntu',
         }
       end
@@ -61,8 +62,8 @@ touch /etc/ceph/ceph.client.admin.keyring"
 
       let :facts do
         {
+          :osfamily => 'RedHat',
           :operatingsystem => 'RHEL6',
-          :hostname => 'first',
         }
       end
 
@@ -78,6 +79,11 @@ touch /etc/ceph/ceph.client.admin.keyring"
       end
 
       it { should contain_service('ceph-mon-A').with('ensure' => "running") }
+      it { should contain_exec('ceph-mon-ceph.client.admin.keyring-A').with(
+         'command' => "/bin/true # comment to satisfy puppet syntax requirements
+set -ex
+touch /etc/ceph/ceph.client.admin.keyring"
+       ) }
 
 #      it { p subject.resources }
 
