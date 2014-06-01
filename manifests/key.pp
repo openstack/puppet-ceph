@@ -144,6 +144,6 @@ ceph ${cluster_option} ${inject_id_option} ${inject_keyring_option} auth get ${n
       logoutput => true,
     }
 
+    Ceph::Mon<| cluster == $cluster |> -> Ceph::Key<| cluster == $cluster |>
   }
-
 }

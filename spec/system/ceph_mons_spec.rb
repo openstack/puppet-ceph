@@ -23,6 +23,7 @@ describe 'ceph::mons' do
   machines = ENV['MACHINES'] ? ENV['MACHINES'].split : [ 'first', 'second' ]
   # passing it directly as unqoted array is not supported everywhere
   fsid = 'a4807c9a-e76f-4666-a297-6d6cbc922e3a'
+  admin_key = 'AQA0TVRTsP/aHxAAFBvntu1dSEJHxtJeFFrRsg=='
   fixture_path = File.expand_path(File.join(File.dirname(__FILE__), '../fixtures'))
   data = File.join(fixture_path, 'scenario_node_terminus/data')
   data_path = '/etc/puppet/data'
@@ -160,6 +161,99 @@ ensure: purged
           end
         end
       end
+
+      describe 'on one host', :cephx do
+        it 'should install one monitor' do
+          file = Tempfile.new('user_hiera_data')
+          begin
+            file.write(<<-EOS)
+---
+fsid: '#{fsid}'
+release: #{release}
+ceph::keys::args:
+  'client.admin':
+    secret: '#{admin_key}'
+    cap_mon: 'allow *'
+    cap_osd: 'allow *'
+    cap_mds: allow
+            EOS
+            file.close
+            rcp(:sp => file.path, :dp => user_hiera_file, :d => node)
+          ensure
+            file.unlink
+          end
+
+          file = Tempfile.new('user_params')
+          begin
+            file.write(<<-EOS)
+auth_type: cephx
+ensure: present
+            EOS
+            file.close
+            rcp(:sp => file.path, :dp => user_params_file, :d => node)
+          ensure
+            file.unlink
+          end
+
+          puppet_apply('') do |r|
+            r.exit_code.should_not == 1
+            r.refresh
+            r.exit_code.should_not == 1
+          end
+
+          shell 'cat /etc/ceph/ceph.client.admin.keyring' do |r|
+            r.stdout.should =~ /#{admin_key}/
+            r.stderr.should be_empty
+            r.exit_code.should be_zero
+          end
+
+          shell 'ceph -s' do |r|
+            r.stdout.should =~ /1 mons at/
+            r.stderr.should be_empty
+            r.exit_code.should be_zero
+          end
+
+          shell 'ceph auth list' do |r|
+            r.stdout.should =~ /#{admin_key}/
+            r.exit_code.should be_zero
+          end
+        end
+
+        it 'should uninstall one monitor' do
+          file = Tempfile.new('user_params')
+          begin
+            file.write(<<-EOS)
+ensure: purged
+            EOS
+            file.close
+            rcp(:sp => file.path, :dp => user_params_file, :d => node)
+          ensure
+            file.unlink
+          end
+
+          puppet_apply('') do |r|
+            r.exit_code.should_not == 1
+          end
+
+          osfamily = facter.facts['osfamily']
+          operatingsystem = facter.facts['operatingsystem']
+
+          if osfamily == 'Debian' && operatingsystem == 'Ubuntu'
+            shell 'status ceph-mon id=first' do |r|
+              r.stdout.should be_empty
+              r.stderr.should =~ /status: Unknown job: ceph-mon/
+              r.exit_code.should_not be_zero
+            end
+          end
+          if osfamily == 'RedHat'
+            shell 'service ceph status mon.first' do |r|
+              r.stdout.should be_empty
+              r.stderr.should =~ /ceph: unrecognized service/
+              r.exit_code.should_not be_zero
+            end
+          end
+        end
+      end
     end
   end
 end
@@ -176,7 +270,9 @@ end
 #   RS_DESTROY=no \
 #   RS_SET=one-ubuntu-server-12042-x64 \
 #   BUNDLE_PATH=/tmp/vendor \
-#   bundle exec rake spec:system SPEC=spec/system/ceph_mons_spec.rb | tee /tmp/puppet.log &&
+#   bundle exec rake spec:system \
+#         SPEC=spec/system/ceph_mons_spec.rb \
+#         SPEC_OPTS='--tag cephx' | tee /tmp/puppet.log &&
 #   git checkout Gemfile
 # "
 # End:
