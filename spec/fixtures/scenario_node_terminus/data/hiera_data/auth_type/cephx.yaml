@@ -1,0 +1,4 @@
+---
+mon_defaults:
+  authentication_type: cephx
+  key: 'AQCztJdSyNb0NBAASA2yPZPuwXeIQnDJ9O8gVw=='

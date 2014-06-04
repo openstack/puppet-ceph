@@ -4,3 +4,4 @@ ceph::mons::args:
   'second':
     ensure: absent
 ceph::repo::ensure: absent
+ceph::keys::args: {}
