@@ -1,0 +1,6 @@
+roles:
+  mon:
+    classes:
+      - ceph::mons
+    class_groups:
+      - base

@@ -1,0 +1,18 @@
+---
+"%{auth_type}":
+  - ceph::authentication_type
+defaults:
+  - ceph::mons::defaults
+"%{ensure}":
+  - ceph::ensure
+  - ceph::repo::ensure
+fsid:
+  - ceph::fsid
+mon_host:
+  - ceph::mon_host
+packages:
+  - ceph::params::packages
+public_network:
+  - ceph::public_network
+release:
+  - ceph::repo::release

@@ -1,0 +1,6 @@
+ceph::mons::args:
+  'first':
+    ensure: absent
+  'second':
+    ensure: absent
+ceph::repo::ensure: absent

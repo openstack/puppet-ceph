@@ -1,4 +1,5 @@
 #   Copyright (C) iWeb Technologies Inc.
+#   Copyright (C) 2014 Nine Internet Solutions AG
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -13,13 +14,14 @@
 #   limitations under the License.
 #
 # Author: David Moreau Simard <dmsimard@iweb.com>
+# Author: David Gurtner <david@nine.ch>
 
 # these parameters need to be accessed from several locations and
 # should be considered to be constant
 
-class ceph::params {
-
-  $package_name = 'ceph'
+class ceph::params (
+  $packages = 'ceph', # just provide the minimum per default
+) {
 
   case $::osfamily {
     'Debian': {

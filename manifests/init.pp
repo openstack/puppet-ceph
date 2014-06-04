@@ -1,4 +1,5 @@
 #   Copyright (C) iWeb Technologies Inc.
+#   Copyright (C) 2014 Nine Internet Solutions AG
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -13,12 +14,16 @@
 #   limitations under the License.
 #
 # Author: David Moreau Simard <dmsimard@iweb.com>
+# Author: David Gurtner <david@nine.ch>
 
 # init takes care of installing/configuring the common dependencies across classes
 # it also takes care of the global configuration values
 ### == Parameters
 # [*fsid*] The cluster's fsid.
 #   Mandatory. Get one with `uuidgen -r`.
+#
+# [*ensure*] Installs ( present ) or removes ( absent ) ceph.
+#   Optional. Defaults to present.
 #
 # [*authentication_type*] Authentication type.
 #   Optional. none or 'cephx'. Defaults to 'cephx'.
@@ -55,7 +60,7 @@
 # [*mon_initial_members*] The IDs of initial MONs in the cluster during startup.
 #   Optional. String like e.g. 'a, b, c'.
 #
-## [*mon_host*] The fqdn of MONs in the cluster. They can also be declared
+# [*mon_host*] The fqdn of MONs in the cluster. They can also be declared
 #   individually through ceph::mon.
 #   Optional. String like e.g. 'a, b, c'.
 #
@@ -79,9 +84,10 @@
 #
 # [*public_network*] The address of the public network.
 #   Optional. {public-network-ip/netmask}
-
+#
 class ceph (
   $fsid,
+  $ensure                     = present,
   $authentication_type        = 'cephx',
   $keyring                    = undef,
   $osd_pool_default_pg_num    = undef,
@@ -102,48 +108,49 @@ class ceph (
 ) {
   include ceph::params
 
-  # Make sure ceph is installed before managing the configuration
-  Package['ceph'] -> Ceph_Config<| |>
-
-  package { 'ceph':
-    ensure  => present,
-    name    => $::ceph::params::package_name,
+  package { $::ceph::params::packages :
+    ensure => $ensure,
+    tag    => 'ceph'
   }
 
-  # [global]
-  ceph_config {
-    'global/fsid':                        value => $fsid;
-    'global/keyring':                     value => $keyring;
-    'global/osd_pool_default_pg_num':     value => $osd_pool_default_pg_num;
-    'global/osd_pool_default_pgp_num':    value => $osd_pool_default_pgp_num;
-    'global/osd_pool_default_size':       value => $osd_pool_default_size;
-    'global/osd_pool_default_min_size':   value => $osd_pool_default_min_size;
-    'global/osd_pool_default_crush_rule': value => $osd_pool_default_crush_rule;
-    'global/mon_osd_full_ratio':          value => $mon_osd_full_ratio;
-    'global/mon_osd_nearfull_ratio':      value => $mon_osd_nearfull_ratio;
-    'global/mon_initial_members':         value => $mon_initial_members;
-    'global/mon_host':                    value => $mon_host;
-    'global/require_signatures':          value => $require_signatures;
-    'global/cluster_require_signatures':  value => $cluster_require_signatures;
-    'global/service_require_signatures':  value => $service_require_signatures;
-    'global/sign_messages':               value => $sign_messages;
-    'global/cluster_network':             value => $cluster_network;
-    'global/public_network':              value => $public_network;
-  }
-
-  if $authentication_type == 'cephx' {
+  if $ensure !~ /(absent|purged)/ {
+    # Make sure ceph is installed before managing the configuration
+    Package<| tag == 'ceph' |> -> Ceph_Config<| |>
+    # [global]
     ceph_config {
-      'global/auth_cluster_required': value => 'cephx';
-      'global/auth_service_required': value => 'cephx';
-      'global/auth_client_required':  value => 'cephx';
-      'global/auth_supported':        value => 'cephx';
+      'global/fsid':                        value => $fsid;
+      'global/keyring':                     value => $keyring;
+      'global/osd_pool_default_pg_num':     value => $osd_pool_default_pg_num;
+      'global/osd_pool_default_pgp_num':    value => $osd_pool_default_pgp_num;
+      'global/osd_pool_default_size':       value => $osd_pool_default_size;
+      'global/osd_pool_default_min_size':   value => $osd_pool_default_min_size;
+      'global/osd_pool_default_crush_rule': value => $osd_pool_default_crush_rule;
+      'global/mon_osd_full_ratio':          value => $mon_osd_full_ratio;
+      'global/mon_osd_nearfull_ratio':      value => $mon_osd_nearfull_ratio;
+      'global/mon_initial_members':         value => $mon_initial_members;
+      'global/mon_host':                    value => $mon_host;
+      'global/require_signatures':          value => $require_signatures;
+      'global/cluster_require_signatures':  value => $cluster_require_signatures;
+      'global/service_require_signatures':  value => $service_require_signatures;
+      'global/sign_messages':               value => $sign_messages;
+      'global/cluster_network':             value => $cluster_network;
+      'global/public_network':              value => $public_network;
     }
-  } else {
-    ceph_config {
-      'global/auth_cluster_required': value => 'none';
-      'global/auth_service_required': value => 'none';
-      'global/auth_client_required':  value => 'none';
-      'global/auth_supported':        value => 'none';
+
+    if $authentication_type == 'cephx' {
+      ceph_config {
+        'global/auth_cluster_required': value => 'cephx';
+        'global/auth_service_required': value => 'cephx';
+        'global/auth_client_required':  value => 'cephx';
+        'global/auth_supported':        value => 'cephx';
+      }
+    } else {
+      ceph_config {
+        'global/auth_cluster_required': value => 'none';
+        'global/auth_service_required': value => 'none';
+        'global/auth_client_required':  value => 'none';
+        'global/auth_supported':        value => 'none';
+      }
     }
   }
 }

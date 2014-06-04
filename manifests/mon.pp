@@ -177,6 +177,6 @@ mon_data=\$(ceph-mon ${cluster_option} --id ${id} --show-config | sed -n -e 's/m
 rm -fr \$mon_data
 ",
         logoutput => true,
-      }
+      } -> Package<| tag == 'ceph' |>
     }
   }

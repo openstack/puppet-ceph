@@ -39,9 +39,11 @@ class ceph::repo (
         location => "http://ceph.com/debian-${release}/",
         release  => $::lsbdistcodename,
         require  => Apt::Key['ceph'],
+        tag      => 'ceph',
       }
 
-      Exec['apt_update'] -> Package<||>
+      Apt::Source<| tag == 'ceph' |> -> Package<| tag == 'ceph' |>
+      Exec['apt_update'] -> Package<| tag == 'ceph' |>
     }
 
     'RedHat': {
@@ -56,6 +58,7 @@ class ceph::repo (
         gpgkey     => absent,
         mirrorlist => 'https://mirrors.fedoraproject.org/metalink?repo=epel-6&arch=$basearch',
         priority   => '20', # prefer ceph repos over EPEL
+        tag        => 'ceph',
       }
 
       yumrepo { 'ext-ceph':
@@ -68,6 +71,7 @@ class ceph::repo (
         gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc',
         mirrorlist => absent,
         priority   => '10', # prefer ceph repos over EPEL
+        tag        => 'ceph',
       }
 
       yumrepo { 'ext-ceph-noarch':
@@ -80,12 +84,16 @@ class ceph::repo (
         gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc',
         mirrorlist => absent,
         priority   => '10', # prefer ceph repos over EPEL
+        tag        => 'ceph',
       }
+
+      Yumrepo<| tag == 'ceph' |> -> Package<| tag == 'ceph' |>
 
       # prefer ceph repos over EPEL
       package { 'yum-plugin-priorities':
         ensure => present,
-      }
+      } -> Package<| tag == 'ceph' |>
+
     }
 
     default: {

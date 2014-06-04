@@ -1,0 +1,4 @@
+---
+ceph::mons::args:
+  'second':
+    public_addr: '10.11.12.3'

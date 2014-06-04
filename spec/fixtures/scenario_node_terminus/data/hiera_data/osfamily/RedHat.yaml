@@ -1,0 +1,6 @@
+packages:
+ - ceph
+ - libcephfs1
+ - librados2
+ - librbd1
+ - 'python-ceph'
