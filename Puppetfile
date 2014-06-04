@@ -11,3 +11,6 @@ mod 'puppetlabs/apt',
 mod 'puppetlabs/inifile',
   :git => 'git://github.com/puppetlabs/puppetlabs-inifile',
   :ref => '1.0.3'
+
+mod 'bodepd/scenario_node_terminus',
+  :git => 'git://github.com/bodepd/scenario_node_terminus'
