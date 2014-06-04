@@ -47,6 +47,9 @@ RSpec.configure do |c|
             :node => vm)
       shell(:command => 'puppet module install --version 1.4.0 puppetlabs/apt',
             :node => vm)
+      rcp(:sp => File.join(proj_root, 'spec/fixtures/hieradata/hiera.yaml'),
+          :dp => '/etc/puppet/hiera.yaml',
+          :d => node(:name => vm))
       # Flush the firewall
       flushfw = <<-EOS
         iptables -F
