@@ -16,10 +16,8 @@ ceph::profile::params::public_network: '10.11.12.0/24'
 
 ######## Keys
 ceph::profile::params::mon_key: 'AQATGHJTUCBqIBAA7M2yafV1xctn1pgr3GcKPg=='
-# as an alternative to specifying the mon key you can provide an exising keyring
-#ceph::profile::params::mon_keyring: '/etc/ceph/ceph.mon.keyring'
 ceph::profile::params::admin_key: 'AQBMGHJTkC8HKhAAJ7NH255wYypgm1oVuV41MA=='
-ceph::profile::params::admin_key_mode: '0600'
+ceph::profile::params::admin_key_mode: '0644'
 ceph::profile::params::bootstrap_osd_key: 'AQARG3JTsDDEHhAAVinHPiqvJkUi5Mww/URupw=='
 ceph::profile::params::bootstrap_mds_key: 'AQCztJdSyNb0NBAASA2yPZPuwXeIQnDJ9O8gVw=='
 ceph::profile::params::osds:
