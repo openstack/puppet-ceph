@@ -1,0 +1,10 @@
+#################
+# Data Mappings #
+#################
+
+ceph::mons::args:
+  "%{hostname}":
+    ensure: absent
+
+ceph::keys::args: {}
+

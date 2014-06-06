@@ -1,0 +1,7 @@
+packages: &packages [ 'ceph', 'libcephfs1', 'librados2', 'librbd1', 'python-ceph' ]
+
+#########################################
+# Anchor mappings for non-string elements
+#########################################
+
+ceph::params::packages: *packages
