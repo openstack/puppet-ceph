@@ -92,7 +92,7 @@ class ceph::repo (
       # prefer ceph repos over EPEL
       package { 'yum-plugin-priorities':
         ensure => present,
-      } -> Package<| tag == 'ceph' |>
+      }
 
     }
 

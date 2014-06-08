@@ -71,7 +71,6 @@ describe 'ceph::mon' do
               mon_host => #{mon_host},
               authentication_type => 'none',
             }
-            ->
             ceph::mon { 'a':
               public_addr => #{mon_host},
               authentication_type => 'none',
@@ -129,7 +128,6 @@ describe 'ceph::mon' do
               fsid => '#{fsid}',
               mon_host => #{mon_host},
             }
-            ->
             ceph::mon { 'a':
               public_addr => #{mon_host},
               key => 'AQCztJdSyNb0NBAASA2yPZPuwXeIQnDJ9O8gVw==',
@@ -189,7 +187,6 @@ describe 'ceph::mon' do
               fsid => '#{fsid}',
               mon_host => #{mon_host},
             }
-            ->
             ceph::mon { 'a':
               public_addr => #{mon_host},
               keyring => '#{keyring_path}',
@@ -252,7 +249,6 @@ describe 'ceph::mon' do
                   public_network => '10.11.12.0/24',
                   authentication_type => 'none',
                 }
-                ->
                 ceph::mon { '#{mon}':
                   public_addr => $::ipaddress_eth1,
                   authentication_type => 'none',

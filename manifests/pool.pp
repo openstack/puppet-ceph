@@ -1,5 +1,6 @@
 #
 # Copyright (C) 2014 Catalyst IT Limited.
+# Copyright (C) 2014 Nine Internet Solutions AG
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -14,6 +15,7 @@
 #   limitations under the License.
 #
 # Author: Ricardo Rocha <ricardo@catalyst.net.nz>
+# Author: David Gurtner <david@nine.ch>
 #
 # Manages operations on the pools in the cluster, such as creating or deleting
 # pools, setting PG/PGP numbers, number of replicas, ...
@@ -50,6 +52,9 @@ define ceph::pool (
 
   if $ensure == present {
 
+    Ceph_Config<||> -> Exec["create-${name}"]
+    Ceph::Mon<||> -> Exec["create-${name}"]
+    Ceph::Key<||> -> Exec["create-${name}"]
     exec { "create-${name}":
       command => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
@@ -102,7 +107,7 @@ ceph osd pool delete ${name} ${name} --yes-i-really-really-mean-it",
       onlyif  => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 ceph osd lspools | grep ${name}",
-    }
+    } -> Ceph::Mon<| ensure == absent |>
 
   } else {
 

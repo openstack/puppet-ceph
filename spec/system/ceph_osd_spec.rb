@@ -87,16 +87,13 @@ describe 'ceph::osd' do
               mon_host => #{mon_host},
               authentication_type => 'none',
             }
-            ->
             ceph_config {
              'global/osd_journal_size': value => '100';
             }
-            ->
             ceph::mon { 'a':
               public_addr => #{mon_host},
               authentication_type => 'none',
             }
-            ->
             ceph::osd { '#{data}': }
           EOS
 
@@ -148,16 +145,13 @@ describe 'ceph::osd' do
               fsid => '#{fsid}',
               mon_host => #{mon_host},
             }
-            ->
             ceph_config {
              'global/osd_journal_size': value => '100';
             }
-            ->
             ceph::mon { 'a':
               public_addr => #{mon_host},
               key => 'AQCztJdSyNb0NBAASA2yPZPuwXeIQnDJ9O8gVw==',
             }
-            ->
             ceph::key { 'client.admin':
               secret         => '#{admin_key}',
               cap_mon        => 'allow *',
@@ -221,17 +215,14 @@ describe 'ceph::osd' do
               mon_host => #{mon_host},
               authentication_type => 'none',
             }
-            ->
             ceph_config {
              'global/osd_journal_size': value => '100';
             }
-            ->
             ceph::mon { 'a':
               public_addr => #{mon_host},
               key => 'AQCztJdSyNb0NBAASA2yPZPuwXeIQnDJ9O8gVw==',
               authentication_type => 'none',
             }
-            ->
             ceph::osd { '#{data}':
               journal => '/tmp/journal'
             }
@@ -286,16 +277,13 @@ describe 'ceph::osd' do
               mon_host => #{mon_host},
               authentication_type => 'none',
             }
-            ->
             ceph_config {
              'global/osd_journal_size': value => '100';
             }
-            ->
             ceph::mon { 'a':
               public_addr => #{mon_host},
               authentication_type => 'none',
             }
-            ->
             ceph::osd { '/dev/sdb1': }
           EOS
 

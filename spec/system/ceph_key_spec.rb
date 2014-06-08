@@ -97,7 +97,6 @@ describe 'ceph::key' do
             mon_host => #{mon_host},
             authentication_type => 'none',
           }
-          ->
           ceph::key { 'client.admin':
             secret  => '#{admin_key}',
             cap_mon => 'allow *',
@@ -108,6 +107,8 @@ describe 'ceph::key' do
             group   => 'root',
             inject  => false,
           }
+          # this is the dependency we want to prove to work here,
+          # we do not need to specify dependencies normally.
           ->
           ceph::mon { 'a':
             public_addr => #{mon_host},
@@ -162,12 +163,10 @@ describe 'ceph::key' do
             fsid => '#{fsid}',
             mon_host => #{mon_host},
           }
-          ->
           ceph::mon { 'a':
             public_addr => #{mon_host},
             key => '#{mon_key}',
           }
-          ->
           ceph::key { 'client.admin':
             secret         => '#{admin_key}',
             cap_mon        => 'allow *',
@@ -177,6 +176,8 @@ describe 'ceph::key' do
             inject_as_id   => 'mon.',
             inject_keyring => '/var/lib/ceph/mon/ceph-a/keyring',
           }
+          # as we are injecting using the client.admin key we
+          # need this dependency
           ->
           ceph::key { 'client.volumes':
             secret  => '#{volume_key}',

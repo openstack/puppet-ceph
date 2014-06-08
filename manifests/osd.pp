@@ -1,5 +1,6 @@
 #
 #   Copyright (C) 2014 Cloudwatt <libre.licensing@cloudwatt.com>
+#   Copyright (C) 2014 Nine Internet Solutions AG
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -14,6 +15,7 @@
 #   limitations under the License.
 #
 # Author: Loic Dachary <loic@dachary.org>
+# Author: David Gurtner <david@nine.ch>
 #
 ### == Parameters
 # [*title*] The OSD data path.
@@ -47,9 +49,12 @@ define ceph::osd (
     }
 
     if $ensure == present {
+
       $ceph_mkfs = "ceph-osd-mkfs-${name}"
 
-      Ceph::Key<| cluster == $cluster |> ->
+      Ceph_Config<||> -> Exec[$ceph_mkfs]
+      Ceph::Mon<||> -> Exec[$ceph_mkfs]
+      Ceph::Key<||> -> Exec[$ceph_mkfs]
       # ceph-disk: prepare should be idempotent http://tracker.ceph.com/issues/7475
       exec { $ceph_mkfs:
         command   => "/bin/true  # comment to satisfy puppet syntax requirements
@@ -97,7 +102,7 @@ if [ \"\$id\" ] ; then
 fi
 ",
         logoutput => true,
-      } -> Ceph::Mon<| cluster == $cluster |>
+      } -> Ceph::Mon<| ensure == absent |>
     }
 
 }

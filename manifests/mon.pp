@@ -123,6 +123,7 @@ define ceph::mon (
         $public_addr_option = "--public_addr ${public_addr}"
       }
 
+      Ceph_Config<||> ->
       exec { $ceph_mkfs:
         command   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex

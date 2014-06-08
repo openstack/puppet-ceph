@@ -18,6 +18,5 @@
 # Class wrapper for the benefit of scenario_node_terminus
 #
 class ceph::osds($args, $defaults = {}) {
-  Ceph_Config<| |> -> Ceph::Osd<| |>
   create_resources(ceph::osd, $args, $defaults)
 }
