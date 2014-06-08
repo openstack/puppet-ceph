@@ -4,109 +4,167 @@ Use Cases
 I want to try this module, heard of ceph, want to see it in action
 ------------------------------------------------------------------
 
-I want to run it on a virtual machine, all in one. The **ceph::conf** class will create configuration file with no authentication enabled. The **ceph::mon** resource configures and runs a monitor to which two **ceph::osd** daemon will connect to provide disk storage, using two disks attached to the virtual machine.
+I want to run it on a virtual machine, all in one. The **ceph::repo** class will enable the official ceph repository with the most current branch selected. The **ceph** class will create a configuration file with no authentication enabled. The **ceph::mon** resource configures and runs a monitor to which a **ceph::osd** daemon will connect to provide disk storage backed by the /srv/data folder (note that storing OSD data on an existing filesystem is only recommended for simple tests like this one).
 
-    class { 'ceph::conf':
-      fsid        => generate('/usr/bin/uuidgen'),
-      mon_host    => $::ipaddress_eth0,
-      authentication_type => 'none',
+* install puppet and this module and its dependences (see the Modulefile and Puppetfile)
+* paste the snippet above into /tmp/ceph.puppet
+* `puppet apply /tmp/ceph.puppet`
+* `ceph -s`: it will connect to the monitor and report that the cluster is ready to be used
+
+```
+    class { 'ceph::repo': }
+    class { 'ceph':
+      fsid                       => generate('/usr/bin/uuidgen'),
+      mon_host                   => $::ipaddress_eth0,
+      authentication_type        => 'none',
+      osd_pool_default_size      => '1',
+      osd_pool_default_min_size  => '1',
     }
     ceph::mon { 'a':
-      public_addr => $::ipaddress_eth0,
-      osd_pool_default_size => 1,
+      public_addr         => $::ipaddress_eth0,
       authentication_type => 'none',
-    };
-    ceph::osd { '/dev/vdb': };
-
-* install puppet and this module,
-* paste the snippet above in /tmp/ceph.puppet,
-* puppet apply /tmp/ceph.puppet,
-* type **ceph -s** : it will connect to the monitor and report that the cluster is ready to be used.
+    }
+    ceph::osd { '/srv/data': }
+```
 
 I want to operate a production cluster
----------------------------------------
+--------------------------------------
 
-_Notice : Please note that the code below is a sample which may not be up to date and is not expected to work._
+_Notice : Please note that the code below is a sample which is not expected to work without further configuration. You will need to at least adapt the hostnames, the IP addresses of the monitor hosts and the OSD disks to your setup._
 
+On all machines:
+* install puppet and this module and its dependences (see the Modulefile and Puppetfile)
+* paste the snippet below into /tmp/ceph.puppet
+
+On the monitor hosts:
+* `puppet apply /tmp/ceph.puppet` (please note that you will need to run this on all monitor hosts at the same time, as they need to connect to each other to finish setting up)
+
+On all other hosts:
+* `puppet apply /tmp/ceph.puppet`
+
+Enjoy your ceph cluster!
+
+```
     $admin_key = 'AQCTg71RsNIHORAAW+O6FCMZWBjmVfMIPk3MhQ=='
     $mon_key = 'AQDesGZSsC7KJBAAw+W/Z4eGSQGAIbxWjxjvfw=='
-    $boostrap_osd_key = 'AQABsWZSgEDmJhAAkAGSOOAJwrMHrM5Pz5On1A=='
+    $bootstrap_osd_key = 'AQABsWZSgEDmJhAAkAGSOOAJwrMHrM5Pz5On1A=='
+    $fsid = '066F558C-6789-4A93-AAF1-5AF1BA01A3AD'
 
-    /ceph-default/ {
-       ceph::conf{
-         mon_host => 'mon1.a.tld,mon2.a.tld.com,mon3.a.tld'
-       };
-    }
-
-    /mon[123]/ inherits ceph-default {
-      ceph::mon{ $hostname: key => $mon_key }
-      ceph::key{'client.admin':
-          secret => $admin_key,
-          caps_mon => '*',
-          caps_osd => '*',
-          inject => true,
+    node /mon[123]/ {
+      class { 'ceph::repo': }
+      class { 'ceph':
+        fsid                => $fsid,
+        mon_initial_members => 'mon1,mon2,mon3',
+        mon_host            => '<ip of mon1>,<ip of mon2>,<ip of mon3>',
       }
-      cceph::key{'client.bootstrap-osd':
-          secret => $bootstrap_osd_key,
-          caps_mon => 'profile bootstrap-osd'
-          inject => true,
+      ceph::mon { $::hostname:
+        public_addr => $::ipaddress_eth0,
+        key => $mon_key,
+      }
+      Ceph::Key {
+        inject         => true,
+        inject_as_id   => 'mon.',
+        inject_keyring => "/var/lib/ceph/mon/ceph-${::hostname}/keyring",
+      }
+      ceph::key { 'client.admin':
+        secret  => $admin_key,
+        cap_mon => 'allow *',
+        cap_osd => 'allow *',
+        cap_mds => 'allow',
+      }
+      ceph::key { 'client.bootstrap-osd':
+        secret  => $bootstrap_osd_key,
+        cap_mon => 'allow profile bootstrap-osd',
       }
     }
 
-    /osd*/ inherits ceph-default {
-      ceph::osd{ 'discover' };
-      ceph::key{'client.bootstrap-osd':
-         keyring => '/var/lib/ceph/bootstrap-osd/ceph.keyring',
-         secret => $bootstrap_osd_key,
+    node /osd*/ {
+      class { 'ceph::repo': }
+      class { 'ceph':
+        fsid                => $fsid,
+        mon_initial_members => 'mon1,mon2,mon3',
+        mon_host            => '<ip of mon1>,<ip of mon2>,<ip of mon3>',
+      }
+      ceph::osd {
+      '<disk1>':
+        journal => '<journal for disk1>';
+      '<disk2>':
+        journal => '<journal for disk2>';
+      }
+      ceph::key {'client.bootstrap-osd':
+         keyring_path => '/var/lib/ceph/bootstrap-osd/ceph.keyring',
+         secret       => $bootstrap_osd_key,
       }
     }
 
-    /client/ inherits ceph-default {
-       ceph::key{'client.admin':
-         keyring => '/etc/ceph/ceph.client.admin.keyring',
-         secret => $admin_key
-       }
-       ceph::client{ };
+    node /client/ {
+      class { 'ceph::repo': }
+      class { 'ceph':
+        fsid                => $fsid,
+        mon_initial_members => 'mon1,mon2,mon3',
+        mon_host            => '<ip of mon1>,<ip of mon2>,<ip of mon3>',
+      }
+      ceph::key { 'client.admin':
+        secret => $admin_key
+      }
     }
-
-* the *osd* nodes only contain disks that are used for OSD and using the discover option to automatically use new disks and provision them as part of the cluster is acceptable, there is no risk of destroying unrelated data.
-* when a hardware is decomissioned, all its disks can be placed in another machines and the OSDs will automatically be re-inserted in the cluster, even if an external journal is used
-
-I want to spawn a cluster configured with a puppetmaster as part of a continuous integration effort
----------------------------------------
-
-Leveraging vagrant, vagrant-openstack, openstack
-
-Ceph is used as a backend storage for various use cases
-There are tests to make sure the Ceph cluster was instantiated properly
-There are tests to make sure various other infrastructure components (or products) can use the Ceph cluster
+```
 
 I want to run benchmarks on three new machines
------------------------------------------------
+----------------------------------------------
 
-There are four machines, 3 OSD, 1 MON and one machine that is the client from which the user runs commands.
-install puppetmaster and create site.pp with:
+_Notice : Please note that the code below is a sample which is not expected to work without further configuration. You will need to at least adapt the hostnames, the IP address of the monitor host and the OSD disks to your setup._
 
-    /ceph-default/ {
-     class { 'ceph::conf':
-        auth_enable => false,
-        mon_host    => 'node1'
-      };
-    }
+There are four machines, 3 OSDs, one of which also doubles as the single monitor and one machine that is the client from which the user runs the benchmark.
 
-    /node1/ inherits ceph-default {
-     ceph::mon { $hostname: };
-     ceph::osd { 'discover': };
-    }
+On all four machines:
+* install puppet and this module and its dependences (see the Modulefile and Puppetfile)
+* paste the snippet below into /tmp/ceph.puppet
+* `puppet apply /tmp/ceph.puppet`
 
-    /node2/, /node3/ inherits ceph-default {
-     ceph::osd { 'discover': };
-    }
-
-    /client/ inherits ceph-default {
-    class { 'ceph::client' };
-    }
-
-* ssh client
-* rados bench
+On the client:
+* `rados bench`
 * interpret the results
+
+```
+    $fsid = '066F558C-6789-4A93-AAF1-5AF1BA01A3AD'
+
+    node /node1/ {
+      class { 'ceph::repo': }
+      class { 'ceph':
+        fsid                => $fsid,
+        mon_host            => '<ip of node1>',
+        mon_initial_members => 'node1',
+        authentication_type => 'none',
+      }
+      ceph::mon { $::hostname:
+        public_addr         => $::ipaddress_eth0,
+        authentication_type => 'none',
+      }
+      ceph::osd {
+      '<disk1>':
+        journal => '<journal for disk1>';
+      '<disk2>':
+        journal => '<journal for disk2>';
+      }
+    }
+
+    node /node[23]/ {
+      class { 'ceph::repo': }
+      class { 'ceph':
+        fsid                => $fsid,
+        mon_host            => '<ip of node1>',
+        mon_initial_members => 'node1',
+        authentication_type => 'none',
+      }
+      ceph::osd {
+      '<disk1>':
+        journal => '<journal for disk1>';
+      '<disk2>':
+        journal => '<journal for disk2>';
+      }
+    }
+
+    node /client/ inherits ceph-default {}
+```
+
