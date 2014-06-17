@@ -1,0 +1,6 @@
+---
+######## OSD
+ceph::profile::params::osds:
+  '/dev/sdb':
+    journal: '/tmp/journal'
+
