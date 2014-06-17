@@ -17,7 +17,7 @@
 # Author: Loic Dachary <loic@dachary.org>
 # Author: François Charlier <francois.charlier@enovance.com>
 # Author: David Moreau Simard <dmsimard@iweb.com>
-# Author: Andrew Woodward <xarses>
+# Author: Andrew Woodward <awoodward@mirantis.com>
 # Author: David Gurtner <david@nine.ch>
 #
 class ceph::repo (
