@@ -16,7 +16,7 @@
 # Author: Ricardo Rocha <ricardo@catalyst.net.nz>
 #
 # Handles ceph keys (cephx), generates keys, creates keyring files, injects
-# keys into or delete keys from the cluster/keyring via ceph and ceph-autotool
+# keys into or delete keys from the cluster/keyring via ceph and ceph-authtool
 # tools.
 #
 ### == Name
