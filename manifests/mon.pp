@@ -42,10 +42,10 @@
 #   key or keyring must be provided.
 #
 # [*key*] Authentication key for [mon.]
-#   Optional. $key and $keyring are mutually exclusives.
+#   Optional. $key and $keyring are mutually exclusive.
 #
 # [*keyring*] Path of the [mon.] keyring file
-#   Optional. $key and $keyring are mutually exclusives.
+#   Optional. $key and $keyring are mutually exclusive.
 #
 define ceph::mon (
   $ensure = present,
