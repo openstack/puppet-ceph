@@ -47,6 +47,10 @@ RSpec.configure do |c|
             :node => vm)
       shell(:command => 'puppet module install --version 1.4.0 puppetlabs/apt',
             :node => vm)
+      shell(:command => 'puppet module install --version 1.0.1 puppetlabs/apache',
+            :node => vm)
+      shell(:command => 'puppet module install --version 1.1.0 puppetlabs/concat',
+            :node => vm)
       rcp(:sp => File.join(proj_root, 'spec/fixtures/hieradata/hiera.yaml'),
           :dp => '/etc/puppet/hiera.yaml',
           :d => node(:name => vm))

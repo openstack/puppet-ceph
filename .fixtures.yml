@@ -5,6 +5,12 @@ fixtures:
       repo: 'git://github.com/puppetlabs/puppetlabs-apt.git'
       ref:  '1.4.0'
     'inifile': 'git://github.com/puppetlabs/puppetlabs-inifile'
+    'apache':
+      repo: 'git://github.com/puppetlabs/puppetlabs-apache'
+      ref: '1.0.1'
+    'concat':
+      repo: 'git://github.com/puppetlabs/puppetlabs-concat'
+      ref: '1.1.0'
 
   symlinks:
     'ceph': "#{source_dir}"
