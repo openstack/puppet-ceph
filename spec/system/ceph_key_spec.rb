@@ -28,7 +28,7 @@ describe 'ceph::key' do
   machines = ENV['MACHINES'] ? ENV['MACHINES'].split : [ 'first', 'second' ]
   fsid = 'a4807c9a-e76f-4666-a297-6d6cbc922e3a'
   mon_key = 'AQCztJdSyNb0NBAASA2yPZPuwXeIQnDJ9O8gVw=='
-  admin_key = 'AQA0TVRTsP/aHxAAFBvntu1dSEJHxtJeFFrRsg=='
+  admin_key = 'AQA0TVRTsP/aHxAAFBvntu1dSEJHxtJeFFrRsg==' # client.admin key needs to contain a / character!
   volume_key = 'AQAMTVRTSOHmHBAAH5d1ukHrAnxuSbrWSv9KGA=='
   mon_host = '$::ipaddress_eth1'
   # passing it directly as unqoted array is not supported everywhere
@@ -195,6 +195,7 @@ describe 'ceph::key' do
           r.exit_code.should_not == 1
           r.refresh
           r.exit_code.should_not == 1
+          r.stdout.should_not =~ /Exec\[ceph-key-client\.admin\]/ # client.admin key needs to contain a / character!
         end
 
         shell 'ceph auth list' do |r|

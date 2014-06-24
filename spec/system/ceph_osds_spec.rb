@@ -131,6 +131,7 @@ ensure: purged
           end
 
           shell(:node => vm, :command => 'test -b /dev/sdb && sgdisk --zap-all --clear --mbrtogpt -- /dev/sdb')
+          shell(:node => vm, :command => 'rm -rf /var/lib/ceph; rm -rf /etc/ceph')
         end
       end
 

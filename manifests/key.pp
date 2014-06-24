@@ -118,7 +118,7 @@ set -ex
 ceph-authtool ${keyring_path} --name '${name}' --add-key '${secret}' ${caps}",
     unless    => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-sed -n 'N;/.*${name}.*\\n\\s*key = ${secret}/p' ${keyring_path} | grep ${name}",
+sed -n 'N;\\%.*${name}.*\\n\\s*key = ${secret}%p' ${keyring_path} | grep ${name}",
     require   => [ Package['ceph'], File[$keyring_path], ],
     logoutput => true,
   }
