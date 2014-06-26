@@ -1,3 +1,4 @@
+# %{ipaddress_eth1} is not substituted within hash (it is a scenario_mode_terminus limitation)
 ---
 ceph::mons::args:
   'first':
