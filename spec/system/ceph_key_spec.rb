@@ -1,6 +1,6 @@
 #
 # Copyright (C) 2014 Catalyst IT Limited.
-# Copyright (C) 2014 Cloudwatt <libre-licensing@cloudwatt.com>
+# Copyright (C) 2014 Cloudwatt <libre.licensing@cloudwatt.com>
 # Copyright (C) 2014 Nine Internet Solutions AG
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
