@@ -1,5 +1,5 @@
 #
-#  Copyright 2013,2014 Cloudwatt <libre-licensing@cloudwatt.com>
+#  Copyright (C) 2013,2014 Cloudwatt <libre.licensing@cloudwatt.com>
 #  Copyright 2014 (C) Nine Internet Solutions AG
 #
 #  Author: Loic Dachary <loic@dachary.org>
