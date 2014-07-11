@@ -45,10 +45,12 @@ Use Cases
 Development
 -----------
 
-    git clone https://github.com/stackforge/puppet-ceph.git
-    cd puppet-ceph
-    sudo gem install bundler
-    bundle install
+```
+git clone https://github.com/stackforge/puppet-ceph.git
+cd puppet-ceph
+sudo gem install bundler
+bundle install
+```
 
 The developer documentation of the puppet-openstack project is the reference:
 
@@ -73,8 +75,7 @@ and tests are in spec/system. It runs virtual machines and requires
 4GB of free memory and 10GB of free disk space.
 
 * [Install Vagrant and Virtualbox](http://docs-v1.vagrantup.com/v1/docs/getting-started/)
-* # nokogiri dependencies
-  sudo apt-get install ruby-dev libxml2-dev libxslt-dev
+* sudo apt-get install ruby-dev libxml2-dev libxslt-dev # nokogiri dependencies
 * mv Gemfile-rspec-system Gemfile # because of https://bugs.launchpad.net/openstack-ci/+bug/1290710
 * BUNDLE_PATH=/tmp/vendor bundle install
 * BUNDLE_PATH=/tmp/vendor bundle exec rake lint
@@ -87,9 +88,11 @@ and tests are in spec/system. It runs virtual machines and requires
 The RELEASES environment variable contains the list of ceph releases
 for which integration tests are going to be run. The default is
 
-* BUNDLE_PATH=/tmp/vendor \
-  RELEASES='dumpling emperor firefly' \
-  bundle exec rake spec:system
+```
+BUNDLE_PATH=/tmp/vendor \
+RELEASES='dumpling emperor firefly' \
+bundle exec rake spec:system
+```
 
 The RS_SET environment variable contains the resource set of linux
 distribution configurations for which integration tests are going
@@ -102,27 +105,34 @@ to be run. Available values are
 
 The default is
 
-* BUNDLE_PATH=/tmp/vendor \
-  RS_SET=two-ubuntu-server-12042-x64 \
-  bundle exec rake spec:system
+```
+BUNDLE_PATH=/tmp/vendor \
+RS_SET=two-ubuntu-server-12042-x64 \
+bundle exec rake spec:system
+```
 
 The MACHINES environment variable contains the list of virtual
 machines that are used for integration tests. This needs to match
 with the RS_SET above. I.e. for a two-* RS_SET use 2 machines.
 The default is
 
-* MACHINES='first second' \
-  bundle exec rake spec:system
+```
+MACHINES='first second' \
+bundle exec rake spec:system
+```
 
 On success it should complete with
 
-    ...
-    =end=============================================================
-    Finished in 4 minutes 1.7 seconds
-    1 example, 0 failures
+```
+...
+=end=============================================================
+Finished in 4 minutes 1.7 seconds
+1 example, 0 failures
+```
 
 Example invocation of gerritexec:
 
+```
 script='bash -c "'
 script+='mv Gemfile-rspec-system Gemfile ; bundle install ;'
 script+='RS_SET=two-ubuntu-server-12042-x64 bundle exec rake spec:system'
@@ -136,6 +146,7 @@ GEM_HOME=~/.gems gerritexec \
    --verbose --username puppetceph \
    --script "$script" \
    --project stackforge/puppet-ceph
+```
 
 Contributors
 ------------
