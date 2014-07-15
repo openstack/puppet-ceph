@@ -102,7 +102,7 @@ describe 'ceph::profile::mon' do
 end
 # Local Variables:
 # compile-command: "cd ../.. ;
-#    bundle install --path=vendor;
-#    bundle exec rake spec
+#    BUNDLE_PATH=/tmp/vendor bundle install ;
+#    BUNDLE_PATH=/tmp/vendor bundle exec rake spec
 # "
 # End:
