@@ -17,7 +17,9 @@
 #
 # Profile for a Ceph client
 #
-class ceph::profile::client inherits ceph::profile::base {
+class ceph::profile::client {
+  require ceph::profile::base
+
   # if this is also a mon, the key is already defined
   if ! defined(Ceph::Key['client.admin']) {
     if $ceph::profile::params::admin_key {

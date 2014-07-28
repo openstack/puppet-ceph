@@ -17,7 +17,9 @@
 #
 # Profile for a Ceph osd
 #
-class ceph::profile::osd inherits ceph::profile::base {
+class ceph::profile::osd {
+  require ceph::profile::base
+
   # this supports providing the key manually
   if $ceph::profile::params::bootstrap_osd_key {
     if ! defined(Ceph::Key['client.bootstrap-osd']) {

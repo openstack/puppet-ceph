@@ -17,7 +17,8 @@
 #
 # Profile for a Ceph mon
 #
-class ceph::profile::mon inherits ceph::profile::base {
+class ceph::profile::mon {
+  require ceph::profile::base
 
   Ceph_Config<| |> ->
   ceph::mon { $::hostname:
