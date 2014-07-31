@@ -13,7 +13,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-# Author: David Gurtner <david@nine.ch>
+# Author: David Gurtner <aldavud@crimson.ch>
 #
 # Base profile to install ceph and configure /etc/ceph/ceph.conf
 #

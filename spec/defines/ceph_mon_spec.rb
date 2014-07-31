@@ -16,7 +16,7 @@
 #
 # Author: Loic Dachary <loic@dachary.org>
 # Author: David Moreau Simard <dmsimard@iweb.com>
-# Author: David Gurtner <david@nine.ch>
+# Author: David Gurtner <aldavud@crimson.ch>
 #
 require 'spec_helper'
 

@@ -15,7 +15,7 @@
 #   limitations under the License.
 #
 # Author: Loic Dachary <loic@dachary.org>
-# Author: David Gurtner <david@nine.ch>
+# Author: David Gurtner <aldavud@crimson.ch>
 #
 ### == Parameters
 # [*title*] The OSD data path.

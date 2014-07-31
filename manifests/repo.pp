@@ -18,7 +18,7 @@
 # Author: François Charlier <francois.charlier@enovance.com>
 # Author: David Moreau Simard <dmsimard@iweb.com>
 # Author: Andrew Woodward <awoodward@mirantis.com>
-# Author: David Gurtner <david@nine.ch>
+# Author: David Gurtner <aldavud@crimson.ch>
 #
 class ceph::repo (
   $ensure  = present,

@@ -1,7 +1,7 @@
 #
 #  Copyright (C) Nine Internet Solutions AG
 #
-#  Author: David Gurtner <david@nine.ch>
+#  Author: David Gurtner <aldavud@crimson.ch>
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.

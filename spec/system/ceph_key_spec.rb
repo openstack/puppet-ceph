@@ -17,7 +17,7 @@
 #
 # Author: Ricardo Rocha <ricardo@catalyst.net.nz>
 # Author: Loic Dachary <loic@dachary.org>
-# Author: David Gurtner <david@nine.ch>
+# Author: David Gurtner <aldavud@crimson.ch>
 #
 
 require 'spec_helper_system'

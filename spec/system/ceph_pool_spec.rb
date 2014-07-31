@@ -15,7 +15,7 @@
 #   limitations under the License.
 #
 # Author: Ricardo Rocha <ricardo@catalyst.net.nz>
-# Author: David Gurtner <david@nine.ch>
+# Author: David Gurtner <aldavud@crimson.ch>
 #
 require 'spec_helper_system'
 

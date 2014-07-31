@@ -15,7 +15,7 @@
 #   limitations under the License.
 #
 # Author: Ricardo Rocha <ricardo@catalyst.net.nz>
-# Author: David Gurtner <david@nine.ch>
+# Author: David Gurtner <aldavud@crimson.ch>
 #
 # Manages operations on the pools in the cluster, such as creating or deleting
 # pools, setting PG/PGP numbers, number of replicas, ...

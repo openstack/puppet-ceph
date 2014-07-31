@@ -14,7 +14,7 @@
 #   limitations under the License.
 #
 # Author: David Moreau Simard <dmsimard@iweb.com>
-# Author: David Gurtner <david@nine.ch>
+# Author: David Gurtner <aldavud@crimson.ch>
 
 # init takes care of installing/configuring the common dependencies across classes
 # it also takes care of the global configuration values
