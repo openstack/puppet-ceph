@@ -25,8 +25,8 @@ describe 'ceph::repo' do
 
     let :facts do
     {
-      :osfamily         => 'Debian',
-      :lsbdistcodename  => 'wheezy'
+      :osfamily        => 'Debian',
+      :lsbdistcodename => 'wheezy',
     }
     end
 
@@ -65,8 +65,9 @@ describe 'ceph::repo' do
 
     let :facts do
     {
-      :osfamily         => 'Debian',
-      :lsbdistcodename  => 'precise'
+      :osfamily        => 'Debian',
+      :lsbdistcodename => 'precise',
+      :hardwaremodel   => 'x86_64',
     }
     end
 
@@ -97,6 +98,87 @@ describe 'ceph::repo' do
         :release  => 'precise',
         :require  => 'Apt::Key[ceph]'
       ) }
+    end
+
+    describe "when wanting extras" do
+      let :params do
+        {
+         :extras => true
+        }
+      end
+
+      it { should contain_apt__source('ceph').with(
+        :location => 'http://ceph.com/debian-firefly/',
+        :release  => 'precise',
+        :require  => 'Apt::Key[ceph]'
+      ) }
+
+      it { should contain_apt__source('ceph-extras').with(
+        :ensure   => 'present',
+        :location => 'http://ceph.com/packages/ceph-extras/debian/',
+        :release  => 'precise',
+        :require  => 'Apt::Key[ceph]'
+      ) }
+
+    end
+
+    describe "when wanting fast-cgi" do
+      let :params do
+        {
+         :fastcgi => true
+        }
+      end
+
+      it { should contain_apt__key('ceph-gitbuilder').with(
+        :key        => '6EAEAE2203C3951A',
+        :key_server => 'keyserver.ubuntu.com'
+      ) }
+
+      it { should contain_apt__source('ceph').with(
+        :location => 'http://ceph.com/debian-firefly/',
+        :release  => 'precise',
+        :require  => 'Apt::Key[ceph]'
+      ) }
+
+      it { should contain_apt__source('ceph-fastcgi').with(
+        :ensure   => 'present',
+        :location => 'http://gitbuilder.ceph.com/libapache-mod-fastcgi-deb-precise-x86_64-basic/ref/master',
+        :release  => 'precise',
+        :require  => 'Apt::Key[ceph-gitbuilder]'
+      ) }
+
+    end
+
+    describe "with ensure => absent to disable" do
+      let :params do
+        {
+          :ensure  => 'absent',
+          :extras  => true,
+          :fastcgi => true
+        }
+      end
+
+      it { should contain_apt__source('ceph').with(
+        :ensure   => 'absent',
+        :location => 'http://ceph.com/debian-firefly/',
+        :release  => 'precise',
+        :require  => 'Apt::Key[ceph]'
+      ) }
+
+      it { should contain_apt__source('ceph-extras').with(
+        :ensure   => 'absent',
+        :location => 'http://ceph.com/packages/ceph-extras/debian/',
+        :release  => 'precise',
+        :require  => 'Apt::Key[ceph]'
+      ) }
+
+      it { should contain_apt__source('ceph-fastcgi').with(
+        :ensure   => 'absent',
+        :location => 'http://gitbuilder.ceph.com/libapache-mod-fastcgi-deb-precise-x86_64-basic/ref/master',
+        :release  => 'precise',
+        :require  => 'Apt::Key[ceph-gitbuilder]'
+      ) }
+
     end
 
   end
@@ -189,7 +271,9 @@ describe 'ceph::repo' do
     describe "with ensure => absent to disable" do
       let :params do
         {
-          :ensure => 'absent'
+          :ensure  => 'absent',
+          :extras  => true,
+          :fastcgi => true
         }
       end
 
@@ -225,9 +309,136 @@ describe 'ceph::repo' do
         :mirrorlist => 'absent',
         :priority   => '10'
       ) }
+
+      it { should contain_yumrepo('ext-ceph-extras').with(
+        :enabled    => '0',
+        :descr      => 'External Ceph Extras',
+        :name       => 'ext-ceph-extras',
+        :baseurl    => 'http://ceph.com/packages/ceph-extras/rpm/rhel6/$basearch',
+        :gpgcheck   => '1',
+        :gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc',
+        :mirrorlist => 'absent',
+        :priority   => '10'
+      ) }
+
+      it { should contain_yumrepo('ext-ceph-fastcgi').with(
+        :enabled    => '0',
+        :descr      => 'FastCGI basearch packages for Ceph',
+        :name       => 'ext-ceph-fastcgi',
+        :baseurl    => 'http://gitbuilder.ceph.com/mod_fastcgi-rpm-rhel6-x86_64-basic/ref/master',
+        :gpgcheck   => '1',
+        :gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/autobuild.asc',
+        :mirrorlist => 'absent',
+        :priority   => '20'
+      ) }
+
     end
 
+    describe "with ceph extras" do
+      let :params do
+        {
+          :extras => true
+        }
+      end
 
+      it { should contain_yumrepo('ext-epel-6.8').with(
+        :enabled    => '1',
+        :descr      => 'External EPEL 6.8',
+        :name       => 'ext-epel-6.8',
+        :baseurl    => 'absent',
+        :gpgcheck   => '0',
+        :gpgkey     => 'absent',
+        :mirrorlist => 'https://mirrors.fedoraproject.org/metalink?repo=epel-6&arch=$basearch',
+        :priority   => '20'
+      ) }
+
+      it { should contain_yumrepo('ext-ceph').with(
+        :enabled    => '1',
+        :descr      => 'External Ceph firefly',
+        :name       => 'ext-ceph-firefly',
+        :baseurl    => 'http://ceph.com/rpm-firefly/el6/$basearch',
+        :gpgcheck   => '1',
+        :gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc',
+        :mirrorlist => 'absent',
+        :priority   => '10'
+     ) }
+
+      it { should contain_yumrepo('ext-ceph-noarch').with(
+        :enabled    => '1',
+        :descr      => 'External Ceph noarch',
+        :name       => 'ext-ceph-firefly-noarch',
+        :baseurl    => 'http://ceph.com/rpm-firefly/el6/noarch',
+        :gpgcheck   => '1',
+        :gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc',
+        :mirrorlist => 'absent',
+        :priority   => '10'
+      ) }
+
+      it { should contain_yumrepo('ext-ceph-extras').with(
+        :enabled    => '1',
+        :descr      => 'External Ceph Extras',
+        :name       => 'ext-ceph-extras',
+        :baseurl    => 'http://ceph.com/packages/ceph-extras/rpm/rhel6/$basearch',
+        :gpgcheck   => '1',
+        :gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc',
+        :mirrorlist => 'absent',
+        :priority   => '10'
+      ) }
+
+    end
+
+    describe "with ceph fast-cgi" do
+      let :params do
+        {
+          :fastcgi => true
+        }
+      end
+
+      it { should contain_yumrepo('ext-epel-6.8').with(
+        :enabled    => '1',
+        :descr      => 'External EPEL 6.8',
+        :name       => 'ext-epel-6.8',
+        :baseurl    => 'absent',
+        :gpgcheck   => '0',
+        :gpgkey     => 'absent',
+        :mirrorlist => 'https://mirrors.fedoraproject.org/metalink?repo=epel-6&arch=$basearch',
+        :priority   => '20'
+      ) }
+
+      it { should contain_yumrepo('ext-ceph').with(
+        :enabled    => '1',
+        :descr      => 'External Ceph firefly',
+        :name       => 'ext-ceph-firefly',
+        :baseurl    => 'http://ceph.com/rpm-firefly/el6/$basearch',
+        :gpgcheck   => '1',
+        :gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc',
+        :mirrorlist => 'absent',
+        :priority   => '10'
+     ) }
+
+      it { should contain_yumrepo('ext-ceph-noarch').with(
+        :enabled    => '1',
+        :descr      => 'External Ceph noarch',
+        :name       => 'ext-ceph-firefly-noarch',
+        :baseurl    => 'http://ceph.com/rpm-firefly/el6/noarch',
+        :gpgcheck   => '1',
+        :gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc',
+        :mirrorlist => 'absent',
+        :priority   => '10'
+      ) }
+
+      it { should contain_yumrepo('ext-ceph-fastcgi').with(
+        :enabled    => '1',
+        :descr      => 'FastCGI basearch packages for Ceph',
+        :name       => 'ext-ceph-fastcgi',
+        :baseurl    => 'http://gitbuilder.ceph.com/mod_fastcgi-rpm-rhel6-x86_64-basic/ref/master',
+        :gpgcheck   => '1',
+        :gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/autobuild.asc',
+        :mirrorlist => 'absent',
+        :priority   => '20'
+      ) }
+
+    end
   end
 
 end

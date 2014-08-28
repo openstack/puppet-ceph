@@ -49,6 +49,7 @@ describe 'ceph::key' do
       package { [
          'python-ceph',
          'ceph-common',
+         'curl',
          'librados2',
          'librbd1',
          'libcephfs1',

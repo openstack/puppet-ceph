@@ -28,7 +28,7 @@ describe 'ceph::osd' do
   admin_key = 'AQA0TVRTsP/aHxAAFBvntu1dSEJHxtJeFFrRsg=='
   mon_host = '$::ipaddress_eth1'
   # passing it directly as unqoted array is not supported everywhere
-  packages = "[ 'python-ceph', 'ceph-common', 'librados2', 'librbd1', 'libcephfs1' ]"
+  packages = "[ 'python-ceph', 'ceph-common', 'curl', 'librados2', 'librbd1', 'libcephfs1' ]"
 
   purge = <<-EOS
     ceph::mon { 'a': ensure => absent }

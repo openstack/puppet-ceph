@@ -40,6 +40,8 @@ describe 'ceph::repo' do
         class { 'ceph::repo':
           #{release_arg}
           ensure  => absent,
+          extras  => true,
+          fastcgi => true,
         }
       EOS
 
@@ -56,10 +58,27 @@ describe 'ceph::repo' do
         r.stderr.should be_empty
         r.exit_code.should be_zero
       end
+      shell 'apt-cache policy curl' do |r|
+        r.stdout.should_not =~ /ceph.com/
+        r.exit_code.should be_zero
+      end
+      shell 'apt-cache policy libapache2-mod-fastcgi' do |r|
+        r.stdout.should_not =~ /ceph.com/
+        r.exit_code.should be_zero
+      end
     end
     if osfamily == 'RedHat'
       shell 'yum info ceph' do |r|
         r.stdout.should_not =~ /ceph.com/
+        r.stderr.should =~ /Error: No matching Packages to list/
+        r.exit_code.should_not be_zero
+      end
+      shell 'yum info qemu-kvm' do |r|
+        r.stdout.should_not =~ /Repo.*ext-ceph-extras/
+        r.exit_code.should be_zero
+      end
+      shell 'yum info mod_fastcgi' do |r|
+        r.stdout.should_not =~ /Repo.*ext-ceph-fastcgi/
         r.stderr.should =~ /Error: No matching Packages to list/
         r.exit_code.should_not be_zero
       end
@@ -108,6 +127,20 @@ describe 'ceph::repo' do
           r.exit_code.should be_zero
         end
 
+        # Test extras is not enabled
+        if osfamily == 'Debian'
+          shell 'apt-cache policy curl' do |r|
+            r.stdout.should_not =~ /ceph\.com.*ceph-extras/
+            r.exit_code.should be_zero
+          end
+        end
+        if osfamily == 'RedHat'
+          shell 'yum info qemu-kvm' do |r|
+            r.stdout.should_not =~ /Repo.*ext-ceph-extras/
+            r.exit_code.should be_zero
+          end
+        end
+
         # On RedHat family we need to use the version when removing
         pp = <<-EOS
           class { 'ceph::repo':
@@ -133,6 +166,133 @@ describe 'ceph::repo' do
         if osfamily == 'RedHat'
           shell querycommand do |r|
             r.stdout.should_not =~ /ceph.com/
+            r.stderr.should =~ /Error: No matching Packages to list/
+            r.exit_code.should_not be_zero
+          end
+        end
+      end
+
+      it "should find curl in ceph-extras" do
+        osfamily = facter.facts['osfamily']
+
+        pp = <<-EOS
+          class { 'ceph::repo':
+            #{release_arg}
+            extras => true,
+          }
+        EOS
+
+        # Run it twice and test for idempotency
+        puppet_apply(pp) do |r|
+          r.exit_code.should_not == 1
+          r.refresh
+          r.exit_code.should_not == 1
+        end
+
+        # Test for a package in ceph-extras (curl)
+        if osfamily == 'Debian'
+          shell 'apt-cache policy curl' do |r|
+            r.stdout.should =~ /ceph\.com.*ceph-extras/
+            r.stderr.should be_empty
+            r.exit_code.should be_zero
+          end
+        end
+        if osfamily == 'RedHat'
+          shell 'yum info qemu-kvm' do |r|
+            r.stdout.should =~ /Repo.*ext-ceph-extras/
+            r.stderr.should be_empty
+            r.exit_code.should be_zero
+          end
+        end
+
+        # On RedHat family we need to use the version when removing
+        pp = <<-EOS
+          class { 'ceph::repo':
+            ensure => absent,
+            extras => true,
+            #{release_arg}
+          }
+        EOS
+
+        # Run it twice and test for idempotency
+        puppet_apply(pp) do |r|
+          r.exit_code.should_not == 1
+          r.refresh
+          r.exit_code.should_not == 1
+        end
+
+        if osfamily == 'Debian'
+          shell 'apt-cache policy curl' do |r|
+            r.stdout.should_not =~ /ceph.com/
+            r.exit_code.should be_zero
+          end
+        end
+        if osfamily == 'RedHat'
+          shell 'yum info qemu-kvm' do |r|
+            r.stdout.should_not =~ /Repo.*ext-ceph-extras/
+            r.exit_code.should be_zero
+          end
+        end
+      end
+
+      it "should find fastcgi in ceph-fastcgi" do
+        osfamily = facter.facts['osfamily']
+
+        pp = <<-EOS
+          class { 'ceph::repo':
+            #{release_arg}
+            fastcgi => true,
+          }
+        EOS
+
+        # Run it twice and test for idempotency
+        puppet_apply(pp) do |r|
+          r.exit_code.should_not == 1
+          r.refresh
+          r.exit_code.should_not == 1
+        end
+
+        # Test fastcgi in ceph-fastcgi
+        if osfamily == 'Debian'
+          shell 'apt-cache policy libapache2-mod-fastcgi' do |r|
+            r.stdout.should =~ /ceph.com/
+            r.stderr.should be_empty
+            r.exit_code.should be_zero
+          end
+        end
+        if osfamily == 'RedHat'
+          shell 'yum info mod_fastcgi' do |r|
+            r.stdout.should =~ /Repo.*ext-ceph-fastcgi/
+            r.stderr.should be_empty
+            r.exit_code.should be_zero
+          end
+        end
+
+        # On RedHat family we need to use the version when removing
+        pp = <<-EOS
+          class { 'ceph::repo':
+            ensure  => absent,
+            fastcgi => true,
+            #{release_arg}
+          }
+        EOS
+
+        # Run it twice and test for idempotency
+        puppet_apply(pp) do |r|
+          r.exit_code.should_not == 1
+          r.refresh
+          r.exit_code.should_not == 1
+        end
+
+        if osfamily == 'Debian'
+          shell 'apt-cache policy libapache2-mod-fastcgi' do |r|
+            r.stdout.should_not =~ /ceph.com/
+            r.exit_code.should be_zero
+          end
+        end
+        if osfamily == 'RedHat'
+          shell 'yum info mod_fastcgi' do |r|
+            r.stdout.should_not =~ /Repo.*ext-ceph-fastcgi/
             r.stderr.should =~ /Error: No matching Packages to list/
             r.exit_code.should_not be_zero
           end

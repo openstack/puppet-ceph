@@ -1,6 +1,7 @@
 #   Copyright (C) 2013, 2014 iWeb Technologies Inc.
 #   Copyright (C) 2013 Cloudwatt <libre.licensing@cloudwatt.com>
 #   Copyright (C) 2014 Nine Internet Solutions AG
+#   Copyright (C) 2014 Catalyst IT Limited
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -19,10 +20,13 @@
 # Author: David Moreau Simard <dmsimard@iweb.com>
 # Author: Andrew Woodward <awoodward@mirantis.com>
 # Author: David Gurtner <aldavud@crimson.ch>
+# Author: Ricardo Rocha <ricardo@catalyst.net.nz>
 #
 class ceph::repo (
   $ensure  = present,
-  $release = 'firefly'
+  $release = 'firefly',
+  $extras  = false,
+  $fastcgi = false,
 ) {
   case $::osfamily {
     'Debian': {
@@ -40,6 +44,34 @@ class ceph::repo (
         release  => $::lsbdistcodename,
         require  => Apt::Key['ceph'],
         tag      => 'ceph',
+      }
+
+      if $extras {
+
+        apt::source { 'ceph-extras':
+          ensure   => $ensure,
+          location => 'http://ceph.com/packages/ceph-extras/debian/',
+          release  => $::lsbdistcodename,
+          require  => Apt::Key['ceph'],
+        }
+
+      }
+
+      if $fastcgi {
+
+        apt::key { 'ceph-gitbuilder':
+          ensure     => $ensure,
+          key        => '6EAEAE2203C3951A',
+          key_server => 'keyserver.ubuntu.com',
+        }
+
+        apt::source { 'ceph-fastcgi':
+          ensure   => $ensure,
+          location => "http://gitbuilder.ceph.com/libapache-mod-fastcgi-deb-${::lsbdistcodename}-${::hardwaremodel}-basic/ref/master",
+          release  => $::lsbdistcodename,
+          require  => Apt::Key['ceph-gitbuilder'],
+        }
+
       }
 
       Apt::Source<| tag == 'ceph' |> -> Package<| tag == 'ceph' |>
@@ -85,6 +117,38 @@ class ceph::repo (
         mirrorlist => absent,
         priority   => '10', # prefer ceph repos over EPEL
         tag        => 'ceph',
+      }
+
+      if $extras {
+
+        yumrepo { 'ext-ceph-extras':
+          enabled    => $enabled,
+          descr      => 'External Ceph Extras',
+          name       => 'ext-ceph-extras',
+          baseurl    => 'http://ceph.com/packages/ceph-extras/rpm/rhel6/$basearch',
+          gpgcheck   => '1',
+          gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc',
+          mirrorlist => absent,
+          priority   => '10', # prefer ceph repos over EPEL
+          tag        => 'ceph',
+        }
+
+      }
+
+      if $fastcgi {
+
+        yumrepo { 'ext-ceph-fastcgi':
+          enabled    => $enabled,
+          descr      => 'FastCGI basearch packages for Ceph',
+          name       => 'ext-ceph-fastcgi',
+          baseurl    => 'http://gitbuilder.ceph.com/mod_fastcgi-rpm-rhel6-x86_64-basic/ref/master',
+          gpgcheck   => '1',
+          gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/autobuild.asc',
+          mirrorlist => absent,
+          priority   => '20', # prefer ceph repos over EPEL
+          tag        => 'ceph',
+        }
+
       }
 
       Yumrepo<| tag == 'ceph' |> -> Package<| tag == 'ceph' |>
