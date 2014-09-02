@@ -50,19 +50,37 @@ define ceph::osd (
 
     if $ensure == present {
 
-      $ceph_mkfs = "ceph-osd-mkfs-${name}"
+      $ceph_prepare = "ceph-osd-prepare-${name}"
+      $ceph_activate = "ceph-osd-activate-${name}"
 
-      Ceph_Config<||> -> Exec[$ceph_mkfs]
-      Ceph::Mon<||> -> Exec[$ceph_mkfs]
-      Ceph::Key<||> -> Exec[$ceph_mkfs]
+      Ceph_Config<||> -> Exec[$ceph_prepare]
+      Ceph::Mon<||> -> Exec[$ceph_prepare]
+      Ceph::Key<||> -> Exec[$ceph_prepare]
       # ceph-disk: prepare should be idempotent http://tracker.ceph.com/issues/7475
-      exec { $ceph_mkfs:
+      exec { $ceph_prepare:
         command   => "/bin/true  # comment to satisfy puppet syntax requirements
 set -ex
 if ! test -b ${data} ; then
   mkdir -p ${data}
 fi
 ceph-disk prepare ${cluster_option} ${data} ${journal}
+",
+        unless    => "/bin/true  # comment to satisfy puppet syntax requirements
+set -ex
+ceph-disk list | grep ' *${data}.*ceph data, prepared' ||
+ceph-disk list | grep ' *${data}.*ceph data, active' ||
+ls -l /var/lib/ceph/osd/${cluster_name}-* | grep ' ${data}'
+",
+        logoutput => true,
+      }
+
+      Exec[$ceph_prepare] -> Exec[$ceph_activate]
+      exec { $ceph_activate:
+        command   => "/bin/true  # comment to satisfy puppet syntax requirements
+set -ex
+if ! test -b ${data} ; then
+  mkdir -p ${data}
+fi
 # activate happens via udev when using the entire device
 if ! test -b ${data} || ! test -b ${data}1 ; then
   ceph-disk activate ${data} || true

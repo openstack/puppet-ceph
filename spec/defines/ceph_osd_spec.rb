@@ -34,7 +34,9 @@ describe 'ceph::osd' do
         '/tmp'
       end
 
-      it { should contain_exec('ceph-osd-mkfs-/tmp') }
+      it { should contain_exec('ceph-osd-prepare-/tmp') }
+
+      it { should contain_exec('ceph-osd-activate-/tmp') }
 
     end
   end
@@ -53,7 +55,9 @@ describe 'ceph::osd' do
         '/tmp'
       end
 
-      it { should contain_exec('ceph-osd-mkfs-/tmp') }
+      it { should contain_exec('ceph-osd-prepare-/tmp') }
+
+      it { should contain_exec('ceph-osd-activate-/tmp') }
 
     end
   end

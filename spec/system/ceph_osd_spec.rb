@@ -321,6 +321,81 @@ describe 'ceph::osd' do
           shell 'ceph-disk zap /dev/sdb'
         end
 
+        it 'should install one OSD no cephx on partition and activate after umount' do
+          shell 'sgdisk --delete=1 /dev/sdb || true; sgdisk --largest-new=1 --change-name="1:ceph data" --partition-guid=1:7aebb13f-d4a5-4b94-8622-355d2b5401f1 --typecode=1:4fbd7e29-9d25-41b8-afd0-062c0ceff05d -- /dev/sdb' do |r|
+            r.exit_code.should be_zero
+          end
+
+          pp = <<-EOS
+            class { 'ceph':
+              fsid => '#{fsid}',
+              mon_host => #{mon_host},
+              authentication_type => 'none',
+            }
+            ceph_config {
+             'global/osd_journal_size': value => '100';
+            }
+            ceph::mon { 'a':
+              public_addr => #{mon_host},
+              authentication_type => 'none',
+            }
+            ceph::osd { '/dev/sdb1': }
+          EOS
+
+          puppet_apply(pp) do |r|
+            r.exit_code.should_not == 1
+            r.refresh
+            r.exit_code.should_not == 1
+          end
+
+          shell 'ceph osd tree' do |r|
+            r.stdout.should =~ /osd.0/
+            r.stderr.should be_empty
+            r.exit_code.should be_zero
+          end
+
+          # stop and umount (but leave it prepared)
+          shell 'stop ceph-osd id=0 || /etc/init.d/ceph stop osd.0; umount /dev/sdb1' do |r|
+            r.exit_code.should be_zero
+          end
+
+          # rerun puppet (should activate but not prepare)
+          puppet_apply(pp) do |r|
+            r.exit_code.should_not == 1
+            r.refresh
+            r.exit_code.should_not == 1
+          end
+
+          # check osd up and same osd.id
+          shell 'ceph osd tree' do |r|
+            r.stdout.should =~ /osd.0\s*up/
+            r.stderr.should be_empty
+            r.exit_code.should be_zero
+          end
+
+        end
+
+        it 'should uninstall one osd' do
+          shell 'ceph osd tree | grep DNE' do |r|
+            r.exit_code.should_not be_zero
+          end
+
+          pp = <<-EOS
+            ceph::osd { '/dev/sdb1':
+              ensure => absent,
+            }
+          EOS
+
+          puppet_apply(pp) do |r|
+            r.exit_code.should_not == 1
+          end
+
+          shell 'ceph osd tree | grep DNE' do |r|
+            r.exit_code.should be_zero
+          end
+          shell 'ceph-disk zap /dev/sdb'
+        end
+
         it 'should uninstall one monitor and all packages' do
           puppet_apply(purge) do |r|
             r.exit_code.should_not == 1
