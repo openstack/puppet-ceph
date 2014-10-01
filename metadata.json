@@ -1,0 +1,40 @@
+{
+  "name": "stackforge-ceph",
+  "version": "1.0.0",
+  "author": "Puppet Ceph community and StackForge Contributors",
+  "summary": "Community Developed Ceph Module",
+  "license": "Apache-2.0",
+  "source": "git://github.com/stackforge/puppet-ceph.git",
+  "project_page": "https://launchpad.net/puppet-ceph",
+  "issues_url": "https://bugs.launchpad.net/puppet-ceph",
+  "requirements": [
+    { "name": "pe","version_requirement": "3.x" },
+    { "name": "puppet","version_requirement": "3.x" }
+  ],
+  "operatingsystem_support": [
+    {
+      "operatingsystem": "Debian",
+      "operatingsystemrelease": ["6","7"]
+    },
+    {
+      "operatingsystem": "Fedora",
+      "operatingsystemrelease": ["20"]
+    },
+    {
+      "operatingsystem": "RedHat",
+      "operatingsystemrelease": ["5","6","7"]
+    },
+    {
+      "operatingsystem": "Ubuntu",
+      "operatingsystemrelease": ["12.04","14.04"]
+    }
+  ],
+  "description": "Installs and configures Ceph.",
+  "dependencies": [
+    { "name": "puppetlabs/apt", "version_requirement": ">=1.4.0 <2.0.0" },
+    { "name": "puppetlabs/apache", "version_requirement": ">=1.0.1 <2.0.0" },
+    { "name": "puppetlabs/concat", "version_requirement": ">=1.1.0 <2.0.0" },
+    { "name": "puppetlabs/inifile", "version_requirement": ">=1.0.0 <2.0.0" },
+    { "name": "puppetlabs/stdlib", "version_requirement": ">=4.0.0 <5.0.0" }
+  ]
+}
