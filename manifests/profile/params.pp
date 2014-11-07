@@ -17,6 +17,10 @@
 #
 # Extract the data from hiera where available
 #
+# [*manage_repo*] Whether we should manage the local repository (true) or depend
+#   on what is available (false). Set this to false when you want to manage the
+#   the repo by yourself.
+#   Optional. Defaults to true
 class ceph::profile::params (
   # puppet 2.7 compatibiliy hack. TODO: change to undef once 2.7 is deprecated
   $fsid = '4b5c8c0a-ff60-454b-a1b4-9747aa737d19',
@@ -37,5 +41,6 @@ class ceph::profile::params (
   $bootstrap_osd_key = undef,
   $bootstrap_mds_key = undef,
   $osds = undef,
+  $manage_repo = true,
 ) {
 }
