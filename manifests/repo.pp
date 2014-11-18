@@ -16,7 +16,7 @@
 #   limitations under the License.
 #
 # Author: Loic Dachary <loic@dachary.org>
-# Author: François Charlier <francois.charlier@enovance.com>
+# Author: Francois Charlier <francois.charlier@enovance.com>
 # Author: David Moreau Simard <dmsimard@iweb.com>
 # Author: Andrew Woodward <awoodward@mirantis.com>
 # Author: David Gurtner <aldavud@crimson.ch>

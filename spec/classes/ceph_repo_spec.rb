@@ -13,7 +13,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-# Author: François Charlier <francois.charlier@enovance.com>
+# Author: Francois Charlier <francois.charlier@enovance.com>
 # Author: David Moreau Simard <dmsimard@iweb.com>
 # Author: Andrew Woodward <xarses>
 
