@@ -35,6 +35,9 @@ RSpec.configure do |c|
     machines = ENV['MACHINES'] ? ENV['MACHINES'].split : [ 'first', 'second' ]
     machines.each do |vm|
       puppet_install(:node => vm)
+      # https://tickets.puppetlabs.com/browse/PUP-2566
+      shell(:command => 'sed -i "/templatedir/d" /etc/puppet/puppet.conf',
+            :node => vm)
       puppet_module_install(:source => proj_root,
                             :module_name => 'ceph',
                             :node => vm)
