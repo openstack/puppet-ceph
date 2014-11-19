@@ -281,7 +281,7 @@ scenario: 2_role
       EOS
 
       machines.each do |vm|
-        puppet_apply(pp) do |r|
+        puppet_apply(:node => vm, :code => pp) do |r|
           r.exit_code.should_not == 1
         end
 
@@ -291,21 +291,7 @@ scenario: 2_role
     end
 
     after(:all) do
-      pp = <<-EOS
-      ini_setting { 'puppetmastermodulepath':
-        ensure  => absent,
-        path    => '/etc/puppet/puppet.conf',
-        section => 'main',
-        setting => 'node_terminus',
-        value   => 'scenario',
-      }
-      EOS
-
       machines.each do |vm|
-        puppet_apply(pp) do |r|
-          r.exit_code.should_not == 1
-        end
-
         file = Tempfile.new('hieraconfig')
         begin
           file.write(minimal_hiera_config)
@@ -315,6 +301,7 @@ scenario: 2_role
           file.unlink
         end
 
+        shell(:node => vm, :command => "sed -i '/^node_terminus.*=.*scenario$/d' /etc/puppet/puppet.conf")
         shell(:node => vm, :command => 'rm -rf /etc/puppet/data')
       end
     end
