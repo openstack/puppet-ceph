@@ -24,7 +24,7 @@
 #
 class ceph::repo (
   $ensure  = present,
-  $release = 'firefly',
+  $release = 'giant',
   $extras  = false,
   $fastcgi = false,
 ) {

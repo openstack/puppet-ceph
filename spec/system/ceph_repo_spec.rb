@@ -23,9 +23,9 @@ describe 'ceph::repo' do
 
   release2version = {
     'dumpling' => '0.67',
-    'emperor' => '0.72',
     'firefly' => '0.80',
-    '(default)' => '0.80',
+    'giant' => '0.87',
+    '(default)' => '0.87',
   }
 
   releases = ENV['RELEASES'] ? ENV['RELEASES'].split : release2version.keys
