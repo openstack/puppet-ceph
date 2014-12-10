@@ -200,7 +200,7 @@ describe 'ceph::repo' do
         :baseurl    => 'absent',
         :gpgcheck   => '0',
         :gpgkey     => 'absent',
-        :mirrorlist => 'https://mirrors.fedoraproject.org/metalink?repo=epel-6&arch=$basearch',
+        :mirrorlist => 'http://mirrors.fedoraproject.org/metalink?repo=epel-6&arch=$basearch',
         :priority   => '20'
       ) }
 
@@ -241,7 +241,7 @@ describe 'ceph::repo' do
         :baseurl    => 'absent',
         :gpgcheck   => '0',
         :gpgkey     => 'absent',
-        :mirrorlist => 'https://mirrors.fedoraproject.org/metalink?repo=epel-6&arch=$basearch',
+        :mirrorlist => 'http://mirrors.fedoraproject.org/metalink?repo=epel-6&arch=$basearch',
         :priority   => '20'
       ) }
 
@@ -284,7 +284,7 @@ describe 'ceph::repo' do
         :baseurl    => 'absent',
         :gpgcheck   => '0',
         :gpgkey     => 'absent',
-        :mirrorlist => 'https://mirrors.fedoraproject.org/metalink?repo=epel-6&arch=$basearch',
+        :mirrorlist => 'http://mirrors.fedoraproject.org/metalink?repo=epel-6&arch=$basearch',
         :priority   => '20'
       ) }
 
@@ -348,7 +348,7 @@ describe 'ceph::repo' do
         :baseurl    => 'absent',
         :gpgcheck   => '0',
         :gpgkey     => 'absent',
-        :mirrorlist => 'https://mirrors.fedoraproject.org/metalink?repo=epel-6&arch=$basearch',
+        :mirrorlist => 'http://mirrors.fedoraproject.org/metalink?repo=epel-6&arch=$basearch',
         :priority   => '20'
       ) }
 
@@ -401,7 +401,7 @@ describe 'ceph::repo' do
         :baseurl    => 'absent',
         :gpgcheck   => '0',
         :gpgkey     => 'absent',
-        :mirrorlist => 'https://mirrors.fedoraproject.org/metalink?repo=epel-6&arch=$basearch',
+        :mirrorlist => 'http://mirrors.fedoraproject.org/metalink?repo=epel-6&arch=$basearch',
         :priority   => '20'
       ) }
 

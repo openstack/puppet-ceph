@@ -26,7 +26,7 @@ describe 'ceph::mon' do
   fsid = 'a4807c9a-e76f-4666-a297-6d6cbc922e3a'
   mon_host = '$::ipaddress_eth1'
   # passing it directly as unqoted array is not supported everywhere
-  packages = "[ 'python-ceph', 'ceph-common', 'curl', 'librados2', 'librbd1', 'libcephfs1' ]"
+  packages = "[ 'python-ceph', 'ceph-common', 'librados2', 'librbd1', 'libcephfs1' ]"
 
   releases.each do |release|
 

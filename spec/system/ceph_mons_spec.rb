@@ -301,7 +301,7 @@ scenario: 2_role
           file.unlink
         end
 
-        shell(:node => vm, :command => "sed -i '/^node_terminus.*=.*scenario$/d' /etc/puppet/puppet.conf")
+        shell(:node => vm, :command => "sed -i '/^\\s*node_terminus\\s*=\\s*scenario\\s*$/d' /etc/puppet/puppet.conf")
         shell(:node => vm, :command => 'rm -rf /etc/puppet/data')
       end
     end

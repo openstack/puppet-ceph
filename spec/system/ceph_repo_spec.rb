@@ -172,7 +172,7 @@ describe 'ceph::repo' do
         end
       end
 
-      it "should find curl in ceph-extras" do
+      it "should find curl/qemu-kvm in ceph-extras" do
         osfamily = facter.facts['osfamily']
 
         pp = <<-EOS
@@ -189,7 +189,7 @@ describe 'ceph::repo' do
           r.exit_code.should_not == 1
         end
 
-        # Test for a package in ceph-extras (curl)
+        # Test for a package in ceph-extras (curl/qemu-kvm)
         if osfamily == 'Debian'
           shell 'apt-cache policy curl' do |r|
             r.stdout.should =~ /ceph\.com.*ceph-extras/
