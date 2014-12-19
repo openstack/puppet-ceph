@@ -58,9 +58,7 @@ describe 'ceph::profile::osd' do
       }
     end
 
-    # dont actually run any tests. these cannot run under puppet 2.7
-    # TODO: uncomment once 2.7 is deprecated
-    #it_configures 'ceph profile osd'
+    it_configures 'ceph profile osd'
   end
 
   describe 'on Ubuntu' do
@@ -73,9 +71,7 @@ describe 'ceph::profile::osd' do
       }
     end
 
-    # dont actually run any tests. these cannot run under puppet 2.7
-    # TODO: uncomment once 2.7 is deprecated
-    #it_configures 'ceph profile osd'
+    it_configures 'ceph profile osd'
   end
 
   describe 'on RedHat' do
@@ -87,9 +83,7 @@ describe 'ceph::profile::osd' do
       }
     end
 
-    # dont actually run any tests. these cannot run under puppet 2.7
-    # TODO: uncomment once 2.7 is deprecated
-    #it_configures 'ceph profile osd'
+    it_configures 'ceph profile osd'
   end
 end
 # Local Variables:

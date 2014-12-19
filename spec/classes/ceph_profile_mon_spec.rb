@@ -24,7 +24,7 @@ describe 'ceph::profile::mon' do
       :authentication_type => 'cephx',
       :key                 => 'AQATGHJTUCBqIBAA7M2yafV1xctn1pgr3GcKPg==')
     }
-    it { should contain_ceph__key('client.admin').that_requires('Ceph::Mon[first]').with(
+    it { should contain_ceph__key('client.admin').with(
       :secret          => 'AQBMGHJTkC8HKhAAJ7NH255wYypgm1oVuV41MA==',
       :cap_mon         => 'allow *',
       :cap_osd         => 'allow *',
@@ -34,7 +34,7 @@ describe 'ceph::profile::mon' do
       :inject_as_id    => 'mon.',
       :inject_keyring  => '/var/lib/ceph/mon/ceph-first/keyring')
     }
-    it { should contain_ceph__key('client.bootstrap-osd').that_requires('Ceph::Mon[first]').with(
+    it { should contain_ceph__key('client.bootstrap-osd').with(
       :secret          => 'AQARG3JTsDDEHhAAVinHPiqvJkUi5Mww/URupw==',
       :keyring_path    => '/var/lib/ceph/bootstrap-osd/ceph.keyring',
       :cap_mon         => 'allow profile bootstrap-osd',
@@ -42,7 +42,7 @@ describe 'ceph::profile::mon' do
       :inject_as_id    => 'mon.',
       :inject_keyring  => '/var/lib/ceph/mon/ceph-first/keyring')
     }
-    it { should contain_ceph__key('client.bootstrap-mds').that_requires('Ceph::Mon[first]').with(
+    it { should contain_ceph__key('client.bootstrap-mds').with(
       :secret          => 'AQCztJdSyNb0NBAASA2yPZPuwXeIQnDJ9O8gVw==',
       :keyring_path    => '/var/lib/ceph/bootstrap-mds/ceph.keyring',
       :cap_mon         => 'allow profile bootstrap-mds',
@@ -63,9 +63,7 @@ describe 'ceph::profile::mon' do
       }
     end
 
-    # dont actually run any tests. these cannot run under puppet 2.7
-    # TODO: uncomment once 2.7 is deprecated
-    #it_configures 'ceph profile mon'
+    it_configures 'ceph profile mon'
   end
 
   context 'on Ubuntu' do
@@ -79,9 +77,7 @@ describe 'ceph::profile::mon' do
       }
     end
 
-    # dont actually run any tests. these cannot run under puppet 2.7
-    # TODO: uncomment once 2.7 is deprecated
-    #it_configures 'ceph profile mon'
+    it_configures 'ceph profile mon'
   end
 
   context 'on RHEL6' do
@@ -94,9 +90,7 @@ describe 'ceph::profile::mon' do
       }
     end
 
-    # dont actually run any tests. these cannot run under puppet 2.7
-    # TODO: uncomment once 2.7 is deprecated
-    #it_configures 'ceph profile mon'
+    it_configures 'ceph profile mon'
   end
 
 end

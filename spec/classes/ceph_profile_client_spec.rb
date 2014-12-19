@@ -37,9 +37,7 @@ describe 'ceph::profile::client' do
       }
     end
 
-    # dont actually run any tests. these cannot run under puppet 2.7
-    # TODO: uncomment once 2.7 is deprecated
-    #it_configures 'ceph profile client'
+    it_configures 'ceph profile client'
   end
 
   context 'on Ubuntu' do
@@ -52,9 +50,7 @@ describe 'ceph::profile::client' do
       }
     end
 
-    # dont actually run any tests. these cannot run under puppet 2.7
-    # TODO: uncomment once 2.7 is deprecated
-    #it_configures 'ceph profile client'
+    it_configures 'ceph profile client'
   end
 
   context 'on RHEL6' do
@@ -66,9 +62,7 @@ describe 'ceph::profile::client' do
       }
     end
 
-    # dont actually run any tests. these cannot run under puppet 2.7
-    # TODO: uncomment once 2.7 is deprecated
-    #it_configures 'ceph profile client'
+    it_configures 'ceph profile client'
   end
 end
 # Local Variables:
