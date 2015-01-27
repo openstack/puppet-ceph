@@ -71,7 +71,8 @@ fi
         unless    => "/bin/true  # comment to satisfy puppet syntax requirements
 set -ex
 ceph-disk list | grep ' *${data}.*ceph data, active' ||
-ls -l /var/lib/ceph/osd/${cluster_name}-* | grep ' ${data}'
+ls -l /var/lib/ceph/osd/${cluster_name}-* | grep ' ${data}' ||
+ceph-disk list | grep ' *${data}.*mounted.*/ceph/osd/.*'
 ",
         logoutput => true,
       }
