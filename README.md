@@ -133,9 +133,9 @@ Example invocation of gerritexec:
 
 ```
 script='bash -c "'
-script+='mv Gemfile-rspec-system Gemfile ; bundle install ;'
-script+='RS_SET=two-ubuntu-server-12042-x64 bundle exec rake spec:system'
-script+='RS_SET=two-centos-64-x64 bundle exec rake spec:system'
+script+='mv Gemfile-rspec-system Gemfile ; bundle install ; '
+script+='RS_SET=two-ubuntu-server-12042-x64 bundle exec rake spec:system ; '
+script+='RS_SET=two-centos-64-x64 bundle exec rake spec:system ; '
 script+='" > /tmp/out 2>&1 ; r=$? ; '
 script+='echo https://pypi.python.org/pypi/gerritexec output: ; '
 script+='pastebinit /tmp/out ; '
