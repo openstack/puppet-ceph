@@ -20,6 +20,9 @@ I want to run it on a virtual machine, all in one. The **ceph::repo** class will
       osd_pool_default_size      => '1',
       osd_pool_default_min_size  => '1',
     }
+    ceph_config {
+     'global/osd_journal_size': value => '100';
+    }
     ceph::mon { 'a':
       public_addr         => $::ipaddress_eth0,
       authentication_type => 'none',
