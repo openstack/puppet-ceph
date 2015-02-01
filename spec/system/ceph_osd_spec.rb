@@ -124,6 +124,8 @@ describe 'ceph::osd' do
 
           puppet_apply(pp) do |r|
             r.exit_code.should_not == 1
+            r.refresh
+            r.exit_code.should == 0
           end
 
           shell 'ceph osd tree | grep DNE' do |r|
@@ -193,6 +195,8 @@ describe 'ceph::osd' do
 
           puppet_apply(pp) do |r|
             r.exit_code.should_not == 1
+            r.refresh
+            r.exit_code.should == 0
           end
 
           shell 'ceph osd tree | grep DNE' do |r|
@@ -252,6 +256,8 @@ describe 'ceph::osd' do
 
           puppet_apply(pp) do |r|
             r.exit_code.should_not == 1
+            r.refresh
+            r.exit_code.should == 0
           end
 
           shell 'ceph osd tree | grep DNE' do |r|
@@ -313,6 +319,8 @@ describe 'ceph::osd' do
 
           puppet_apply(pp) do |r|
             r.exit_code.should_not == 1
+            r.refresh
+            r.exit_code.should == 0
           end
 
           shell 'ceph osd tree | grep DNE' do |r|
@@ -388,6 +396,8 @@ describe 'ceph::osd' do
 
           puppet_apply(pp) do |r|
             r.exit_code.should_not == 1
+            r.refresh
+            r.exit_code.should == 0
           end
 
           shell 'ceph osd tree | grep DNE' do |r|
