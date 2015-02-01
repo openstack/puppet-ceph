@@ -21,15 +21,21 @@
 
 class ceph::params (
   $packages = 'ceph', # just provide the minimum per default
+  $rgw_port = 80,
+  $rgw_socket_path = '/tmp/radosgw.sock',
 ) {
 
   case $::osfamily {
     'Debian': {
-      # Nothing here yet
+      $pkg_radosgw = 'radosgw'
+      $user_radosgw = 'www-data'
+      $pkg_fastcgi = 'libapache2-mod-fastcgi'
     }
 
     'RedHat': {
-      # Nothing here yet
+      $pkg_radosgw = 'ceph-radosgw'
+      $user_radosgw = 'apache'
+      $pkg_fastcgi = 'mod_fastcgi'
     }
 
     default: {
