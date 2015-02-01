@@ -168,6 +168,14 @@ On the client:
       }
     }
 
-    node /client/ inherits ceph-default {}
+    node /client/ {
+      class { 'ceph::repo': }
+      class { 'ceph':
+        fsid                => $fsid,
+        mon_host            => '<ip of node1>',
+        mon_initial_members => 'node1',
+        authentication_type => 'none',
+      }
+    }
 ```
 
