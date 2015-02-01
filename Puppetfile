@@ -21,4 +21,4 @@ mod 'puppetlabs/apache',
 
 mod 'puppetlabs/concat',
   :git => 'git://github.com/puppetlabs/puppetlabs-concat',
-  :ref => '1.1.0'
+  :ref => '1.1.x'
