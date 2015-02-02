@@ -133,6 +133,9 @@ define ceph::mon (
         command => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 touch /etc/ceph/${cluster_name}.client.admin.keyring",
+        unless  => "/bin/true # comment to satisfy puppet syntax requirements
+set -ex
+test -e /etc/ceph/${cluster_name}.client.admin.keyring",
       }
       ->
       exec { $ceph_mkfs:
@@ -152,6 +155,11 @@ if [ ! -d \$mon_data ] ; then
   fi
 fi
 ",
+        unless    => "/bin/true # comment to satisfy puppet syntax requirements
+set -ex
+mon_data=\$(ceph-mon ${cluster_option} --id ${id} --show-config-value mon_data)
+test -d  \$mon_data
+",
         logoutput => true,
       }
       ->
@@ -159,13 +167,16 @@ fi
         ensure => running,
       }
 
-
       if $authentication_type == 'cephx' {
         if $key {
           Exec[$ceph_mkfs] -> Exec["rm-keyring-${id}"]
 
           exec { "rm-keyring-${id}":
             command => "/bin/rm ${keyring_path}",
+            unless  => "/bin/true # comment to satisfy puppet syntax requirements
+set -ex
+test ! -e ${keyring_path}
+",
           }
         }
       }
