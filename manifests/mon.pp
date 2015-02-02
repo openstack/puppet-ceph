@@ -140,7 +140,7 @@ if [ ! -d \$mon_data ] ; then
     rm -fr \$mon_data
   fi
 fi
-        ",
+",
         logoutput => true,
       }
       ->
@@ -172,10 +172,16 @@ touch /etc/ceph/${cluster_name}.client.admin.keyring",
       }
       ->
       exec { "remove-mon-${id}":
-        command   => "/bin/true  # comment to satisfy puppet syntax requirements
+        command   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-mon_data=\$(ceph-mon ${cluster_option} --id ${id} --show-config | sed -n -e 's/mon_data = //p')
+mon_data=\$(ceph-mon ${cluster_option} --id ${id} --show-config-value mon_data)
 rm -fr \$mon_data
+",
+        unless    => "/bin/true # comment to satisfy puppet syntax requirements
+set -ex
+which ceph-mon || exit 0 # if ceph-mon is not available we already uninstalled ceph and there is nothing to do
+mon_data=\$(ceph-mon ${cluster_option} --id ${id} --show-config-value mon_data)
+test ! -d \$mon_data
 ",
         logoutput => true,
       } -> Package<| tag == 'ceph' |>
