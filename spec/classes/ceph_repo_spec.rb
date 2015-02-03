@@ -38,7 +38,7 @@ describe 'ceph::repo' do
       ) }
 
       it { should contain_apt__source('ceph').with(
-        :location => 'http://ceph.com/debian-firefly/',
+        :location => 'http://ceph.com/debian-giant/',
         :release  => 'wheezy',
         :require  => 'Apt::Key[ceph]'
       ) }
@@ -48,12 +48,12 @@ describe 'ceph::repo' do
     describe "when overriding ceph release" do
       let :params do
         {
-         :release => 'dumpling'
+         :release => 'firefly'
         }
       end
 
       it { should contain_apt__source('ceph').with(
-        :location => 'http://ceph.com/debian-dumpling/',
+        :location => 'http://ceph.com/debian-firefly/',
         :release  => 'wheezy',
         :require  => 'Apt::Key[ceph]'
       ) }
@@ -79,7 +79,7 @@ describe 'ceph::repo' do
       ) }
 
       it { should contain_apt__source('ceph').with(
-        :location => 'http://ceph.com/debian-firefly/',
+        :location => 'http://ceph.com/debian-giant/',
         :release  => 'precise',
         :require  => 'Apt::Key[ceph]'
       ) }
@@ -89,12 +89,12 @@ describe 'ceph::repo' do
     describe "when overriding ceph release" do
       let :params do
         {
-         :release => 'dumpling'
+         :release => 'firefly'
         }
       end
 
       it { should contain_apt__source('ceph').with(
-        :location => 'http://ceph.com/debian-dumpling/',
+        :location => 'http://ceph.com/debian-firefly/',
         :release  => 'precise',
         :require  => 'Apt::Key[ceph]'
       ) }
@@ -108,7 +108,7 @@ describe 'ceph::repo' do
       end
 
       it { should contain_apt__source('ceph').with(
-        :location => 'http://ceph.com/debian-firefly/',
+        :location => 'http://ceph.com/debian-giant/',
         :release  => 'precise',
         :require  => 'Apt::Key[ceph]'
       ) }
@@ -135,7 +135,7 @@ describe 'ceph::repo' do
       ) }
 
       it { should contain_apt__source('ceph').with(
-        :location => 'http://ceph.com/debian-firefly/',
+        :location => 'http://ceph.com/debian-giant/',
         :release  => 'precise',
         :require  => 'Apt::Key[ceph]'
       ) }
@@ -160,7 +160,7 @@ describe 'ceph::repo' do
 
       it { should contain_apt__source('ceph').with(
         :ensure   => 'absent',
-        :location => 'http://ceph.com/debian-firefly/',
+        :location => 'http://ceph.com/debian-giant/',
         :release  => 'precise',
         :require  => 'Apt::Key[ceph]'
       ) }
@@ -206,9 +206,9 @@ describe 'ceph::repo' do
 
       it { should contain_yumrepo('ext-ceph').with(
         :enabled    => '1',
-        :descr      => 'External Ceph firefly',
-        :name       => 'ext-ceph-firefly',
-        :baseurl    => 'http://ceph.com/rpm-firefly/el6/$basearch',
+        :descr      => 'External Ceph giant',
+        :name       => 'ext-ceph-giant',
+        :baseurl    => 'http://ceph.com/rpm-giant/el6/$basearch',
         :gpgcheck   => '1',
         :gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc',
         :mirrorlist => 'absent',
@@ -218,8 +218,8 @@ describe 'ceph::repo' do
       it { should contain_yumrepo('ext-ceph-noarch').with(
         :enabled    => '1',
         :descr      => 'External Ceph noarch',
-        :name       => 'ext-ceph-firefly-noarch',
-        :baseurl    => 'http://ceph.com/rpm-firefly/el6/noarch',
+        :name       => 'ext-ceph-giant-noarch',
+        :baseurl    => 'http://ceph.com/rpm-giant/el6/noarch',
         :gpgcheck   => '1',
         :gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc',
         :mirrorlist => 'absent',
@@ -230,7 +230,7 @@ describe 'ceph::repo' do
     describe "when overriding ceph release" do
       let :params do
         {
-         :release => 'dumpling'
+         :release => 'firefly'
         }
       end
 
@@ -247,9 +247,9 @@ describe 'ceph::repo' do
 
       it { should contain_yumrepo('ext-ceph').with(
         :enabled    => '1',
-        :descr      => 'External Ceph dumpling',
-        :name       => 'ext-ceph-dumpling',
-        :baseurl    => 'http://ceph.com/rpm-dumpling/el6/$basearch',
+        :descr      => 'External Ceph firefly',
+        :name       => 'ext-ceph-firefly',
+        :baseurl    => 'http://ceph.com/rpm-firefly/el6/$basearch',
         :gpgcheck   => '1',
         :gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc',
         :mirrorlist => 'absent',
@@ -259,8 +259,8 @@ describe 'ceph::repo' do
       it { should contain_yumrepo('ext-ceph-noarch').with(
         :enabled    => '1',
         :descr      => 'External Ceph noarch',
-        :name       => 'ext-ceph-dumpling-noarch',
-        :baseurl    => 'http://ceph.com/rpm-dumpling/el6/noarch',
+        :name       => 'ext-ceph-firefly-noarch',
+        :baseurl    => 'http://ceph.com/rpm-firefly/el6/noarch',
         :gpgcheck   => '1',
         :gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc',
         :mirrorlist => 'absent',
@@ -290,9 +290,9 @@ describe 'ceph::repo' do
 
       it { should contain_yumrepo('ext-ceph').with(
         :enabled    => '0',
-        :descr      => 'External Ceph firefly',
-        :name       => 'ext-ceph-firefly',
-        :baseurl    => 'http://ceph.com/rpm-firefly/el6/$basearch',
+        :descr      => 'External Ceph giant',
+        :name       => 'ext-ceph-giant',
+        :baseurl    => 'http://ceph.com/rpm-giant/el6/$basearch',
         :gpgcheck   => '1',
         :gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc',
         :mirrorlist => 'absent',
@@ -302,8 +302,8 @@ describe 'ceph::repo' do
       it { should contain_yumrepo('ext-ceph-noarch').with(
         :enabled    => '0',
         :descr      => 'External Ceph noarch',
-        :name       => 'ext-ceph-firefly-noarch',
-        :baseurl    => 'http://ceph.com/rpm-firefly/el6/noarch',
+        :name       => 'ext-ceph-giant-noarch',
+        :baseurl    => 'http://ceph.com/rpm-giant/el6/noarch',
         :gpgcheck   => '1',
         :gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc',
         :mirrorlist => 'absent',
@@ -354,9 +354,9 @@ describe 'ceph::repo' do
 
       it { should contain_yumrepo('ext-ceph').with(
         :enabled    => '1',
-        :descr      => 'External Ceph firefly',
-        :name       => 'ext-ceph-firefly',
-        :baseurl    => 'http://ceph.com/rpm-firefly/el6/$basearch',
+        :descr      => 'External Ceph giant',
+        :name       => 'ext-ceph-giant',
+        :baseurl    => 'http://ceph.com/rpm-giant/el6/$basearch',
         :gpgcheck   => '1',
         :gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc',
         :mirrorlist => 'absent',
@@ -366,8 +366,8 @@ describe 'ceph::repo' do
       it { should contain_yumrepo('ext-ceph-noarch').with(
         :enabled    => '1',
         :descr      => 'External Ceph noarch',
-        :name       => 'ext-ceph-firefly-noarch',
-        :baseurl    => 'http://ceph.com/rpm-firefly/el6/noarch',
+        :name       => 'ext-ceph-giant-noarch',
+        :baseurl    => 'http://ceph.com/rpm-giant/el6/noarch',
         :gpgcheck   => '1',
         :gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc',
         :mirrorlist => 'absent',
@@ -407,9 +407,9 @@ describe 'ceph::repo' do
 
       it { should contain_yumrepo('ext-ceph').with(
         :enabled    => '1',
-        :descr      => 'External Ceph firefly',
-        :name       => 'ext-ceph-firefly',
-        :baseurl    => 'http://ceph.com/rpm-firefly/el6/$basearch',
+        :descr      => 'External Ceph giant',
+        :name       => 'ext-ceph-giant',
+        :baseurl    => 'http://ceph.com/rpm-giant/el6/$basearch',
         :gpgcheck   => '1',
         :gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc',
         :mirrorlist => 'absent',
@@ -419,8 +419,8 @@ describe 'ceph::repo' do
       it { should contain_yumrepo('ext-ceph-noarch').with(
         :enabled    => '1',
         :descr      => 'External Ceph noarch',
-        :name       => 'ext-ceph-firefly-noarch',
-        :baseurl    => 'http://ceph.com/rpm-firefly/el6/noarch',
+        :name       => 'ext-ceph-giant-noarch',
+        :baseurl    => 'http://ceph.com/rpm-giant/el6/noarch',
         :gpgcheck   => '1',
         :gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc',
         :mirrorlist => 'absent',
