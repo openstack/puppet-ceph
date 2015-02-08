@@ -20,7 +20,7 @@ require 'spec_helper_system'
 
 describe 'ceph::rgw::apache' do
 
-  releases = ENV['RELEASES'] ? ENV['RELEASES'].split : [ 'dumpling', 'emperor', 'firefly' ]
+  releases = ENV['RELEASES'] ? ENV['RELEASES'].split : [ 'dumpling', 'firefly', 'giant' ]
   fsid = 'a4807c9a-e76f-4666-a297-6d6cbc922e3a'
   mon_key ='AQCztJdSyNb0NBAASA2yPZPuwXeIQnDJ9O8gVw=='
   admin_key = 'AQA0TVRTsP/aHxAAFBvntu1dSEJHxtJeFFrRsg=='
@@ -32,7 +32,7 @@ describe 'ceph::rgw::apache' do
     describe release do
       it 'should install one monitor/osd with a rgw' do
         pp = <<-EOS
-          $user = $::osfamily ? {
+          $apache_user = $::osfamily ? {
             'RedHat' => 'apache',
             default => 'www-data',
           }
@@ -43,8 +43,10 @@ describe 'ceph::rgw::apache' do
             fastcgi => true,
           }
           class { 'ceph':
-            fsid => '#{fsid}',
-            mon_host => $::ipaddress_eth0,
+            fsid                       => '#{fsid}',
+            mon_host                   => $::ipaddress_eth0,
+            osd_pool_default_size      => '1',
+            osd_pool_default_min_size  => '1',
           }
           ceph::mon { 'a':
             public_addr => $::ipaddress_eth0,
@@ -61,9 +63,9 @@ describe 'ceph::rgw::apache' do
           }
           ->
           ceph::key { 'client.radosgw.gateway':
-            user    => $user,
+            user    => $apache_user,
             secret  => '#{radosgw_key}',
-            cap_mon => 'allow rw',
+            cap_mon => 'allow rwx',
             cap_osd => 'allow rwx',
             inject  => true,
           }
@@ -74,41 +76,29 @@ describe 'ceph::rgw::apache' do
           ->
           ceph::osd { '/dev/sdb': }
 
-          #host { $::fqdn: # workaround for bad 'hostname -f' in vagrant box
-          #  ip => $ipaddress,
-          #}
-          #->
+          host { $::fqdn: # workaround for bad 'hostname -f' in vagrant box
+            ip => $ipaddress,
+          }
+          ->
           file { '/var/run/ceph': # workaround for bad sysvinit script (ignores socket)
             ensure => directory,
-            owner  => $user,
+            owner  => $apache_user,
           }
           ->
           ceph::rgw { 'radosgw.gateway':
             rgw_port        => 80,
             rgw_socket_path => '/var/run/ceph/ceph-client.radosgw.gateway.asok',
           }
+          Ceph::Osd['/dev/sdb'] -> Service['radosgw-radosgw.gateway']
 
           ceph::rgw::apache { 'radosgw.gateway':
             rgw_port        => 80,
             rgw_socket_path => '/var/run/ceph/ceph-client.radosgw.gateway.asok',
           }
 
-          # we declare all pools here even if they're created by the
-          # daemon to make sure we get a replica of 1
-          Ceph::Pool {
-            size => 1,
+          ceph_config {
+           'global/mon_data_avail_warn': value => 10; # workaround for health warn in mon
           }
-          ceph::pool { 'data': }
-          ceph::pool { 'metadata': }
-          ceph::pool { 'rbd': }
-          ceph::pool { '.rgw': }
-          ceph::pool { '.rgw.control': }
-          ceph::pool { '.rgw.gc': }
-          ceph::pool { '.rgw.root': }
-          ceph::pool { '.users': }
-          ceph::pool { '.users.uid': }
-          ceph::pool { '.users.swift': }
-
         EOS
 
         osfamily = facter.facts['osfamily']
@@ -126,10 +116,6 @@ describe 'ceph::rgw::apache' do
         shell servicequery[osfamily] do |r|
           r.exit_code.should be_zero
         end
-
-#        shell 'radosgw-admin user rm --uid=puppet --purge-data --purge-keys --purge-objects || true' do |r|
-#          r.exit_code.should be_zero
-#        end
 
         shell 'radosgw-admin user create --uid=puppet --display-name=puppet-user' do |r|
           r.exit_code.should be_zero
@@ -150,12 +136,9 @@ describe 'ceph::rgw::apache' do
 
         shell 'curl -i -H "X-Auth-User: puppet:swift" -H "X-Auth-Key: 123456" http://first/auth/v1.0/' do |r|
           r.exit_code.should be_zero
+          r.stdout.should =~ /HTTP\/1\.1 204 No Content/
+          r.stdout.should_not =~ /401 Unauthorized/
         end
-
-#        shell "curl -i -H 'X-Auth-User: puppet:swift' -H 'X-Auth-Key: 123456' http://#{facter.facts['fqdn']}/auth/v1.0/" do |r|
-#          r.exit_code.should be_zero
-#        end
-
 
       end
 
@@ -173,15 +156,24 @@ describe 'ceph::rgw::apache' do
         shell 'ceph-disk zap /dev/sdb'
 
         purge = <<-EOS
+          $radosgw = $::osfamily ? {
+            'RedHat' => 'ceph-radosgw',
+            default => 'radosgw',
+          }
           ceph::mon { 'a': ensure => absent }
           ->
           file { [
              '/var/lib/ceph/bootstrap-osd/ceph.keyring',
+             '/var/lib/ceph/bootstrap-mds/ceph.keyring',
+             '/var/lib/ceph/radosgw/ceph-radosgw.gateway',
+             '/var/lib/ceph/radosgw',
              '/etc/ceph/ceph.client.admin.keyring',
              '/etc/ceph/ceph.client.radosgw.gateway',
             ]:
             ensure => absent
           }
+          ->
+          package { $radosgw: ensure => purged }
           ->
           package { #{packages}:
             ensure => purged
@@ -192,16 +184,9 @@ describe 'ceph::rgw::apache' do
             fastcgi => true,
             ensure  => absent,
           }
-          # apache
-          #include ceph::params
-          #package { $::ceph::params::pkg_fastcgi:
-          #  ensure => absent,
-          #}
-          #->
           class { 'apache':
             service_ensure => stopped,
             service_enable => false,
-            #package_ensure => absent,
           }
           apache::vhost { "$fqdn-radosgw":
             ensure  => absent,
@@ -215,7 +200,6 @@ describe 'ceph::rgw::apache' do
       end
     end
   end
-
 end
 # Local Variables:
 # compile-command: "cd ../..
