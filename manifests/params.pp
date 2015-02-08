@@ -26,15 +26,11 @@
 # [*packages*] The ceph package name
 #   Optional. Defaults to 'ceph'
 #
-# [*rgw_port*] The TCP port for the rados gateway
-#   Optional. Defaults to '80'
-#
 # [*rgw_socket_path*] The socket path of the rados gateway
 #   Optional. Defaults to '/tmp/radosgw.sock'
 #
 class ceph::params (
   $packages = 'ceph', # just provide the minimum per default
-  $rgw_port = 80,
   $rgw_socket_path = '/tmp/radosgw.sock',
 ) {
 
@@ -43,12 +39,14 @@ class ceph::params (
       $pkg_radosgw = 'radosgw'
       $user_radosgw = 'www-data'
       $pkg_fastcgi = 'libapache2-mod-fastcgi'
+      $pkg_nsstools = 'libnss3-tools'
     }
 
     'RedHat': {
       $pkg_radosgw = 'ceph-radosgw'
       $user_radosgw = 'apache'
       $pkg_fastcgi = 'mod_fastcgi'
+      $pkg_nsstools = 'nss-tools'
     }
 
     default: {

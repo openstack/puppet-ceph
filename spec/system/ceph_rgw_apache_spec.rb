@@ -20,7 +20,7 @@ require 'spec_helper_system'
 
 describe 'ceph::rgw::apache' do
 
-  releases = ENV['RELEASES'] ? ENV['RELEASES'].split : [ 'dumpling', 'firefly', 'giant', 'hammer' ]
+  releases = ENV['RELEASES'] ? ENV['RELEASES'].split : [ 'hammer' ]
   fsid = 'a4807c9a-e76f-4666-a297-6d6cbc922e3a'
   mon_key ='AQCztJdSyNb0NBAASA2yPZPuwXeIQnDJ9O8gVw=='
   admin_key = 'AQA0TVRTsP/aHxAAFBvntu1dSEJHxtJeFFrRsg=='
@@ -40,7 +40,6 @@ describe 'ceph::rgw::apache' do
 
           class { 'ceph::repo':
             release => '#{release}',
-            extras  => true,
             fastcgi => true,
           }
           class { 'ceph':
@@ -75,7 +74,7 @@ describe 'ceph::rgw::apache' do
             command => '/usr/sbin/ceph-create-keys --id a',
           }
           ->
-          ceph::osd { '/dev/sdb': }
+          ceph::osd { '/srv/data': }
 
           host { $::fqdn: # workaround for bad 'hostname -f' in vagrant box
             ip => #{mon_host},
@@ -87,10 +86,9 @@ describe 'ceph::rgw::apache' do
           }
           ->
           ceph::rgw { 'radosgw.gateway':
-            rgw_port        => 80,
             rgw_socket_path => '/var/run/ceph/ceph-client.radosgw.gateway.asok',
           }
-          Ceph::Osd['/dev/sdb'] -> Service['radosgw-radosgw.gateway']
+          Ceph::Osd['/srv/data'] -> Service['radosgw-radosgw.gateway']
 
           ceph::rgw::apache { 'radosgw.gateway':
             rgw_port        => 80,
@@ -145,7 +143,7 @@ describe 'ceph::rgw::apache' do
 
       it 'should purge everything' do
         pp = <<-EOS
-         ceph::osd { '/dev/sdb':
+         ceph::osd { '/srv/data':
             ensure => absent,
           }
         EOS
@@ -153,8 +151,6 @@ describe 'ceph::rgw::apache' do
         puppet_apply(pp) do |r|
           expect(r.exit_code).not_to eq(1)
         end
-
-        shell 'ceph-disk zap /dev/sdb'
 
         purge = <<-EOS
           $radosgw = $::osfamily ? {
@@ -181,7 +177,6 @@ describe 'ceph::rgw::apache' do
           }
           class { 'ceph::repo':
             release => '#{release}',
-            extras  => true,
             fastcgi => true,
             ensure  => absent,
           }
@@ -210,9 +205,9 @@ end
 #   )
 #   cp -a Gemfile-rspec-system Gemfile
 #   BUNDLE_PATH=/tmp/vendor bundle install --no-deployment
-#   RELEASES=dumpling \
+#   RELEASES=hammer \
 #   RS_DESTROY=no \
-#   RS_SET=ubuntu-server-1204-x64 \
+#   RS_SET=ubuntu-server-1404-x64 \
 #   MACHINES=first \
 #   BUNDLE_PATH=/tmp/vendor \
 #   bundle exec rake spec:system SPEC=spec/system/ceph_rgw_apache_spec.rb &&
