@@ -137,7 +137,7 @@ define ceph::rgw (
     ensure => running,
   }
 
-  Package[$pkg_radosgw]
+  Package<| tag == 'ceph' |>
   -> File['/var/lib/ceph/radosgw']
   -> File[$rgw_data]
   -> File[$log_file]
