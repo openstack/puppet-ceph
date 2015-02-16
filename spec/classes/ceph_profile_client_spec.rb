@@ -20,7 +20,7 @@ require 'spec_helper'
 describe 'ceph::profile::client' do
 
   shared_examples_for 'ceph profile client' do
-    it { should contain_ceph__key('client.admin').with(
+    it { is_expected.to contain_ceph__key('client.admin').with(
       :secret       => 'AQBMGHJTkC8HKhAAJ7NH255wYypgm1oVuV41MA==',
       :keyring_path => '/etc/ceph/ceph.client.admin.keyring',
       :mode         => '0644')

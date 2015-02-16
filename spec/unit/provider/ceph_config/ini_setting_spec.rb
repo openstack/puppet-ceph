@@ -50,9 +50,9 @@ describe provider_class do
     resource = Puppet::Type::Ceph_config.new(params.merge(
       :name => 'global/ceph_is_foo', :value => 'bar'))
     provider = provider_class.new(resource)
-    provider.exists?.should be_false
+    provider.exists?.should be_falsey
     provider.create
-    provider.exists?.should be_true
+    provider.exists?.should be_truthy
     validate(<<-EOS
 
 [global]

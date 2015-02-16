@@ -20,11 +20,11 @@ require 'spec_helper'
 describe 'ceph::profile::mon' do
 
   shared_examples_for 'ceph profile mon' do
-    it { should contain_ceph__mon('first').with(
+    it { is_expected.to contain_ceph__mon('first').with(
       :authentication_type => 'cephx',
       :key                 => 'AQATGHJTUCBqIBAA7M2yafV1xctn1pgr3GcKPg==')
     }
-    it { should contain_ceph__key('client.admin').with(
+    it { is_expected.to contain_ceph__key('client.admin').with(
       :secret          => 'AQBMGHJTkC8HKhAAJ7NH255wYypgm1oVuV41MA==',
       :cap_mon         => 'allow *',
       :cap_osd         => 'allow *',
@@ -34,7 +34,7 @@ describe 'ceph::profile::mon' do
       :inject_as_id    => 'mon.',
       :inject_keyring  => '/var/lib/ceph/mon/ceph-first/keyring')
     }
-    it { should contain_ceph__key('client.bootstrap-osd').with(
+    it { is_expected.to contain_ceph__key('client.bootstrap-osd').with(
       :secret          => 'AQARG3JTsDDEHhAAVinHPiqvJkUi5Mww/URupw==',
       :keyring_path    => '/var/lib/ceph/bootstrap-osd/ceph.keyring',
       :cap_mon         => 'allow profile bootstrap-osd',
@@ -42,7 +42,7 @@ describe 'ceph::profile::mon' do
       :inject_as_id    => 'mon.',
       :inject_keyring  => '/var/lib/ceph/mon/ceph-first/keyring')
     }
-    it { should contain_ceph__key('client.bootstrap-mds').with(
+    it { is_expected.to contain_ceph__key('client.bootstrap-mds').with(
       :secret          => 'AQCztJdSyNb0NBAASA2yPZPuwXeIQnDJ9O8gVw==',
       :keyring_path    => '/var/lib/ceph/bootstrap-mds/ceph.keyring',
       :cap_mon         => 'allow profile bootstrap-mds',

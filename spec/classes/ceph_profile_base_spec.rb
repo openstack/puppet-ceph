@@ -21,18 +21,18 @@ describe 'ceph::profile::base' do
 
   shared_examples_for 'ceph profile base' do
     describe "with default params" do
-      it { should contain_class('ceph::profile::params') }
-      it { should contain_class('ceph::repo') }
-      it { should contain_class('ceph') }
+      it { is_expected.to contain_class('ceph::profile::params') }
+      it { is_expected.to contain_class('ceph::repo') }
+      it { is_expected.to contain_class('ceph') }
     end
 
     describe "with custom param manage_repo false" do
       let :pre_condition do
         "class { 'ceph::profile::params': manage_repo => false }"
       end
-      it { should contain_class('ceph::profile::params') }
-      it { should_not contain_class('ceph::repo') }
-      it { should contain_class('ceph') }
+      it { is_expected.to contain_class('ceph::profile::params') }
+      it { is_expected.to_not contain_class('ceph::repo') }
+      it { is_expected.to contain_class('ceph') }
     end
   end
 
