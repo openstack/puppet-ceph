@@ -20,11 +20,11 @@
 # Manages operations on the pools in the cluster, such as creating or deleting
 # pools, setting PG/PGP numbers, number of replicas, ...
 #
-### == Name
+# == Define: ceph::pool
 #
 # The name of the pool.
 #
-### == Parameters
+# === Parameters:
 #
 # [*ensure*] Creates ( present ) or removes ( absent ) a pool.
 #   Optional. Defaults to present.

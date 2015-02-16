@@ -19,11 +19,11 @@
 # keys into or delete keys from the cluster/keyring via ceph and ceph-authtool
 # tools.
 #
-### == Name
+# == Define: ceph::key
 #
 # The full ceph ID name, e.g. 'client.admin' or 'mon.'.
 #
-### == Parameters
+# === Parameters:
 #
 # [*secret*] Key secret.
 #   Mandatory. Can be created with ceph-authtool --gen-print-key.

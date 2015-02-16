@@ -15,6 +15,8 @@
 #
 # Author: David Gurtner <aldavud@crimson.ch>
 #
+# == Class: ceph::profile::mon
+#
 # Profile for a Ceph mon
 #
 class ceph::profile::mon {
@@ -36,27 +38,27 @@ class ceph::profile::mon {
   # this supports providing the key manually
   if $ceph::profile::params::admin_key {
     ceph::key { 'client.admin':
-      secret       => $ceph::profile::params::admin_key,
-      cap_mon      => 'allow *',
-      cap_osd      => 'allow *',
-      cap_mds      => 'allow',
-      mode         => $ceph::profile::params::admin_key_mode,
+      secret  => $ceph::profile::params::admin_key,
+      cap_mon => 'allow *',
+      cap_osd => 'allow *',
+      cap_mds => 'allow',
+      mode    => $ceph::profile::params::admin_key_mode,
     }
   }
 
   if $ceph::profile::params::bootstrap_osd_key {
     ceph::key { 'client.bootstrap-osd':
-      secret           => $ceph::profile::params::bootstrap_osd_key,
-      keyring_path     => '/var/lib/ceph/bootstrap-osd/ceph.keyring',
-      cap_mon          => 'allow profile bootstrap-osd',
+      secret       => $ceph::profile::params::bootstrap_osd_key,
+      keyring_path => '/var/lib/ceph/bootstrap-osd/ceph.keyring',
+      cap_mon      => 'allow profile bootstrap-osd',
     }
   }
 
   if $ceph::profile::params::bootstrap_mds_key {
     ceph::key { 'client.bootstrap-mds':
-      secret           => $ceph::profile::params::bootstrap_mds_key,
-      keyring_path     => '/var/lib/ceph/bootstrap-mds/ceph.keyring',
-      cap_mon          => 'allow profile bootstrap-mds',
+      secret       => $ceph::profile::params::bootstrap_mds_key,
+      keyring_path => '/var/lib/ceph/bootstrap-mds/ceph.keyring',
+      cap_mon      => 'allow profile bootstrap-mds',
     }
   }
 }

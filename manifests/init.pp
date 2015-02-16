@@ -15,10 +15,14 @@
 #
 # Author: David Moreau Simard <dmsimard@iweb.com>
 # Author: David Gurtner <aldavud@crimson.ch>
-
+#
+# == Class: ceph
+#
 # init takes care of installing/configuring the common dependencies across classes
 # it also takes care of the global configuration values
-### == Parameters
+#
+# === Parameters:
+#
 # [*fsid*] The cluster's fsid.
 #   Mandatory. Get one with `uuidgen -r`.
 #
@@ -37,7 +41,7 @@
 # [*osd_pool_default_pgp_num*] The default flags for new pools.
 #   Optional. Integer. Default provided by Ceph.
 #
-# [*$osd_pool_size*] Number of replicas for objects in the pool
+# [*osd_pool_default_size*] Number of replicas for objects in the pool
 #   Optional. Integer. Default provided by Ceph.
 #
 # [*osd_pool_default_min_size*] The default minimum num of replicas.

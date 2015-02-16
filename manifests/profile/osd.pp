@@ -15,6 +15,8 @@
 #
 # Author: David Gurtner <aldavud@crimson.ch>
 #
+# Class: ceph::profle::osd
+#
 # Profile for a Ceph osd
 #
 class ceph::profile::osd {

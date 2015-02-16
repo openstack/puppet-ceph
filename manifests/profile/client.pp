@@ -15,6 +15,8 @@
 #
 # Author: David Gurtner <aldavud@crimson.ch>
 #
+# Class: ceph::profile::client
+#
 # Profile for a Ceph client
 #
 class ceph::profile::client {

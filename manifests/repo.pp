@@ -22,6 +22,24 @@
 # Author: David Gurtner <aldavud@crimson.ch>
 # Author: Ricardo Rocha <ricardo@catalyst.net.nz>
 #
+# == Class: ceph::repo
+#
+# Configure ceph APT repo for Ceph
+#
+# === Parameters:
+#
+# [*ensure*] The ensure state for package ressources.
+#  Optional. Defaults to 'present'.
+#
+# [*release*] The name of the Ceph release to install
+#   Optional. Default to 'giant'.
+#
+# [*extras*] Install Ceph Extra APT repo.
+#   Optional. Defaults to 'false'.
+#
+# [*fastcgi*] Install Ceph fastcgi apache module for Ceph
+#   Optional. Defaults to 'false'
+#
 class ceph::repo (
   $ensure  = present,
   $release = 'giant',

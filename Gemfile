@@ -2,9 +2,9 @@ source 'https://rubygems.org'
 
 group :development, :test do
   gem 'puppetlabs_spec_helper', :require => false
-  gem 'puppet-lint', '~> 0.3.2'
   gem 'rspec-puppet', '~> 1.0.1', :require => false
   gem 'beaker-rspec', '~> 2.2.4', :require => false
+  gem 'puppet-lint-param-docs'
   gem 'rake', '10.1.1'
   gem 'rspec', '< 2.99'
   gem 'json'

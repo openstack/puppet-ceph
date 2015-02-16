@@ -3,7 +3,7 @@ source 'https://rubygems.org'
 
 group :development, :test do
   gem 'puppetlabs_spec_helper', :require => false
-  gem 'puppet-lint', '~> 0.3.2'
+  gem 'puppet-lint-param-docs'
   gem 'rspec-system', :git => 'https://github.com/aldavud/rspec-system.git', :branch => 'master'
   gem 'rspec-system-puppet', :git => 'https://github.com/aldavud/rspec-system-puppet.git', :branch => 'master'
   gem 'rspec', '< 2.99'

@@ -13,9 +13,13 @@
 #   limitations under the License.
 #
 # Author: David Moreau Simard <dmsimard@iweb.com>
-
+#
+# == Class: ceph::mds
+#
 # Installs and configures MDSs (ceph metadata servers)
-### == Parameters
+#
+# === Parameters:
+#
 # [*mds_activate*] Switch to activate the '[mds]' section in the config.
 #   Optional. Defaults to 'true'.
 #
@@ -24,7 +28,7 @@
 #
 # [*keyring*] The location of the keyring used by MDSs
 #   Optional. Defaults to /var/lib/ceph/mds/$cluster-$id/keyring.
-
+#
 class ceph::mds (
   $mds_activate = true,
   $mds_data     = '/var/lib/ceph/mds/$cluster-$id',

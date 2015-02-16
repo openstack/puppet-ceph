@@ -17,7 +17,12 @@
 # Author: Loic Dachary <loic@dachary.org>
 # Author: David Gurtner <aldavud@crimson.ch>
 #
-### == Parameters
+# == Define: ceph::osd
+#
+# Install and configure a ceph OSD
+#
+# === Parameters:
+#
 # [*title*] The OSD data path.
 #   Mandatory. A path in which the OSD data is to be stored.
 #

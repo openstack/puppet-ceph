@@ -15,6 +15,8 @@
 #
 # Author: David Gurtner <aldavud@crimson.ch>
 #
+# == Class: ceph::profile::base
+#
 # Base profile to install ceph and configure /etc/ceph/ceph.conf
 #
 class ceph::profile::base {

@@ -17,12 +17,12 @@
 #
 # Configures a ceph radosgw.
 #
-### == Name
+# == Define: ceph::rgw
 #
 # The RGW id. An alphanumeric string uniquely identifying the RGW.
 # ( example: radosgw.gateway )
 #
-### == Parameters
+# === Parameters:
 #
 # [*pgk_cephrgw*] Package name for the ceph radosgw.
 #   Optional. Default is osfamily dependent (check ceph::params).

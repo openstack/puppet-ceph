@@ -19,8 +19,12 @@
 # Author: David Moreau Simard <dmsimard@iweb.com>
 # Author: David Gurtner <aldavud@crimson.ch>
 #
+# == Class: ceph::mon
+#
 # Installs and configures MONs (ceph monitors)
-### == Parameters
+#
+# === Parameters:
+#
 # [*title*] The MON id.
 #   Mandatory. An alphanumeric string uniquely identifying the MON.
 #
@@ -105,8 +109,8 @@ define ceph::mon (
           $keyring_path = "/tmp/ceph-mon-keyring-${id}"
 
           file { $keyring_path:
-            mode        => '0444',
-            content     => "[mon.]\n\tkey = ${key}\n\tcaps mon = \"allow *\"\n",
+            mode    => '0444',
+            content => "[mon.]\n\tkey = ${key}\n\tcaps mon = \"allow *\"\n",
           }
 
           File[$keyring_path] -> Exec[$ceph_mkfs]

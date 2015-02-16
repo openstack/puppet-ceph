@@ -15,7 +15,17 @@
 #
 # Author: David Gurtner <aldavud@crimson.ch>
 #
+# == Class: ceph::osds
+#
 # Class wrapper for the benefit of scenario_node_terminus
+#
+# === Parameters:
+#
+# [*args*] A Ceph osds config hash
+#   Mandatory.
+#
+# [*defaults*] A config hash
+#   Optional. Defaults to a empty hash
 #
 class ceph::osds($args, $defaults = {}) {
   create_resources(ceph::osd, $args, $defaults)
