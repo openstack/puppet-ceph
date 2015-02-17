@@ -65,8 +65,39 @@ IRC channels:
 * irc.freenode.net#puppet-openstack
 * irc.oftc.net#ceph-devel
 
-Integration Tests
------------------
+Beaker Integration Tests
+------------------------
+
+Relies on
+[rspec-beaker](https://github.com/puppetlabs/beaker-rspec)
+and tests are in spec/acceptance.
+It also requires [Vagrant and Virtualbox](http://docs-v1.vagrantup.com/v1/docs/getting-started/)
+.
+
+```
+BUNDLE_PATH=/tmp/vendor bundle install
+BUNDLE_PATH=/tmp/vendor bundle exec rspec spec/acceptance
+```
+
+The BEAKER_set environment variable contains the resource set of linux
+distribution configurations for which integration tests are going
+to be run. Available values are
+
+* two-ubuntu-server-1204-x64
+* ubuntu-server-1204-x64
+* two-centos-64-x64
+* centos-64-x64
+
+The default is
+
+```
+BUNDLE_PATH=/tmp/vendor \
+BEAKER_set=two-ubuntu-server-1204-x64 \
+bundle exec rspec spec/acceptance
+```
+
+Deprecated Integration Tests
+----------------------------
 
 Relies on
 [rspec-system-puppet](https://github.com/puppetlabs/rspec-system-puppet)
