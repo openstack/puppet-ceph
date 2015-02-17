@@ -1,5 +1,25 @@
 default_set: 'two-ubuntu-server-12042-x64'
 sets:
+  'two-ubuntu-server-1404-x64':
+    default_node: 'first'
+    nodes:
+      'first':
+        prefab: 'ubuntu-server-1404-x64'
+        options:
+                 ip: '10.11.12.2'
+                 idedisk: 10
+      'second':
+        prefab: 'ubuntu-server-1404-x64'
+        options:
+                 ip: '10.11.12.3'
+                 idedisk: 10
+  'one-ubuntu-server-1404-x64':
+    nodes:
+      'first':
+        prefab: 'ubuntu-server-1404-x64'
+        options:
+                 ip: '10.11.12.2'
+                 idedisk: 10
   'two-ubuntu-server-12042-x64':
     default_node: 'first'
     nodes:
@@ -20,6 +40,46 @@ sets:
         options:
                  ip: '10.11.12.2'
                  disk: 10
+  'two-centos-70-x64':
+    default_node: 'first'
+    nodes:
+      'first':
+        prefab: 'centos-70-x64'
+        options:
+                 ip: '10.11.12.2'
+                 idedisk: 10
+      'second':
+        prefab: 'centos-70-x64'
+        options:
+                 ip: '10.11.12.3'
+                 idedisk: 10
+  'one-centos-70-x64':
+    nodes:
+      'first':
+        prefab: 'centos-70-x64'
+        options:
+                 ip: '10.11.12.2'
+                 idedisk: 10
+  'two-centos-65-x64':
+    default_node: 'first'
+    nodes:
+      'first':
+        prefab: 'centos-65-x64'
+        options:
+                 ip: '10.11.12.2'
+                 idedisk: 10
+      'second':
+        prefab: 'centos-65-x64'
+        options:
+                 ip: '10.11.12.3'
+                 idedisk: 10
+  'one-centos-65-x64':
+    nodes:
+      'first':
+        prefab: 'centos-65-x64'
+        options:
+                 ip: '10.11.12.2'
+                 idedisk: 10
   'two-centos-64-x64':
     default_node: 'first'
     nodes:
