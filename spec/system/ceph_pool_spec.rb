@@ -64,18 +64,26 @@ describe 'ceph::pool' do
             public_addr => $::ipaddress_eth0,
             authentication_type => 'none',
           }
+        EOS
+
+        pp2 = <<-SOE
           ceph::pool { 'volumes':
             pg_num  => 64,
             pgp_num => 64,
             size    => 3,
           }
-        EOS
+        SOE
 
         puppet_apply(pp) do |r|
           r.exit_code.should_not == 1
           r.refresh
-          r.exit_code.should == 0
+          r.exit_code.should_not == 1
         end
+
+        puppet_apply(pp2) do |r|
+          r.exit_code.should_not == 1
+          r.refresh
+          r.exit_code.should == 0
 
         shell 'ceph osd pool get volumes pg_num' do |r|
           r.stdout.should =~ /pg_num: 64/
