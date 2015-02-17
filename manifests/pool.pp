@@ -93,7 +93,7 @@ set -ex
 ceph osd pool set ${name} size ${size}",
         unless  => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-test $(ceph osd pool get ${name} size` | sed 's/.*:\s*//g') == ${size}",
+test $(ceph osd pool get ${name} size | sed 's/.*:\s*//g') -eq ${size}",
         require => Exec["create-${name}"],
       }
     }
