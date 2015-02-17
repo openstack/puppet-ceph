@@ -21,37 +21,15 @@ require 'spec_helper_system'
 
 describe 'ceph::pool' do
 
-  releases = [ 'dumpling', 'firefly', 'giant' ]
+  releases = ENV['RELEASES'] ? ENV['RELEASES'].split : [ 'dumpling', 'firefly', 'giant' ]
   fsid = 'a4807c9a-e76f-4666-a297-6d6cbc922e3a'
+  # passing it directly as unqoted array is not supported everywhere
+  packages = "[ 'python-ceph', 'ceph-common', 'librados2', 'librbd1', 'libcephfs1' ]"
 
   releases.each do |release|
-    purge = <<-EOS
-      Exec { path => [ '/bin/', '/sbin/' , '/usr/bin/', '/usr/sbin/' ] }
-
-      ceph::mon { 'a': ensure => absent }
-      ->
-      file { '/var/lib/ceph/bootstrap-osd/ceph.keyring': ensure => absent }
-      ->
-      package { [
-         'python-ceph',
-         'ceph-common',
-         'librados2',
-         'librbd1',
-         'libcephfs1',
-        ]:
-        ensure => purged
-      }
-      class { 'ceph::repo':
-        ensure => absent,
-        release => '#{release}',
-      }
-    EOS
-
     describe release do
-      it 'should install and create pool volumes' do
+      before(:all) do
         pp = <<-EOS
-          Exec { path => [ '/bin/', '/sbin/' , '/usr/bin/', '/usr/sbin/' ] }
-
           class { 'ceph::repo':
             release => '#{release}',
           }
@@ -66,24 +44,45 @@ describe 'ceph::pool' do
           }
         EOS
 
-        pp2 = <<-SOE
+        puppet_apply(pp) do |r|
+          r.exit_code.should_not == 1
+        end
+      end
+
+      after(:all) do
+        pp = <<-EOS
+          ceph::mon { 'a': ensure => absent }
+          ->
+          file { '/var/lib/ceph/bootstrap-osd/ceph.keyring': ensure => absent }
+          ->
+          package { #{packages}:
+            ensure => purged
+          }
+          class { 'ceph::repo':
+            ensure => absent,
+            release => '#{release}',
+          }
+        EOS
+
+        puppet_apply(pp) do |r|
+          r.exit_code.should_not == 1
+        end
+      end
+
+      it 'should install and create pool volumes' do
+        pp = <<-EOS
           ceph::pool { 'volumes':
             pg_num  => 64,
             pgp_num => 64,
             size    => 3,
           }
-        SOE
+        EOS
 
         puppet_apply(pp) do |r|
           r.exit_code.should_not == 1
           r.refresh
-          r.exit_code.should_not == 1
-        end
-
-        puppet_apply(pp2) do |r|
-          r.exit_code.should_not == 1
-          r.refresh
           r.exit_code.should == 0
+        end
 
         shell 'ceph osd pool get volumes pg_num' do |r|
           r.stdout.should =~ /pg_num: 64/
@@ -108,33 +107,28 @@ describe 'ceph::pool' do
       it 'should install and delete pool volumes' do
         pp = <<-EOS
           Exec { path => [ '/bin/', '/sbin/' , '/usr/bin/', '/usr/sbin/' ] }
-
-          class { 'ceph::repo':
-            release => '#{release}',
-          }
-          class { 'ceph':
-            fsid => '#{fsid}',
-            mon_host => $::ipaddress_eth0,
-            authentication_type => 'none',
-          }
-          ceph::mon { 'a':
-            public_addr => $::ipaddress_eth0,
-            authentication_type => 'none',
-          }
-          ->
           exec { 'create-volumes':
             command => 'ceph osd pool create volumes 64',
-          }
-          ->
-          ceph::pool { 'volumes':
-            ensure => absent,
+            unless  => 'ceph osd lspools | grep volumes',
           }
         EOS
 
         puppet_apply(pp) do |r|
           r.exit_code.should_not == 1
           r.refresh
+          r.exit_code.should == 0
+        end
+
+        pp2 = <<-EOS
+          ceph::pool { 'volumes':
+            ensure => absent,
+          }
+        EOS
+
+        puppet_apply(pp2) do |r|
           r.exit_code.should_not == 1
+          r.refresh
+          r.exit_code.should == 0
         end
 
         shell 'ceph osd lspools | grep volumes' do |r|
@@ -144,15 +138,8 @@ describe 'ceph::pool' do
         end
 
       end
-      it 'should uninstall one monitor and all packages' do
-        puppet_apply(purge) do |r|
-          r.exit_code.should_not == 1
-        end
-      end
-
     end
   end
-
 end
 # Local Variables:
 # compile-command: "cd ../..
