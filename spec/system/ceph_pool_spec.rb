@@ -74,7 +74,7 @@ describe 'ceph::pool' do
         puppet_apply(pp) do |r|
           r.exit_code.should_not == 1
           r.refresh
-          r.exit_code.should_not == 1
+          r.exit_code.should == 0
         end
 
         shell 'ceph osd pool get volumes pg_num' do |r|
