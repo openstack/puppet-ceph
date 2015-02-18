@@ -31,7 +31,7 @@ describe 'ceph usecases' do
         class { 'ceph::repo': }
         class { 'ceph':
           fsid                       => generate('/usr/bin/uuidgen'),
-          mon_host                   => $::ipaddress_eth0,
+          mon_host                   => $::ipaddress,
           authentication_type        => 'none',
           osd_pool_default_size      => '1',
           osd_pool_default_min_size  => '1',
@@ -40,7 +40,7 @@ describe 'ceph usecases' do
          'global/osd_journal_size': value => '100';
         }
         ceph::mon { 'a':
-          public_addr         => $::ipaddress_eth0,
+          public_addr         => $::ipaddress,
           authentication_type => 'none',
         }
         ceph::osd { '/srv/data': }
@@ -154,7 +154,6 @@ describe 'ceph usecases' do
             mon_host            => '10.11.12.2',
           }
           ceph::mon { $::hostname:
-            public_addr => $::ipaddress_eth1, # we only know the IP on eth1
             key => $mon_key,
           }
           Ceph::Key {
@@ -298,7 +297,6 @@ describe 'ceph usecases' do
             authentication_type => 'none',
           }
           ceph::mon { $::hostname:
-            public_addr         => $::ipaddress_eth1, # we only know the IP on eth1
             authentication_type => 'none',
           }
           ceph::osd { '/dev/sdb': }

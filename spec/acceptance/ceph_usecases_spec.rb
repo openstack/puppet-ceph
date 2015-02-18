@@ -29,7 +29,7 @@ describe 'ceph usecases' do
         class { 'ceph::repo': }
         class { 'ceph':
           fsid                       => generate('/usr/bin/uuidgen'),
-          mon_host                   => $::ipaddress_eth0,
+          mon_host                   => $::ipaddress,
           authentication_type        => 'none',
           osd_pool_default_size      => '1',
           osd_pool_default_min_size  => '1',
@@ -38,7 +38,7 @@ describe 'ceph usecases' do
          'global/osd_journal_size': value => '100';
         }
         ceph::mon { 'a':
-          public_addr         => $::ipaddress_eth0,
+          public_addr         => $::ipaddress,
           authentication_type => 'none',
         }
         ceph::osd { '/srv/data': }

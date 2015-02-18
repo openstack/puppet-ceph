@@ -15,7 +15,7 @@ I want to run it on a virtual machine, all in one. The **ceph::repo** class will
     class { 'ceph::repo': }
     class { 'ceph':
       fsid                       => generate('/usr/bin/uuidgen'),
-      mon_host                   => $::ipaddress_eth0,
+      mon_host                   => $::ipaddress,
       authentication_type        => 'none',
       osd_pool_default_size      => '1',
       osd_pool_default_min_size  => '1',
@@ -24,7 +24,7 @@ I want to run it on a virtual machine, all in one. The **ceph::repo** class will
      'global/osd_journal_size': value => '100';
     }
     ceph::mon { 'a':
-      public_addr         => $::ipaddress_eth0,
+      public_addr         => $::ipaddress,
       authentication_type => 'none',
     }
     ceph::osd { '/srv/data': }
@@ -61,7 +61,6 @@ Enjoy your ceph cluster!
         mon_host            => '<ip of mon1>,<ip of mon2>,<ip of mon3>',
       }
       ceph::mon { $::hostname:
-        public_addr => $::ipaddress_eth0,
         key => $mon_key,
       }
       Ceph::Key {
@@ -141,7 +140,6 @@ On the client:
         authentication_type => 'none',
       }
       ceph::mon { $::hostname:
-        public_addr         => $::ipaddress_eth0,
         authentication_type => 'none',
       }
       ceph::osd {

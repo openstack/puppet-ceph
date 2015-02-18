@@ -30,7 +30,7 @@ describe 'ceph::key' do
   mon_key = 'AQCztJdSyNb0NBAASA2yPZPuwXeIQnDJ9O8gVw=='
   admin_key = 'AQA0TVRTsP/aHxAAFBvntu1dSEJHxtJeFFrRsg==' # client.admin key needs to contain a / character!
   volume_key = 'AQAMTVRTSOHmHBAAH5d1ukHrAnxuSbrWSv9KGA=='
-  mon_host = '$::ipaddress_eth1'
+  mon_host = '$::ipaddress'
   # passing it directly as unqoted array is not supported everywhere
   packages = "[ 'python-ceph', 'ceph-common', 'librados2', 'librbd1', 'libcephfs1' ]"
 

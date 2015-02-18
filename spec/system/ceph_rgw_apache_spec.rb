@@ -25,6 +25,7 @@ describe 'ceph::rgw::apache' do
   mon_key ='AQCztJdSyNb0NBAASA2yPZPuwXeIQnDJ9O8gVw=='
   admin_key = 'AQA0TVRTsP/aHxAAFBvntu1dSEJHxtJeFFrRsg=='
   radosgw_key = 'AQA0TVRTsP/aHxAAFBvntu1dSEJHxtJeFFrRwg=='
+  mon_host = '$::ipaddress'
   # passing it directly as unqoted array is not supported everywhere
   packages = "[ 'python-ceph', 'ceph-common', 'librados2', 'librbd1', 'libcephfs1' ]"
 
@@ -44,12 +45,12 @@ describe 'ceph::rgw::apache' do
           }
           class { 'ceph':
             fsid                       => '#{fsid}',
-            mon_host                   => $::ipaddress_eth0,
+            mon_host                   => #{mon_host},
             osd_pool_default_size      => '1',
             osd_pool_default_min_size  => '1',
           }
           ceph::mon { 'a':
-            public_addr => $::ipaddress_eth0,
+            public_addr => #{mon_host},
             key => '#{mon_key}',
           }
           ceph::key { 'client.admin':
@@ -77,7 +78,7 @@ describe 'ceph::rgw::apache' do
           ceph::osd { '/dev/sdb': }
 
           host { $::fqdn: # workaround for bad 'hostname -f' in vagrant box
-            ip => $ipaddress,
+            ip => #{mon_host},
           }
           ->
           file { '/var/run/ceph': # workaround for bad sysvinit script (ignores socket)

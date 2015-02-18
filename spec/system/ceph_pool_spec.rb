@@ -23,6 +23,7 @@ describe 'ceph::pool' do
 
   releases = ENV['RELEASES'] ? ENV['RELEASES'].split : [ 'dumpling', 'firefly', 'giant' ]
   fsid = 'a4807c9a-e76f-4666-a297-6d6cbc922e3a'
+  mon_host = '$::ipaddress'
   # passing it directly as unqoted array is not supported everywhere
   packages = "[ 'python-ceph', 'ceph-common', 'librados2', 'librbd1', 'libcephfs1' ]"
 
@@ -35,11 +36,11 @@ describe 'ceph::pool' do
           }
           class { 'ceph':
             fsid => '#{fsid}',
-            mon_host => $::ipaddress_eth0,
+            mon_host => #{mon_host},
             authentication_type => 'none',
           }
           ceph::mon { 'a':
-            public_addr => $::ipaddress_eth0,
+            public_addr => #{mon_host},
             authentication_type => 'none',
           }
         EOS

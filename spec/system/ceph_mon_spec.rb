@@ -24,7 +24,7 @@ describe 'ceph::mon' do
   releases = ENV['RELEASES'] ? ENV['RELEASES'].split : [ 'dumpling', 'firefly', 'giant' ]
   machines = ENV['MACHINES'] ? ENV['MACHINES'].split : [ 'first', 'second' ]
   fsid = 'a4807c9a-e76f-4666-a297-6d6cbc922e3a'
-  mon_host = '$::ipaddress_eth1'
+  mon_host = '$::ipaddress'
   # passing it directly as unqoted array is not supported everywhere
   packages = "[ 'python-ceph', 'ceph-common', 'librados2', 'librbd1', 'libcephfs1' ]"
 
@@ -252,11 +252,11 @@ describe 'ceph::mon' do
                 class { 'ceph':
                   fsid => '#{fsid}',
                   mon_host => '10.11.12.2,10.11.12.3',
+                  mon_initial_members => 'first,second',
                   public_network => '10.11.12.0/24',
                   authentication_type => 'none',
                 }
                 ceph::mon { '#{mon}':
-                  public_addr => $::ipaddress_eth1,
                   authentication_type => 'none',
                 }
             EOS
