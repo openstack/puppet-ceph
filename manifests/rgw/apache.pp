@@ -65,17 +65,17 @@ define ceph::rgw::apache (
   $ceph_apache_repo = true,
 ) {
 
-  class { 'apache':
+  class { '::apache':
     default_mods  => false,
     default_vhost => false,
   }
-  include apache::mod::alias
-  include apache::mod::auth_basic
+  include ::apache::mod::alias
+  include ::apache::mod::auth_basic
   apache::mod { 'fastcgi':
     package => $pkg_fastcgi,
   }
-  include apache::mod::mime
-  include apache::mod::rewrite
+  include ::apache::mod::mime
+  include ::apache::mod::rewrite
 
   apache::vhost { "${rgw_dns_name}-radosgw":
     servername        => $rgw_dns_name,
