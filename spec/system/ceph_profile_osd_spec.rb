@@ -428,13 +428,13 @@ end
 # Local Variables:
 # compile-command: "cd ../..
 #   (
-#     cd .rspec_system/vagrant_projects/two-ubuntu-server-12042-x64
+#     cd .rspec_system/vagrant_projects/two-ubuntu-server-1204-x64
 #     vagrant destroy --force
 #   )
 #   cp -a Gemfile-rspec-system Gemfile
 #   BUNDLE_PATH=/tmp/vendor bundle install --no-deployment
 #   RELEASES=dumpling \
-#   RS_SET=two-ubuntu-server-12042-x64 \
+#   RS_SET=two-ubuntu-server-1204-x64 \
 #   RS_DESTROY=no \
 #   BUNDLE_PATH=/tmp/vendor \
 #   bundle exec rake spec:system SPEC=spec/system/ceph_profile_osd_spec.rb &&

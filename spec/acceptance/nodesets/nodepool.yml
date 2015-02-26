@@ -5,7 +5,7 @@ HOSTS:
       - mon
       - osd
       - client
-    platform: ubuntu-1204-amd64
+    platform: ubuntu-1404-amd64
     hypervisor: none
     ip: 127.0.0.1
 CONFIG:

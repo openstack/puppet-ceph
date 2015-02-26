@@ -5,7 +5,7 @@ HOSTS:
       - mon
     platform: ubuntu-1204-amd64
     box: puppetlabs/ubuntu-12.04-64-nocm
-    box_url: https://vagrantcloud.com/puppetlabs/boxes/ubuntu-12.04-64-nocm
+    box_url: https://atlas.hashicorp.com/puppetlabs/boxes/ubuntu-12.04-64-nocm
     hypervisor: vagrant
     ip: 10.11.12.2
   second:
@@ -14,7 +14,7 @@ HOSTS:
       - client
     platform: ubuntu-1204-amd64
     box: puppetlabs/ubuntu-12.04-64-nocm
-    box_url: https://vagrantcloud.com/puppetlabs/boxes/ubuntu-12.04-64-nocm
+    box_url: https://atlas.hashicorp.com/puppetlabs/boxes/ubuntu-12.04-64-nocm
     hypervisor: vagrant
     ip: 10.11.12.3
 CONFIG:

@@ -112,8 +112,8 @@ and tests are in spec/system. It runs virtual machines and requires
 * BUNDLE_PATH=/tmp/vendor bundle exec rake spec
 * git clone https://github.com/bodepd/scenario_node_terminus.git ../scenario_node_terminus
 * BUNDLE_PATH=/tmp/vendor bundle exec rake spec:system
-* BUNDLE_PATH=/tmp/vendor RS_SET=two-ubuntu-server-12042-x64 bundle exec rake spec:system
-* BUNDLE_PATH=/tmp/vendor RS_SET=two-centos-65-x64 bundle exec rake spec:system
+* BUNDLE_PATH=/tmp/vendor RS_SET=two-ubuntu-server-1204-x64 bundle exec rake spec:system
+* BUNDLE_PATH=/tmp/vendor RS_SET=two-centos-66-x64 bundle exec rake spec:system
 
 The RELEASES environment variable contains the list of ceph releases
 for which integration tests are going to be run. The default is
@@ -128,16 +128,16 @@ The RS_SET environment variable contains the resource set of linux
 distribution configurations for which integration tests are going
 to be run. Available values are
 
-* two-ubuntu-server-12042-x64
-* one-ubuntu-server-12042-x64
-* two-centos-65-x64
-* one-centos-65-x64
+* two-ubuntu-server-1204-x64
+* ubuntu-server-1204-x64
+* two-centos-66-x64
+* centos-66-x64
 
 The default is
 
 ```
 BUNDLE_PATH=/tmp/vendor \
-RS_SET=two-ubuntu-server-12042-x64 \
+RS_SET=two-ubuntu-server-1204-x64 \
 bundle exec rake spec:system
 ```
 
@@ -165,8 +165,8 @@ Example invocation of gerritexec:
 ```
 script='bash -c "'
 script+='mv Gemfile-rspec-system Gemfile ; bundle install ; '
-script+='RS_SET=two-ubuntu-server-12042-x64 bundle exec rake spec:system ; '
-script+='RS_SET=two-centos-65-x64 bundle exec rake spec:system ; '
+script+='RS_SET=two-ubuntu-server-1204-x64 bundle exec rake spec:system ; '
+script+='RS_SET=two-centos-66-x64 bundle exec rake spec:system ; '
 script+='" > /tmp/out 2>&1 ; r=$? ; '
 script+='echo https://pypi.python.org/pypi/gerritexec output: ; '
 script+='pastebinit /tmp/out ; '

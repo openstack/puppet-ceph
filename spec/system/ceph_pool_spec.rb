@@ -145,7 +145,7 @@ end
 # Local Variables:
 # compile-command: "cd ../..
 #   (
-#     cd .rspec_system/vagrant_projects/one-ubuntu-server-12042-x64
+#     cd .rspec_system/vagrant_projects/ubuntu-server-1204-x64
 #     vagrant destroy --force
 #   )
 #   cp -a Gemfile-rspec-system Gemfile
@@ -153,7 +153,7 @@ end
 #   MACHINES=first \
 #   RELEASES=dumpling \
 #   RS_DESTROY=no \
-#   RS_SET=one-ubuntu-server-12042-x64 \
+#   RS_SET=ubuntu-server-1204-x64 \
 #   BUNDLE_PATH=/tmp/vendor \
 #   bundle exec rake spec:system SPEC=spec/system/ceph_pool_spec.rb &&
 #   git checkout Gemfile

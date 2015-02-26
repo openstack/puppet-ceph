@@ -20,12 +20,39 @@
   provider_specifics:
     vagrant_virtualbox:
       box: 'puppetlabs/ubuntu-14.04-64-nocm'
-      box_url: 'https://vagrantcloud.com/puppetlabs/boxes/ubuntu-14.04-64-nocm/versions/1.0.0/providers/virtualbox.box'
+      box_url: 'https://vagrantcloud.com/puppetlabs/boxes/ubuntu-14.04-64-nocm'
     vagrant_vmware_fusion:
       box: 'puppetlabs/ubuntu-14.04-64-nocm'
-      box_url: 'https://vagrantcloud.com/puppetlabs/boxes/ubuntu-14.04-64-nocm/versions/1.0.0/providers/vmware_fusion.box'
+      box_url: 'https://vagrantcloud.com/puppetlabs/boxes/ubuntu-14.04-64-nocm'
     vsphere:
       template: 'ubuntu-1404-x86_64'
+'ubuntu-server-1204-x64':
+  description: ""
+  facts:
+    architecture: amd64
+    kernel: Linux
+    operatingsystem: Ubuntu
+    lsbdistid: Ubuntu
+    facterversion: "2.4.1"
+    kernelmajversion: "3.11"
+    kernelrelease: "3.11.0-15-generic"
+    kernelversion: "3.11.0"
+    lsbdistcodename: precise
+    lsbdistdescription: "Ubuntu 12.04.4 LTS"
+    lsbdistrelease: "12.04"
+    lsbmajdistrelease: "12.04"
+    operatingsystemrelease: "12.04"
+    osfamily: Debian
+    rubyversion: "1.8.7"
+  provider_specifics:
+    vagrant_virtualbox:
+      box: 'puppetlabs/ubuntu-12.04-64-nocm'
+      box_url: 'https://vagrantcloud.com/puppetlabs/boxes/ubuntu-12.04-64-nocm'
+    vagrant_vmware_fusion:
+      box: 'puppetlabs/ubuntu-12.04-64-nocm'
+      box_url: 'https://vagrantcloud.com/puppetlabs/boxes/ubuntu-12.04-64-nocm'
+    vsphere:
+      template: 'ubuntu-1402-x86_64'
 'centos-70-x64':
   description: ""
   facts:
@@ -47,12 +74,39 @@
   provider_specifics:
     vagrant_virtualbox:
       box: 'puppetlabs/centos-7.0-64-nocm'
-      box_url: 'https://atlas.hashicorp.com/puppetlabs/boxes/centos-7.0-64-nocm/versions/1.0.0/providers/virtualbox.box'
+      box_url: 'https://atlas.hashicorp.com/puppetlabs/boxes/centos-7.0-64-nocm'
     vagrant_vmware_fusion:
       box: 'puppetlabs/centos-7.0-64-nocm'
-      box_url: 'https://atlas.hashicorp.com/puppetlabs/boxes/centos-7.0-64-nocm/versions/1.0.0/providers/vmware_fusion.box'
+      box_url: 'https://atlas.hashicorp.com/puppetlabs/boxes/centos-7.0-64-nocm'
     vsphere:
       template: 'centos-7-x86_64'
+'centos-66-x64':
+  description: ""
+  facts:
+    kernelrelease: "2.6.32-504.8.1.el6.x86_64"
+    operatingsystem: CentOS
+    kernelmajversion: "2.6"
+    architecture: x86_64
+    facterversion: "2.4.1"
+    kernelversion: "2.6.32"
+    operatingsystemrelease: "6.6"
+    osfamily: RedHat
+    lsbmajdistrelease: "6"
+    lsbdistcodename: Final
+    lsbdistdescription: "CentOS release 6.6 (Final)"
+    lsbdistid: CentOS
+    lsbdistrelease: "6.6"
+    kernel: Linux
+    rubyversion: "1.8.7"
+  provider_specifics:
+    vagrant_virtualbox:
+      box: 'puppetlabs/centos-6.6-64-nocm'
+      box_url: 'https://atlas.hashicorp.com/puppetlabs/boxes/centos-6.6-64-nocm'
+    vagrant_vmware_fusion:
+      box: 'puppetlabs/centos-6.6-64-nocm'
+      box_url: 'https://atlas.hashicorp.com/puppetlabs/boxes/centos-6.6-64-nocm'
+    vsphere:
+      template: 'centos-6-x86_64'
 'centos-65-x64':
   description: ""
   facts:
@@ -74,9 +128,7 @@
   provider_specifics:
     vagrant_virtualbox:
       box: 'puppetlabs/centos-6.5-64-nocm'
-      box_url: 'https://atlas.hashicorp.com/puppetlabs/boxes/centos-6.5-64-nocm/versions/1.0.0/providers/virtualbox.box'
     vagrant_vmware_fusion:
       box: 'puppetlabs/centos-6.5-64-nocm'
-      box_url: 'https://atlas.hashicorp.com/puppetlabs/boxes/centos-6.5-64-nocm/versions/1.0.0/providers/vmware_fusion.box'
     vsphere:
       template: 'centos-6-x86_64'

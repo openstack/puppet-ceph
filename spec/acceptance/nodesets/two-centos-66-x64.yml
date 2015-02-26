@@ -5,7 +5,7 @@ HOSTS:
       - mon
     platform: el-6-x86_64
     box: puppetlabs/centos-6.5-64-nocm
-    box_url: https://vagrantcloud.com/puppetlabs/boxes/centos-6.5-64-nocm
+    box_url: https://atlas.hashicorp.com/puppetlabs/boxes/centos-6.6-64-nocm
     hypervisor: vagrant
     ip: 10.11.12.2
   second:
@@ -14,7 +14,7 @@ HOSTS:
       - client
     platform: el-6-x86_64
     box: puppetlabs/centos-6.5-64-nocm
-    box_url: https://vagrantcloud.com/puppetlabs/boxes/centos-6.5-64-nocm
+    box_url: https://atlas.hashicorp.com/puppetlabs/boxes/centos-6.6-64-nocm
     hypervisor: vagrant
     ip: 10.11.12.3
 CONFIG:
