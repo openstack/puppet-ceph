@@ -19,7 +19,7 @@
 # Author: David Moreau Simard <dmsimard@iweb.com>
 # Author: David Gurtner <aldavud@crimson.ch>
 #
-# == Class: ceph::mon
+# == Define: ceph::mon
 #
 # Installs and configures MONs (ceph monitors)
 #
