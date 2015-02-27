@@ -14,23 +14,14 @@
 #   limitations under the License.
 #
 # Author: David Gurtner <aldavud@crimson.ch>
+# Author: David Moreau Simard <dmsimard@iweb.com>
 #
 # Class: ceph::profle::osd
 #
 # Profile for a Ceph osd
 #
 class ceph::profile::osd {
-  require ceph::profile::base
-
-  # this supports providing the key manually
-  if $ceph::profile::params::bootstrap_osd_key {
-    if ! defined(Ceph::Key['client.bootstrap-osd']) {
-      ceph::key { 'client.bootstrap-osd':
-        keyring_path => '/var/lib/ceph/bootstrap-osd/ceph.keyring',
-        secret       => $ceph::profile::params::bootstrap_osd_key,
-      }
-    }
-  }
+  require ::ceph::profile::client
 
   class { '::ceph::osds':
     args => $ceph::profile::params::osds,

@@ -14,13 +14,14 @@
 #   limitations under the License.
 #
 # Author: David Gurtner <aldavud@crimson.ch>
+# Author: David Moreau Simard <dmsimard@iweb.com>
 #
 # == Class: ceph::profile::mon
 #
 # Profile for a Ceph mon
 #
 class ceph::profile::mon {
-  require ceph::profile::base
+  require ::ceph::profile::base
 
   Ceph_Config<| |> ->
   ceph::mon { $::hostname:
@@ -29,36 +30,16 @@ class ceph::profile::mon {
     keyring             => $ceph::profile::params::mon_keyring,
   }
 
-  Ceph::Key {
+  $defaults = {
     inject         => true,
     inject_as_id   => 'mon.',
     inject_keyring => "/var/lib/ceph/mon/ceph-${::hostname}/keyring",
   }
 
-  # this supports providing the key manually
-  if $ceph::profile::params::admin_key {
-    ceph::key { 'client.admin':
-      secret  => $ceph::profile::params::admin_key,
-      cap_mon => 'allow *',
-      cap_osd => 'allow *',
-      cap_mds => 'allow',
-      mode    => $ceph::profile::params::admin_key_mode,
-    }
-  }
-
-  if $ceph::profile::params::bootstrap_osd_key {
-    ceph::key { 'client.bootstrap-osd':
-      secret       => $ceph::profile::params::bootstrap_osd_key,
-      keyring_path => '/var/lib/ceph/bootstrap-osd/ceph.keyring',
-      cap_mon      => 'allow profile bootstrap-osd',
-    }
-  }
-
-  if $ceph::profile::params::bootstrap_mds_key {
-    ceph::key { 'client.bootstrap-mds':
-      secret       => $ceph::profile::params::bootstrap_mds_key,
-      keyring_path => '/var/lib/ceph/bootstrap-mds/ceph.keyring',
-      cap_mon      => 'allow profile bootstrap-mds',
+  if !empty($ceph::profile::params::client_keys) {
+    class { '::ceph::keys':
+      args     => $ceph::profile::params::client_keys,
+      defaults => $defaults
     }
   }
 }

@@ -14,6 +14,7 @@
 #   limitations under the License.
 #
 #  Author: David Gurtner <aldavud@crimson.ch>
+#  Author: David Moreau Simard <dmsimard@iweb.com>
 #
 require 'spec_helper_system'
 
@@ -123,10 +124,16 @@ ceph::profile::params::mon_host: '10.11.12.2:6789'
           hiera = <<-EOS
 ceph::profile::params::release: '#{release}'
 ceph::profile::params::authentication_type: 'cephx'
-ceph::profile::params::admin_key: '#{admin_key}'
 ceph::profile::params::mon_key: '#{mon_key}'
 ceph::profile::params::mon_initial_members: 'first'
 ceph::profile::params::mon_host: '10.11.12.2:6789'
+ceph::profile::params::client_keys:
+  'client.admin':
+    secret: #{admin_key}
+    mode: '0600'
+    cap_mon: 'allow *'
+    cap_osd: 'allow *'
+    cap_mds: 'allow *'
           EOS
 
           file = Tempfile.new('hieradata')
@@ -199,10 +206,16 @@ ceph::profile::params::mon_host: '10.11.12.2:6789'
           hiera = <<-EOS
 ceph::profile::params::release: '#{release}'
 ceph::profile::params::authentication_type: 'cephx'
-ceph::profile::params::admin_key: '#{admin_key}'
 ceph::profile::params::mon_keyring: '#{keyring_path}'
 ceph::profile::params::mon_initial_members: 'first'
 ceph::profile::params::mon_host: '10.11.12.2:6789'
+ceph::profile::params::client_keys:
+  'client.admin':
+    secret: #{admin_key}
+    mode: '0600'
+    cap_mon: 'allow *'
+    cap_osd: 'allow *'
+    cap_mds: 'allow *'
           EOS
 
           file = Tempfile.new('hieradata')

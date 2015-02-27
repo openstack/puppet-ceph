@@ -14,6 +14,7 @@
 #   limitations under the License.
 #
 #  Author: David Gurtner <aldavud@crimson.ch>
+#  Author: David Moreau Simard <dmsimard@iweb.com>
 #
 # == Class: ceph::profile::params
 #
@@ -69,31 +70,23 @@
 # [*public_network*] The address of the public network.
 #   Optional. {public-network-ip/netmask}
 #
-# [*admin_key*] The admin secret key.
-#   Optional.
-#
-# [*admin_key_mode*] The admin key mode.
-#   Optional.
-#
 # [*mon_key*] The mon secret key.
 #   Optional. Either mon_key or mon_keyring need to be set when using cephx.
 #
 # [*mon_keyring*] The location of the keyring retrieved by default
 #   Optional. Either mon_key or mon_keyring need to be set when using cephx
 #
-# [*bootstrap_osd_key*] The osd secret key (used for bootstrap)
-#   Optional.
+# [*client_keys*] A hash of client keys that will be passed to ceph::keys.
+#   Optional but required when using cephx.
+#   See ceph::key for hash parameters andstructure.
 #
-# [*bootstrap_mds_key*] The mds secret key (used for bootstrap)
+# [*osds*] A Ceph osd hash
 #   Optional.
 #
 # [*manage_repo*] Whether we should manage the local repository (true) or depend
 #   on what is available (false). Set this to false when you want to manage the
 #   the repo by yourself.
 #   Optional. Defaults to true
-#
-# [*osds*] A Ceph osd hash
-#   Optional.
 #
 class ceph::profile::params (
   # puppet 2.7 compatibiliy hack. TODO: change to undef once 2.7 is deprecated
@@ -108,13 +101,15 @@ class ceph::profile::params (
   $osd_pool_default_min_size = undef,
   $cluster_network = undef,
   $public_network = undef,
-  $admin_key = undef,
-  $admin_key_mode = undef,
   $mon_key = undef,
   $mon_keyring = undef,
-  $bootstrap_osd_key = undef,
-  $bootstrap_mds_key = undef,
+  $client_keys = {},
   $osds = undef,
   $manage_repo = true,
 ) {
+  validate_hash($client_keys)
+
+  if $authentication_type == 'cephx' and empty($client_keys) {
+    fail("client_keys must be provided when using authentication_type = 'cephx'")
+  }
 }

@@ -1,0 +1,9 @@
+---
+ceph::profile::params::client_keys:
+  'client.volumes':
+    secret: 'AQA4MPZTOGU0ARAAXH9a0fXxVq0X25n2yPREDw=='
+    mode: '0644'
+    user: 'root'
+    group: 'root'
+    cap_mon: 'allow r'
+    cap_osd: 'allow class-read object_prefix rbd_children, allow rwx pool=volumes'

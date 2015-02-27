@@ -26,10 +26,7 @@ describe 'ceph::profile::osd' do
         facts.merge!( :hostname => 'osd')
       end
 
-      it { is_expected.to contain_ceph__key('client.bootstrap-osd').with(
-        :keyring_path     => '/var/lib/ceph/bootstrap-osd/ceph.keyring',
-        :secret           => 'AQARG3JTsDDEHhAAVinHPiqvJkUi5Mww/URupw==')
-      }
+      it { is_expected.to contain_class('ceph::profile::client') }
       it { is_expected.to contain_ceph__osd('/dev/sdc').with(:journal => '/dev/sdb1') }
       it { is_expected.to contain_ceph__osd('/dev/sdd').with(:journal => '/dev/sdb2') }
     end
@@ -40,10 +37,7 @@ describe 'ceph::profile::osd' do
         facts.merge!( :hostname => 'first')
       end
 
-      it { is_expected.to contain_ceph__key('client.bootstrap-osd').with(
-        :keyring_path     => '/var/lib/ceph/bootstrap-osd/ceph.keyring',
-        :secret           => 'AQARG3JTsDDEHhAAVinHPiqvJkUi5Mww/URupw==')
-      }
+      it { is_expected.to contain_class('ceph::profile::client') }
       it { is_expected.to contain_ceph__osd('/dev/sdb').with( :journal => '/tmp/journal') }
     end
   end
