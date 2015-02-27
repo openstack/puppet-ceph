@@ -17,7 +17,7 @@
 #
 # Configures a ceph radosgw apache frontend.
 #
-### == Name
+## == Define: ceph::rgw::apache
 #
 # The RGW id. An alphanumeric string uniquely identifying the RGW.
 # ( example: radosgw.gateway )
