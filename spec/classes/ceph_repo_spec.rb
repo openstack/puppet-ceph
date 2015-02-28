@@ -32,12 +32,12 @@ describe 'ceph::repo' do
 
     describe "with default params" do
 
-      it { should contain_apt__key('ceph').with(
+      it { is_expected.to contain_apt__key('ceph').with(
         :key        => '17ED316D',
         :key_source => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc'
       ) }
 
-      it { should contain_apt__source('ceph').with(
+      it { is_expected.to contain_apt__source('ceph').with(
         :location => 'http://ceph.com/debian-giant/',
         :release  => 'wheezy',
         :require  => 'Apt::Key[ceph]'
@@ -52,7 +52,7 @@ describe 'ceph::repo' do
         }
       end
 
-      it { should contain_apt__source('ceph').with(
+      it { is_expected.to contain_apt__source('ceph').with(
         :location => 'http://ceph.com/debian-firefly/',
         :release  => 'wheezy',
         :require  => 'Apt::Key[ceph]'
@@ -73,12 +73,12 @@ describe 'ceph::repo' do
 
     describe "with default params" do
 
-      it { should contain_apt__key('ceph').with(
+      it { is_expected.to contain_apt__key('ceph').with(
         :key        => '17ED316D',
         :key_source => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc'
       ) }
 
-      it { should contain_apt__source('ceph').with(
+      it { is_expected.to contain_apt__source('ceph').with(
         :location => 'http://ceph.com/debian-giant/',
         :release  => 'precise',
         :require  => 'Apt::Key[ceph]'
@@ -93,7 +93,7 @@ describe 'ceph::repo' do
         }
       end
 
-      it { should contain_apt__source('ceph').with(
+      it { is_expected.to contain_apt__source('ceph').with(
         :location => 'http://ceph.com/debian-firefly/',
         :release  => 'precise',
         :require  => 'Apt::Key[ceph]'
@@ -107,13 +107,13 @@ describe 'ceph::repo' do
         }
       end
 
-      it { should contain_apt__source('ceph').with(
+      it { is_expected.to contain_apt__source('ceph').with(
         :location => 'http://ceph.com/debian-giant/',
         :release  => 'precise',
         :require  => 'Apt::Key[ceph]'
       ) }
 
-      it { should contain_apt__source('ceph-extras').with(
+      it { is_expected.to contain_apt__source('ceph-extras').with(
         :ensure   => 'present',
         :location => 'http://ceph.com/packages/ceph-extras/debian/',
         :release  => 'precise',
@@ -129,18 +129,18 @@ describe 'ceph::repo' do
         }
       end
 
-      it { should contain_apt__key('ceph-gitbuilder').with(
+      it { is_expected.to contain_apt__key('ceph-gitbuilder').with(
         :key        => '6EAEAE2203C3951A',
         :key_server => 'keyserver.ubuntu.com'
       ) }
 
-      it { should contain_apt__source('ceph').with(
+      it { is_expected.to contain_apt__source('ceph').with(
         :location => 'http://ceph.com/debian-giant/',
         :release  => 'precise',
         :require  => 'Apt::Key[ceph]'
       ) }
 
-      it { should contain_apt__source('ceph-fastcgi').with(
+      it { is_expected.to contain_apt__source('ceph-fastcgi').with(
         :ensure   => 'present',
         :location => 'http://gitbuilder.ceph.com/libapache-mod-fastcgi-deb-precise-x86_64-basic/ref/master',
         :release  => 'precise',
@@ -158,21 +158,21 @@ describe 'ceph::repo' do
         }
       end
 
-      it { should contain_apt__source('ceph').with(
+      it { is_expected.to contain_apt__source('ceph').with(
         :ensure   => 'absent',
         :location => 'http://ceph.com/debian-giant/',
         :release  => 'precise',
         :require  => 'Apt::Key[ceph]'
       ) }
 
-      it { should contain_apt__source('ceph-extras').with(
+      it { is_expected.to contain_apt__source('ceph-extras').with(
         :ensure   => 'absent',
         :location => 'http://ceph.com/packages/ceph-extras/debian/',
         :release  => 'precise',
         :require  => 'Apt::Key[ceph]'
       ) }
 
-      it { should contain_apt__source('ceph-fastcgi').with(
+      it { is_expected.to contain_apt__source('ceph-fastcgi').with(
         :ensure   => 'absent',
         :location => 'http://gitbuilder.ceph.com/libapache-mod-fastcgi-deb-precise-x86_64-basic/ref/master',
         :release  => 'precise',
@@ -193,7 +193,7 @@ describe 'ceph::repo' do
 
     describe "with default params" do
 
-      it { should contain_yumrepo('ext-epel-6.8').with(
+      it { is_expected.to contain_yumrepo('ext-epel-6.8').with(
         :enabled    => '1',
         :descr      => 'External EPEL 6.8',
         :name       => 'ext-epel-6.8',
@@ -204,7 +204,7 @@ describe 'ceph::repo' do
         :priority   => '20'
       ) }
 
-      it { should contain_yumrepo('ext-ceph').with(
+      it { is_expected.to contain_yumrepo('ext-ceph').with(
         :enabled    => '1',
         :descr      => 'External Ceph giant',
         :name       => 'ext-ceph-giant',
@@ -215,7 +215,7 @@ describe 'ceph::repo' do
         :priority   => '10'
      ) }
 
-      it { should contain_yumrepo('ext-ceph-noarch').with(
+      it { is_expected.to contain_yumrepo('ext-ceph-noarch').with(
         :enabled    => '1',
         :descr      => 'External Ceph noarch',
         :name       => 'ext-ceph-giant-noarch',
@@ -234,7 +234,7 @@ describe 'ceph::repo' do
         }
       end
 
-      it { should contain_yumrepo('ext-epel-6.8').with(
+      it { is_expected.to contain_yumrepo('ext-epel-6.8').with(
         :enabled    => '1',
         :descr      => 'External EPEL 6.8',
         :name       => 'ext-epel-6.8',
@@ -245,7 +245,7 @@ describe 'ceph::repo' do
         :priority   => '20'
       ) }
 
-      it { should contain_yumrepo('ext-ceph').with(
+      it { is_expected.to contain_yumrepo('ext-ceph').with(
         :enabled    => '1',
         :descr      => 'External Ceph firefly',
         :name       => 'ext-ceph-firefly',
@@ -256,7 +256,7 @@ describe 'ceph::repo' do
         :priority   => '10'
      ) }
 
-      it { should contain_yumrepo('ext-ceph-noarch').with(
+      it { is_expected.to contain_yumrepo('ext-ceph-noarch').with(
         :enabled    => '1',
         :descr      => 'External Ceph noarch',
         :name       => 'ext-ceph-firefly-noarch',
@@ -277,7 +277,7 @@ describe 'ceph::repo' do
         }
       end
 
-      it { should contain_yumrepo('ext-epel-6.8').with(
+      it { is_expected.to contain_yumrepo('ext-epel-6.8').with(
         :enabled    => '0',
         :descr      => 'External EPEL 6.8',
         :name       => 'ext-epel-6.8',
@@ -288,7 +288,7 @@ describe 'ceph::repo' do
         :priority   => '20'
       ) }
 
-      it { should contain_yumrepo('ext-ceph').with(
+      it { is_expected.to contain_yumrepo('ext-ceph').with(
         :enabled    => '0',
         :descr      => 'External Ceph giant',
         :name       => 'ext-ceph-giant',
@@ -299,7 +299,7 @@ describe 'ceph::repo' do
         :priority   => '10'
      ) }
 
-      it { should contain_yumrepo('ext-ceph-noarch').with(
+      it { is_expected.to contain_yumrepo('ext-ceph-noarch').with(
         :enabled    => '0',
         :descr      => 'External Ceph noarch',
         :name       => 'ext-ceph-giant-noarch',
@@ -310,7 +310,7 @@ describe 'ceph::repo' do
         :priority   => '10'
       ) }
 
-      it { should contain_yumrepo('ext-ceph-extras').with(
+      it { is_expected.to contain_yumrepo('ext-ceph-extras').with(
         :enabled    => '0',
         :descr      => 'External Ceph Extras',
         :name       => 'ext-ceph-extras',
@@ -321,7 +321,7 @@ describe 'ceph::repo' do
         :priority   => '10'
       ) }
 
-      it { should contain_yumrepo('ext-ceph-fastcgi').with(
+      it { is_expected.to contain_yumrepo('ext-ceph-fastcgi').with(
         :enabled    => '0',
         :descr      => 'FastCGI basearch packages for Ceph',
         :name       => 'ext-ceph-fastcgi',
@@ -341,7 +341,7 @@ describe 'ceph::repo' do
         }
       end
 
-      it { should contain_yumrepo('ext-epel-6.8').with(
+      it { is_expected.to contain_yumrepo('ext-epel-6.8').with(
         :enabled    => '1',
         :descr      => 'External EPEL 6.8',
         :name       => 'ext-epel-6.8',
@@ -352,7 +352,7 @@ describe 'ceph::repo' do
         :priority   => '20'
       ) }
 
-      it { should contain_yumrepo('ext-ceph').with(
+      it { is_expected.to contain_yumrepo('ext-ceph').with(
         :enabled    => '1',
         :descr      => 'External Ceph giant',
         :name       => 'ext-ceph-giant',
@@ -363,7 +363,7 @@ describe 'ceph::repo' do
         :priority   => '10'
      ) }
 
-      it { should contain_yumrepo('ext-ceph-noarch').with(
+      it { is_expected.to contain_yumrepo('ext-ceph-noarch').with(
         :enabled    => '1',
         :descr      => 'External Ceph noarch',
         :name       => 'ext-ceph-giant-noarch',
@@ -374,7 +374,7 @@ describe 'ceph::repo' do
         :priority   => '10'
       ) }
 
-      it { should contain_yumrepo('ext-ceph-extras').with(
+      it { is_expected.to contain_yumrepo('ext-ceph-extras').with(
         :enabled    => '1',
         :descr      => 'External Ceph Extras',
         :name       => 'ext-ceph-extras',
@@ -394,7 +394,7 @@ describe 'ceph::repo' do
         }
       end
 
-      it { should contain_yumrepo('ext-epel-6.8').with(
+      it { is_expected.to contain_yumrepo('ext-epel-6.8').with(
         :enabled    => '1',
         :descr      => 'External EPEL 6.8',
         :name       => 'ext-epel-6.8',
@@ -405,7 +405,7 @@ describe 'ceph::repo' do
         :priority   => '20'
       ) }
 
-      it { should contain_yumrepo('ext-ceph').with(
+      it { is_expected.to contain_yumrepo('ext-ceph').with(
         :enabled    => '1',
         :descr      => 'External Ceph giant',
         :name       => 'ext-ceph-giant',
@@ -416,7 +416,7 @@ describe 'ceph::repo' do
         :priority   => '10'
      ) }
 
-      it { should contain_yumrepo('ext-ceph-noarch').with(
+      it { is_expected.to contain_yumrepo('ext-ceph-noarch').with(
         :enabled    => '1',
         :descr      => 'External Ceph noarch',
         :name       => 'ext-ceph-giant-noarch',
@@ -427,7 +427,7 @@ describe 'ceph::repo' do
         :priority   => '10'
       ) }
 
-      it { should contain_yumrepo('ext-ceph-fastcgi').with(
+      it { is_expected.to contain_yumrepo('ext-ceph-fastcgi').with(
         :enabled    => '1',
         :descr      => 'FastCGI basearch packages for Ceph',
         :name       => 'ext-ceph-fastcgi',

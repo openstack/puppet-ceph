@@ -34,8 +34,8 @@ describe 'ceph::conf' do
   end
 
   it {
-    should contain_ceph_config('A').with('value' => "AA VALUE")
-    should contain_ceph_config('B').with('value' => "DEFAULT")
+    is_expected.to contain_ceph_config('A').with('value' => "AA VALUE")
+    is_expected.to contain_ceph_config('B').with('value' => "DEFAULT")
   }
 
 end

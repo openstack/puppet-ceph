@@ -36,12 +36,12 @@ describe 'ceph::osds' do
     end
 
     it {
-      should contain_ceph__osd('/dev/sdb').with(
+      is_expected.to contain_ceph__osd('/dev/sdb').with(
         :ensure  => 'present',
         :journal => '/tmp/journal',
         :cluster => 'CLUSTER'
     )
-      should contain_ceph__osd('/srv/data').with(
+      is_expected.to contain_ceph__osd('/srv/data').with(
         :ensure  => 'present',
         :cluster => 'CLUSTER')
     }

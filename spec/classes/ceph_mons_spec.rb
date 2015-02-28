@@ -41,8 +41,8 @@ describe 'ceph::mons' do
     end
 
     it {
-      should contain_service('ceph-mon-A').with('ensure' => "running")
-      should contain_service('ceph-mon-B').with('ensure' => "running")
+      is_expected.to contain_service('ceph-mon-A').with('ensure' => "running")
+      is_expected.to contain_service('ceph-mon-B').with('ensure' => "running")
     }
   end
 
