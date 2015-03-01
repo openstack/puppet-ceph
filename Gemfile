@@ -5,6 +5,7 @@ group :development, :test do
   gem 'rspec-puppet', '~> 2.0.0', :require => false
   gem 'beaker-rspec', '~> 2.2.4', :require => false
   gem 'puppet-lint-param-docs'
+  gem 'metadata-json-lint'
   gem 'json'
   gem 'webmock'
   gem 'minitest', :require => false
