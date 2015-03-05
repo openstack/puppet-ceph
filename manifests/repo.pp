@@ -48,7 +48,7 @@ class ceph::repo (
 ) {
   case $::osfamily {
     'Debian': {
-      include apt
+      include ::apt
 
       apt::key { 'ceph':
         ensure     => $ensure,
@@ -97,7 +97,7 @@ class ceph::repo (
     }
 
     'RedHat': {
-      $enabled = $ensure ? { present => '1', absent => '0', default => absent, }
+      $enabled = $ensure ? { 'present' => '1', 'absent' => '0', default => absent, }
       yumrepo { 'ext-epel-6.8':
         # puppet versions prior to 3.5 do not support ensure, use enabled instead
         enabled    => $enabled,

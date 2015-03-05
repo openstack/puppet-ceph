@@ -6,6 +6,16 @@ group :development, :test do
   gem 'rspec-puppet', '~> 2.0.0', :require => false
   gem 'metadata-json-lint'
   gem 'puppet-lint-param-docs'
+  gem 'puppet-lint-absolute_classname-check'
+  gem 'puppet-lint-absolute_template_path'
+  gem 'puppet-lint-trailing_newline-check'
+
+  # Puppet 4.x related lint checks
+  gem 'puppet-lint-unquoted_string-check'
+  gem 'puppet-lint-leading_zero-check'
+  gem 'puppet-lint-variable_contains_upcase'
+  gem 'puppet-lint-numericvariable'
+
   gem 'rspec-system', :git => 'https://github.com/aldavud/rspec-system.git', :branch => 'master'
   gem 'rspec-system-puppet', :git => 'https://github.com/aldavud/rspec-system-puppet.git', :branch => 'master'
 end

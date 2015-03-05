@@ -110,7 +110,7 @@ class ceph (
   $cluster_network            = undef,
   $public_network             = undef,
 ) {
-  include ceph::params
+  include ::ceph::params
 
   package { $::ceph::params::packages :
     ensure => $ensure,
