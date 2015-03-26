@@ -28,6 +28,8 @@ describe 'ceph::osds' do
           },
           '/srv/data' => {
           },
+          'discover' => {
+          },
         },
         :defaults => {
           'cluster' => 'CLUSTER',
@@ -42,6 +44,10 @@ describe 'ceph::osds' do
         :cluster => 'CLUSTER'
     )
       is_expected.to contain_ceph__osd('/srv/data').with(
+        :ensure  => 'present',
+        :cluster => 'CLUSTER'
+    )
+      is_expected.to contain_ceph__osd('discover').with(
         :ensure  => 'present',
         :cluster => 'CLUSTER')
     }

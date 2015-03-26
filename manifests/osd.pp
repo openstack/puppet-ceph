@@ -65,10 +65,17 @@ define ceph::osd (
       exec { $ceph_prepare:
         command   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-if ! test -b ${data} ; then
-  mkdir -p ${data}
+if [ \"${data}\" = \"discover\" ] ; then
+  # 'Unrecognized escape sequence' warning ... Not sure how to rectify this
+  for disk in `ceph-disk list | awk '/\/dev\/sd[a-z]+ other, unknown/ {print \$1}'` ; do
+    ceph-disk prepare ${cluster_option} \$disk ${journal}
+  done
+else
+  if ! test -b ${data} ; then
+    mkdir -p ${data}
+  fi
+  ceph-disk prepare ${cluster_option} ${data} ${journal}
 fi
-ceph-disk prepare ${cluster_option} ${data} ${journal}
 ",
         unless    => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
@@ -76,6 +83,9 @@ ceph-disk list | grep ' *${data}.*ceph data, prepared' ||
 ceph-disk list | grep ' *${data}.*ceph data, active' ||
 ls -l /var/lib/ceph/osd/${cluster_name}-* | grep ' ${data}'
 ",
+        # For systems with large number of drives (e.g., 25), default (300 sec) could time out
+        timeout   => 1200,
+        
         logoutput => true,
       }
 
