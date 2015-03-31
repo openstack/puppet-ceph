@@ -43,16 +43,16 @@ describe provider_class do
   } }
 
   def validate(expected, tmpfile = tmpfile)
-    File.read(tmpfile).should == expected
+    expect(File.read(tmpfile)).to eq(expected)
   end
 
   it 'should create keys = value and ensure space around equals' do
     resource = Puppet::Type::Ceph_config.new(params.merge(
       :name => 'global/ceph_is_foo', :value => 'bar'))
     provider = provider_class.new(resource)
-    provider.exists?.should be_falsey
+    expect(provider.exists?).to be_falsey
     provider.create
-    provider.exists?.should be_truthy
+    expect(provider.exists?).to be_truthy
     validate(<<-EOS
 
 [global]
@@ -65,7 +65,7 @@ ceph_is_foo = bar
     resource = Puppet::Type::Ceph_config.new(
       :name => 'global/ceph_is_foo', :value => 'bar')
     provider = provider_class.new(resource)
-    provider.file_path.should == '/etc/ceph/ceph.conf'
+    expect(provider.file_path).to eq('/etc/ceph/ceph.conf')
   end
 
 end

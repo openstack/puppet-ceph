@@ -109,36 +109,36 @@ describe 'ceph::rgw::apache' do
         }
 
         puppet_apply(pp) do |r|
-          r.exit_code.should_not == 1
+          expect(r.exit_code).not_to eq(1)
           r.refresh
-          r.exit_code.should_not == 1
+          expect(r.exit_code).not_to eq(1)
         end
 
         shell servicequery[osfamily] do |r|
-          r.exit_code.should be_zero
+          expect(r.exit_code).to be_zero
         end
 
         shell 'radosgw-admin user create --uid=puppet --display-name=puppet-user' do |r|
-          r.exit_code.should be_zero
+          expect(r.exit_code).to be_zero
         end
 
         shell 'radosgw-admin subuser create --uid=puppet --subuser=puppet:swift --access=full' do |r|
-          r.exit_code.should be_zero
+          expect(r.exit_code).to be_zero
         end
 
         # need to create subuser key twice, due to http://tracker.ceph.com/issues/9155
         shell "radosgw-admin key create --subuser=puppet:swift --key-type=swift --secret='123456'" do |r|
-          r.exit_code.should be_zero
+          expect(r.exit_code).to be_zero
         end
 
         shell "radosgw-admin key create --subuser=puppet:swift --key-type=swift --secret='123456'" do |r|
-          r.exit_code.should be_zero
+          expect(r.exit_code).to be_zero
         end
 
         shell 'curl -i -H "X-Auth-User: puppet:swift" -H "X-Auth-Key: 123456" http://first/auth/v1.0/' do |r|
-          r.exit_code.should be_zero
-          r.stdout.should =~ /HTTP\/1\.1 204 No Content/
-          r.stdout.should_not =~ /401 Unauthorized/
+          expect(r.exit_code).to be_zero
+          expect(r.stdout).to match(/HTTP\/1\.1 204 No Content/)
+          expect(r.stdout).not_to match(/401 Unauthorized/)
         end
 
       end
@@ -151,7 +151,7 @@ describe 'ceph::rgw::apache' do
         EOS
 
         puppet_apply(pp) do |r|
-          r.exit_code.should_not == 1
+          expect(r.exit_code).not_to eq(1)
         end
 
         shell 'ceph-disk zap /dev/sdb'
@@ -196,7 +196,7 @@ describe 'ceph::rgw::apache' do
         EOS
 
         puppet_apply(purge) do |r|
-          r.exit_code.should_not == 1
+          expect(r.exit_code).not_to eq(1)
         end
       end
     end

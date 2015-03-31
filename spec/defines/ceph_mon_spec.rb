@@ -39,7 +39,7 @@ describe 'ceph::mon' do
 
       it {
         expect {
-          should contain_service('ceph-mon-A').with('ensure' => 'running')
+          is_expected.to contain_service('ceph-mon-A').with('ensure' => 'running')
         }.to raise_error(Puppet::Error, /authentication_type cephx requires either key or keyring to be set but both are undef/)
       }
     end
@@ -56,13 +56,13 @@ describe 'ceph::mon' do
         }
       end
 
-      it { should contain_service('ceph-mon-A').with('ensure' => 'running') }
-      it { should contain_exec('ceph-mon-ceph.client.admin.keyring-A').with(
+      it { is_expected.to contain_service('ceph-mon-A').with('ensure' => 'running') }
+      it { is_expected.to contain_exec('ceph-mon-ceph.client.admin.keyring-A').with(
         'command' => '/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 touch /etc/ceph/ceph.client.admin.keyring'
        ) }
-      it { should contain_exec('ceph-mon-mkfs-A').with(
+      it { is_expected.to contain_exec('ceph-mon-mkfs-A').with(
         'command' => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 mon_data=\$(ceph-mon  --id A --show-config-value mon_data)
@@ -80,10 +80,10 @@ if [ ! -d \$mon_data ] ; then
 fi
 ",
         'logoutput' => true) }
-      it { should contain_file('/tmp/ceph-mon-keyring-A').with(
+      it { is_expected.to contain_file('/tmp/ceph-mon-keyring-A').with(
         'mode' => '0444',
         'content' => "[mon.]\n\tkey = AQATGHJTUCBqIBAA7M2yafV1xctn1pgr3GcKPg==\n\tcaps mon = \"allow *\"\n") }
-      it { should contain_exec('rm-keyring-A').with('command' => '/bin/rm /tmp/ceph-mon-keyring-A') }
+      it { is_expected.to contain_exec('rm-keyring-A').with('command' => '/bin/rm /tmp/ceph-mon-keyring-A') }
     end
 
     describe 'with keyring' do
@@ -98,13 +98,13 @@ fi
         }
       end
 
-      it { should contain_service('ceph-mon-A').with('ensure' => 'running') }
-      it { should contain_exec('ceph-mon-ceph.client.admin.keyring-A').with(
+      it { is_expected.to contain_service('ceph-mon-A').with('ensure' => 'running') }
+      it { is_expected.to contain_exec('ceph-mon-ceph.client.admin.keyring-A').with(
         'command' => '/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 touch /etc/ceph/ceph.client.admin.keyring'
        ) }
-      it { should contain_exec('ceph-mon-mkfs-A').with(
+      it { is_expected.to contain_exec('ceph-mon-mkfs-A').with(
         'command' => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 mon_data=\$(ceph-mon  --id A --show-config-value mon_data)
@@ -138,13 +138,13 @@ fi
         }
       end
 
-      it { should contain_service('ceph-mon-A').with('ensure' => 'running') }
-      it { should contain_exec('ceph-mon-testcluster.client.admin.keyring-A').with(
+      it { is_expected.to contain_service('ceph-mon-A').with('ensure' => 'running') }
+      it { is_expected.to contain_exec('ceph-mon-testcluster.client.admin.keyring-A').with(
         'command' => '/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 touch /etc/ceph/testcluster.client.admin.keyring'
        ) }
-      it { should contain_exec('ceph-mon-mkfs-A').with(
+      it { is_expected.to contain_exec('ceph-mon-mkfs-A').with(
         'command' => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 mon_data=\$(ceph-mon --cluster testcluster --id A --show-config-value mon_data)
@@ -179,8 +179,8 @@ fi
         }
       end
 
-      it { should contain_service('ceph-mon-A').with('ensure' => 'stopped') }
-      it { should contain_exec('remove-mon-A').with(
+      it { is_expected.to contain_service('ceph-mon-A').with('ensure' => 'stopped') }
+      it { is_expected.to contain_exec('remove-mon-A').with(
         'command' => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 mon_data=\$(ceph-mon --cluster testcluster --id A --show-config-value mon_data)
@@ -213,7 +213,7 @@ test ! -d \$mon_data
 
       it {
         expect {
-          should contain_service('ceph-mon-A').with('ensure' => 'running')
+          is_expected.to contain_service('ceph-mon-A').with('ensure' => 'running')
         }.to raise_error(Puppet::Error, /authentication_type cephx requires either key or keyring to be set but both are undef/)
       }
     end
@@ -230,13 +230,13 @@ test ! -d \$mon_data
         }
       end
 
-      it { should contain_service('ceph-mon-A').with('ensure' => 'running') }
-      it { should contain_exec('ceph-mon-ceph.client.admin.keyring-A').with(
+      it { is_expected.to contain_service('ceph-mon-A').with('ensure' => 'running') }
+      it { is_expected.to contain_exec('ceph-mon-ceph.client.admin.keyring-A').with(
         'command' => '/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 touch /etc/ceph/ceph.client.admin.keyring'
        ) }
-      it { should contain_exec('ceph-mon-mkfs-A').with(
+      it { is_expected.to contain_exec('ceph-mon-mkfs-A').with(
         'command' => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 mon_data=\$(ceph-mon  --id A --show-config-value mon_data)
@@ -254,10 +254,10 @@ if [ ! -d \$mon_data ] ; then
 fi
 ",
         'logoutput' => true) }
-      it { should contain_file('/tmp/ceph-mon-keyring-A').with(
+      it { is_expected.to contain_file('/tmp/ceph-mon-keyring-A').with(
         'mode' => '0444',
         'content' => "[mon.]\n\tkey = AQATGHJTUCBqIBAA7M2yafV1xctn1pgr3GcKPg==\n\tcaps mon = \"allow *\"\n") }
-      it { should contain_exec('rm-keyring-A').with('command' => '/bin/rm /tmp/ceph-mon-keyring-A') }
+      it { is_expected.to contain_exec('rm-keyring-A').with('command' => '/bin/rm /tmp/ceph-mon-keyring-A') }
     end
 
     describe 'with keyring' do
@@ -272,13 +272,13 @@ fi
         }
       end
 
-      it { should contain_service('ceph-mon-A').with('ensure' => 'running') }
-      it { should contain_exec('ceph-mon-ceph.client.admin.keyring-A').with(
+      it { is_expected.to contain_service('ceph-mon-A').with('ensure' => 'running') }
+      it { is_expected.to contain_exec('ceph-mon-ceph.client.admin.keyring-A').with(
         'command' => '/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 touch /etc/ceph/ceph.client.admin.keyring'
        ) }
-      it { should contain_exec('ceph-mon-mkfs-A').with(
+      it { is_expected.to contain_exec('ceph-mon-mkfs-A').with(
         'command' => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 mon_data=\$(ceph-mon  --id A --show-config-value mon_data)
@@ -312,13 +312,13 @@ fi
         }
       end
 
-      it { should contain_service('ceph-mon-A').with('ensure' => 'running') }
-      it { should contain_exec('ceph-mon-testcluster.client.admin.keyring-A').with(
+      it { is_expected.to contain_service('ceph-mon-A').with('ensure' => 'running') }
+      it { is_expected.to contain_exec('ceph-mon-testcluster.client.admin.keyring-A').with(
         'command' => '/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 touch /etc/ceph/testcluster.client.admin.keyring'
        ) }
-      it { should contain_exec('ceph-mon-mkfs-A').with(
+      it { is_expected.to contain_exec('ceph-mon-mkfs-A').with(
         'command' => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 mon_data=\$(ceph-mon --cluster testcluster --id A --show-config-value mon_data)
@@ -353,8 +353,8 @@ fi
         }
       end
 
-      it { should contain_service('ceph-mon-A').with('ensure' => 'stopped') }
-      it { should contain_exec('remove-mon-A').with(
+      it { is_expected.to contain_service('ceph-mon-A').with('ensure' => 'stopped') }
+      it { is_expected.to contain_exec('remove-mon-A').with(
         'command' => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 mon_data=\$(ceph-mon --cluster testcluster --id A --show-config-value mon_data)

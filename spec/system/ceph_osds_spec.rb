@@ -52,7 +52,7 @@ describe 'ceph::osds' do
 
     machines.each do |vm|
       puppet_apply(:node => vm, :code => pp) do |r|
-        r.exit_code.should_not == 1
+        expect(r.exit_code).not_to eq(1)
       end
 
       rcp(:sp => data, :dp => data_path, :d => node(:name => vm))
@@ -114,7 +114,7 @@ ensure: purged
 
         machines.each do |vm|
           puppet_apply('') do |r|
-            r.exit_code.should_not == 1
+            expect(r.exit_code).not_to eq(1)
           end
 
           shell(:node => vm, :command => 'test -b /dev/sdb && sgdisk --zap-all --clear --mbrtogpt -- /dev/sdb')
@@ -148,15 +148,15 @@ ensure: present
           end
 
           puppet_apply('') do |r|
-            r.exit_code.should_not == 1
+            expect(r.exit_code).not_to eq(1)
             r.refresh
-            r.exit_code.should_not == 1
+            expect(r.exit_code).not_to eq(1)
           end
 
           shell 'ceph osd tree' do |r|
-            r.stdout.should =~ /osd.0/
-            r.stderr.should be_empty
-            r.exit_code.should be_zero
+            expect(r.stdout).to match(/osd.0/)
+            expect(r.stderr).to be_empty
+            expect(r.exit_code).to be_zero
           end
         end
       end
@@ -199,15 +199,15 @@ ensure: present
           end
 
           puppet_apply('') do |r|
-            r.exit_code.should_not == 1
+            expect(r.exit_code).not_to eq(1)
             r.refresh
-            r.exit_code.should_not == 1
+            expect(r.exit_code).not_to eq(1)
           end
 
           shell 'ceph osd tree' do |r|
-            r.stdout.should =~ /osd.0/
-            r.stderr.should be_empty
-            r.exit_code.should be_zero
+            expect(r.stdout).to match(/osd.0/)
+            expect(r.stderr).to be_empty
+            expect(r.exit_code).to be_zero
           end
         end
       end

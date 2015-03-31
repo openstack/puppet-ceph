@@ -46,7 +46,7 @@ describe 'ceph::pool' do
         EOS
 
         puppet_apply(pp) do |r|
-          r.exit_code.should_not == 1
+          expect(r.exit_code).not_to eq(1)
         end
       end
 
@@ -66,7 +66,7 @@ describe 'ceph::pool' do
         EOS
 
         puppet_apply(pp) do |r|
-          r.exit_code.should_not == 1
+          expect(r.exit_code).not_to eq(1)
         end
       end
 
@@ -80,27 +80,27 @@ describe 'ceph::pool' do
         EOS
 
         puppet_apply(pp) do |r|
-          r.exit_code.should_not == 1
+          expect(r.exit_code).not_to eq(1)
           r.refresh
-          r.exit_code.should == 0
+          expect(r.exit_code).to eq(0)
         end
 
         shell 'ceph osd pool get volumes pg_num' do |r|
-          r.stdout.should =~ /pg_num: 64/
-          r.stderr.should be_empty
-          r.exit_code.should be_zero
+          expect(r.stdout).to match(/pg_num: 64/)
+          expect(r.stderr).to be_empty
+          expect(r.exit_code).to be_zero
         end
 
         shell 'ceph osd pool get volumes pgp_num' do |r|
-          r.stdout.should =~ /pgp_num: 64/
-          r.stderr.should be_empty
-          r.exit_code.should be_zero
+          expect(r.stdout).to match(/pgp_num: 64/)
+          expect(r.stderr).to be_empty
+          expect(r.exit_code).to be_zero
         end
 
         shell 'ceph osd pool get volumes size' do |r|
-          r.stdout.should =~ /size: 3/
-          r.stderr.should be_empty
-          r.exit_code.should be_zero
+          expect(r.stdout).to match(/size: 3/)
+          expect(r.stderr).to be_empty
+          expect(r.exit_code).to be_zero
         end
 
       end
@@ -115,9 +115,9 @@ describe 'ceph::pool' do
         EOS
 
         puppet_apply(pp) do |r|
-          r.exit_code.should_not == 1
+          expect(r.exit_code).not_to eq(1)
           r.refresh
-          r.exit_code.should == 0
+          expect(r.exit_code).to eq(0)
         end
 
         pp2 = <<-EOS
@@ -127,15 +127,15 @@ describe 'ceph::pool' do
         EOS
 
         puppet_apply(pp2) do |r|
-          r.exit_code.should_not == 1
+          expect(r.exit_code).not_to eq(1)
           r.refresh
-          r.exit_code.should == 0
+          expect(r.exit_code).to eq(0)
         end
 
         shell 'ceph osd lspools | grep volumes' do |r|
-          r.stdout.should be_empty
-          r.stderr.should be_empty
-          r.exit_code.should_not be_zero
+          expect(r.stdout).to be_empty
+          expect(r.stderr).to be_empty
+          expect(r.exit_code).not_to be_zero
         end
 
       end

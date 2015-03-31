@@ -51,13 +51,13 @@ describe 'ceph usecases' do
       shell 'sleep 10' # we need to wait a bit until the OSD is up
 
       shell 'ceph -s', { :acceptable_exit_codes => [0] } do |r|
-        r.stdout.should =~ /1 mons at/
-        r.stderr.should be_empty
+        expect(r.stdout).to match(/1 mons at/)
+        expect(r.stderr).to be_empty
       end
 
       shell 'ceph osd tree', { :acceptable_exit_codes => [0] } do |r|
-        r.stdout.should =~ /osd.0/
-        r.stderr.should be_empty
+        expect(r.stdout).to match(/osd.0/)
+        expect(r.stderr).to be_empty
       end
     end
 
@@ -93,14 +93,14 @@ describe 'ceph usecases' do
 
       if osfamily == 'Debian' && operatingsystem == 'Ubuntu'
         shell 'status ceph-mon id=a', { :acceptable_exit_codes => [1] } do |r|
-          r.stdout.should be_empty
-          r.stderr.should =~ /Unknown instance: ceph.a/
+          expect(r.stdout).to be_empty
+          expect(r.stderr).to match(/Unknown instance: ceph.a/)
         end
       end
       if osfamily == 'RedHat'
         shell 'service ceph status mon.a', { :acceptable_exit_codes => [1] } do |r|
-          r.stdout.should =~ /mon.a not found/
-          r.stderr.should be_empty
+          expect(r.stdout).to match(/mon.a not found/)
+          expect(r.stderr).to be_empty
         end
       end
     end

@@ -37,19 +37,19 @@ describe 'ceph::pool' do
       end
 
       it {
-        should contain_exec('create-volumes').with(
+        is_expected.to contain_exec('create-volumes').with(
           'command' => "/bin/true # comment to satisfy puppet syntax requirements\nset -ex\nceph osd pool create volumes 3"
         )
-        should contain_exec('set-volumes-pg_num').with(
+        is_expected.to contain_exec('set-volumes-pg_num').with(
           'command' => "/bin/true # comment to satisfy puppet syntax requirements\nset -ex\nceph osd pool set volumes pg_num 3"
         )
-        should contain_exec('set-volumes-pgp_num').with(
+        is_expected.to contain_exec('set-volumes-pgp_num').with(
           'command' => "/bin/true # comment to satisfy puppet syntax requirements\nset -ex\nceph osd pool set volumes pgp_num 4"
         )
-        should contain_exec('set-volumes-size').with(
+        is_expected.to contain_exec('set-volumes-size').with(
           'command' => "/bin/true # comment to satisfy puppet syntax requirements\nset -ex\nceph osd pool set volumes size 2"
         )
-        should_not contain_exec('delete-volumes')
+        is_expected.not_to contain_exec('delete-volumes')
       }
 
     end
@@ -67,8 +67,8 @@ describe 'ceph::pool' do
       end
 
       it {
-        should_not contain_exec('create-volumes')
-        should contain_exec('delete-volumes').with(
+        is_expected.not_to contain_exec('create-volumes')
+        is_expected.to contain_exec('delete-volumes').with(
           'command' => "/bin/true # comment to satisfy puppet syntax requirements\nset -ex\nceph osd pool delete volumes volumes --yes-i-really-really-mean-it"
         )
       }

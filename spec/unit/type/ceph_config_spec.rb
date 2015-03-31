@@ -26,16 +26,16 @@ describe 'Puppet::Type.type(:ceph_config)' do
 
   it 'should work bascily' do
     @ceph_config[:value] = 'max'
-    @ceph_config[:value].should == 'max'
+    expect(@ceph_config[:value]).to eq('max')
   end
 
   it 'should convert true to True' do
     @ceph_config[:value] = 'tRuE'
-    @ceph_config[:value].should == 'True'
+    expect(@ceph_config[:value]).to eq('True')
   end
 
   it 'should convert false to False' do
     @ceph_config[:value] = 'fAlSe'
-    @ceph_config[:value].should == 'False'
+    expect(@ceph_config[:value]).to eq('False')
   end
 end

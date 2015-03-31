@@ -67,7 +67,7 @@ describe 'ceph::key' do
 
         machines.each do |mon|
           puppet_apply(:node => mon, :code => pp) do |r|
-            r.exit_code.should_not == 1
+            expect(r.exit_code).not_to eq(1)
           end
         end
       end
@@ -85,7 +85,7 @@ describe 'ceph::key' do
 
         machines.each do |mon|
           puppet_apply(:node => mon, :code => pp) do |r|
-            r.exit_code.should_not == 1
+            expect(r.exit_code).not_to eq(1)
           end
         end
       end
@@ -117,33 +117,33 @@ describe 'ceph::key' do
         EOS
 
         puppet_apply(pp) do |r|
-          r.exit_code.should_not == 1
+          expect(r.exit_code).not_to eq(1)
           r.refresh
-          r.exit_code.should_not == 1
+          expect(r.exit_code).not_to eq(1)
         end
 
         shell 'ceph auth list' do |r|
-          r.stdout.should_not =~ /client.admin/
-          r.exit_code.should be_zero
+          expect(r.stdout).not_to match(/client.admin/)
+          expect(r.exit_code).to be_zero
         end
 
         shell 'ls -l /etc/ceph/ceph.client.admin.keyring' do |r|
-          r.stdout.should =~ /.*-rw-------.*root\sroot.*/m
-          r.stderr.should be_empty
-          r.exit_code.should be_zero
+          expect(r.stdout).to match(/.*-rw-------.*root\sroot.*/m)
+          expect(r.stderr).to be_empty
+          expect(r.exit_code).to be_zero
         end
 
         shell 'cat /etc/ceph/ceph.client.admin.keyring' do |r|
-          r.stdout.should =~ /.*\[client.admin\].*key = #{admin_key}.*caps mds = "allow \*".*caps mon = "allow \*".*caps osd = "allow \*".*/m
-          r.stderr.should be_empty
-          r.exit_code.should be_zero
+          expect(r.stdout).to match(/.*\[client.admin\].*key = #{admin_key}.*caps mds = "allow \*".*caps mon = "allow \*".*caps osd = "allow \*".*/m)
+          expect(r.stderr).to be_empty
+          expect(r.exit_code).to be_zero
         end
 
       end
 
       it 'should uninstall one monitor and all packages' do
         puppet_apply(purge) do |r|
-          r.exit_code.should_not == 1
+          expect(r.exit_code).not_to eq(1)
         end
       end
 
@@ -192,34 +192,34 @@ describe 'ceph::key' do
         EOS
 
         puppet_apply(pp) do |r|
-          r.exit_code.should_not == 1
+          expect(r.exit_code).not_to eq(1)
           r.refresh
-          r.exit_code.should_not == 1
-          r.stdout.should_not =~ /Exec\[ceph-key-client\.admin\]/ # client.admin key needs to contain a / character!
+          expect(r.exit_code).not_to eq(1)
+          expect(r.stdout).not_to match(/Exec\[ceph-key-client\.admin\]/) # client.admin key needs to contain a / character!
         end
 
         shell 'ceph auth list' do |r|
-          r.stdout.should =~ /.*client\.volumes.*key:\s#{volume_key}.*/m
+          expect(r.stdout).to match(/.*client\.volumes.*key:\s#{volume_key}.*/m)
           # r.stderr.should be_empty # ceph auth writes to stderr!
-          r.exit_code.should be_zero
+          expect(r.exit_code).to be_zero
         end
 
         shell 'ls -l /etc/ceph/ceph.client.volumes.keyring' do |r|
-          r.stdout.should =~ /.*-rw-------.*nobody\s#{nogroup}.*/m
-          r.stderr.should be_empty
-          r.exit_code.should be_zero
+          expect(r.stdout).to match(/.*-rw-------.*nobody\s#{nogroup}.*/m)
+          expect(r.stderr).to be_empty
+          expect(r.exit_code).to be_zero
         end
 
         shell 'cat /etc/ceph/ceph.client.volumes.keyring' do |r|
-          r.stdout.should =~ /.*\[client.volumes\].*key = #{volume_key}.*caps mon = "allow \*".*caps osd = "allow rw".*/m
-          r.stderr.should be_empty
-          r.exit_code.should be_zero
+          expect(r.stdout).to match(/.*\[client.volumes\].*key = #{volume_key}.*caps mon = "allow \*".*caps osd = "allow rw".*/m)
+          expect(r.stderr).to be_empty
+          expect(r.exit_code).to be_zero
         end
       end
 
       it 'should uninstall one monitor and all packages' do
         puppet_apply(purge) do |r|
-          r.exit_code.should_not == 1
+          expect(r.exit_code).not_to eq(1)
         end
       end
     end

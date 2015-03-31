@@ -29,7 +29,7 @@ describe 'ceph::osd' do
         '/tmp'
       end
 
-      it { should contain_exec('ceph-osd-prepare-/tmp').with(
+      it { is_expected.to contain_exec('ceph-osd-prepare-/tmp').with(
         'command'   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 if ! test -b /tmp ; then
@@ -45,7 +45,7 @@ ls -l /var/lib/ceph/osd/ceph-* | grep ' /tmp'
 ",
         'logoutput' => true
       ) }
-      it { should contain_exec('ceph-osd-activate-/tmp').with(
+      it { is_expected.to contain_exec('ceph-osd-activate-/tmp').with(
         'command'   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 if ! test -b /tmp ; then
@@ -78,7 +78,7 @@ ls -ld /var/lib/ceph/osd/ceph-* | grep ' /tmp'
         }
       end
 
-      it { should contain_exec('ceph-osd-prepare-/tmp/data').with(
+      it { is_expected.to contain_exec('ceph-osd-prepare-/tmp/data').with(
         'command'   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 if ! test -b /tmp/data ; then
@@ -94,7 +94,7 @@ ls -l /var/lib/ceph/osd/testcluster-* | grep ' /tmp/data'
 ",
         'logoutput' => true
       ) }
-      it { should contain_exec('ceph-osd-activate-/tmp/data').with(
+      it { is_expected.to contain_exec('ceph-osd-activate-/tmp/data').with(
         'command'   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 if ! test -b /tmp/data ; then
@@ -126,7 +126,7 @@ ls -ld /var/lib/ceph/osd/testcluster-* | grep ' /tmp/data'
         }
       end
 
-      it { should contain_exec('remove-osd-/tmp').with(
+      it { is_expected.to contain_exec('remove-osd-/tmp').with(
         'command'   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 if [ -z \"\$id\" ] ; then

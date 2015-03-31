@@ -49,27 +49,27 @@ describe 'ceph usecases' do
       puppet_apply(pp) do |r|
         # due to the generate() the above is not idempotent
         # so we don't run twice as usual
-        r.exit_code.should_not == 1
+        expect(r.exit_code).not_to eq(1)
       end
 
       shell 'sleep 30' # we need to wait a bit until the OSD is up
 
       shell 'ceph -s' do |r|
-        r.stdout.should =~ /1 mons at/
-        r.stderr.should be_empty
-        r.exit_code.should be_zero
+        expect(r.stdout).to match(/1 mons at/)
+        expect(r.stderr).to be_empty
+        expect(r.exit_code).to be_zero
       end
 
       shell 'ceph osd tree' do |r|
-        r.stdout.should =~ /osd.0/
-        r.stderr.should be_empty
-        r.exit_code.should be_zero
+        expect(r.stdout).to match(/osd.0/)
+        expect(r.stderr).to be_empty
+        expect(r.exit_code).to be_zero
       end
     end
 
     it 'should uninstall one osd' do
       shell 'ceph osd tree | grep DNE' do |r|
-        r.exit_code.should_not be_zero
+        expect(r.exit_code).not_to be_zero
       end
 
       pp = <<-EOS
@@ -79,12 +79,12 @@ describe 'ceph usecases' do
       EOS
 
       puppet_apply(pp) do |r|
-        r.exit_code.should_not == 1
+        expect(r.exit_code).not_to eq(1)
       end
 
       shell 'ceph osd tree | grep DNE' do |r|
-        r.stderr.should be_empty
-        r.exit_code.should be_zero
+        expect(r.stderr).to be_empty
+        expect(r.exit_code).to be_zero
       end
     end
 
@@ -96,7 +96,7 @@ describe 'ceph usecases' do
       EOS
 
       puppet_apply(pp) do |r|
-        r.exit_code.should_not == 1
+        expect(r.exit_code).not_to eq(1)
       end
 
       osfamily = facter.facts['osfamily']
@@ -104,16 +104,16 @@ describe 'ceph usecases' do
 
       if osfamily == 'Debian' && operatingsystem == 'Ubuntu'
         shell 'status ceph-mon id=a' do |r|
-          r.stdout.should be_empty
-          r.stderr.should =~ /Unknown instance: ceph.a/
-          r.exit_code.should_not be_zero
+          expect(r.stdout).to be_empty
+          expect(r.stderr).to match(/Unknown instance: ceph.a/)
+          expect(r.exit_code).not_to be_zero
         end
       end
       if osfamily == 'RedHat'
         shell 'service ceph status mon.a' do |r|
-          r.stdout.should =~ /mon.a not found/
-          r.stderr.should be_empty
-          r.exit_code.should_not be_zero
+          expect(r.stdout).to match(/mon.a not found/)
+          expect(r.stderr).to be_empty
+          expect(r.exit_code).not_to be_zero
         end
       end
     end
@@ -130,7 +130,7 @@ describe 'ceph usecases' do
 
       machines.each do |vm|
         puppet_apply(:node => vm, :code => pp) do |r|
-          r.exit_code.should_not == 1
+          expect(r.exit_code).not_to eq(1)
         end
       end
     end
@@ -193,28 +193,28 @@ describe 'ceph usecases' do
 
       machines.each do |vm|
         puppet_apply(:node => vm, :code => pp) do |r|
-          r.exit_code.should_not == 1
+          expect(r.exit_code).not_to eq(1)
           r.refresh
-          r.exit_code.should_not == 1
+          expect(r.exit_code).not_to eq(1)
         end
       end
 
       shell 'ceph -s' do |r|
-        r.stdout.should =~ /1 mons at/
-        r.stderr.should be_empty
-        r.exit_code.should be_zero
+        expect(r.stdout).to match(/1 mons at/)
+        expect(r.stderr).to be_empty
+        expect(r.exit_code).to be_zero
       end
 
       shell 'ceph osd tree' do |r|
-        r.stdout.should =~ /osd.0/
-        r.stderr.should be_empty
-        r.exit_code.should be_zero
+        expect(r.stdout).to match(/osd.0/)
+        expect(r.stderr).to be_empty
+        expect(r.exit_code).to be_zero
       end
     end
 
     it 'should uninstall one osd' do
       shell 'ceph osd tree | grep DNE' do |r|
-        r.exit_code.should_not be_zero
+        expect(r.exit_code).not_to be_zero
       end
 
       pp = <<-EOS
@@ -224,13 +224,13 @@ describe 'ceph usecases' do
       EOS
 
       puppet_apply(:node => 'second', :code => pp) do |r|
-        r.exit_code.should_not == 1
+        expect(r.exit_code).not_to eq(1)
       end
 
       shell(:node => 'second', :command => "test -b /dev/sdb && ceph-disk zap /dev/sdb")
 
       shell 'ceph osd tree | grep DNE' do |r|
-        r.exit_code.should be_zero
+        expect(r.exit_code).to be_zero
       end
     end
 
@@ -242,7 +242,7 @@ describe 'ceph usecases' do
       EOS
 
       puppet_apply(:node => 'first', :code => pp) do |r|
-        r.exit_code.should_not == 1
+        expect(r.exit_code).not_to eq(1)
       end
 
       osfamily = facter.facts['osfamily']
@@ -250,16 +250,16 @@ describe 'ceph usecases' do
 
       if osfamily == 'Debian' && operatingsystem == 'Ubuntu'
         shell 'status ceph-mon id=first' do |r|
-          r.stdout.should be_empty
-          r.stderr.should =~ /Unknown instance: ceph.first/
-          r.exit_code.should_not be_zero
+          expect(r.stdout).to be_empty
+          expect(r.stderr).to match(/Unknown instance: ceph.first/)
+          expect(r.exit_code).not_to be_zero
         end
       end
       if osfamily == 'RedHat'
         shell 'service ceph status mon.first' do |r|
-          r.stdout.should =~ /mon.first not found/
-          r.stderr.should be_empty
-          r.exit_code.should_not be_zero
+          expect(r.stdout).to match(/mon.first not found/)
+          expect(r.stderr).to be_empty
+          expect(r.exit_code).not_to be_zero
         end
       end
     end
@@ -276,7 +276,7 @@ describe 'ceph usecases' do
 
       machines.each do |vm|
         puppet_apply(:node => vm, :code => pp) do |r|
-          r.exit_code.should_not == 1
+          expect(r.exit_code).not_to eq(1)
         end
       end
     end
@@ -316,29 +316,29 @@ describe 'ceph usecases' do
 
       machines.each do |vm|
         puppet_apply(:node => vm, :code => pp) do |r|
-          r.exit_code.should_not == 1
+          expect(r.exit_code).not_to eq(1)
           r.refresh
-          r.exit_code.should_not == 1
+          expect(r.exit_code).not_to eq(1)
         end
       end
 
       shell 'ceph -s' do |r|
-        r.stdout.should =~ /1 mons at/
-        r.stderr.should be_empty
-        r.exit_code.should be_zero
+        expect(r.stdout).to match(/1 mons at/)
+        expect(r.stderr).to be_empty
+        expect(r.exit_code).to be_zero
       end
 
       shell 'ceph osd tree' do |r|
-        r.stdout.should =~ /osd.0/
-        r.stdout.should =~ /osd.1/
-        r.stderr.should be_empty
-        r.exit_code.should be_zero
+        expect(r.stdout).to match(/osd.0/)
+        expect(r.stdout).to match(/osd.1/)
+        expect(r.stderr).to be_empty
+        expect(r.exit_code).to be_zero
       end
     end
 
     it 'should uninstall two OSDs' do
       shell 'ceph osd tree | grep DNE' do |r|
-        r.exit_code.should_not be_zero
+        expect(r.exit_code).not_to be_zero
       end
 
       pp = <<-EOS
@@ -349,14 +349,14 @@ describe 'ceph usecases' do
 
       machines.each do |vm|
         puppet_apply(:node => vm, :code => pp) do |r|
-          r.exit_code.should_not == 1
+          expect(r.exit_code).not_to eq(1)
         end
 
         shell(:node => vm, :command => "test -b /dev/sdb && ceph-disk zap /dev/sdb")
       end
 
       shell 'ceph osd tree | grep DNE' do |r|
-        r.exit_code.should be_zero
+        expect(r.exit_code).to be_zero
       end
     end
 
@@ -368,7 +368,7 @@ describe 'ceph usecases' do
       EOS
 
       puppet_apply(:node => 'first', :code => pp) do |r|
-        r.exit_code.should_not == 1
+        expect(r.exit_code).not_to eq(1)
       end
 
       osfamily = facter.facts['osfamily']
@@ -376,16 +376,16 @@ describe 'ceph usecases' do
 
       if osfamily == 'Debian' && operatingsystem == 'Ubuntu'
         shell 'status ceph-mon id=first' do |r|
-          r.stdout.should be_empty
-          r.stderr.should =~ /Unknown instance: ceph.first/
-          r.exit_code.should_not be_zero
+          expect(r.stdout).to be_empty
+          expect(r.stderr).to match(/Unknown instance: ceph.first/)
+          expect(r.exit_code).not_to be_zero
         end
       end
       if osfamily == 'RedHat'
         shell 'service ceph status mon.first' do |r|
-          r.stdout.should =~ /mon.first not found/
-          r.stderr.should be_empty
-          r.exit_code.should_not be_zero
+          expect(r.stdout).to match(/mon.first not found/)
+          expect(r.stderr).to be_empty
+          expect(r.exit_code).not_to be_zero
         end
       end
     end
@@ -402,7 +402,7 @@ describe 'ceph usecases' do
 
       machines.each do |vm|
         puppet_apply(:node => vm, :code => pp) do |r|
-          r.exit_code.should_not == 1
+          expect(r.exit_code).not_to eq(1)
         end
       end
     end

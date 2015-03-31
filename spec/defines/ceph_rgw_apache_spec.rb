@@ -49,7 +49,7 @@ describe 'ceph::rgw::apache' do
         'radosgw.gateway'
       end
 
-      it { should contain_apache__vhost('myhost.domain-radosgw').with( {
+      it { is_expected.to contain_apache__vhost('myhost.domain-radosgw').with( {
         'servername'        => 'myhost.domain',
         'serveradmin'       => 'root@localhost',
         'port'              => 80,
@@ -63,14 +63,14 @@ describe 'ceph::rgw::apache' do
   ServerSignature Off",
       })}
 
-      it { should contain_class('apache') }
-      it { should contain_class('apache::mod::alias') }
-      it { should contain_class('apache::mod::auth_basic') }
-      it { should contain_apache__mod('fastcgi').with ( { 'package' => 'libapache2-mod-fastcgi' } ) }
-      it { should contain_class('apache::mod::mime') }
-      it { should contain_class('apache::mod::rewrite') }
+      it { is_expected.to contain_class('apache') }
+      it { is_expected.to contain_class('apache::mod::alias') }
+      it { is_expected.to contain_class('apache::mod::auth_basic') }
+      it { is_expected.to contain_apache__mod('fastcgi').with ( { 'package' => 'libapache2-mod-fastcgi' } ) }
+      it { is_expected.to contain_class('apache::mod::mime') }
+      it { is_expected.to contain_class('apache::mod::rewrite') }
 
-      it { should contain_file('/var/www/s3gw.fcgi').with({
+      it { is_expected.to contain_file('/var/www/s3gw.fcgi').with({
         'ensure'  => 'file',
         'owner'   => 'root',
         'group'   => 'root',
@@ -98,7 +98,7 @@ exec /usr/bin/radosgw -c /etc/ceph/ceph.conf -n radosgw.gateway",
         }
       end
 
-      it { should contain_apache__vhost('mydns.hostname-radosgw').with( {
+      it { is_expected.to contain_apache__vhost('mydns.hostname-radosgw').with( {
         'servername'        => 'mydns.hostname',
         'serveradmin'       => 'admin@hostname',
         'port'              => 1111,
@@ -112,14 +112,14 @@ exec /usr/bin/radosgw -c /etc/ceph/ceph.conf -n radosgw.gateway",
   ServerSignature Off",
       } ) }
 
-      it { should contain_class('apache') }
-      it { should contain_class('apache::mod::alias') }
-      it { should contain_class('apache::mod::auth_basic') }
-      it { should contain_apache__mod('fastcgi').with ( { 'package' => 'libapache2-mod-fastcgi' } ) }
-      it { should contain_class('apache::mod::mime') }
-      it { should contain_class('apache::mod::rewrite') }
+      it { is_expected.to contain_class('apache') }
+      it { is_expected.to contain_class('apache::mod::alias') }
+      it { is_expected.to contain_class('apache::mod::auth_basic') }
+      it { is_expected.to contain_apache__mod('fastcgi').with ( { 'package' => 'libapache2-mod-fastcgi' } ) }
+      it { is_expected.to contain_class('apache::mod::mime') }
+      it { is_expected.to contain_class('apache::mod::rewrite') }
 
-      it { should contain_file('/some/fcgi/filepath') }
+      it { is_expected.to contain_file('/some/fcgi/filepath') }
 
     end
   end
@@ -144,7 +144,7 @@ exec /usr/bin/radosgw -c /etc/ceph/ceph.conf -n radosgw.gateway",
         'radosgw.gateway'
       end
 
-      it { should contain_apache__vhost('myhost.domain-radosgw').with( {
+      it { is_expected.to contain_apache__vhost('myhost.domain-radosgw').with( {
         'servername'        => 'myhost.domain',
         'serveradmin'       => 'root@localhost',
         'port'              => 80,
@@ -158,14 +158,14 @@ exec /usr/bin/radosgw -c /etc/ceph/ceph.conf -n radosgw.gateway",
   ServerSignature Off",
       })}
 
-      it { should contain_class('apache') }
-      it { should contain_class('apache::mod::alias') }
-      it { should contain_class('apache::mod::auth_basic') }
-      it { should contain_apache__mod('fastcgi').with ( { 'package' => 'mod_fastcgi' } ) }
-      it { should contain_class('apache::mod::mime') }
-      it { should contain_class('apache::mod::rewrite') }
+      it { is_expected.to contain_class('apache') }
+      it { is_expected.to contain_class('apache::mod::alias') }
+      it { is_expected.to contain_class('apache::mod::auth_basic') }
+      it { is_expected.to contain_apache__mod('fastcgi').with ( { 'package' => 'mod_fastcgi' } ) }
+      it { is_expected.to contain_class('apache::mod::mime') }
+      it { is_expected.to contain_class('apache::mod::rewrite') }
 
-      it { should contain_file('/var/www/s3gw.fcgi').with({
+      it { is_expected.to contain_file('/var/www/s3gw.fcgi').with({
         'ensure'  => 'file',
         'owner'   => 'root',
         'group'   => 'root',
@@ -193,7 +193,7 @@ exec /usr/bin/radosgw -c /etc/ceph/ceph.conf -n radosgw.gateway",
         }
       end
 
-      it { should contain_apache__vhost('mydns.hostname-radosgw').with( {
+      it { is_expected.to contain_apache__vhost('mydns.hostname-radosgw').with( {
         'servername'        => 'mydns.hostname',
         'serveradmin'       => 'admin@hostname',
         'port'              => 1111,
@@ -207,14 +207,14 @@ exec /usr/bin/radosgw -c /etc/ceph/ceph.conf -n radosgw.gateway",
   ServerSignature Off",
       } ) }
 
-      it { should contain_class('apache') }
-      it { should contain_class('apache::mod::alias') }
-      it { should contain_class('apache::mod::auth_basic') }
-      it { should contain_apache__mod('fastcgi').with ( { 'package' => 'mod_fastcgi' } ) }
-      it { should contain_class('apache::mod::mime') }
-      it { should contain_class('apache::mod::rewrite') }
+      it { is_expected.to contain_class('apache') }
+      it { is_expected.to contain_class('apache::mod::alias') }
+      it { is_expected.to contain_class('apache::mod::auth_basic') }
+      it { is_expected.to contain_apache__mod('fastcgi').with ( { 'package' => 'mod_fastcgi' } ) }
+      it { is_expected.to contain_class('apache::mod::mime') }
+      it { is_expected.to contain_class('apache::mod::rewrite') }
 
-      it { should contain_file('/some/fcgi/filepath') }
+      it { is_expected.to contain_file('/some/fcgi/filepath') }
 
     end
   end

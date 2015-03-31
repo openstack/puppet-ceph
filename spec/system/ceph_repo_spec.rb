@@ -46,7 +46,7 @@ describe 'ceph::repo' do
       EOS
 
       puppet_apply(pp) do |r|
-        r.exit_code.should_not == 1
+        expect(r.exit_code).not_to eq(1)
       end
     end
 
@@ -54,33 +54,33 @@ describe 'ceph::repo' do
 
     if osfamily == 'Debian'
       shell 'apt-cache policy ceph' do |r|
-        r.stdout.should_not =~ /ceph.com/
-        r.stderr.should be_empty
-        r.exit_code.should be_zero
+        expect(r.stdout).not_to match(/ceph.com/)
+        expect(r.stderr).to be_empty
+        expect(r.exit_code).to be_zero
       end
       shell 'apt-cache policy curl' do |r|
-        r.stdout.should_not =~ /ceph.com/
-        r.exit_code.should be_zero
+        expect(r.stdout).not_to match(/ceph.com/)
+        expect(r.exit_code).to be_zero
       end
       shell 'apt-cache policy libapache2-mod-fastcgi' do |r|
-        r.stdout.should_not =~ /ceph.com/
-        r.exit_code.should be_zero
+        expect(r.stdout).not_to match(/ceph.com/)
+        expect(r.exit_code).to be_zero
       end
     end
     if osfamily == 'RedHat'
       shell 'yum info ceph' do |r|
-        r.stdout.should_not =~ /ceph.com/
-        r.stderr.should =~ /Error: No matching Packages to list/
-        r.exit_code.should_not be_zero
+        expect(r.stdout).not_to match(/ceph.com/)
+        expect(r.stderr).to match(/Error: No matching Packages to list/)
+        expect(r.exit_code).not_to be_zero
       end
       shell 'yum info qemu-kvm' do |r|
-        r.stdout.should_not =~ /Repo.*ext-ceph-extras/
-        r.exit_code.should be_zero
+        expect(r.stdout).not_to match(/Repo.*ext-ceph-extras/)
+        expect(r.exit_code).to be_zero
       end
       shell 'yum info mod_fastcgi' do |r|
-        r.stdout.should_not =~ /Repo.*ext-ceph-fastcgi/
-        r.stderr.should =~ /Error: No matching Packages to list/
-        r.exit_code.should_not be_zero
+        expect(r.stdout).not_to match(/Repo.*ext-ceph-fastcgi/)
+        expect(r.stderr).to match(/Error: No matching Packages to list/)
+        expect(r.exit_code).not_to be_zero
       end
     end
   end
@@ -116,28 +116,28 @@ describe 'ceph::repo' do
 
         # Run it twice and test for idempotency
         puppet_apply(pp) do |r|
-          r.exit_code.should_not == 1
+          expect(r.exit_code).not_to eq(1)
           r.refresh
-          r.exit_code.should_not == 1
+          expect(r.exit_code).not_to eq(1)
         end
 
         shell querycommand do |r|
-          r.stdout.should =~ /#{queryresult}/
-          r.stderr.should be_empty
-          r.exit_code.should be_zero
+          expect(r.stdout).to match(/#{queryresult}/)
+          expect(r.stderr).to be_empty
+          expect(r.exit_code).to be_zero
         end
 
         # Test extras is not enabled
         if osfamily == 'Debian'
           shell 'apt-cache policy curl' do |r|
-            r.stdout.should_not =~ /ceph\.com.*ceph-extras/
-            r.exit_code.should be_zero
+            expect(r.stdout).not_to match(/ceph\.com.*ceph-extras/)
+            expect(r.exit_code).to be_zero
           end
         end
         if osfamily == 'RedHat'
           shell 'yum info qemu-kvm' do |r|
-            r.stdout.should_not =~ /Repo.*ext-ceph-extras/
-            r.exit_code.should be_zero
+            expect(r.stdout).not_to match(/Repo.*ext-ceph-extras/)
+            expect(r.exit_code).to be_zero
           end
         end
 
@@ -151,23 +151,23 @@ describe 'ceph::repo' do
 
         # Run it twice and test for idempotency
         puppet_apply(pp) do |r|
-          r.exit_code.should_not == 1
+          expect(r.exit_code).not_to eq(1)
           r.refresh
-          r.exit_code.should_not == 1
+          expect(r.exit_code).not_to eq(1)
         end
 
         if osfamily == 'Debian'
           shell querycommand do |r|
-            r.stdout.should_not =~ /ceph.com/
-            r.stderr.should be_empty
-            r.exit_code.should be_zero
+            expect(r.stdout).not_to match(/ceph.com/)
+            expect(r.stderr).to be_empty
+            expect(r.exit_code).to be_zero
           end
         end
         if osfamily == 'RedHat'
           shell querycommand do |r|
-            r.stdout.should_not =~ /ceph.com/
-            r.stderr.should =~ /Error: No matching Packages to list/
-            r.exit_code.should_not be_zero
+            expect(r.stdout).not_to match(/ceph.com/)
+            expect(r.stderr).to match(/Error: No matching Packages to list/)
+            expect(r.exit_code).not_to be_zero
           end
         end
       end
@@ -184,24 +184,24 @@ describe 'ceph::repo' do
 
         # Run it twice and test for idempotency
         puppet_apply(pp) do |r|
-          r.exit_code.should_not == 1
+          expect(r.exit_code).not_to eq(1)
           r.refresh
-          r.exit_code.should_not == 1
+          expect(r.exit_code).not_to eq(1)
         end
 
         # Test for a package in ceph-extras (curl/qemu-kvm)
         if osfamily == 'Debian'
           shell 'apt-cache policy curl' do |r|
-            r.stdout.should =~ /ceph\.com.*ceph-extras/
-            r.stderr.should be_empty
-            r.exit_code.should be_zero
+            expect(r.stdout).to match(/ceph\.com.*ceph-extras/)
+            expect(r.stderr).to be_empty
+            expect(r.exit_code).to be_zero
           end
         end
         if osfamily == 'RedHat'
           shell 'yum info qemu-kvm' do |r|
-            r.stdout.should =~ /Repo.*ext-ceph-extras/
-            r.stderr.should be_empty
-            r.exit_code.should be_zero
+            expect(r.stdout).to match(/Repo.*ext-ceph-extras/)
+            expect(r.stderr).to be_empty
+            expect(r.exit_code).to be_zero
           end
         end
 
@@ -216,21 +216,21 @@ describe 'ceph::repo' do
 
         # Run it twice and test for idempotency
         puppet_apply(pp) do |r|
-          r.exit_code.should_not == 1
+          expect(r.exit_code).not_to eq(1)
           r.refresh
-          r.exit_code.should_not == 1
+          expect(r.exit_code).not_to eq(1)
         end
 
         if osfamily == 'Debian'
           shell 'apt-cache policy curl' do |r|
-            r.stdout.should_not =~ /ceph.com/
-            r.exit_code.should be_zero
+            expect(r.stdout).not_to match(/ceph.com/)
+            expect(r.exit_code).to be_zero
           end
         end
         if osfamily == 'RedHat'
           shell 'yum info qemu-kvm' do |r|
-            r.stdout.should_not =~ /Repo.*ext-ceph-extras/
-            r.exit_code.should be_zero
+            expect(r.stdout).not_to match(/Repo.*ext-ceph-extras/)
+            expect(r.exit_code).to be_zero
           end
         end
       end
@@ -247,24 +247,24 @@ describe 'ceph::repo' do
 
         # Run it twice and test for idempotency
         puppet_apply(pp) do |r|
-          r.exit_code.should_not == 1
+          expect(r.exit_code).not_to eq(1)
           r.refresh
-          r.exit_code.should_not == 1
+          expect(r.exit_code).not_to eq(1)
         end
 
         # Test fastcgi in ceph-fastcgi
         if osfamily == 'Debian'
           shell 'apt-cache policy libapache2-mod-fastcgi' do |r|
-            r.stdout.should =~ /ceph.com/
-            r.stderr.should be_empty
-            r.exit_code.should be_zero
+            expect(r.stdout).to match(/ceph.com/)
+            expect(r.stderr).to be_empty
+            expect(r.exit_code).to be_zero
           end
         end
         if osfamily == 'RedHat'
           shell 'yum info mod_fastcgi' do |r|
-            r.stdout.should =~ /Repo.*ext-ceph-fastcgi/
-            r.stderr.should be_empty
-            r.exit_code.should be_zero
+            expect(r.stdout).to match(/Repo.*ext-ceph-fastcgi/)
+            expect(r.stderr).to be_empty
+            expect(r.exit_code).to be_zero
           end
         end
 
@@ -279,22 +279,22 @@ describe 'ceph::repo' do
 
         # Run it twice and test for idempotency
         puppet_apply(pp) do |r|
-          r.exit_code.should_not == 1
+          expect(r.exit_code).not_to eq(1)
           r.refresh
-          r.exit_code.should_not == 1
+          expect(r.exit_code).not_to eq(1)
         end
 
         if osfamily == 'Debian'
           shell 'apt-cache policy libapache2-mod-fastcgi' do |r|
-            r.stdout.should_not =~ /ceph.com/
-            r.exit_code.should be_zero
+            expect(r.stdout).not_to match(/ceph.com/)
+            expect(r.exit_code).to be_zero
           end
         end
         if osfamily == 'RedHat'
           shell 'yum info mod_fastcgi' do |r|
-            r.stdout.should_not =~ /Repo.*ext-ceph-fastcgi/
-            r.stderr.should =~ /Error: No matching Packages to list/
-            r.exit_code.should_not be_zero
+            expect(r.stdout).not_to match(/Repo.*ext-ceph-fastcgi/)
+            expect(r.stderr).to match(/Error: No matching Packages to list/)
+            expect(r.exit_code).not_to be_zero
           end
         end
       end

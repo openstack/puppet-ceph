@@ -56,7 +56,7 @@ describe 'ceph::osd' do
 
         machines.each do |mon|
           puppet_apply(:node => mon, :code => pp) do |r|
-            r.exit_code.should_not == 1
+            expect(r.exit_code).not_to eq(1)
           end
         end
       end
@@ -74,7 +74,7 @@ describe 'ceph::osd' do
 
         machines.each do |mon|
           puppet_apply(:node => mon, :code => pp) do |r|
-            r.exit_code.should_not == 1
+            expect(r.exit_code).not_to eq(1)
           end
         end
       end
@@ -98,22 +98,22 @@ describe 'ceph::osd' do
           EOS
 
           puppet_apply(pp) do |r|
-            r.exit_code.should_not == 1
+            expect(r.exit_code).not_to eq(1)
             r.refresh
-            r.exit_code.should_not == 1
+            expect(r.exit_code).not_to eq(1)
           end
 
           shell 'ceph osd tree' do |r|
-            r.stdout.should =~ /osd.0/
-            r.stderr.should be_empty
-            r.exit_code.should be_zero
+            expect(r.stdout).to match(/osd.0/)
+            expect(r.stderr).to be_empty
+            expect(r.exit_code).to be_zero
           end
 
         end
 
         it 'should uninstall one osd' do
           shell 'ceph osd tree | grep DNE' do |r|
-            r.exit_code.should_not be_zero
+            expect(r.exit_code).not_to be_zero
           end
 
           pp = <<-EOS
@@ -123,20 +123,20 @@ describe 'ceph::osd' do
           EOS
 
           puppet_apply(pp) do |r|
-            r.exit_code.should_not == 1
+            expect(r.exit_code).not_to eq(1)
             r.refresh
-            r.exit_code.should == 0
+            expect(r.exit_code).to eq(0)
           end
 
           shell 'ceph osd tree | grep DNE' do |r|
-            r.exit_code.should be_zero
+            expect(r.exit_code).to be_zero
           end
           shell "test -b #{data} && ceph-disk zap #{data}"
         end
 
         it 'should uninstall one monitor and all packages' do
           puppet_apply(purge) do |r|
-            r.exit_code.should_not == 1
+            expect(r.exit_code).not_to eq(1)
           end
         end
 
@@ -172,21 +172,21 @@ describe 'ceph::osd' do
           EOS
 
           puppet_apply(pp) do |r|
-            r.exit_code.should_not == 1
+            expect(r.exit_code).not_to eq(1)
             r.refresh
-            r.exit_code.should_not == 1
+            expect(r.exit_code).not_to eq(1)
           end
 
           shell 'ceph osd tree' do |r|
-            r.stdout.should =~ /osd.0/
-            r.stderr.should be_empty
-            r.exit_code.should be_zero
+            expect(r.stdout).to match(/osd.0/)
+            expect(r.stderr).to be_empty
+            expect(r.exit_code).to be_zero
           end
         end
 
         it 'should uninstall one osd' do
           shell 'ceph osd tree | grep DNE' do |r|
-            r.exit_code.should_not be_zero
+            expect(r.exit_code).not_to be_zero
           end
 
           pp = <<-EOS
@@ -194,13 +194,13 @@ describe 'ceph::osd' do
           EOS
 
           puppet_apply(pp) do |r|
-            r.exit_code.should_not == 1
+            expect(r.exit_code).not_to eq(1)
             r.refresh
-            r.exit_code.should == 0
+            expect(r.exit_code).to eq(0)
           end
 
           shell 'ceph osd tree | grep DNE' do |r|
-            r.exit_code.should be_zero
+            expect(r.exit_code).to be_zero
           end
 
           shell "test -b #{data} && ceph-disk zap #{data}"
@@ -208,7 +208,7 @@ describe 'ceph::osd' do
 
         it 'should uninstall one monitor and all packages' do
           puppet_apply(purge) do |r|
-            r.exit_code.should_not == 1
+            expect(r.exit_code).not_to eq(1)
           end
         end
 
@@ -233,21 +233,21 @@ describe 'ceph::osd' do
           EOS
 
           puppet_apply(pp) do |r|
-            r.exit_code.should_not == 1
+            expect(r.exit_code).not_to eq(1)
             r.refresh
-            r.exit_code.should_not == 1
+            expect(r.exit_code).not_to eq(1)
           end
 
           shell 'ceph osd tree' do |r|
-            r.stdout.should =~ /osd.0/
-            r.stderr.should be_empty
-            r.exit_code.should be_zero
+            expect(r.stdout).to match(/osd.0/)
+            expect(r.stderr).to be_empty
+            expect(r.exit_code).to be_zero
           end
         end
 
         it 'should uninstall one osd and external journal' do
           shell 'ceph osd tree | grep DNE' do |r|
-            r.exit_code.should_not be_zero
+            expect(r.exit_code).not_to be_zero
           end
 
           pp = <<-EOS
@@ -255,26 +255,26 @@ describe 'ceph::osd' do
           EOS
 
           puppet_apply(pp) do |r|
-            r.exit_code.should_not == 1
+            expect(r.exit_code).not_to eq(1)
             r.refresh
-            r.exit_code.should == 0
+            expect(r.exit_code).to eq(0)
           end
 
           shell 'ceph osd tree | grep DNE' do |r|
-            r.exit_code.should be_zero
+            expect(r.exit_code).to be_zero
           end
           shell "test -b #{data} && ceph-disk zap #{data}"
         end
 
         it 'should uninstall one monitor and all packages' do
           puppet_apply(purge) do |r|
-            r.exit_code.should_not == 1
+            expect(r.exit_code).not_to eq(1)
           end
         end
 
         it 'should install one OSD no cephx on a partition' do
           shell 'sgdisk --largest-new=1 --change-name="1:ceph data" --partition-guid=1:7aebb13f-d4a5-4b94-8622-355d2b5401f1 --typecode=1:4fbd7e29-9d25-41b8-afd0-062c0ceff05d -- /dev/sdb' do |r|
-            r.exit_code.should be_zero
+            expect(r.exit_code).to be_zero
           end
 
           pp = <<-EOS
@@ -294,21 +294,21 @@ describe 'ceph::osd' do
           EOS
 
           puppet_apply(pp) do |r|
-            r.exit_code.should_not == 1
+            expect(r.exit_code).not_to eq(1)
             r.refresh
-            r.exit_code.should_not == 1
+            expect(r.exit_code).not_to eq(1)
           end
 
           shell 'ceph osd tree' do |r|
-            r.stdout.should =~ /osd.0/
-            r.stderr.should be_empty
-            r.exit_code.should be_zero
+            expect(r.stdout).to match(/osd.0/)
+            expect(r.stderr).to be_empty
+            expect(r.exit_code).to be_zero
           end
         end
 
         it 'should uninstall one osd' do
           shell 'ceph osd tree | grep DNE' do |r|
-            r.exit_code.should_not be_zero
+            expect(r.exit_code).not_to be_zero
           end
 
           pp = <<-EOS
@@ -318,20 +318,20 @@ describe 'ceph::osd' do
           EOS
 
           puppet_apply(pp) do |r|
-            r.exit_code.should_not == 1
+            expect(r.exit_code).not_to eq(1)
             r.refresh
-            r.exit_code.should == 0
+            expect(r.exit_code).to eq(0)
           end
 
           shell 'ceph osd tree | grep DNE' do |r|
-            r.exit_code.should be_zero
+            expect(r.exit_code).to be_zero
           end
           shell 'ceph-disk zap /dev/sdb'
         end
 
         it 'should install one OSD no cephx on partition and activate after umount' do
           shell 'sgdisk --delete=1 /dev/sdb || true; sgdisk --largest-new=1 --change-name="1:ceph data" --partition-guid=1:7aebb13f-d4a5-4b94-8622-355d2b5401f1 --typecode=1:4fbd7e29-9d25-41b8-afd0-062c0ceff05d -- /dev/sdb' do |r|
-            r.exit_code.should be_zero
+            expect(r.exit_code).to be_zero
           end
 
           pp = <<-EOS
@@ -351,41 +351,41 @@ describe 'ceph::osd' do
           EOS
 
           puppet_apply(pp) do |r|
-            r.exit_code.should_not == 1
+            expect(r.exit_code).not_to eq(1)
             r.refresh
-            r.exit_code.should_not == 1
+            expect(r.exit_code).not_to eq(1)
           end
 
           shell 'ceph osd tree' do |r|
-            r.stdout.should =~ /osd.0/
-            r.stderr.should be_empty
-            r.exit_code.should be_zero
+            expect(r.stdout).to match(/osd.0/)
+            expect(r.stderr).to be_empty
+            expect(r.exit_code).to be_zero
           end
 
           # stop and umount (but leave it prepared)
           shell 'stop ceph-osd id=0 || /etc/init.d/ceph stop osd.0; umount /dev/sdb1' do |r|
-            r.exit_code.should be_zero
+            expect(r.exit_code).to be_zero
           end
 
           # rerun puppet (should activate but not prepare)
           puppet_apply(pp) do |r|
-            r.exit_code.should_not == 1
+            expect(r.exit_code).not_to eq(1)
             r.refresh
-            r.exit_code.should_not == 1
+            expect(r.exit_code).not_to eq(1)
           end
 
           # check osd up and same osd.id
           shell 'ceph osd tree' do |r|
-            r.stdout.should =~ /osd.0\s*up/
-            r.stderr.should be_empty
-            r.exit_code.should be_zero
+            expect(r.stdout).to match(/osd.0\s*up/)
+            expect(r.stderr).to be_empty
+            expect(r.exit_code).to be_zero
           end
 
         end
 
         it 'should uninstall one osd' do
           shell 'ceph osd tree | grep DNE' do |r|
-            r.exit_code.should_not be_zero
+            expect(r.exit_code).not_to be_zero
           end
 
           pp = <<-EOS
@@ -395,20 +395,20 @@ describe 'ceph::osd' do
           EOS
 
           puppet_apply(pp) do |r|
-            r.exit_code.should_not == 1
+            expect(r.exit_code).not_to eq(1)
             r.refresh
-            r.exit_code.should == 0
+            expect(r.exit_code).to eq(0)
           end
 
           shell 'ceph osd tree | grep DNE' do |r|
-            r.exit_code.should be_zero
+            expect(r.exit_code).to be_zero
           end
           shell 'ceph-disk zap /dev/sdb'
         end
 
         it 'should uninstall one monitor and all packages' do
           puppet_apply(purge) do |r|
-            r.exit_code.should_not == 1
+            expect(r.exit_code).not_to eq(1)
           end
         end
       end

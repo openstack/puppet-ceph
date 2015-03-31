@@ -54,7 +54,7 @@ ceph::profile::params::fsid: '#{fsid}'
 
         machines.each do |vm|
           puppet_apply(:node => vm, :code => pp) do |r|
-            r.exit_code.should_not == 1
+            expect(r.exit_code).not_to eq(1)
           end
         end
       end
@@ -93,21 +93,21 @@ ceph::profile::params::release: '#{release}'
           EOS
 
           puppet_apply(pp) do |r|
-            r.exit_code.should_not == 1
+            expect(r.exit_code).not_to eq(1)
             r.refresh
-            r.exit_code.should_not == 1
+            expect(r.exit_code).not_to eq(1)
           end
 
           shell 'cat /etc/ceph/ceph.conf' do |r|
-            r.stdout.should =~ /#{fsid}/
-            r.stderr.should be_empty
-            r.exit_code.should be_zero
+            expect(r.stdout).to match(/#{fsid}/)
+            expect(r.stderr).to be_empty
+            expect(r.exit_code).to be_zero
           end
 
           shell querycommand do |r|
-            r.stdout.should =~ /#{queryresult}/
-            r.stderr.should be_empty
-            r.exit_code.should be_zero
+            expect(r.stdout).to match(/#{queryresult}/)
+            expect(r.stderr).to be_empty
+            expect(r.exit_code).to be_zero
           end
         end
       end
