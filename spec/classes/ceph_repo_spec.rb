@@ -34,7 +34,7 @@ describe 'ceph::repo' do
 
       it { is_expected.to contain_apt__key('ceph').with(
         :key        => '17ED316D',
-        :key_source => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc'
+        :key_source => 'http://git.ceph.com/?p=ceph.git;a=blob_plain;f=keys/release.asc'
       ) }
 
       it { is_expected.to contain_apt__source('ceph').with(
@@ -75,7 +75,7 @@ describe 'ceph::repo' do
 
       it { is_expected.to contain_apt__key('ceph').with(
         :key        => '17ED316D',
-        :key_source => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc'
+        :key_source => 'http://git.ceph.com/?p=ceph.git;a=blob_plain;f=keys/release.asc'
       ) }
 
       it { is_expected.to contain_apt__source('ceph').with(
