@@ -1,0 +1,13 @@
+HOSTS:
+  first:
+    roles:
+      - master
+      - mon
+      - osd
+      - client
+    platform: ubuntu-14.04-amd64
+    hypervisor: none
+    ip: 127.0.0.1
+CONFIG:
+  type: foss
+  set_env: false

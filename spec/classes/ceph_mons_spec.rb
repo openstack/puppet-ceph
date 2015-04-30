@@ -68,11 +68,22 @@ describe 'ceph::mons' do
     it_configures 'ceph mons'
   end
 
-  describe 'RedHat' do
+  describe 'RHEL6' do
     let :facts do
       {
-        :osfamily => 'RedHat',
-        :operatingsystem => 'RedHat',
+        :osfamily                  => 'RedHat',
+        :operatingsystemmajrelease => '6',
+      }
+    end
+
+    it_configures 'ceph mons'
+  end
+
+  describe 'RHEL7' do
+    let :facts do
+      {
+        :osfamily                  => 'RedHat',
+        :operatingsystemmajrelease => '7',
       }
     end
 

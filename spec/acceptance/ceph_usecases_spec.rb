@@ -116,7 +116,9 @@ describe 'ceph usecases' do
       EOS
 
       apply_manifest(pp, :catch_failures => true)
-      apply_manifest(pp, :catch_changes => true)
+      # can't check for idempotency because of https://tickets.puppetlabs.com/browse/PUP-1198
+      #apply_manifest(pp, :catch_changes => true)
+      apply_manifest(pp, :catch_failures => true)
     end
   end
 end

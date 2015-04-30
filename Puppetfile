@@ -17,8 +17,8 @@ mod 'bodepd/scenario_node_terminus',
 
 mod 'puppetlabs/apache',
   :git => 'git://github.com/puppetlabs/puppetlabs-apache',
-  :ref => '1.0.1'
+  :ref => '1.4.1'
 
 mod 'puppetlabs/concat',
   :git => 'git://github.com/puppetlabs/puppetlabs-concat',
-  :ref => '1.1.x'
+  :ref => '1.2.1'

@@ -7,10 +7,10 @@ fixtures:
     'inifile': 'git://github.com/puppetlabs/puppetlabs-inifile'
     'apache':
       repo: 'git://github.com/puppetlabs/puppetlabs-apache'
-      ref: '1.0.1'
+      ref: '1.4.1'
     'concat':
       repo: 'git://github.com/puppetlabs/puppetlabs-concat'
-      ref: '1.1.0'
+      ref: '1.2.1'
 
   symlinks:
     'ceph': "#{source_dir}"

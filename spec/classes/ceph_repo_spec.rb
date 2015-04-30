@@ -187,21 +187,24 @@ describe 'ceph::repo' do
 
     let :facts do
     {
-      :osfamily         => 'RedHat',
+      :osfamily                  => 'RedHat',
+      :operatingsystem           => 'RedHat',
+      :operatingsystemmajrelease => '6',
     }
     end
 
     describe "with default params" do
 
-      it { is_expected.to contain_yumrepo('ext-epel-6.8').with(
+      it { is_expected.to contain_yumrepo('ext-epel-6').with(
         :enabled    => '1',
-        :descr      => 'External EPEL 6.8',
-        :name       => 'ext-epel-6.8',
+        :descr      => 'External EPEL 6',
+        :name       => 'ext-epel-6',
         :baseurl    => 'absent',
         :gpgcheck   => '0',
         :gpgkey     => 'absent',
         :mirrorlist => 'http://mirrors.fedoraproject.org/metalink?repo=epel-6&arch=$basearch',
-        :priority   => '20'
+        :priority   => '20',
+        :exclude    => 'python-ceph-compat python-rbd python-rados python-cephfs',
       ) }
 
       it { is_expected.to contain_yumrepo('ext-ceph').with(
@@ -234,15 +237,16 @@ describe 'ceph::repo' do
         }
       end
 
-      it { is_expected.to contain_yumrepo('ext-epel-6.8').with(
+      it { is_expected.to contain_yumrepo('ext-epel-6').with(
         :enabled    => '1',
-        :descr      => 'External EPEL 6.8',
-        :name       => 'ext-epel-6.8',
+        :descr      => 'External EPEL 6',
+        :name       => 'ext-epel-6',
         :baseurl    => 'absent',
         :gpgcheck   => '0',
         :gpgkey     => 'absent',
         :mirrorlist => 'http://mirrors.fedoraproject.org/metalink?repo=epel-6&arch=$basearch',
-        :priority   => '20'
+        :priority   => '20',
+        :exclude    => 'python-ceph-compat python-rbd python-rados python-cephfs',
       ) }
 
       it { is_expected.to contain_yumrepo('ext-ceph').with(
@@ -277,15 +281,16 @@ describe 'ceph::repo' do
         }
       end
 
-      it { is_expected.to contain_yumrepo('ext-epel-6.8').with(
+      it { is_expected.to contain_yumrepo('ext-epel-6').with(
         :enabled    => '0',
-        :descr      => 'External EPEL 6.8',
-        :name       => 'ext-epel-6.8',
+        :descr      => 'External EPEL 6',
+        :name       => 'ext-epel-6',
         :baseurl    => 'absent',
         :gpgcheck   => '0',
         :gpgkey     => 'absent',
         :mirrorlist => 'http://mirrors.fedoraproject.org/metalink?repo=epel-6&arch=$basearch',
-        :priority   => '20'
+        :priority   => '20',
+        :exclude    => 'python-ceph-compat python-rbd python-rados python-cephfs',
       ) }
 
       it { is_expected.to contain_yumrepo('ext-ceph').with(
@@ -341,15 +346,16 @@ describe 'ceph::repo' do
         }
       end
 
-      it { is_expected.to contain_yumrepo('ext-epel-6.8').with(
+      it { is_expected.to contain_yumrepo('ext-epel-6').with(
         :enabled    => '1',
-        :descr      => 'External EPEL 6.8',
-        :name       => 'ext-epel-6.8',
+        :descr      => 'External EPEL 6',
+        :name       => 'ext-epel-6',
         :baseurl    => 'absent',
         :gpgcheck   => '0',
         :gpgkey     => 'absent',
         :mirrorlist => 'http://mirrors.fedoraproject.org/metalink?repo=epel-6&arch=$basearch',
-        :priority   => '20'
+        :priority   => '20',
+        :exclude    => 'python-ceph-compat python-rbd python-rados python-cephfs',
       ) }
 
       it { is_expected.to contain_yumrepo('ext-ceph').with(
@@ -394,15 +400,16 @@ describe 'ceph::repo' do
         }
       end
 
-      it { is_expected.to contain_yumrepo('ext-epel-6.8').with(
+      it { is_expected.to contain_yumrepo('ext-epel-6').with(
         :enabled    => '1',
-        :descr      => 'External EPEL 6.8',
-        :name       => 'ext-epel-6.8',
+        :descr      => 'External EPEL 6',
+        :name       => 'ext-epel-6',
         :baseurl    => 'absent',
         :gpgcheck   => '0',
         :gpgkey     => 'absent',
         :mirrorlist => 'http://mirrors.fedoraproject.org/metalink?repo=epel-6&arch=$basearch',
-        :priority   => '20'
+        :priority   => '20',
+        :exclude    => 'python-ceph-compat python-rbd python-rados python-cephfs',
       ) }
 
       it { is_expected.to contain_yumrepo('ext-ceph').with(
@@ -432,6 +439,252 @@ describe 'ceph::repo' do
         :descr      => 'FastCGI basearch packages for Ceph',
         :name       => 'ext-ceph-fastcgi',
         :baseurl    => 'http://gitbuilder.ceph.com/mod_fastcgi-rpm-rhel6-x86_64-basic/ref/master',
+        :gpgcheck   => '1',
+        :gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/autobuild.asc',
+        :mirrorlist => 'absent',
+        :priority   => '20'
+      ) }
+
+    end
+  end
+
+  describe 'RHEL7' do
+
+    let :facts do
+    {
+      :osfamily                  => 'RedHat',
+      :operatingsystem           => 'RedHat',
+      :operatingsystemmajrelease => '7',
+    }
+    end
+
+    describe "with default params" do
+
+      it { should contain_yumrepo('ext-epel-7').with(
+        :enabled    => '1',
+        :descr      => 'External EPEL 7',
+        :name       => 'ext-epel-7',
+        :baseurl    => 'absent',
+        :gpgcheck   => '0',
+        :gpgkey     => 'absent',
+        :mirrorlist => 'http://mirrors.fedoraproject.org/metalink?repo=epel-7&arch=$basearch',
+        :priority   => '20',
+        :exclude    => 'python-ceph-compat python-rbd python-rados python-cephfs',
+      ) }
+
+      it { should contain_yumrepo('ext-ceph').with(
+        :enabled    => '1',
+        :descr      => 'External Ceph giant',
+        :name       => 'ext-ceph-giant',
+        :baseurl    => 'http://ceph.com/rpm-giant/el7/$basearch',
+        :gpgcheck   => '1',
+        :gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc',
+        :mirrorlist => 'absent',
+        :priority   => '10'
+     ) }
+
+      it { should contain_yumrepo('ext-ceph-noarch').with(
+        :enabled    => '1',
+        :descr      => 'External Ceph noarch',
+        :name       => 'ext-ceph-giant-noarch',
+        :baseurl    => 'http://ceph.com/rpm-giant/el7/noarch',
+        :gpgcheck   => '1',
+        :gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc',
+        :mirrorlist => 'absent',
+        :priority   => '10'
+      ) }
+    end
+
+    describe "when overriding ceph release" do
+      let :params do
+        {
+         :release => 'firefly'
+        }
+      end
+
+      it { should contain_yumrepo('ext-epel-7').with(
+        :enabled    => '1',
+        :descr      => 'External EPEL 7',
+        :name       => 'ext-epel-7',
+        :baseurl    => 'absent',
+        :gpgcheck   => '0',
+        :gpgkey     => 'absent',
+        :mirrorlist => 'http://mirrors.fedoraproject.org/metalink?repo=epel-7&arch=$basearch',
+        :priority   => '20',
+        :exclude    => 'python-ceph-compat python-rbd python-rados python-cephfs',
+      ) }
+
+      it { should contain_yumrepo('ext-ceph').with(
+        :enabled    => '1',
+        :descr      => 'External Ceph firefly',
+        :name       => 'ext-ceph-firefly',
+        :baseurl    => 'http://ceph.com/rpm-firefly/el7/$basearch',
+        :gpgcheck   => '1',
+        :gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc',
+        :mirrorlist => 'absent',
+        :priority   => '10'
+     ) }
+
+      it { should contain_yumrepo('ext-ceph-noarch').with(
+        :enabled    => '1',
+        :descr      => 'External Ceph noarch',
+        :name       => 'ext-ceph-firefly-noarch',
+        :baseurl    => 'http://ceph.com/rpm-firefly/el7/noarch',
+        :gpgcheck   => '1',
+        :gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc',
+        :mirrorlist => 'absent',
+        :priority   => '10'
+      ) }
+    end
+
+    describe "with ensure => absent to disable" do
+      let :params do
+        {
+          :ensure  => 'absent',
+          :extras  => true,
+          :fastcgi => true
+        }
+      end
+
+      it { should contain_yumrepo('ext-epel-7').with(
+        :enabled    => '0',
+        :descr      => 'External EPEL 7',
+        :name       => 'ext-epel-7',
+        :baseurl    => 'absent',
+        :gpgcheck   => '0',
+        :gpgkey     => 'absent',
+        :mirrorlist => 'http://mirrors.fedoraproject.org/metalink?repo=epel-7&arch=$basearch',
+        :priority   => '20',
+        :exclude    => 'python-ceph-compat python-rbd python-rados python-cephfs',
+      ) }
+
+      it { should contain_yumrepo('ext-ceph').with(
+        :enabled    => '0',
+        :descr      => 'External Ceph giant',
+        :name       => 'ext-ceph-giant',
+        :baseurl    => 'http://ceph.com/rpm-giant/el7/$basearch',
+        :gpgcheck   => '1',
+        :gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc',
+        :mirrorlist => 'absent',
+        :priority   => '10'
+     ) }
+
+      it { should contain_yumrepo('ext-ceph-noarch').with(
+        :enabled    => '0',
+        :descr      => 'External Ceph noarch',
+        :name       => 'ext-ceph-giant-noarch',
+        :baseurl    => 'http://ceph.com/rpm-giant/el7/noarch',
+        :gpgcheck   => '1',
+        :gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc',
+        :mirrorlist => 'absent',
+        :priority   => '10'
+      ) }
+
+      it { should_not contain_yumrepo('ext-ceph-extras') }
+
+      it { should contain_yumrepo('ext-ceph-fastcgi').with(
+        :enabled    => '0',
+        :descr      => 'FastCGI basearch packages for Ceph',
+        :name       => 'ext-ceph-fastcgi',
+        :baseurl    => 'http://gitbuilder.ceph.com/mod_fastcgi-rpm-rhel7-x86_64-basic/ref/master',
+        :gpgcheck   => '1',
+        :gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/autobuild.asc',
+        :mirrorlist => 'absent',
+        :priority   => '20'
+      ) }
+
+    end
+
+    describe "with ceph extras" do
+      let :params do
+        {
+          :extras => true
+        }
+      end
+
+      it { should contain_yumrepo('ext-epel-7').with(
+        :enabled    => '1',
+        :descr      => 'External EPEL 7',
+        :name       => 'ext-epel-7',
+        :baseurl    => 'absent',
+        :gpgcheck   => '0',
+        :gpgkey     => 'absent',
+        :mirrorlist => 'http://mirrors.fedoraproject.org/metalink?repo=epel-7&arch=$basearch',
+        :priority   => '20',
+        :exclude    => 'python-ceph-compat python-rbd python-rados python-cephfs',
+      ) }
+
+      it { should contain_yumrepo('ext-ceph').with(
+        :enabled    => '1',
+        :descr      => 'External Ceph giant',
+        :name       => 'ext-ceph-giant',
+        :baseurl    => 'http://ceph.com/rpm-giant/el7/$basearch',
+        :gpgcheck   => '1',
+        :gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc',
+        :mirrorlist => 'absent',
+        :priority   => '10'
+     ) }
+
+      it { should contain_yumrepo('ext-ceph-noarch').with(
+        :enabled    => '1',
+        :descr      => 'External Ceph noarch',
+        :name       => 'ext-ceph-giant-noarch',
+        :baseurl    => 'http://ceph.com/rpm-giant/el7/noarch',
+        :gpgcheck   => '1',
+        :gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc',
+        :mirrorlist => 'absent',
+        :priority   => '10'
+      ) }
+
+      it { should_not contain_yumrepo('ext-ceph-extras') }
+    end
+
+    describe "with ceph fast-cgi" do
+      let :params do
+        {
+          :fastcgi => true
+        }
+      end
+
+      it { should contain_yumrepo('ext-epel-7').with(
+        :enabled    => '1',
+        :descr      => 'External EPEL 7',
+        :name       => 'ext-epel-7',
+        :baseurl    => 'absent',
+        :gpgcheck   => '0',
+        :gpgkey     => 'absent',
+        :mirrorlist => 'http://mirrors.fedoraproject.org/metalink?repo=epel-7&arch=$basearch',
+        :priority   => '20',
+        :exclude    => 'python-ceph-compat python-rbd python-rados python-cephfs',
+      ) }
+
+      it { should contain_yumrepo('ext-ceph').with(
+        :enabled    => '1',
+        :descr      => 'External Ceph giant',
+        :name       => 'ext-ceph-giant',
+        :baseurl    => 'http://ceph.com/rpm-giant/el7/$basearch',
+        :gpgcheck   => '1',
+        :gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc',
+        :mirrorlist => 'absent',
+        :priority   => '10'
+     ) }
+
+      it { should contain_yumrepo('ext-ceph-noarch').with(
+        :enabled    => '1',
+        :descr      => 'External Ceph noarch',
+        :name       => 'ext-ceph-giant-noarch',
+        :baseurl    => 'http://ceph.com/rpm-giant/el7/noarch',
+        :gpgcheck   => '1',
+        :gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc',
+        :mirrorlist => 'absent',
+        :priority   => '10'
+      ) }
+
+      it { should contain_yumrepo('ext-ceph-fastcgi').with(
+        :enabled    => '1',
+        :descr      => 'FastCGI basearch packages for Ceph',
+        :name       => 'ext-ceph-fastcgi',
+        :baseurl    => 'http://gitbuilder.ceph.com/mod_fastcgi-rpm-rhel7-x86_64-basic/ref/master',
         :gpgcheck   => '1',
         :gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/autobuild.asc',
         :mirrorlist => 'absent',

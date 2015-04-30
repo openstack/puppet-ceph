@@ -196,12 +196,12 @@ test ! -d \$mon_data
     end
   end
 
-  context 'RHEL6' do
+  context 'RHEL7' do
 
     let :facts do
       {
         :osfamily        => 'RedHat',
-        :operatingsystem => 'RHEL6',
+        :operatingsystem => 'RHEL7',
       }
     end
 

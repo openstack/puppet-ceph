@@ -24,7 +24,7 @@
 #
 # === Parameters:
 #
-# [*pgk_cephrgw*] Package name for the ceph radosgw.
+# [*pkg_radosgw*] Package name for the ceph radosgw.
 #   Optional. Default is osfamily dependent (check ceph::params).
 #
 # [*rgw_data*] The path where the radosgw data should be stored.

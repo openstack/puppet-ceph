@@ -24,13 +24,18 @@ RSpec.configure do |c|
 
   hosts.each do |host|
     install_puppet
+    # clean out any module cruft
+    shell('rm -fr /etc/puppet/modules/*')
     on host, "mkdir -p #{host['distmoduledir']}"
+    # we will provide our own epel with some excludes later
+    shell('test -f /etc/debian_version || yum-config-manager --disable epel')
   end
 
+  c.formatter = :documentation
+
   c.before :suite do
-    puppet_module_install(:source => proj_root, :module_name => 'ceph')
-    scp_to hosts, File.join(proj_root, 'spec/fixtures/hieradata/hiera.yaml'), '/etc/puppet/hiera.yaml'
     hosts.each do |host|
+      scp_to hosts, File.join(proj_root, 'spec/fixtures/hieradata/hiera.yaml'), '/etc/puppet/hiera.yaml'
       # https://tickets.puppetlabs.com/browse/PUP-2566
       on host, 'sed -i "/templatedir/d" /etc/puppet/puppet.conf'
       install_package host, 'git'
@@ -38,8 +43,9 @@ RSpec.configure do |c|
       on host, puppet('module install puppetlabs/stdlib --version ">=4.0.0 <5.0.0"'), { :acceptable_exit_codes => [0,1] }
       on host, puppet('module install puppetlabs/inifile --version ">=1.0.0 <2.0.0"'), { :acceptable_exit_codes => [0,1] }
       on host, puppet('module install puppetlabs/apt --version ">=1.4.0 <2.0.0"'), { :acceptable_exit_codes => [0,1] }
-      on host, puppet('module install puppetlabs/concat --version ">=1.1.0 <2.0.0"'), { :acceptable_exit_codes => [0,1] }
-      on host, puppet('module install puppetlabs/apache --version ">=1.0.1 <2.0.0"'), { :acceptable_exit_codes => [0,1] }
+      on host, puppet('module install puppetlabs/concat --version ">=1.2.1 <2.0.0"'), { :acceptable_exit_codes => [0,1] }
+      on host, puppet('module install puppetlabs/apache --version ">=1.4.1 <2.0.0"'), { :acceptable_exit_codes => [0,1] }
+      puppet_module_install(:source => proj_root, :module_name => 'ceph')
       # Flush the firewall
       flushfw = <<-EOS
         iptables -F

@@ -118,11 +118,21 @@ describe 'ceph::profile::client' do
   context 'on RHEL6' do
 
     let :facts do
-      {
-        :osfamily         => 'RedHat',
-        :operatingsystem  => 'RHEL6',
-      }
+      { :osfamily                  => 'RedHat',
+        :operatingsystemmajrelease => '6' }
     end
+
+
+    it_configures 'ceph profile client'
+  end
+
+  context 'on RHEL7' do
+
+    let :facts do
+      { :osfamily                  => 'RedHat',
+        :operatingsystemmajrelease => '7' }
+    end
+
 
     it_configures 'ceph profile client'
   end

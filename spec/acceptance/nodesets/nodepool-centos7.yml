@@ -5,8 +5,9 @@ HOSTS:
       - mon
       - osd
       - client
-    platform: ubuntu-1404-amd64
+    platform: el-7-x86_64
     hypervisor: none
     ip: 127.0.0.1
 CONFIG:
   type: foss
+  set_env: false

@@ -44,15 +44,15 @@ RSpec.configure do |c|
       puppet_module_install(:source => File.join(proj_root, '../scenario_node_terminus'),
                             :module_name => 'scenario_node_terminus',
                             :node => vm)
-      shell(:command => 'puppet module install --version 4.x puppetlabs/stdlib',
+      shell(:command => 'puppet module install --version ">=4.0.0 <5.0.0" puppetlabs/stdlib',
             :node => vm)
-      shell(:command => 'puppet module install --version 1.0.0 puppetlabs/inifile',
+      shell(:command => 'puppet module install --version ">=1.0.0 <2.0.0" puppetlabs/inifile',
             :node => vm)
-      shell(:command => 'puppet module install --version 1.4.0 puppetlabs/apt',
+      shell(:command => 'puppet module install --version ">=1.4.0 <2.0.0" puppetlabs/apt',
             :node => vm)
-      shell(:command => 'puppet module install --version 1.1.x puppetlabs/concat',
+      shell(:command => 'puppet module install --version ">=1.2.1 <2.0.0" puppetlabs/concat',
             :node => vm)
-      shell(:command => 'puppet module install --version 1.0.1 puppetlabs/apache',
+      shell(:command => 'puppet module install --version ">=1.4.1 <2.0.0" puppetlabs/apache',
             :node => vm)
       rcp(:sp => File.join(proj_root, 'spec/fixtures/hieradata/hiera.yaml'),
           :dp => '/etc/puppet/hiera.yaml',

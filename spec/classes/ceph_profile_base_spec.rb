@@ -63,7 +63,18 @@ describe 'ceph::profile::base' do
   context 'on RHEL6' do
 
     let :facts do
-      { :osfamily => 'RedHat', }
+      { :osfamily                  => 'RedHat',
+        :operatingsystemmajrelease => '6' }
+    end
+
+    it_configures 'ceph profile base'
+  end
+
+  context 'on RHEL7' do
+
+    let :facts do
+      { :osfamily                  => 'RedHat',
+        :operatingsystemmajrelease => '7' }
     end
 
     it_configures 'ceph profile base'

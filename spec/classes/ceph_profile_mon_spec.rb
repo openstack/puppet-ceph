@@ -92,11 +92,20 @@ describe 'ceph::profile::mon' do
   context 'on RHEL6' do
 
     let :facts do
-      {
-        :osfamily         => 'RedHat',
-        :operatingsystem  => 'RHEL6',
-        :hostname         => 'first',
-      }
+      { :osfamily                  => 'RedHat',
+        :hostname                  => 'first',
+        :operatingsystemmajrelease => '6' }
+    end
+
+    it_configures 'ceph profile mon'
+  end
+
+  context 'on RHEL7' do
+
+    let :facts do
+      { :osfamily                  => 'RedHat',
+        :hostname                  => 'first',
+        :operatingsystemmajrelease => '7' }
     end
 
     it_configures 'ceph profile mon'

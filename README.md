@@ -128,10 +128,12 @@ The RS_SET environment variable contains the resource set of linux
 distribution configurations for which integration tests are going
 to be run. Available values are
 
-* two-ubuntu-server-1204-x64
-* ubuntu-server-1204-x64
-* two-centos-66-x64
-* centos-66-x64
+* two-ubuntu-server-12042-x64
+* one-ubuntu-server-12042-x64
+* two-centos-65-x64
+* one-centos-65-x64
+* two-centos-70-x64
+* one-centos-70-x64
 
 The default is
 

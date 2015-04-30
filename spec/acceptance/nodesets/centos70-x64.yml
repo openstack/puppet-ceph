@@ -1,0 +1,15 @@
+HOSTS:
+  first:
+    roles:
+      - master
+      - mon
+      - osd
+      - client
+    platform: el-7-x86_64
+    box: puppetlabs/centos-7.0-64-nocm
+    box_url: https://atlas.hashicorp.com/puppetlabs/boxes/centos-7.0-64-nocm
+    hypervisor: vagrant
+    ip: 10.11.12.2
+CONFIG:
+  type: foss
+  set_env: false
