@@ -25,7 +25,8 @@ describe 'ceph::repo' do
     'dumpling' => '0.67',
     'firefly' => '0.80',
     'giant' => '0.87',
-    '(default)' => '0.87',
+    'hammer' => '0.94',
+    '(default)' => '0.94',
   }
 
   releases = ENV['RELEASES'] ? ENV['RELEASES'].split : release2version.keys

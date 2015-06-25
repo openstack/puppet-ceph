@@ -38,7 +38,7 @@ describe 'ceph::repo' do
       ) }
 
       it { is_expected.to contain_apt__source('ceph').with(
-        :location => 'http://ceph.com/debian-giant/',
+        :location => 'http://ceph.com/debian-hammer/',
         :release  => 'wheezy',
         :require  => 'Apt::Key[ceph]'
       ) }
@@ -79,7 +79,7 @@ describe 'ceph::repo' do
       ) }
 
       it { is_expected.to contain_apt__source('ceph').with(
-        :location => 'http://ceph.com/debian-giant/',
+        :location => 'http://ceph.com/debian-hammer/',
         :release  => 'precise',
         :require  => 'Apt::Key[ceph]'
       ) }
@@ -108,7 +108,7 @@ describe 'ceph::repo' do
       end
 
       it { is_expected.to contain_apt__source('ceph').with(
-        :location => 'http://ceph.com/debian-giant/',
+        :location => 'http://ceph.com/debian-hammer/',
         :release  => 'precise',
         :require  => 'Apt::Key[ceph]'
       ) }
@@ -135,7 +135,7 @@ describe 'ceph::repo' do
       ) }
 
       it { is_expected.to contain_apt__source('ceph').with(
-        :location => 'http://ceph.com/debian-giant/',
+        :location => 'http://ceph.com/debian-hammer/',
         :release  => 'precise',
         :require  => 'Apt::Key[ceph]'
       ) }
@@ -160,7 +160,7 @@ describe 'ceph::repo' do
 
       it { is_expected.to contain_apt__source('ceph').with(
         :ensure   => 'absent',
-        :location => 'http://ceph.com/debian-giant/',
+        :location => 'http://ceph.com/debian-hammer/',
         :release  => 'precise',
         :require  => 'Apt::Key[ceph]'
       ) }
@@ -209,9 +209,9 @@ describe 'ceph::repo' do
 
       it { is_expected.to contain_yumrepo('ext-ceph').with(
         :enabled    => '1',
-        :descr      => 'External Ceph giant',
-        :name       => 'ext-ceph-giant',
-        :baseurl    => 'http://ceph.com/rpm-giant/el6/$basearch',
+        :descr      => 'External Ceph hammer',
+        :name       => 'ext-ceph-hammer',
+        :baseurl    => 'http://ceph.com/rpm-hammer/el6/$basearch',
         :gpgcheck   => '1',
         :gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc',
         :mirrorlist => 'absent',
@@ -221,8 +221,8 @@ describe 'ceph::repo' do
       it { is_expected.to contain_yumrepo('ext-ceph-noarch').with(
         :enabled    => '1',
         :descr      => 'External Ceph noarch',
-        :name       => 'ext-ceph-giant-noarch',
-        :baseurl    => 'http://ceph.com/rpm-giant/el6/noarch',
+        :name       => 'ext-ceph-hammer-noarch',
+        :baseurl    => 'http://ceph.com/rpm-hammer/el6/noarch',
         :gpgcheck   => '1',
         :gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc',
         :mirrorlist => 'absent',
@@ -295,9 +295,9 @@ describe 'ceph::repo' do
 
       it { is_expected.to contain_yumrepo('ext-ceph').with(
         :enabled    => '0',
-        :descr      => 'External Ceph giant',
-        :name       => 'ext-ceph-giant',
-        :baseurl    => 'http://ceph.com/rpm-giant/el6/$basearch',
+        :descr      => 'External Ceph hammer',
+        :name       => 'ext-ceph-hammer',
+        :baseurl    => 'http://ceph.com/rpm-hammer/el6/$basearch',
         :gpgcheck   => '1',
         :gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc',
         :mirrorlist => 'absent',
@@ -307,8 +307,8 @@ describe 'ceph::repo' do
       it { is_expected.to contain_yumrepo('ext-ceph-noarch').with(
         :enabled    => '0',
         :descr      => 'External Ceph noarch',
-        :name       => 'ext-ceph-giant-noarch',
-        :baseurl    => 'http://ceph.com/rpm-giant/el6/noarch',
+        :name       => 'ext-ceph-hammer-noarch',
+        :baseurl    => 'http://ceph.com/rpm-hammer/el6/noarch',
         :gpgcheck   => '1',
         :gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc',
         :mirrorlist => 'absent',
@@ -360,9 +360,9 @@ describe 'ceph::repo' do
 
       it { is_expected.to contain_yumrepo('ext-ceph').with(
         :enabled    => '1',
-        :descr      => 'External Ceph giant',
-        :name       => 'ext-ceph-giant',
-        :baseurl    => 'http://ceph.com/rpm-giant/el6/$basearch',
+        :descr      => 'External Ceph hammer',
+        :name       => 'ext-ceph-hammer',
+        :baseurl    => 'http://ceph.com/rpm-hammer/el6/$basearch',
         :gpgcheck   => '1',
         :gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc',
         :mirrorlist => 'absent',
@@ -372,8 +372,8 @@ describe 'ceph::repo' do
       it { is_expected.to contain_yumrepo('ext-ceph-noarch').with(
         :enabled    => '1',
         :descr      => 'External Ceph noarch',
-        :name       => 'ext-ceph-giant-noarch',
-        :baseurl    => 'http://ceph.com/rpm-giant/el6/noarch',
+        :name       => 'ext-ceph-hammer-noarch',
+        :baseurl    => 'http://ceph.com/rpm-hammer/el6/noarch',
         :gpgcheck   => '1',
         :gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc',
         :mirrorlist => 'absent',
@@ -414,9 +414,9 @@ describe 'ceph::repo' do
 
       it { is_expected.to contain_yumrepo('ext-ceph').with(
         :enabled    => '1',
-        :descr      => 'External Ceph giant',
-        :name       => 'ext-ceph-giant',
-        :baseurl    => 'http://ceph.com/rpm-giant/el6/$basearch',
+        :descr      => 'External Ceph hammer',
+        :name       => 'ext-ceph-hammer',
+        :baseurl    => 'http://ceph.com/rpm-hammer/el6/$basearch',
         :gpgcheck   => '1',
         :gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc',
         :mirrorlist => 'absent',
@@ -426,8 +426,8 @@ describe 'ceph::repo' do
       it { is_expected.to contain_yumrepo('ext-ceph-noarch').with(
         :enabled    => '1',
         :descr      => 'External Ceph noarch',
-        :name       => 'ext-ceph-giant-noarch',
-        :baseurl    => 'http://ceph.com/rpm-giant/el6/noarch',
+        :name       => 'ext-ceph-hammer-noarch',
+        :baseurl    => 'http://ceph.com/rpm-hammer/el6/noarch',
         :gpgcheck   => '1',
         :gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc',
         :mirrorlist => 'absent',
@@ -474,9 +474,9 @@ describe 'ceph::repo' do
 
       it { should contain_yumrepo('ext-ceph').with(
         :enabled    => '1',
-        :descr      => 'External Ceph giant',
-        :name       => 'ext-ceph-giant',
-        :baseurl    => 'http://ceph.com/rpm-giant/el7/$basearch',
+        :descr      => 'External Ceph hammer',
+        :name       => 'ext-ceph-hammer',
+        :baseurl    => 'http://ceph.com/rpm-hammer/el7/$basearch',
         :gpgcheck   => '1',
         :gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc',
         :mirrorlist => 'absent',
@@ -486,8 +486,8 @@ describe 'ceph::repo' do
       it { should contain_yumrepo('ext-ceph-noarch').with(
         :enabled    => '1',
         :descr      => 'External Ceph noarch',
-        :name       => 'ext-ceph-giant-noarch',
-        :baseurl    => 'http://ceph.com/rpm-giant/el7/noarch',
+        :name       => 'ext-ceph-hammer-noarch',
+        :baseurl    => 'http://ceph.com/rpm-hammer/el7/noarch',
         :gpgcheck   => '1',
         :gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc',
         :mirrorlist => 'absent',
@@ -560,9 +560,9 @@ describe 'ceph::repo' do
 
       it { should contain_yumrepo('ext-ceph').with(
         :enabled    => '0',
-        :descr      => 'External Ceph giant',
-        :name       => 'ext-ceph-giant',
-        :baseurl    => 'http://ceph.com/rpm-giant/el7/$basearch',
+        :descr      => 'External Ceph hammer',
+        :name       => 'ext-ceph-hammer',
+        :baseurl    => 'http://ceph.com/rpm-hammer/el7/$basearch',
         :gpgcheck   => '1',
         :gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc',
         :mirrorlist => 'absent',
@@ -572,8 +572,8 @@ describe 'ceph::repo' do
       it { should contain_yumrepo('ext-ceph-noarch').with(
         :enabled    => '0',
         :descr      => 'External Ceph noarch',
-        :name       => 'ext-ceph-giant-noarch',
-        :baseurl    => 'http://ceph.com/rpm-giant/el7/noarch',
+        :name       => 'ext-ceph-hammer-noarch',
+        :baseurl    => 'http://ceph.com/rpm-hammer/el7/noarch',
         :gpgcheck   => '1',
         :gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc',
         :mirrorlist => 'absent',
@@ -616,9 +616,9 @@ describe 'ceph::repo' do
 
       it { should contain_yumrepo('ext-ceph').with(
         :enabled    => '1',
-        :descr      => 'External Ceph giant',
-        :name       => 'ext-ceph-giant',
-        :baseurl    => 'http://ceph.com/rpm-giant/el7/$basearch',
+        :descr      => 'External Ceph hammer',
+        :name       => 'ext-ceph-hammer',
+        :baseurl    => 'http://ceph.com/rpm-hammer/el7/$basearch',
         :gpgcheck   => '1',
         :gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc',
         :mirrorlist => 'absent',
@@ -628,8 +628,8 @@ describe 'ceph::repo' do
       it { should contain_yumrepo('ext-ceph-noarch').with(
         :enabled    => '1',
         :descr      => 'External Ceph noarch',
-        :name       => 'ext-ceph-giant-noarch',
-        :baseurl    => 'http://ceph.com/rpm-giant/el7/noarch',
+        :name       => 'ext-ceph-hammer-noarch',
+        :baseurl    => 'http://ceph.com/rpm-hammer/el7/noarch',
         :gpgcheck   => '1',
         :gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc',
         :mirrorlist => 'absent',
@@ -660,9 +660,9 @@ describe 'ceph::repo' do
 
       it { should contain_yumrepo('ext-ceph').with(
         :enabled    => '1',
-        :descr      => 'External Ceph giant',
-        :name       => 'ext-ceph-giant',
-        :baseurl    => 'http://ceph.com/rpm-giant/el7/$basearch',
+        :descr      => 'External Ceph hammer',
+        :name       => 'ext-ceph-hammer',
+        :baseurl    => 'http://ceph.com/rpm-hammer/el7/$basearch',
         :gpgcheck   => '1',
         :gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc',
         :mirrorlist => 'absent',
@@ -672,8 +672,8 @@ describe 'ceph::repo' do
       it { should contain_yumrepo('ext-ceph-noarch').with(
         :enabled    => '1',
         :descr      => 'External Ceph noarch',
-        :name       => 'ext-ceph-giant-noarch',
-        :baseurl    => 'http://ceph.com/rpm-giant/el7/noarch',
+        :name       => 'ext-ceph-hammer-noarch',
+        :baseurl    => 'http://ceph.com/rpm-hammer/el7/noarch',
         :gpgcheck   => '1',
         :gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc',
         :mirrorlist => 'absent',

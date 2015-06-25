@@ -1,6 +1,6 @@
 ---
 ######## Ceph
-ceph::profile::params::release: 'giant'
+ceph::profile::params::release: 'hammer'
 
 ######## Ceph.conf
 ceph::profile::params::fsid: '4b5c8c0a-ff60-454b-a1b4-9747aa737d19'

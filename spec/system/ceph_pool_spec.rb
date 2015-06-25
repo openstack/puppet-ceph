@@ -21,7 +21,7 @@ require 'spec_helper_system'
 
 describe 'ceph::pool' do
 
-  releases = ENV['RELEASES'] ? ENV['RELEASES'].split : [ 'dumpling', 'firefly', 'giant' ]
+  releases = ENV['RELEASES'] ? ENV['RELEASES'].split : [ 'dumpling', 'firefly', 'giant', 'hammer' ]
   fsid = 'a4807c9a-e76f-4666-a297-6d6cbc922e3a'
   mon_host = '$::ipaddress'
   # passing it directly as unqoted array is not supported everywhere

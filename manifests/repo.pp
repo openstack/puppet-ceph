@@ -34,7 +34,7 @@
 #  Optional. Defaults to 'present'.
 #
 # [*release*] The name of the Ceph release to install
-#   Optional. Default to 'giant'.
+#   Optional. Default to 'hammer'.
 #
 # [*extras*] Install Ceph Extra APT repo.
 #   Optional. Defaults to 'false'.
@@ -44,7 +44,7 @@
 #
 class ceph::repo (
   $ensure  = present,
-  $release = 'giant',
+  $release = 'hammer',
   $extras  = false,
   $fastcgi = false,
 ) {

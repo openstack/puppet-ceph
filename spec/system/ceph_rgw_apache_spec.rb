@@ -20,7 +20,7 @@ require 'spec_helper_system'
 
 describe 'ceph::rgw::apache' do
 
-  releases = ENV['RELEASES'] ? ENV['RELEASES'].split : [ 'dumpling', 'giant' ]
+  releases = ENV['RELEASES'] ? ENV['RELEASES'].split : [ 'dumpling', 'firefly', 'giant', 'hammer' ]
   fsid = 'a4807c9a-e76f-4666-a297-6d6cbc922e3a'
   mon_key ='AQCztJdSyNb0NBAASA2yPZPuwXeIQnDJ9O8gVw=='
   admin_key = 'AQA0TVRTsP/aHxAAFBvntu1dSEJHxtJeFFrRsg=='

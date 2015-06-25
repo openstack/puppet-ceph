@@ -19,7 +19,7 @@ require 'spec_helper_system'
 
 describe 'ceph::profile::osd' do
 
-  releases = ENV['RELEASES'] ? ENV['RELEASES'].split : [ 'dumpling', 'firefly', 'giant' ]
+  releases = ENV['RELEASES'] ? ENV['RELEASES'].split : [ 'dumpling', 'firefly', 'giant', 'hammer' ]
   machines = ENV['MACHINES'] ? ENV['MACHINES'].split : [ 'first', 'second' ]
   # passing it directly as unqoted array is not supported everywhere
   packages = "[ 'python-ceph', 'ceph-common', 'librados2', 'librbd1', 'libcephfs1' ]"

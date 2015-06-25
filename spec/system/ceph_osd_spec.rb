@@ -22,7 +22,7 @@ require 'spec_helper_system'
 describe 'ceph::osd' do
 
   datas = ENV['DATAS'] ? ENV['DATAS'].split : [ '/dev/sdb', '/srv/data' ]
-  releases = ENV['RELEASES'] ? ENV['RELEASES'].split : [ 'dumpling', 'firefly', 'giant' ]
+  releases = ENV['RELEASES'] ? ENV['RELEASES'].split : [ 'dumpling', 'firefly', 'giant', 'hammer' ]
   machines = ENV['MACHINES'] ? ENV['MACHINES'].split : [ 'first', 'second' ]
   fsid = 'a4807c9a-e76f-4666-a297-6d6cbc922e3a'
   admin_key = 'AQA0TVRTsP/aHxAAFBvntu1dSEJHxtJeFFrRsg=='

@@ -120,7 +120,7 @@ for which integration tests are going to be run. The default is
 
 ```
 BUNDLE_PATH=/tmp/vendor \
-RELEASES='dumpling firefly giant' \
+RELEASES='dumpling firefly giant hammer' \
 bundle exec rake spec:system
 ```
 
