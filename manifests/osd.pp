@@ -72,9 +72,9 @@ ceph-disk prepare ${cluster_option} ${data} ${journal}
 ",
         unless    => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-ceph-disk list | grep ' *${data}.*ceph data, prepared' ||
-ceph-disk list | grep ' *${data}.*ceph data, active' ||
-ls -l /var/lib/ceph/osd/${cluster_name}-* | grep ' ${data}'
+ceph-disk list | grep ' *${data} .*ceph data, prepared' ||
+ceph-disk list | grep ' *${data} .*ceph data, active' ||
+ls -l /var/lib/ceph/osd/${cluster_name}-* | grep ' ${data}\$'
 ",
         logoutput => true,
       }
@@ -93,8 +93,8 @@ fi
 ",
         unless    => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-ceph-disk list | grep ' *${data}.*ceph data, active' ||
-ls -ld /var/lib/ceph/osd/${cluster_name}-* | grep ' ${data}'
+ceph-disk list | grep ' *${data} .*ceph data, active' ||
+ls -ld /var/lib/ceph/osd/${cluster_name}-* | grep ' ${data}\$'
 ",
         logoutput => true,
       }
@@ -106,13 +106,13 @@ ls -ld /var/lib/ceph/osd/${cluster_name}-* | grep ' ${data}'
         command   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 if [ -z \"\$id\" ] ; then
-  id=\$(ceph-disk list | grep ' *${data}.*ceph data' | sed -ne 's/.*osd.\\([0-9][0-9]*\\).*/\\1/p')
+  id=\$(ceph-disk list | grep ' *${data} .*ceph data' | sed -ne 's/.*osd.\\([0-9][0-9]*\\).*/\\1/p')
 fi
 if [ -z \"\$id\" ] ; then
-  id=\$(ceph-disk list | grep ' *${data}.*mounted on' | sed -ne 's/.*osd.\\([0-9][0-9]*\\)\$/\\1/p')
+  id=\$(ceph-disk list | grep ' *${data} .*mounted on' | sed -ne 's/.*osd.\\([0-9][0-9]*\\)\$/\\1/p')
 fi
 if [ -z \"\$id\" ] ; then
-  id=\$(ls -ld /var/lib/ceph/osd/${cluster_name}-* | grep ' ${data}' | sed -ne 's:.*/${cluster_name}-\\([0-9][0-9]*\\) -> .*:\\1:p' || true)
+  id=\$(ls -ld /var/lib/ceph/osd/${cluster_name}-* | grep ' ${data}\$' | sed -ne 's:.*/${cluster_name}-\\([0-9][0-9]*\\) -> .*:\\1:p' || true)
 fi
 if [ \"\$id\" ] ; then
   stop ceph-osd cluster=${cluster_name} id=\$id || true
@@ -127,13 +127,13 @@ fi
         unless    => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 if [ -z \"\$id\" ] ; then
-  id=\$(ceph-disk list | grep ' *${data}.*ceph data' | sed -ne 's/.*osd.\\([0-9][0-9]*\\).*/\\1/p')
+  id=\$(ceph-disk list | grep ' *${data} .*ceph data' | sed -ne 's/.*osd.\\([0-9][0-9]*\\).*/\\1/p')
 fi
 if [ -z \"\$id\" ] ; then
-  id=\$(ceph-disk list | grep ' *${data}.*mounted on' | sed -ne 's/.*osd.\\([0-9][0-9]*\\)\$/\\1/p')
+  id=\$(ceph-disk list | grep ' *${data} .*mounted on' | sed -ne 's/.*osd.\\([0-9][0-9]*\\)\$/\\1/p')
 fi
 if [ -z \"\$id\" ] ; then
-  id=\$(ls -ld /var/lib/ceph/osd/${cluster_name}-* | grep ' ${data}' | sed -ne 's:.*/${cluster_name}-\\([0-9][0-9]*\\) -> .*:\\1:p' || true)
+  id=\$(ls -ld /var/lib/ceph/osd/${cluster_name}-* | grep ' ${data}\$' | sed -ne 's:.*/${cluster_name}-\\([0-9][0-9]*\\) -> .*:\\1:p' || true)
 fi
 if [ \"\$id\" ] ; then
   test ! -d /var/lib/ceph/osd/${cluster_name}-\$id
