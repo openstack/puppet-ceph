@@ -12,3 +12,4 @@ HOSTS:
     ip: 10.11.12.2
 CONFIG:
   type: foss
+  set_env: false

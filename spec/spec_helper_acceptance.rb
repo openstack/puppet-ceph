@@ -27,8 +27,8 @@ RSpec.configure do |c|
     # clean out any module cruft
     shell('rm -fr /etc/puppet/modules/*')
     on host, "mkdir -p #{host['distmoduledir']}"
-    # we will provide our own epel with some excludes later
-    shell('test -f /etc/debian_version || yum-config-manager --disable epel')
+    # we will provide our own epel, but excluding the ceph packages later
+    shell('rm -f /etc/yum.repos.d/epel.repo')
   end
 
   c.formatter = :documentation

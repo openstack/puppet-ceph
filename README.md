@@ -83,16 +83,20 @@ The BEAKER_set environment variable contains the resource set of linux
 distribution configurations for which integration tests are going
 to be run. Available values are
 
+* two-centos-70-x64
+* centos-70-x64
+* two-ubuntu-server-1404-x64
+* ubuntu-server-1404-x64
+* two-centos-66-x64
+* centos-66-x64
 * two-ubuntu-server-1204-x64
 * ubuntu-server-1204-x64
-* two-centos-64-x64
-* centos-64-x64
 
 The default is
 
 ```
 BUNDLE_PATH=/tmp/vendor \
-BEAKER_set=two-ubuntu-server-1204-x64 \
+BEAKER_set=two-ubuntu-server-1404-x64 \
 bundle exec rspec spec/acceptance
 ```
 
