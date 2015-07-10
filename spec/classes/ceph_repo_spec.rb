@@ -33,7 +33,7 @@ describe 'ceph::repo' do
     describe "with default params" do
 
       it { is_expected.to contain_apt__key('ceph').with(
-        :key        => '17ED316D',
+        :key        => '7F6C9F236D170493FCF404F27EBFDD5D17ED316D',
         :key_source => 'http://git.ceph.com/?p=ceph.git;a=blob_plain;f=keys/release.asc'
       ) }
 
@@ -74,7 +74,7 @@ describe 'ceph::repo' do
     describe "with default params" do
 
       it { is_expected.to contain_apt__key('ceph').with(
-        :key        => '17ED316D',
+        :key        => '7F6C9F236D170493FCF404F27EBFDD5D17ED316D',
         :key_source => 'http://git.ceph.com/?p=ceph.git;a=blob_plain;f=keys/release.asc'
       ) }
 
@@ -130,7 +130,7 @@ describe 'ceph::repo' do
       end
 
       it { is_expected.to contain_apt__key('ceph-gitbuilder').with(
-        :key        => '6EAEAE2203C3951A',
+        :key        => 'FCC5CB2ED8E6F6FB79D5B3316EAEAE2203C3951A',
         :key_server => 'keyserver.ubuntu.com'
       ) }
 
