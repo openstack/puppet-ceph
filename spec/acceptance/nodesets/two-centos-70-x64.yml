@@ -12,7 +12,7 @@ HOSTS:
     roles:
       - osd
       - client
-    platform: el-6-x86_64
+    platform: el-7-x86_64
     box: puppetlabs/centos-7.0-64-nocm
     box_url: https://atlas.hashicorp.com/puppetlabs/boxes/centos-7.0-64-nocm
     hypervisor: vagrant
