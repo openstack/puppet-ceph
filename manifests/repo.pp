@@ -122,8 +122,8 @@ class ceph::repo (
         descr      => "External EPEL ${el}",
         name       => "ext-epel-${el}",
         baseurl    => absent,
-        gpgcheck   => '0',
-        gpgkey     => absent,
+        gpgcheck   => '1',
+        gpgkey     => "https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-${el}",
         mirrorlist => "http://mirrors.fedoraproject.org/metalink?repo=epel-${el}&arch=\$basearch",
         priority   => '20', # prefer ceph repos over EPEL
         tag        => 'ceph',
