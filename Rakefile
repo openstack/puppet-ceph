@@ -4,9 +4,8 @@ require 'metadata-json-lint/rake_task'
 
 begin
   require 'rspec-system/rake_task'
-rescue LoadError => e
-  warn e.message
-  warn "Run `gem install rspec-system-puppet` to enable integration tests."
+rescue LoadError
+  # don't warn anymore as rspec-system is deprecated
 end
 
 PuppetLint.configuration.fail_on_warnings = true
