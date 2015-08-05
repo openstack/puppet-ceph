@@ -128,6 +128,13 @@ define ceph::mon (
       }
 
       Ceph_Config<||> ->
+      # prevent automatic creation of the client.admin key by ceph-create-keys
+      exec { "ceph-mon-${cluster_name}.client.admin.keyring-${id}":
+        command => "/bin/true # comment to satisfy puppet syntax requirements
+set -ex
+touch /etc/ceph/${cluster_name}.client.admin.keyring",
+      }
+      ->
       exec { $ceph_mkfs:
         command   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
@@ -146,13 +153,6 @@ if [ ! -d \$mon_data ] ; then
 fi
 ",
         logoutput => true,
-      }
-      ->
-      # prevent automatic creation of the client.admin key by ceph-create-keys
-      exec { "ceph-mon-${cluster_name}.client.admin.keyring-${id}":
-        command => "/bin/true # comment to satisfy puppet syntax requirements
-set -ex
-touch /etc/ceph/${cluster_name}.client.admin.keyring",
       }
       ->
       service { $mon_service:
