@@ -22,11 +22,11 @@
 # === Parameters:
 #
 # [*args*] A Ceph osds config hash
-#   Mandatory.
+#   Optional.
 #
 # [*defaults*] A config hash
 #   Optional. Defaults to a empty hash
 #
-class ceph::osds($args, $defaults = {}) {
+class ceph::osds($args = {}, $defaults = {}) {
   create_resources(ceph::osd, $args, $defaults)
 }

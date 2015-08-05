@@ -22,11 +22,11 @@
 # === Parameters:
 #
 # [*args*] A Ceph keys config hash
-#   Mandatory.
+#   Optional.
 #
 # [*defaults*] A keys config hash
 #   Optional. Defaults to a empty hash.
 #
-class ceph::keys($args, $defaults = {}) {
+class ceph::keys($args = {}, $defaults = {}) {
   create_resources(ceph::key, $args, $defaults)
 }
