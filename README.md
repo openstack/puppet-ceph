@@ -75,8 +75,8 @@ It also requires [Vagrant and Virtualbox](http://docs-v1.vagrantup.com/v1/docs/g
 .
 
 ```
-BUNDLE_PATH=/tmp/vendor bundle install
-BUNDLE_PATH=/tmp/vendor bundle exec rspec spec/acceptance
+bundle install
+bundle exec rspec spec/acceptance
 ```
 
 The BEAKER_set environment variable contains the resource set of linux
@@ -95,7 +95,6 @@ to be run. Available values are
 The default is
 
 ```
-BUNDLE_PATH=/tmp/vendor \
 BEAKER_set=two-ubuntu-server-1404-x64 \
 bundle exec rspec spec/acceptance
 ```
@@ -111,19 +110,18 @@ and tests are in spec/system. It runs virtual machines and requires
 * [Install Vagrant and Virtualbox](http://docs-v1.vagrantup.com/v1/docs/getting-started/)
 * sudo apt-get install ruby-dev libxml2-dev libxslt-dev # nokogiri dependencies
 * mv Gemfile-rspec-system Gemfile # because of https://bugs.launchpad.net/openstack-ci/+bug/1290710
-* BUNDLE_PATH=/tmp/vendor bundle install
-* BUNDLE_PATH=/tmp/vendor bundle exec rake lint
-* BUNDLE_PATH=/tmp/vendor bundle exec rake spec
+* bundle install
+* bundle exec rake lint
+* bundle exec rake spec
 * git clone https://github.com/bodepd/scenario_node_terminus.git ../scenario_node_terminus
-* BUNDLE_PATH=/tmp/vendor bundle exec rake spec:system
-* BUNDLE_PATH=/tmp/vendor RS_SET=two-ubuntu-server-1204-x64 bundle exec rake spec:system
-* BUNDLE_PATH=/tmp/vendor RS_SET=two-centos-66-x64 bundle exec rake spec:system
+* bundle exec rake spec:system
+* RS_SET=two-ubuntu-server-1204-x64 bundle exec rake spec:system
+* RS_SET=two-centos-66-x64 bundle exec rake spec:system
 
 The RELEASES environment variable contains the list of ceph releases
 for which integration tests are going to be run. The default is
 
 ```
-BUNDLE_PATH=/tmp/vendor \
 RELEASES='dumpling firefly giant hammer' \
 bundle exec rake spec:system
 ```
@@ -142,7 +140,6 @@ to be run. Available values are
 The default is
 
 ```
-BUNDLE_PATH=/tmp/vendor \
 RS_SET=two-ubuntu-server-1204-x64 \
 bundle exec rake spec:system
 ```
@@ -169,19 +166,29 @@ Finished in 4 minutes 1.7 seconds
 Example invocation of gerritexec:
 
 ```
-script='bash -c "'
-script+='mv Gemfile-rspec-system Gemfile ; bundle install ; '
-script+='RS_SET=two-ubuntu-server-1204-x64 bundle exec rake spec:system ; '
-script+='RS_SET=two-centos-66-x64 bundle exec rake spec:system ; '
-script+='" > /tmp/out 2>&1 ; r=$? ; '
-script+='echo https://pypi.python.org/pypi/gerritexec output: ; '
-script+='pastebinit /tmp/out ; '
-script+='exit $r #'
-GEM_HOME=~/.gems gerritexec \
-   --hostname review.openstack.org \
-   --verbose --username puppetceph \
-   --script "$script" \
-   --project stackforge/puppet-ceph
+cat > ./ci.sh << EOF
+#!/bin/bash
+
+bundle install
+
+export BEAKER_debug=yes
+export BEAKER_destroy=yes
+
+echo ---------------- CENTOS 7 --------------
+BEAKER_set=two-centos-70-x64 bundle exec rspec spec/acceptance
+rc=$?
+
+echo ---------- UBUNTU 14.04 --------------
+BEAKER_set=two-ubuntu-server-1404-x64 bundle exec rspec spec/acceptance
+exit $(( $? | $rc))
+EOF
+
+chmod +x ./ci.sh
+
+GEM_HOME=~/.gems screen -dmS puppet-ceph gerritexec \
+  --timeout 14400 --hostname review.openstack.org \
+  --verbose --username puppetceph --script "../ci.sh > /tmp/out$$ 2>&1 ; r=$? ; pastebinit /tmp/out$$ ; exit $r #" \
+  --project stackforge/puppet-ceph
 ```
 
 Contributors
