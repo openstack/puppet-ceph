@@ -14,69 +14,72 @@
 #   limitations under the License.
 #
 # Author: Ricardo Rocha <ricardo@catalyst.net.nz>
+# Author: David Gurtner <aldavud@crimson.ch>
 #
 require 'spec_helper_system'
 
 describe 'ceph::rgw::keystone' do
 
-  purge = <<-EOS
-   package { [
-      'python-ceph',
-      'ceph-common',
-      'librados2',
-      'librbd1',
-      'radosgw',
-     ]:
-     ensure => purged
-   }
-  EOS
-
-  releases = ENV['RELEASES'] ? ENV['RELEASES'].split : [ 'dumpling', 'emperor', 'firefly' ]
+  releases = ENV['RELEASES'] ? ENV['RELEASES'].split : [ 'firefly', 'hammer' ]
   fsid = 'a4807c9a-e76f-4666-a297-6d6cbc922e3a'
+  mon_key ='AQCztJdSyNb0NBAASA2yPZPuwXeIQnDJ9O8gVw=='
   admin_key = 'AQA0TVRTsP/aHxAAFBvntu1dSEJHxtJeFFrRsg=='
   radosgw_key = 'AQA0TVRTsP/aHxAAFBvntu1dSEJHxtJeFFrRwg=='
+  # passing it directly as unqoted array is not supported everywhere
+  packages = "[ 'python-ceph', 'ceph-common', 'librados2', 'librbd1', 'libcephfs1' ]"
 
   keystone_admin_token = 'keystonetoken'
   keystone_password = '123456'
-  keystone_db_password = '123456'
+
+  test_user = 'testuser'
+  test_password = '123456'
+  test_email = 'testuser@example.com'
+  test_tenant = 'openstack'
 
   releases.each do |release|
-    describe release, :cephx do
-      it 'should install one monitor/osd with a rgw' do
+    describe release do
+      it 'should install one monitor/osd with a rgw and keystone integration' do
         pp = <<-EOS
-          $user = $::osfamily ? {
+          $apache_user = $::osfamily ? {
             'RedHat' => 'apache',
             default => 'www-data',
           }
 
-          $pkg_swift = $osfamily ? {
-            'RedHat' => 'openstack-swift',
-            default  => 'swift',
+          case $::osfamily {
+            'Debian': {
+              include ::apt
+              apt::source { 'cloudarchive-juno':
+                location          => 'http://ubuntu-cloud.archive.canonical.com/ubuntu',
+                release           => 'trusty-updates/juno',
+                repos             => 'main',
+                include_src       => false,
+                required_packages => 'ubuntu-cloud-keyring',
+              }
+              Apt::Source['cloudarchive-juno'] -> Package['keystone','python-swiftclient']
+              Exec['apt_update'] -> Package['keystone','python-swiftclient']
+            }
+            'RedHat': {
+              # ceph-radosgw expects open file limit of 32768
+              file { '/etc/security/limits.d/80-nofile.conf':
+                content => '*          hard    nofile     32768',
+              }
+              yumrepo { 'openstack-juno':
+                descr    => 'OpenStack Juno Repository',
+                baseurl  => 'http://repos.fedorapeople.org/repos/openstack/openstack-juno/epel-7/',
+                enabled  => '1',
+                gpgcheck => '1',
+                gpgkey   => 'https://raw.githubusercontent.com/redhat-openstack/rdo-release/juno/RPM-GPG-KEY-RDO-Juno',
+                priority => '15', # prefer over EPEL, but below ceph
+              }
+              Yumrepo<||> -> Package['python-swiftclient','keystone']
+            }
           }
 
-          # setup a keystone instance (need havana at least)
-          include apt
-          apt::source { 'cloudarchive-havana':
-            location          => 'http://ubuntu-cloud.archive.canonical.com/ubuntu',
-            release           => 'precise-updates/havana',
-            repos             => 'main',
-            include_src       => false,
-            required_packages => 'ubuntu-cloud-keyring',
-          }
-
-          class { 'mysql::server': }
-          ->
-          class { 'keystone::db::mysql':
-            password      => '#{keystone_db_password}',
-            allowed_hosts => '%',
-          }
-          ->
           class { 'keystone':
-            verbose             => True,
+            verbose             => true,
             catalog_type        => 'sql',
             admin_token         => '#{keystone_admin_token}',
-            database_connection => "mysql://keystone_admin:#{keystone_db_password}@${::ipaddress}/keystone",
-            admin_endpoint      => "http://${::ipaddress}:35357/v2.0",
+            admin_endpoint      => "http://${::ipaddress}:35357",
           }
           ->
           class { 'keystone::roles::admin':
@@ -85,51 +88,28 @@ describe 'ceph::rgw::keystone' do
           }
           ->
           class { 'keystone::endpoint':
-            public_url   => "http://${::ipaddress}:5000/v2.0",
-            admin_url    => "http://${::ipaddress}:35357/v2.0",
-            internal_url => "http://${::ipaddress}:5000/v2.0",
+            public_url   => "http://${::ipaddress}:5000",
+            admin_url    => "http://${::ipaddress}:35357",
+            internal_url => "http://${::ipaddress}:5000",
             region       => 'example-1',
-          }
-
-          # default pools size to 1 for local test
-          Ceph::Pool {
-            size => 1,
-          }
-          ceph::pool { 'data': }
-          ceph::pool { 'metadata': }
-          ceph::pool { 'rbd': }
-          # we declare the rgw pool here even if they're created by the
-          # daemon to make sure we get a replica of 1
-          ceph::pool { '.rgw': }
-          ceph::pool { '.rgw.control': }
-          ceph::pool { '.rgw.gc': }
-          ceph::pool { '.rgw.root': }
-          ceph::pool { '.users': }
-          ceph::pool { '.users.uid': }
-          ceph::pool { '.users.swift': }
-
-          ceph_config {
-           'global/mon_data_avail_warn': value => 10; # FIXME: workaround for health warn in mon
-           'global/osd_journal_size':    value => '100';
           }
 
           # ceph setup
           class { 'ceph::repo':
             release => '#{release}',
-            extras  => true,
             fastcgi => true,
           }
           ->
           class { 'ceph':
-            fsid => '#{fsid}',
-            mon_host => $::ipaddress_eth0,
+            fsid                       => '#{fsid}',
+            mon_host                   => $::ipaddress,
+            osd_pool_default_size      => '1',
+            osd_pool_default_min_size  => '1',
           }
-          ->
           ceph::mon { 'a':
-            public_addr => $::ipaddress_eth0,
-            key => 'AQCztJdSyNb0NBAASA2yPZPuwXeIQnDJ9O8gVw==',
+            public_addr => $::ipaddress,
+            key => '#{mon_key}',
           }
-          ->
           ceph::key { 'client.admin':
             secret         => '#{admin_key}',
             cap_mon        => 'allow *',
@@ -141,9 +121,9 @@ describe 'ceph::rgw::keystone' do
           }
           ->
           ceph::key { 'client.radosgw.gateway':
-            user    => $user,
+            user    => $apache_user,
             secret  => '#{radosgw_key}',
-            cap_mon => 'allow rw',
+            cap_mon => 'allow rwx',
             cap_osd => 'allow rwx',
             inject  => true,
           }
@@ -156,57 +136,62 @@ describe 'ceph::rgw::keystone' do
 
           # setup ceph radosgw
           host { $::fqdn: # workaround for bad 'hostname -f' in vagrant box
-            ip => $ipaddress,
+            ip           => $ipaddress,
+            host_aliases => [$::hostname],
           }
           ->
           file { '/var/run/ceph': # workaround for bad sysvinit script (ignores socket)
             ensure => directory,
-            owner  => $user,
+            owner  => $apache_user,
           }
           ->
           ceph::rgw { 'radosgw.gateway':
-            rgw_port        => 80,
             rgw_socket_path => '/var/run/ceph/ceph-client.radosgw.gateway.asok',
-          }
-          ->
-          package { $pkg_swift:  # required for tests below
-            ensure => present,
           }
           Ceph::Osd['/srv/data'] -> Service['radosgw-radosgw.gateway']
 
           ceph::rgw::apache { 'radosgw.gateway':
-            rgw_port        => 80,
+            rgw_port        => '80',
             rgw_socket_path => '/var/run/ceph/ceph-client.radosgw.gateway.asok',
           }
 
+          package { 'python-swiftclient':  # required for tests below
+            ensure => present,
+          }
+          ceph_config {
+           'global/mon_data_avail_warn': value => 10; # workaround for health warn in mon
+           'global/osd_journal_size':    value => 100;
+          }
+
           # add the require keystone endpoints for radosgw (object-store)
+          Service['keystone'] -> Ceph::Rgw::Keystone['radosgw.gateway']
           ceph::rgw::keystone { 'radosgw.gateway':
-            rgw_keystone_url         => "http://${::ipaddress}:5000/v2.0",
+            rgw_keystone_url         => "http://${::ipaddress}:5000",
             rgw_keystone_admin_token => '#{keystone_admin_token}',
           }
-          Service['keystone'] -> Ceph::Rgw::Keystone['radosgw.gateway']
 
           keystone_service { 'swift':
-            ensure => present,
-            type => 'object-store',
+            ensure      => present,
+            type        => 'object-store',
             description => 'Openstack Object Storage Service',
           }
-          keystone_endpoint { 'example-1/swift':
-            ensure => present,
-            public_url => "http://${::ipaddress}:80/swift/v1",
-            admin_url => "http://${::ipaddress}:80/swift/v1",
-            internal_url => "http://${::ipaddress}:80/swift/v1",
-          }
           Keystone_service<||> -> Ceph::Rgw::Keystone['radosgw.gateway']
+
+          keystone_endpoint { 'example-1/swift':
+            ensure       => present,
+            public_url   => "http://${::fqdn}:80/swift/v1",
+            admin_url    => "http://${::fqdn}:80/swift/v1",
+            internal_url => "http://${::fqdn}:80/swift/v1",
+          }
           Keystone_endpoint<||> -> Ceph::Rgw::Keystone['radosgw.gateway']
 
           # add a testuser for validation below
-          keystone_user { 'testuser':
+          keystone_user { '#{test_user}':
             ensure   => present,
-            enabled  => True,
-            email    => 'testuser@example',
-            password => '123456',
-            tenant   => 'openstack',
+            enabled  => true,
+            email    => '#{test_email}',
+            password => '#{test_password}',
+            tenant   => '#{test_tenant}',
           }
           Keystone_user<||> -> Ceph::Rgw::Keystone['radosgw.gateway']
 
@@ -215,7 +200,6 @@ describe 'ceph::rgw::keystone' do
             roles  => ['_member_'],
           }
           Keystone_user_role<||> -> Ceph::Rgw::Keystone['radosgw.gateway']
-
         EOS
 
         osfamily = facter.facts['osfamily']
@@ -225,47 +209,103 @@ describe 'ceph::rgw::keystone' do
         }
 
         puppet_apply(pp) do |r|
-          r.exit_code.should_not == 1
+          expect(r.exit_code).not_to eq(1)
           r.refresh
-          r.exit_code.should_not == 1
+          expect(r.exit_code).not_to eq(1)
         end
 
         shell servicequery[osfamily] do |r|
-          r.exit_code.should be_zero
+          expect(r.exit_code).to be_zero
         end
 
-        shell "OS_TENANT_NAME=openstack OS_USERNAME=testuser OS_PASSWORD=123456 OS_AUTH_URL=http://127.0.0.1:5000/v2.0 swift list" do |r|
-          r.exit_code.should be_zero
+        shell "swift -V 2.0 -A http://127.0.0.1:5000/v2.0 -U #{test_tenant}:#{test_user} -K #{test_password} stat" do |r|
+          expect(r.exit_code).to be_zero
+          expect(r.stdout).to match(/Content-Type: text\/plain; charset=utf-8/)
+          expect(r.stdout).not_to match(/401 Unauthorized/)
         end
-
       end
 
-      it 'should purge all packages' do
+      it 'should purge everything' do
+        pp = <<-EOS
+         ceph::osd { '/srv/data':
+            ensure => absent,
+          }
+        EOS
+
+        puppet_apply(pp) do |r|
+          expect(r.exit_code).not_to eq(1)
+        end
+
+        #shell 'ceph-disk zap /dev/sdb'
+
+        purge = <<-EOS
+          $radosgw = $::osfamily ? {
+            'RedHat' => 'ceph-radosgw',
+            default => 'radosgw',
+          }
+          class { 'keystone':
+            admin_token => 'keystonetoken',
+            enabled   => false,
+          }
+          ->
+          ceph::mon { 'a': ensure => absent }
+          ->
+          file { [
+             '/var/lib/ceph/bootstrap-osd/ceph.keyring',
+             '/var/lib/ceph/bootstrap-mds/ceph.keyring',
+             '/var/lib/ceph/nss/cert8.db',
+             '/var/lib/ceph/nss/key3.db',
+             '/var/lib/ceph/nss/secmod.db',
+             '/var/lib/ceph/radosgw/ceph-radosgw.gateway',
+             '/var/lib/ceph/radosgw',
+             '/var/lib/ceph/nss',
+             '/etc/ceph/ceph.client.admin.keyring',
+             '/etc/ceph/ceph.client.radosgw.gateway',
+            ]:
+            ensure => absent
+          }
+          ->
+          package { $radosgw: ensure => purged }
+          ->
+          package { #{packages}:
+            ensure => purged
+          }
+          class { 'ceph::repo':
+            release => '#{release}',
+            fastcgi => true,
+            ensure  => absent,
+          }
+          class { 'apache':
+            service_ensure => stopped,
+            service_enable => false,
+          }
+          apache::vhost { "$fqdn-radosgw":
+            ensure  => absent,
+            docroot => '/var/www',
+          }
+        EOS
+
         puppet_apply(purge) do |r|
-          r.exit_code.should_not == 1
+          expect(r.exit_code).not_to eq(1)
         end
       end
     end
   end
-
 end
 # Local Variables:
 # compile-command: "cd ../..
 #   (
-#     cd .rspec_system/vagrant_projects/one-ubuntu-server-12042-x64
+#     cd .rspec_system/vagrant_projects/ubuntu-server-1204-x64
 #     vagrant destroy --force
 #   )
 #   cp -a Gemfile-rspec-system Gemfile
 #   BUNDLE_PATH=/tmp/vendor bundle install --no-deployment
 #   MACHINES=first \
-#   RELEASES=dumpling \
-#   DATAS=/srv/data \
+#   RELEASES=hammer \
 #   RS_DESTROY=no \
-#   RS_SET=one-ubuntu-server-12042-x64 \
+#   RS_SET=ubuntu-server-1404-x64 \
 #   BUNDLE_PATH=/tmp/vendor \
-#   bundle exec rake spec:system \
-#          SPEC=spec/system/ceph_rgw_keystone_spec.rb \
-#          SPEC_OPTS='--tag cephx' &&
+#   bundle exec rake spec:system SPEC=spec/system/ceph_rgw_keystone_spec.rb &&
 #   git checkout Gemfile
 # "
 # End:

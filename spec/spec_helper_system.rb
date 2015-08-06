@@ -54,9 +54,7 @@ RSpec.configure do |c|
             :node => vm)
       shell(:command => 'puppet module install --version ">=1.4.1 <2.0.0" puppetlabs/apache',
             :node => vm)
-      shell(:command => 'puppet module install --version 0.9.0 puppetlabs/mysql',
-            :node => vm)
-      shell(:command => 'puppet module install --version 4.1.0 puppetlabs/keystone',
+      shell(:command => 'puppet module install --version ">=5.1.0 <6.0.0" stackforge/keystone',
             :node => vm)
       rcp(:sp => File.join(proj_root, 'spec/fixtures/hieradata/hiera.yaml'),
           :dp => '/etc/puppet/hiera.yaml',

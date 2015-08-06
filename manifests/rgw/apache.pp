@@ -24,9 +24,6 @@
 #
 ### == Parameters
 #
-# [*pkg_fastcgi*] Package for the fastcgi module.
-#   Optional. Default is osfamily dependent (check ceph::params).
-#
 # [*admin_email*] Admin email for the radosgw reports.
 #   Optional. Default is 'root@localhost'.
 #
@@ -37,7 +34,7 @@
 #   Optional. Default is '/var/www/s3gw.cgi'.
 #
 # [*rgw_port*] Port the rados gateway listens.
-#   Optional. Default is 443.
+#   Optional. Default is 80.
 #
 # [*rgw_dns_name*] Hostname to use for the service.
 #   Optional. Default is $fqdn.
@@ -54,12 +51,11 @@
 #   for more info on repository recommendations.
 #
 define ceph::rgw::apache (
-  $pkg_fastcgi = $::ceph::params::pkg_fastcgi,
   $admin_email = 'root@localhost',
   $docroot = '/var/www',
   $fcgi_file = '/var/www/s3gw.fcgi',
   $rgw_dns_name = $::fqdn,
-  $rgw_port = $::ceph::params::rgw_port,
+  $rgw_port = 80,
   $rgw_socket_path = $::ceph::params::rgw_socket_path,
   $syslog = true,
   $ceph_apache_repo = true,
@@ -71,9 +67,6 @@ define ceph::rgw::apache (
   }
   include ::apache::mod::alias
   include ::apache::mod::auth_basic
-  apache::mod { 'fastcgi':
-    package => $pkg_fastcgi,
-  }
   include ::apache::mod::mime
   include ::apache::mod::rewrite
 
@@ -82,25 +75,12 @@ define ceph::rgw::apache (
     serveradmin       => $admin_email,
     port              => $rgw_port,
     docroot           => $docroot,
-    directories       => [{
-      path            => $docroot,
-      addhandlers     => [{
-        handler    => 'fastcgi-script',
-        extensions => ['.fcgi']
-      }],
-      allow_override  => ['All'],
-      options         => ['+ExecCGI'],
-      order           => 'allow,deny',
-      allow           => 'from all',
-      custom_fragment => 'AuthBasicAuthoritative Off',
-    }],
     rewrite_rule      => '^/([a-zA-Z0-9-_.]*)([/]?.*) /s3gw.fcgi?page=$1&params=$2&%{QUERY_STRING} [E=HTTP_AUTHORIZATION:%{HTTP:Authorization},L]',
     access_log_syslog => $syslog,
     error_log_syslog  => $syslog,
-    custom_fragment   => "
-  FastCgiExternalServer ${fcgi_file} -socket ${rgw_socket_path}
-  AllowEncodedSlashes On
-  ServerSignature Off",
+    fastcgi_server    => $fcgi_file,
+    fastcgi_socket    => $rgw_socket_path,
+    fastcgi_dir       => $docroot,
   }
 
   # radosgw fast-cgi script
@@ -117,6 +97,7 @@ exec /usr/bin/radosgw -c /etc/ceph/ceph.conf -n ${name}",
   ~> Service['httpd']
 
   # dependency on ceph apache repo if set
+  $pkg_fastcgi = $::apache::params::mod_packages['fastcgi']
   if $ceph_apache_repo {
     case $::osfamily {
       'Debian': {
