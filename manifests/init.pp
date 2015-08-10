@@ -35,6 +35,9 @@
 # [*keyring*] The location of the keyring retrieved by default
 #   Optional. Defaults to /etc/ceph/keyring.
 #
+# [*osd_journal_size*] The size of the journal file/device.
+#   Optional. Integer. Default provided by Ceph.
+#
 # [*osd_pool_default_pg_num*] The default number of PGs per pool.
 #   Optional. Integer. Default provided by Ceph.
 #
@@ -94,6 +97,7 @@ class ceph (
   $ensure                     = present,
   $authentication_type        = 'cephx',
   $keyring                    = undef,
+  $osd_journal_size           = undef,
   $osd_pool_default_pg_num    = undef,
   $osd_pool_default_pgp_num   = undef,
   $osd_pool_default_size      = undef,
@@ -139,6 +143,7 @@ class ceph (
       'global/sign_messages':               value => $sign_messages;
       'global/cluster_network':             value => $cluster_network;
       'global/public_network':              value => $public_network;
+      'osd/osd_journal_size':               value => $osd_journal_size;
     }
 
     if $authentication_type == 'cephx' {

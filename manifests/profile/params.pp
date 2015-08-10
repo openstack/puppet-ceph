@@ -38,6 +38,9 @@
 #   individually through ceph::mon.
 #   Optional. String like e.g. 'a, b, c'.
 #
+# [*osd_journal_size*] The size of the journal file/device.
+#   Optional. Integer. Default provided by Ceph.
+#
 # [*osd_pool_default_pg_num*] The default number of PGs per pool.
 #   Optional. Integer. Default provided by Ceph.
 #
@@ -95,6 +98,7 @@ class ceph::profile::params (
   $authentication_type = undef,
   $mon_initial_members = undef,
   $mon_host = undef,
+  $osd_journal_size = undef,
   $osd_pool_default_pg_num = undef,
   $osd_pool_default_pgp_num = undef,
   $osd_pool_default_size = undef,

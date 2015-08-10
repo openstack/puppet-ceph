@@ -47,6 +47,7 @@ describe 'ceph' do
       it { is_expected.to_not contain_ceph_config('global/sign_messages').with_value('true') }
       it { is_expected.to_not contain_ceph_config('global/cluster_network').with_value('10.0.0.0/24') }
       it { is_expected.to_not contain_ceph_config('global/public_network').with_value('192.168.0.0/24') }
+      it { is_expected.to_not contain_ceph_config('osd/osd_journal_size').with_value('4096') }
       it { is_expected.to contain_ceph_config('global/auth_cluster_required').with_value('cephx') }
       it { is_expected.to contain_ceph_config('global/auth_service_required').with_value('cephx') }
       it { is_expected.to contain_ceph_config('global/auth_client_required').with_value('cephx') }
@@ -63,6 +64,7 @@ describe 'ceph' do
           :fsid                       => 'd5252e7d-75bc-4083-85ed-fe51fa83f62b',
           :authentication_type        => 'none',
           :keyring                    => '/usr/local/ceph/etc/keyring',
+          :osd_journal_size           => '1024',
           :osd_pool_default_pg_num    => '256',
           :osd_pool_default_pgp_num   => '256',
           :osd_pool_default_size      => '2',
@@ -102,6 +104,7 @@ describe 'ceph' do
       it { is_expected.to contain_ceph_config('global/sign_messages').with_value('false') }
       it { is_expected.to contain_ceph_config('global/cluster_network').with_value('10.0.0.0/24') }
       it { is_expected.to contain_ceph_config('global/public_network').with_value('192.168.0.0/24') }
+      it { is_expected.to contain_ceph_config('osd/osd_journal_size').with_value('1024') }
       it { is_expected.to_not contain_ceph_config('global/auth_cluster_required').with_value('cephx') }
       it { is_expected.to_not contain_ceph_config('global/auth_service_required').with_value('cephx') }
       it { is_expected.to_not contain_ceph_config('global/auth_client_required').with_value('cephx') }
