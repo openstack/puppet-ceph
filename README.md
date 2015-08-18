@@ -122,7 +122,7 @@ The RELEASES environment variable contains the list of ceph releases
 for which integration tests are going to be run. The default is
 
 ```
-RELEASES='dumpling firefly giant hammer' \
+RELEASES='firefly hammer' \
 bundle exec rake spec:system
 ```
 

@@ -21,7 +21,7 @@ require 'spec_helper_system'
 
 describe 'ceph::pool' do
 
-  releases = ENV['RELEASES'] ? ENV['RELEASES'].split : [ 'dumpling', 'firefly', 'giant', 'hammer' ]
+  releases = ENV['RELEASES'] ? ENV['RELEASES'].split : [ 'firefly', 'hammer' ]
   fsid = 'a4807c9a-e76f-4666-a297-6d6cbc922e3a'
   mon_host = '$::ipaddress'
   # passing it directly as unqoted array is not supported everywhere
@@ -151,7 +151,7 @@ end
 #   cp -a Gemfile-rspec-system Gemfile
 #   BUNDLE_PATH=/tmp/vendor bundle install --no-deployment
 #   MACHINES=first \
-#   RELEASES=dumpling \
+#   RELEASES=hammer \
 #   RS_DESTROY=no \
 #   RS_SET=ubuntu-server-1204-x64 \
 #   BUNDLE_PATH=/tmp/vendor \

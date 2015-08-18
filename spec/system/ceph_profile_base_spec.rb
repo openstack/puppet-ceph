@@ -20,9 +20,7 @@ require 'spec_helper_system'
 describe 'ceph::profile::base' do
 
   release2version = {
-    'dumpling' => '0.67',
     'firefly' => '0.80',
-    'giant' => '0.87',
     'hammer' => '0.94',
   }
 
@@ -124,7 +122,7 @@ end
 #   cp -a Gemfile-rspec-system Gemfile
 #   BUNDLE_PATH=/tmp/vendor bundle install --no-deployment
 #   MACHINES=first \
-#   RELEASES=dumpling \
+#   RELEASES=hammer \
 #   RS_DESTROY=no \
 #   RS_SET=ubuntu-server-1204-x64 \
 #   BUNDLE_PATH=/tmp/vendor \

@@ -20,7 +20,7 @@ require 'spec_helper_system'
 
 describe 'ceph::profile::client' do
 
-  releases = ENV['RELEASES'] ? ENV['RELEASES'].split : [ 'dumpling', 'firefly', 'giant', 'hammer' ]
+  releases = ENV['RELEASES'] ? ENV['RELEASES'].split : [ 'firefly', 'hammer' ]
   machines = ENV['MACHINES'] ? ENV['MACHINES'].split : [ 'first', 'second' ]
   # passing it directly as unqoted array is not supported everywhere
   packages = "[ 'python-ceph', 'ceph-common', 'librados2', 'librbd1', 'libcephfs1' ]"
@@ -250,7 +250,7 @@ end
 #   )
 #   cp -a Gemfile-rspec-system Gemfile
 #   BUNDLE_PATH=/tmp/vendor bundle install --no-deployment
-#   RELEASES=dumpling \
+#   RELEASES=hammer \
 #   RS_SET=two-ubuntu-server-1204-x64 \
 #   RS_DESTROY=no \
 #   BUNDLE_PATH=/tmp/vendor \
