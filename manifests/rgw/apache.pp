@@ -71,16 +71,16 @@ define ceph::rgw::apache (
   include ::apache::mod::rewrite
 
   apache::vhost { "${rgw_dns_name}-radosgw":
-    servername        => $rgw_dns_name,
-    serveradmin       => $admin_email,
-    port              => $rgw_port,
-    docroot           => $docroot,
-    rewrite_rule      => '^/([a-zA-Z0-9-_.]*)([/]?.*) /s3gw.fcgi?page=$1&params=$2&%{QUERY_STRING} [E=HTTP_AUTHORIZATION:%{HTTP:Authorization},L]',
-    access_log_syslog => $syslog,
-    error_log_syslog  => $syslog,
-    fastcgi_server    => $fcgi_file,
-    fastcgi_socket    => $rgw_socket_path,
-    fastcgi_dir       => $docroot,
+    servername     => $rgw_dns_name,
+    serveradmin    => $admin_email,
+    port           => $rgw_port,
+    docroot        => $docroot,
+    rewrite_rule   => '^/([a-zA-Z0-9-_.]*)([/]?.*) /s3gw.fcgi?page=$1&params=$2&%{QUERY_STRING} [E=HTTP_AUTHORIZATION:%{HTTP:Authorization},L]',
+    access_log     => $syslog,
+    error_log      => $syslog,
+    fastcgi_server => $fcgi_file,
+    fastcgi_socket => $rgw_socket_path,
+    fastcgi_dir    => $docroot,
   }
 
   # radosgw fast-cgi script

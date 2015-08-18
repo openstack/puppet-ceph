@@ -150,7 +150,7 @@ describe 'ceph rgw' do
         Ceph::Osd['/srv/data'] -> Service['radosgw-radosgw.gateway']
 
         ceph::rgw::apache { 'radosgw.gateway':
-          rgw_port        => '80',
+          rgw_port        => '8080',
           rgw_socket_path => '/var/run/ceph/ceph-client.radosgw.gateway.asok',
         }
 
@@ -178,9 +178,9 @@ describe 'ceph rgw' do
 
         keystone_endpoint { 'example-1/swift':
           ensure       => present,
-          public_url   => "http://${::fqdn}:80/swift/v1",
-          admin_url    => "http://${::fqdn}:80/swift/v1",
-          internal_url => "http://${::fqdn}:80/swift/v1",
+          public_url   => "http://${::fqdn}:8080/swift/v1",
+          admin_url    => "http://${::fqdn}:8080/swift/v1",
+          internal_url => "http://${::fqdn}:8080/swift/v1",
         }
         Keystone_endpoint<||> -> Ceph::Rgw::Keystone['radosgw.gateway']
 
