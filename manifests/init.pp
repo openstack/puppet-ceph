@@ -71,6 +71,9 @@
 #   individually through ceph::mon.
 #   Optional. String like e.g. 'a, b, c'.
 #
+# [*mon_clock_drift_allowed*] The clock drift in seconds allowed between monitors.
+#   Optional. Float e.g. 0.10, 1. Default: 0.050
+#
 # [*require_signatures*] If Ceph requires signatures on all
 #   message traffic (client<->cluster and between cluster daemons).
 #   Optional. Boolean. Default provided by Ceph.
@@ -107,6 +110,7 @@ class ceph (
   $mon_osd_nearfull_ratio     = undef,
   $mon_initial_members        = undef,
   $mon_host                   = undef,
+  $mon_clock_drift_allowed    = undef,
   $require_signatures         = undef,
   $cluster_require_signatures = undef,
   $service_require_signatures = undef,
@@ -137,6 +141,7 @@ class ceph (
       'global/mon_osd_nearfull_ratio':      value => $mon_osd_nearfull_ratio;
       'global/mon_initial_members':         value => $mon_initial_members;
       'global/mon_host':                    value => $mon_host;
+      'global/mon_clock_drift_allowed':     value => $mon_clock_drift_allowed;
       'global/require_signatures':          value => $require_signatures;
       'global/cluster_require_signatures':  value => $cluster_require_signatures;
       'global/service_require_signatures':  value => $service_require_signatures;
