@@ -38,6 +38,9 @@
 #   individually through ceph::mon.
 #   Optional. String like e.g. 'a, b, c'.
 #
+# [*mon_clock_drift_allowed*] The clock drift in seconds allowed between monitors.
+#   Optional. Float e.g. 0.10, 1. Default: 0.050
+#
 # [*osd_journal_size*] The size of the journal file/device.
 #   Optional. Integer. Default provided by Ceph.
 #
@@ -98,6 +101,7 @@ class ceph::profile::params (
   $authentication_type = undef,
   $mon_initial_members = undef,
   $mon_host = undef,
+  $mon_clock_drift_allowed = undef,
   $osd_journal_size = undef,
   $osd_pool_default_pg_num = undef,
   $osd_pool_default_pgp_num = undef,
