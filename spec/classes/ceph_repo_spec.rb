@@ -33,8 +33,8 @@ describe 'ceph::repo' do
     describe "with default params" do
 
       it { is_expected.to contain_apt__key('ceph').with(
-        :key        => '7F6C9F236D170493FCF404F27EBFDD5D17ED316D',
-        :key_source => 'http://git.ceph.com/?p=ceph.git;a=blob_plain;f=keys/release.asc'
+        :key        => '08B73419AC32B4E966C1A330E84AC2C0460F3994',
+        :key_source => 'https://git.ceph.com/release.asc'
       ) }
 
       it { is_expected.to contain_apt__source('ceph').with(
@@ -74,8 +74,8 @@ describe 'ceph::repo' do
     describe "with default params" do
 
       it { is_expected.to contain_apt__key('ceph').with(
-        :key        => '7F6C9F236D170493FCF404F27EBFDD5D17ED316D',
-        :key_source => 'http://git.ceph.com/?p=ceph.git;a=blob_plain;f=keys/release.asc'
+        :key        => '08B73419AC32B4E966C1A330E84AC2C0460F3994',
+        :key_source => 'https://git.ceph.com/release.asc'
       ) }
 
       it { is_expected.to contain_apt__source('ceph').with(
@@ -213,7 +213,7 @@ describe 'ceph::repo' do
         :name       => 'ext-ceph-hammer',
         :baseurl    => 'http://ceph.com/rpm-hammer/el6/$basearch',
         :gpgcheck   => '1',
-        :gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc',
+        :gpgkey     => 'https://git.ceph.com/release.asc',
         :mirrorlist => 'absent',
         :priority   => '10'
      ) }
@@ -224,7 +224,7 @@ describe 'ceph::repo' do
         :name       => 'ext-ceph-hammer-noarch',
         :baseurl    => 'http://ceph.com/rpm-hammer/el6/noarch',
         :gpgcheck   => '1',
-        :gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc',
+        :gpgkey     => 'https://git.ceph.com/release.asc',
         :mirrorlist => 'absent',
         :priority   => '10'
       ) }
@@ -255,7 +255,7 @@ describe 'ceph::repo' do
         :name       => 'ext-ceph-firefly',
         :baseurl    => 'http://ceph.com/rpm-firefly/el6/$basearch',
         :gpgcheck   => '1',
-        :gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc',
+        :gpgkey     => 'https://git.ceph.com/release.asc',
         :mirrorlist => 'absent',
         :priority   => '10'
      ) }
@@ -266,7 +266,7 @@ describe 'ceph::repo' do
         :name       => 'ext-ceph-firefly-noarch',
         :baseurl    => 'http://ceph.com/rpm-firefly/el6/noarch',
         :gpgcheck   => '1',
-        :gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc',
+        :gpgkey     => 'https://git.ceph.com/release.asc',
         :mirrorlist => 'absent',
         :priority   => '10'
       ) }
@@ -299,7 +299,7 @@ describe 'ceph::repo' do
         :name       => 'ext-ceph-hammer',
         :baseurl    => 'http://ceph.com/rpm-hammer/el6/$basearch',
         :gpgcheck   => '1',
-        :gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc',
+        :gpgkey     => 'https://git.ceph.com/release.asc',
         :mirrorlist => 'absent',
         :priority   => '10'
      ) }
@@ -310,7 +310,7 @@ describe 'ceph::repo' do
         :name       => 'ext-ceph-hammer-noarch',
         :baseurl    => 'http://ceph.com/rpm-hammer/el6/noarch',
         :gpgcheck   => '1',
-        :gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc',
+        :gpgkey     => 'https://git.ceph.com/release.asc',
         :mirrorlist => 'absent',
         :priority   => '10'
       ) }
@@ -321,7 +321,7 @@ describe 'ceph::repo' do
         :name       => 'ext-ceph-extras',
         :baseurl    => 'http://ceph.com/packages/ceph-extras/rpm/rhel6/$basearch',
         :gpgcheck   => '1',
-        :gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc',
+        :gpgkey     => 'https://git.ceph.com/release.asc',
         :mirrorlist => 'absent',
         :priority   => '10'
       ) }
@@ -364,7 +364,7 @@ describe 'ceph::repo' do
         :name       => 'ext-ceph-hammer',
         :baseurl    => 'http://ceph.com/rpm-hammer/el6/$basearch',
         :gpgcheck   => '1',
-        :gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc',
+        :gpgkey     => 'https://git.ceph.com/release.asc',
         :mirrorlist => 'absent',
         :priority   => '10'
      ) }
@@ -375,7 +375,7 @@ describe 'ceph::repo' do
         :name       => 'ext-ceph-hammer-noarch',
         :baseurl    => 'http://ceph.com/rpm-hammer/el6/noarch',
         :gpgcheck   => '1',
-        :gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc',
+        :gpgkey     => 'https://git.ceph.com/release.asc',
         :mirrorlist => 'absent',
         :priority   => '10'
       ) }
@@ -386,7 +386,7 @@ describe 'ceph::repo' do
         :name       => 'ext-ceph-extras',
         :baseurl    => 'http://ceph.com/packages/ceph-extras/rpm/rhel6/$basearch',
         :gpgcheck   => '1',
-        :gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc',
+        :gpgkey     => 'https://git.ceph.com/release.asc',
         :mirrorlist => 'absent',
         :priority   => '10'
       ) }
@@ -418,7 +418,7 @@ describe 'ceph::repo' do
         :name       => 'ext-ceph-hammer',
         :baseurl    => 'http://ceph.com/rpm-hammer/el6/$basearch',
         :gpgcheck   => '1',
-        :gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc',
+        :gpgkey     => 'https://git.ceph.com/release.asc',
         :mirrorlist => 'absent',
         :priority   => '10'
      ) }
@@ -429,7 +429,7 @@ describe 'ceph::repo' do
         :name       => 'ext-ceph-hammer-noarch',
         :baseurl    => 'http://ceph.com/rpm-hammer/el6/noarch',
         :gpgcheck   => '1',
-        :gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc',
+        :gpgkey     => 'https://git.ceph.com/release.asc',
         :mirrorlist => 'absent',
         :priority   => '10'
       ) }
@@ -478,7 +478,7 @@ describe 'ceph::repo' do
         :name       => 'ext-ceph-hammer',
         :baseurl    => 'http://ceph.com/rpm-hammer/el7/$basearch',
         :gpgcheck   => '1',
-        :gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc',
+        :gpgkey     => 'https://git.ceph.com/release.asc',
         :mirrorlist => 'absent',
         :priority   => '10'
      ) }
@@ -489,7 +489,7 @@ describe 'ceph::repo' do
         :name       => 'ext-ceph-hammer-noarch',
         :baseurl    => 'http://ceph.com/rpm-hammer/el7/noarch',
         :gpgcheck   => '1',
-        :gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc',
+        :gpgkey     => 'https://git.ceph.com/release.asc',
         :mirrorlist => 'absent',
         :priority   => '10'
       ) }
@@ -520,7 +520,7 @@ describe 'ceph::repo' do
         :name       => 'ext-ceph-firefly',
         :baseurl    => 'http://ceph.com/rpm-firefly/el7/$basearch',
         :gpgcheck   => '1',
-        :gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc',
+        :gpgkey     => 'https://git.ceph.com/release.asc',
         :mirrorlist => 'absent',
         :priority   => '10'
      ) }
@@ -531,7 +531,7 @@ describe 'ceph::repo' do
         :name       => 'ext-ceph-firefly-noarch',
         :baseurl    => 'http://ceph.com/rpm-firefly/el7/noarch',
         :gpgcheck   => '1',
-        :gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc',
+        :gpgkey     => 'https://git.ceph.com/release.asc',
         :mirrorlist => 'absent',
         :priority   => '10'
       ) }
@@ -564,7 +564,7 @@ describe 'ceph::repo' do
         :name       => 'ext-ceph-hammer',
         :baseurl    => 'http://ceph.com/rpm-hammer/el7/$basearch',
         :gpgcheck   => '1',
-        :gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc',
+        :gpgkey     => 'https://git.ceph.com/release.asc',
         :mirrorlist => 'absent',
         :priority   => '10'
      ) }
@@ -575,7 +575,7 @@ describe 'ceph::repo' do
         :name       => 'ext-ceph-hammer-noarch',
         :baseurl    => 'http://ceph.com/rpm-hammer/el7/noarch',
         :gpgcheck   => '1',
-        :gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc',
+        :gpgkey     => 'https://git.ceph.com/release.asc',
         :mirrorlist => 'absent',
         :priority   => '10'
       ) }
@@ -620,7 +620,7 @@ describe 'ceph::repo' do
         :name       => 'ext-ceph-hammer',
         :baseurl    => 'http://ceph.com/rpm-hammer/el7/$basearch',
         :gpgcheck   => '1',
-        :gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc',
+        :gpgkey     => 'https://git.ceph.com/release.asc',
         :mirrorlist => 'absent',
         :priority   => '10'
      ) }
@@ -631,7 +631,7 @@ describe 'ceph::repo' do
         :name       => 'ext-ceph-hammer-noarch',
         :baseurl    => 'http://ceph.com/rpm-hammer/el7/noarch',
         :gpgcheck   => '1',
-        :gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc',
+        :gpgkey     => 'https://git.ceph.com/release.asc',
         :mirrorlist => 'absent',
         :priority   => '10'
       ) }
@@ -664,7 +664,7 @@ describe 'ceph::repo' do
         :name       => 'ext-ceph-hammer',
         :baseurl    => 'http://ceph.com/rpm-hammer/el7/$basearch',
         :gpgcheck   => '1',
-        :gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc',
+        :gpgkey     => 'https://git.ceph.com/release.asc',
         :mirrorlist => 'absent',
         :priority   => '10'
      ) }
@@ -675,7 +675,7 @@ describe 'ceph::repo' do
         :name       => 'ext-ceph-hammer-noarch',
         :baseurl    => 'http://ceph.com/rpm-hammer/el7/noarch',
         :gpgcheck   => '1',
-        :gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/release.asc',
+        :gpgkey     => 'https://git.ceph.com/release.asc',
         :mirrorlist => 'absent',
         :priority   => '10'
       ) }
