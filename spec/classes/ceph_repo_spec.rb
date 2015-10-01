@@ -460,7 +460,7 @@ describe 'ceph::repo' do
 
     describe "with default params" do
 
-      it { should contain_yumrepo('ext-epel-7').with(
+      it { is_expected.to contain_yumrepo('ext-epel-7').with(
         :enabled    => '1',
         :descr      => 'External EPEL 7',
         :name       => 'ext-epel-7',
@@ -472,7 +472,7 @@ describe 'ceph::repo' do
         :exclude    => 'python-ceph-compat python-rbd python-rados python-cephfs',
       ) }
 
-      it { should contain_yumrepo('ext-ceph').with(
+      it { is_expected.to contain_yumrepo('ext-ceph').with(
         :enabled    => '1',
         :descr      => 'External Ceph hammer',
         :name       => 'ext-ceph-hammer',
@@ -483,7 +483,7 @@ describe 'ceph::repo' do
         :priority   => '10'
      ) }
 
-      it { should contain_yumrepo('ext-ceph-noarch').with(
+      it { is_expected.to contain_yumrepo('ext-ceph-noarch').with(
         :enabled    => '1',
         :descr      => 'External Ceph noarch',
         :name       => 'ext-ceph-hammer-noarch',
@@ -502,7 +502,7 @@ describe 'ceph::repo' do
         }
       end
 
-      it { should contain_yumrepo('ext-epel-7').with(
+      it { is_expected.to contain_yumrepo('ext-epel-7').with(
         :enabled    => '1',
         :descr      => 'External EPEL 7',
         :name       => 'ext-epel-7',
@@ -514,7 +514,7 @@ describe 'ceph::repo' do
         :exclude    => 'python-ceph-compat python-rbd python-rados python-cephfs',
       ) }
 
-      it { should contain_yumrepo('ext-ceph').with(
+      it { is_expected.to contain_yumrepo('ext-ceph').with(
         :enabled    => '1',
         :descr      => 'External Ceph firefly',
         :name       => 'ext-ceph-firefly',
@@ -525,7 +525,7 @@ describe 'ceph::repo' do
         :priority   => '10'
      ) }
 
-      it { should contain_yumrepo('ext-ceph-noarch').with(
+      it { is_expected.to contain_yumrepo('ext-ceph-noarch').with(
         :enabled    => '1',
         :descr      => 'External Ceph noarch',
         :name       => 'ext-ceph-firefly-noarch',
@@ -546,7 +546,7 @@ describe 'ceph::repo' do
         }
       end
 
-      it { should contain_yumrepo('ext-epel-7').with(
+      it { is_expected.to contain_yumrepo('ext-epel-7').with(
         :enabled    => '0',
         :descr      => 'External EPEL 7',
         :name       => 'ext-epel-7',
@@ -558,7 +558,7 @@ describe 'ceph::repo' do
         :exclude    => 'python-ceph-compat python-rbd python-rados python-cephfs',
       ) }
 
-      it { should contain_yumrepo('ext-ceph').with(
+      it { is_expected.to contain_yumrepo('ext-ceph').with(
         :enabled    => '0',
         :descr      => 'External Ceph hammer',
         :name       => 'ext-ceph-hammer',
@@ -569,7 +569,7 @@ describe 'ceph::repo' do
         :priority   => '10'
      ) }
 
-      it { should contain_yumrepo('ext-ceph-noarch').with(
+      it { is_expected.to contain_yumrepo('ext-ceph-noarch').with(
         :enabled    => '0',
         :descr      => 'External Ceph noarch',
         :name       => 'ext-ceph-hammer-noarch',
@@ -580,9 +580,9 @@ describe 'ceph::repo' do
         :priority   => '10'
       ) }
 
-      it { should_not contain_yumrepo('ext-ceph-extras') }
+      it { is_expected.to_not contain_yumrepo('ext-ceph-extras') }
 
-      it { should contain_yumrepo('ext-ceph-fastcgi').with(
+      it { is_expected.to contain_yumrepo('ext-ceph-fastcgi').with(
         :enabled    => '0',
         :descr      => 'FastCGI basearch packages for Ceph',
         :name       => 'ext-ceph-fastcgi',
@@ -602,7 +602,7 @@ describe 'ceph::repo' do
         }
       end
 
-      it { should contain_yumrepo('ext-epel-7').with(
+      it { is_expected.to contain_yumrepo('ext-epel-7').with(
         :enabled    => '1',
         :descr      => 'External EPEL 7',
         :name       => 'ext-epel-7',
@@ -614,7 +614,7 @@ describe 'ceph::repo' do
         :exclude    => 'python-ceph-compat python-rbd python-rados python-cephfs',
       ) }
 
-      it { should contain_yumrepo('ext-ceph').with(
+      it { is_expected.to contain_yumrepo('ext-ceph').with(
         :enabled    => '1',
         :descr      => 'External Ceph hammer',
         :name       => 'ext-ceph-hammer',
@@ -625,7 +625,7 @@ describe 'ceph::repo' do
         :priority   => '10'
      ) }
 
-      it { should contain_yumrepo('ext-ceph-noarch').with(
+      it { is_expected.to contain_yumrepo('ext-ceph-noarch').with(
         :enabled    => '1',
         :descr      => 'External Ceph noarch',
         :name       => 'ext-ceph-hammer-noarch',
@@ -636,7 +636,7 @@ describe 'ceph::repo' do
         :priority   => '10'
       ) }
 
-      it { should_not contain_yumrepo('ext-ceph-extras') }
+      it { is_expected.to_not contain_yumrepo('ext-ceph-extras') }
     end
 
     describe "with ceph fast-cgi" do
@@ -646,7 +646,7 @@ describe 'ceph::repo' do
         }
       end
 
-      it { should contain_yumrepo('ext-epel-7').with(
+      it { is_expected.to contain_yumrepo('ext-epel-7').with(
         :enabled    => '1',
         :descr      => 'External EPEL 7',
         :name       => 'ext-epel-7',
@@ -658,7 +658,7 @@ describe 'ceph::repo' do
         :exclude    => 'python-ceph-compat python-rbd python-rados python-cephfs',
       ) }
 
-      it { should contain_yumrepo('ext-ceph').with(
+      it { is_expected.to contain_yumrepo('ext-ceph').with(
         :enabled    => '1',
         :descr      => 'External Ceph hammer',
         :name       => 'ext-ceph-hammer',
@@ -669,7 +669,7 @@ describe 'ceph::repo' do
         :priority   => '10'
      ) }
 
-      it { should contain_yumrepo('ext-ceph-noarch').with(
+      it { is_expected.to contain_yumrepo('ext-ceph-noarch').with(
         :enabled    => '1',
         :descr      => 'External Ceph noarch',
         :name       => 'ext-ceph-hammer-noarch',
@@ -680,7 +680,7 @@ describe 'ceph::repo' do
         :priority   => '10'
       ) }
 
-      it { should contain_yumrepo('ext-ceph-fastcgi').with(
+      it { is_expected.to contain_yumrepo('ext-ceph-fastcgi').with(
         :enabled    => '1',
         :descr      => 'FastCGI basearch packages for Ceph',
         :name       => 'ext-ceph-fastcgi',
