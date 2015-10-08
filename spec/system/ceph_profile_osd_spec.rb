@@ -135,7 +135,7 @@ ceph::profile::params::release: '#{release}'
 ceph::profile::params::authentication_type: 'none'
 ceph::profile::params::osds:
   '/dev/sdb':
-    journal: '/tmp/journal'
+    journal: '/srv/journal'
           EOS
 
           file = Tempfile.new('hieradata')

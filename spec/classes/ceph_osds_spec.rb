@@ -24,7 +24,7 @@ describe 'ceph::osds' do
       {
         :args => {
           '/dev/sdb' => {
-            'journal' => '/tmp/journal',
+            'journal' => '/srv/journal',
           },
           '/srv/data' => {
           },
@@ -38,7 +38,7 @@ describe 'ceph::osds' do
     it {
       is_expected.to contain_ceph__osd('/dev/sdb').with(
         :ensure  => 'present',
-        :journal => '/tmp/journal',
+        :journal => '/srv/journal',
         :cluster => 'CLUSTER'
     )
       is_expected.to contain_ceph__osd('/srv/data').with(
