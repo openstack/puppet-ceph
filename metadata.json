@@ -1,10 +1,10 @@
 {
-  "name": "stackforge-ceph",
+  "name": "openstack-ceph",
   "version": "1.0.0",
-  "author": "Puppet Ceph community and StackForge Contributors",
+  "author": "Puppet Ceph community and OpenStack (StackForge) Contributors",
   "summary": "Community Developed Ceph Module",
   "license": "Apache-2.0",
-  "source": "git://github.com/stackforge/puppet-ceph.git",
+  "source": "git://github.com/openstack/puppet-ceph.git",
   "project_page": "https://launchpad.net/puppet-ceph",
   "issues_url": "https://bugs.launchpad.net/puppet-ceph",
   "requirements": [

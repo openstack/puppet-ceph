@@ -45,7 +45,7 @@ Development
 -----------
 
 ```
-git clone https://github.com/stackforge/puppet-ceph.git
+git clone https://github.com/openstack/puppet-ceph.git
 cd puppet-ceph
 sudo gem install bundler
 bundle install
@@ -188,13 +188,13 @@ chmod +x ./ci.sh
 GEM_HOME=~/.gems screen -dmS puppet-ceph gerritexec \
   --timeout 14400 --hostname review.openstack.org \
   --verbose --username puppetceph --script "../ci.sh > /tmp/out$$ 2>&1 ; r=$? ; pastebinit /tmp/out$$ ; exit $r #" \
-  --project stackforge/puppet-ceph
+  --project openstack/puppet-ceph
 ```
 
 Contributors
 ------------
 
-* https://github.com/stackforge/puppet-ceph/graphs/contributors
+* https://github.com/openstack/puppet-ceph/graphs/contributors
 
 Release Notes
 -------------

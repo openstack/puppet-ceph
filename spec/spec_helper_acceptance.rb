@@ -45,7 +45,7 @@ RSpec.configure do |c|
       on host, puppet('module install puppetlabs/apt --version ">=1.4.0 <2.0.0"'), { :acceptable_exit_codes => [0,1] }
       on host, puppet('module install puppetlabs/concat --version ">=1.2.1 <2.0.0"'), { :acceptable_exit_codes => [0,1] }
       on host, puppet('module install puppetlabs/apache --version ">=1.4.1 <2.0.0"'), { :acceptable_exit_codes => [0,1] }
-      on host, puppet('module install stackforge/keystone --version ">=5.1.0 <6.0.0"'), { :acceptable_exit_codes => [0,1] }
+      on host, puppet('module install stackforge/keystone --version ">=5.1.0 <6.0.0"'), { :acceptable_exit_codes => [0,1] } # keystone >=5.1.0 <6.0.0 is not present in openstack/keystone
       puppet_module_install(:source => proj_root, :module_name => 'ceph')
       # Flush the firewall
       flushfw = <<-EOS
