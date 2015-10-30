@@ -102,6 +102,7 @@ describe 'ceph rgw' do
         class { 'ceph':
           fsid                       => '#{fsid}',
           mon_host                   => $::ipaddress,
+          mon_initial_members        => 'a',
           osd_pool_default_size      => '1',
           osd_pool_default_min_size  => '1',
         }
