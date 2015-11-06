@@ -180,7 +180,7 @@ class ceph::repo (
           name       => 'ext-ceph-fastcgi',
           baseurl    => "http://gitbuilder.ceph.com/mod_fastcgi-rpm-rhel${el}-x86_64-basic/ref/master",
           gpgcheck   => '1',
-          gpgkey     => 'https://ceph.com/git/?p=ceph.git;a=blob_plain;f=keys/autobuild.asc',
+          gpgkey     => 'https://git.ceph.com/autobuild.asc',
           mirrorlist => absent,
           priority   => '20', # prefer ceph repos over EPEL
           tag        => 'ceph',
