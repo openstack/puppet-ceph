@@ -41,6 +41,6 @@ ceph::profile::params::client_keys:
     cap_osd: 'allow class-read object_prefix rbd_children, allow rwx pool=volumes'
 ceph::profile::params::osds:
   '/dev/sdc':
-    journal: '/dev/sdb1'
+    journal: '/dev/sdb'
   '/dev/sdd':
-    journal: '/dev/sdb2'
+    journal: '/dev/sdb'

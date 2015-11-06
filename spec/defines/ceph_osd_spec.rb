@@ -26,39 +26,39 @@ describe 'ceph::osd' do
     describe "with default params" do
 
       let :title do
-        '/tmp'
+        '/srv'
       end
 
-      it { is_expected.to contain_exec('ceph-osd-prepare-/tmp').with(
+      it { is_expected.to contain_exec('ceph-osd-prepare-/srv').with(
         'command'   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-if ! test -b /tmp ; then
-  mkdir -p /tmp
+if ! test -b /srv ; then
+  mkdir -p /srv
 fi
-ceph-disk prepare  /tmp 
+ceph-disk prepare  /srv 
 ",
         'unless'    => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-ceph-disk list | grep -E ' */tmp1? .*ceph data, (prepared|active)' ||
-ls -l /var/lib/ceph/osd/ceph-* | grep ' /tmp\$'
+ceph-disk list | grep -E ' */srv1? .*ceph data, (prepared|active)' ||
+ls -l /var/lib/ceph/osd/ceph-* | grep ' /srv\$'
 ",
         'logoutput' => true
       ) }
-      it { is_expected.to contain_exec('ceph-osd-activate-/tmp').with(
+      it { is_expected.to contain_exec('ceph-osd-activate-/srv').with(
         'command'   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-if ! test -b /tmp ; then
-  mkdir -p /tmp
+if ! test -b /srv ; then
+  mkdir -p /srv
 fi
 # activate happens via udev when using the entire device
-if ! test -b /tmp || ! test -b /tmp1 ; then
-  ceph-disk activate /tmp || true
+if ! test -b /srv || ! test -b /srv1 ; then
+  ceph-disk activate /srv || true
 fi
 ",
         'unless'    => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-ceph-disk list | grep -E ' */tmp1? .*ceph data, active' ||
-ls -ld /var/lib/ceph/osd/ceph-* | grep ' /tmp\$'
+ceph-disk list | grep -E ' */srv1? .*ceph data, active' ||
+ls -ld /var/lib/ceph/osd/ceph-* | grep ' /srv\$'
 ",
         'logoutput' => true
       ) }
@@ -67,46 +67,46 @@ ls -ld /var/lib/ceph/osd/ceph-* | grep ' /tmp\$'
     describe "with custom params" do
 
       let :title do
-        '/tmp/data'
+        '/srv/data'
       end
 
       let :params do
         {
           :cluster => 'testcluster',
-          :journal => '/tmp/journal',
+          :journal => '/srv/journal',
         }
       end
 
-      it { is_expected.to contain_exec('ceph-osd-prepare-/tmp/data').with(
+      it { is_expected.to contain_exec('ceph-osd-prepare-/srv/data').with(
         'command'   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-if ! test -b /tmp/data ; then
-  mkdir -p /tmp/data
+if ! test -b /srv/data ; then
+  mkdir -p /srv/data
 fi
-ceph-disk prepare --cluster testcluster /tmp/data /tmp/journal
+ceph-disk prepare --cluster testcluster /srv/data /srv/journal
 ",
         'unless'    => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-ceph-disk list | grep -E ' */tmp/data1? .*ceph data, (prepared|active)' ||
-ls -l /var/lib/ceph/osd/testcluster-* | grep ' /tmp/data\$'
+ceph-disk list | grep -E ' */srv/data1? .*ceph data, (prepared|active)' ||
+ls -l /var/lib/ceph/osd/testcluster-* | grep ' /srv/data\$'
 ",
         'logoutput' => true
       ) }
-      it { is_expected.to contain_exec('ceph-osd-activate-/tmp/data').with(
+      it { is_expected.to contain_exec('ceph-osd-activate-/srv/data').with(
         'command'   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-if ! test -b /tmp/data ; then
-  mkdir -p /tmp/data
+if ! test -b /srv/data ; then
+  mkdir -p /srv/data
 fi
 # activate happens via udev when using the entire device
-if ! test -b /tmp/data || ! test -b /tmp/data1 ; then
-  ceph-disk activate /tmp/data || true
+if ! test -b /srv/data || ! test -b /srv/data1 ; then
+  ceph-disk activate /srv/data || true
 fi
 ",
         'unless'    => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-ceph-disk list | grep -E ' */tmp/data1? .*ceph data, active' ||
-ls -ld /var/lib/ceph/osd/testcluster-* | grep ' /tmp/data\$'
+ceph-disk list | grep -E ' */srv/data1? .*ceph data, active' ||
+ls -ld /var/lib/ceph/osd/testcluster-* | grep ' /srv/data\$'
 ",
         'logoutput' => true
       ) }
@@ -115,7 +115,7 @@ ls -ld /var/lib/ceph/osd/testcluster-* | grep ' /tmp/data\$'
     describe "with ensure absent" do
 
       let :title do
-        '/tmp'
+        '/srv'
       end
 
       let :params do
@@ -124,14 +124,14 @@ ls -ld /var/lib/ceph/osd/testcluster-* | grep ' /tmp/data\$'
         }
       end
 
-      it { is_expected.to contain_exec('remove-osd-/tmp').with(
+      it { is_expected.to contain_exec('remove-osd-/srv').with(
         'command'   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 if [ -z \"\$id\" ] ; then
-  id=\$(ceph-disk list | sed -nEe 's:^ */tmp1? .*(ceph data|mounted on).*osd\\.([0-9]+).*:\\2:p')
+  id=\$(ceph-disk list | sed -nEe 's:^ */srv1? .*(ceph data|mounted on).*osd\\.([0-9]+).*:\\2:p')
 fi
 if [ -z \"\$id\" ] ; then
-  id=\$(ls -ld /var/lib/ceph/osd/ceph-* | sed -nEe 's:.*/ceph-([0-9]+) *-> */tmp\$:\\1:p' || true)
+  id=\$(ls -ld /var/lib/ceph/osd/ceph-* | sed -nEe 's:.*/ceph-([0-9]+) *-> */srv\$:\\1:p' || true)
 fi
 if [ \"\$id\" ] ; then
   stop ceph-osd cluster=ceph id=\$id || true
@@ -146,10 +146,10 @@ fi
         'unless'    => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 if [ -z \"\$id\" ] ; then
-  id=\$(ceph-disk list | sed -nEe 's:^ */tmp1? .*(ceph data|mounted on).*osd\\.([0-9]+).*:\\2:p')
+  id=\$(ceph-disk list | sed -nEe 's:^ */srv1? .*(ceph data|mounted on).*osd\\.([0-9]+).*:\\2:p')
 fi
 if [ -z \"\$id\" ] ; then
-  id=\$(ls -ld /var/lib/ceph/osd/ceph-* | sed -nEe 's:.*/ceph-([0-9]+) *-> */tmp\$:\\1:p' || true)
+  id=\$(ls -ld /var/lib/ceph/osd/ceph-* | sed -nEe 's:.*/ceph-([0-9]+) *-> */srv\$:\\1:p' || true)
 fi
 if [ \"\$id\" ] ; then
   test ! -d /var/lib/ceph/osd/ceph-\$id

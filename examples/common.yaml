@@ -44,6 +44,6 @@ ceph::profile::params::client_keys:
 
 ceph::profile::params::osds:
   '/dev/sdc':
-    journal: '/dev/sdb1'
+    journal: '/dev/sdb'
   '/dev/sdd':
-    journal: '/dev/sdb2'
+    journal: '/dev/sdb'

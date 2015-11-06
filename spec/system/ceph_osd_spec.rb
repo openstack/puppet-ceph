@@ -228,7 +228,7 @@ describe 'ceph::osd' do
               authentication_type => 'none',
             }
             ceph::osd { '#{data}':
-              journal => '/tmp/journal'
+              journal => '/srv/journal'
             }
           EOS
 
