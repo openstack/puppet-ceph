@@ -54,6 +54,12 @@
 # [*syslog*] Whether or not to log to syslog.
 #   Optional. Default is true.
 #
+# [*frontend_type*] What type of frontend to use
+#   Optional. Default is civetweb. Other option is apache
+#
+# [*rgw_frontends*] Arguments to the rgw frontend
+#   Optional. Default is "civetweb port=7480"
+#
 define ceph::rgw (
   $pkg_radosgw = $::ceph::params::pkg_radosgw,
   $rgw_data = "/var/lib/ceph/radosgw/ceph-${name}",
@@ -65,17 +71,26 @@ define ceph::rgw (
   $rgw_print_continue = false,
   $rgw_port = undef,
   $syslog = true,
+  $frontend_type = 'civetweb' ,
+  $rgw_frontends =  'civetweb port=7480' ,
 ) {
 
   ceph_config {
     "client.${name}/host":               value => $::hostname;
     "client.${name}/keyring":            value => $keyring_path;
     "client.${name}/log_file":           value => $log_file;
-    "client.${name}/rgw_dns_name":       value => $rgw_dns_name;
-    "client.${name}/rgw_port":           value => $rgw_port;
-    "client.${name}/rgw_print_continue": value => $rgw_print_continue;
-    "client.${name}/rgw_socket_path":    value => $rgw_socket_path;
+    "client.${name}/rgw_frontends":      value => $rgw_frontends;
     "client.${name}/user":               value => $user;
+  }
+
+  if ($frontend_type == 'apache')
+  {
+    ceph_config {
+      "client.${name}/rgw_dns_name":       value => $rgw_dns_name;
+      "client.${name}/rgw_port":           value => $rgw_port;
+      "client.${name}/rgw_print_continue": value => $rgw_print_continue;
+      "client.${name}/rgw_socket_path":    value => $rgw_socket_path;
+    }
   }
 
   package { $pkg_radosgw:
