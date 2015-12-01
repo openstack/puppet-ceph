@@ -91,6 +91,16 @@
 #   the repo by yourself.
 #   Optional. Defaults to true
 #
+# [*enable_rgw*] boolean to eanble the configuration of radosgw on the controller
+#   Default to false
+# [*rgw_user*] the user ID radosgw should run as
+#   Default to root
+# [*rgw_print_continue*] should http 100 continue be used
+#  Default is false
+# [*frontend_type*] what kind of HTTPD front is to use
+#   Default is civetweb
+# [*rgw_frontends*] additonal arguements to the HTTPD front end. 
+#
 class ceph::profile::params (
   # puppet 2.7 compatibiliy hack. TODO: change to undef once 2.7 is deprecated
   $fsid = '4b5c8c0a-ff60-454b-a1b4-9747aa737d19',
@@ -110,6 +120,11 @@ class ceph::profile::params (
   $client_keys = {},
   $osds = undef,
   $manage_repo = true,
+  $enable_rgw = false ,
+  $rgw_user = 'root' ,
+  $rgw_print_continue = 'false' ,
+  $frontend_type = 'civetweb' ,
+  $rgw_frontends = 'civetweb port=7480' ,
 ) {
   validate_hash($client_keys)
 
