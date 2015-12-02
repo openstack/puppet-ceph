@@ -37,11 +37,163 @@ describe 'ceph rgw' do
 
   describe 'ceph::rgw::keystone' do
 
-    it 'should install one monitor/osd with a rgw and keystone integration' do
+    it 'should install one monitor/osd with cephx keys' do
       pp = <<-EOS
+        class { 'ceph::repo':
+          release => '#{release}',
+          fastcgi => true,
+        }
+        ->
+        class { 'ceph':
+          fsid                       => '#{fsid}',
+          mon_host                   => $::ipaddress,
+          mon_initial_members        => 'a',
+          osd_pool_default_size      => '1',
+          osd_pool_default_min_size  => '1',
+        }
+        ceph_config {
+         'global/mon_data_avail_warn': value => 10; # workaround for health warn in mon
+         'global/osd_journal_size':    value => 100;
+        }
+        ceph::mon { 'a':
+          public_addr => $::ipaddress,
+          key => '#{mon_key}',
+        }
+        ceph::key { 'client.admin':
+          secret         => '#{admin_key}',
+          cap_mon        => 'allow *',
+          cap_osd        => 'allow *',
+          cap_mds        => 'allow *',
+          inject         => true,
+          inject_as_id   => 'mon.',
+          inject_keyring => '/var/lib/ceph/mon/ceph-a/keyring',
+        }
+        ->
+        ceph::key { 'client.radosgw.gateway':
+          user    => $apache_user,
+          secret  => '#{radosgw_key}',
+          cap_mon => 'allow rwx',
+          cap_osd => 'allow rwx',
+          inject  => true,
+        }
+        ->
+        exec { 'bootstrap-key':
+          command => '/usr/sbin/ceph-create-keys --id a',
+        }
+        ->
+        ceph::osd { '/srv/data': }
+      EOS
+
+      osfamily = fact 'osfamily'
+
+      # RGW on CentOS is currently broken, so lets disable tests for now.
+      if osfamily != 'RedHat'
+        apply_manifest(pp, :catch_failures => true)
+        # Enable as soon as remaining changes are fixed
+        #apply_manifest(pp, :catch_changes => true)
+
+        shell 'sleep 10' # we need to wait a bit until the OSD is up
+
+        shell 'ceph -s', { :acceptable_exit_codes => [0] } do |r|
+          expect(r.stdout).to match(/1 mons at/)
+          expect(r.stderr).to be_empty
+        end
+
+        shell 'ceph osd tree', { :acceptable_exit_codes => [0] } do |r|
+          expect(r.stdout).to match(/osd.0/)
+          expect(r.stderr).to be_empty
+        end
+      end
+    end
+
+    it 'should install a radosgw' do
+      pp = <<-EOS
+        # ceph::repo and ceph are needed as dependencies in the catalog
+        class { 'ceph::repo':
+          release => '#{release}',
+          fastcgi => true,
+        }
+        class { 'ceph':
+          fsid                       => '#{fsid}',
+          mon_host                   => $::ipaddress,
+          mon_initial_members        => 'a',
+          osd_pool_default_size      => '1',
+          osd_pool_default_min_size  => '1',
+        }
+
         $apache_user = $::osfamily ? {
           'RedHat' => 'apache',
           default => 'www-data',
+        }
+
+        host { $::fqdn: # workaround for bad 'hostname -f' in vagrant box
+          ip           => $ipaddress,
+          host_aliases => [$::hostname],
+        }
+        ->
+        file { '/var/run/ceph': # workaround for bad sysvinit script (ignores socket)
+          ensure => directory,
+          owner  => $apache_user,
+        }
+        ->
+        ceph::rgw { 'radosgw.gateway':
+          rgw_socket_path => '/var/run/ceph/ceph-client.radosgw.gateway.asok',
+        }
+        ceph::rgw::apache { 'radosgw.gateway':
+          rgw_port        => '8080',
+          rgw_socket_path => '/var/run/ceph/ceph-client.radosgw.gateway.asok',
+        }
+      EOS
+
+      osfamily = fact 'osfamily'
+
+      servicequery = {
+        'Debian' => 'status radosgw id=radosgw.gateway',
+        'RedHat' => 'service ceph-radosgw status id=radosgw.gateway',
+      }
+
+      # RGW on CentOS is currently broken, so lets disable tests for now.
+      if osfamily != 'RedHat'
+        apply_manifest(pp, :catch_failures => true)
+        # Enable as soon as remaining changes are fixed
+        #apply_manifest(pp, :catch_changes => true)
+
+        shell servicequery[osfamily] do |r|
+          expect(r.exit_code).to be_zero
+        end
+
+        shell "radosgw-admin user create --uid=#{test_user} --display-name=#{test_user}"
+
+        shell "radosgw-admin subuser create --uid=#{test_user} --subuser=#{test_user}:swift --access=full"
+
+        shell "radosgw-admin key create --subuser=#{test_user}:swift --key-type=swift --secret='#{test_password}'"
+
+        shell "curl -i -H 'X-Auth-User: #{test_user}:swift' -H 'X-Auth-Key: #{test_password}' http://127.0.0.1:8080/auth/v1.0/" do |r|
+          expect(r.exit_code).to be_zero
+          expect(r.stdout).to match(/HTTP\/1\.1 204 No Content/)
+          expect(r.stdout).not_to match(/401 Unauthorized/)
+        end
+      end
+    end
+
+    it 'should configure keystone and rgw keystone integration' do
+      pp = <<-EOS
+        # ceph::repo and ceph are needed as dependencies in the catalog
+        class { 'ceph::repo':
+          release => '#{release}',
+          fastcgi => true,
+        }
+        class { 'ceph':
+          fsid                       => '#{fsid}',
+          mon_host                   => $::ipaddress,
+          mon_initial_members        => 'a',
+          osd_pool_default_size      => '1',
+          osd_pool_default_min_size  => '1',
+        }
+
+        # this is needed for the refresh triggered by ceph::rgw::keystone
+        ceph::rgw { 'radosgw.gateway':
+          rgw_socket_path => '/var/run/ceph/ceph-client.radosgw.gateway.asok',
         }
 
         case $::osfamily {
@@ -58,10 +210,6 @@ describe 'ceph rgw' do
             Exec['apt_update'] -> Package['keystone','python-swiftclient']
           }
           'RedHat': {
-            # ceph-radosgw expects open file limit of 32768
-            file { '/etc/security/limits.d/80-nofile.conf':
-              content => '*          hard    nofile     32768',
-            }
             yumrepo { 'openstack-juno':
               descr    => 'OpenStack Juno Repository',
               baseurl  => 'http://repos.fedorapeople.org/repos/openstack/openstack-juno/epel-7/',
@@ -92,83 +240,7 @@ describe 'ceph rgw' do
           internal_url => "http://${::ipaddress}:5000",
           region       => 'example-1',
         }
-
-        # ceph setup
-        class { 'ceph::repo':
-          release => '#{release}',
-          fastcgi => true,
-        }
-        ->
-        class { 'ceph':
-          fsid                       => '#{fsid}',
-          mon_host                   => $::ipaddress,
-          mon_initial_members        => 'a',
-          osd_pool_default_size      => '1',
-          osd_pool_default_min_size  => '1',
-        }
-        ceph::mon { 'a':
-          public_addr => $::ipaddress,
-          key => '#{mon_key}',
-        }
-        ceph::key { 'client.admin':
-          secret         => '#{admin_key}',
-          cap_mon        => 'allow *',
-          cap_osd        => 'allow *',
-          cap_mds        => 'allow *',
-          inject         => true,
-          inject_as_id   => 'mon.',
-          inject_keyring => '/var/lib/ceph/mon/ceph-a/keyring',
-        }
-        ->
-        ceph::key { 'client.radosgw.gateway':
-          user    => $apache_user,
-          secret  => '#{radosgw_key}',
-          cap_mon => 'allow rwx',
-          cap_osd => 'allow rwx',
-          inject  => true,
-        }
-        ->
-        exec { 'bootstrap-key':
-          command => '/usr/sbin/ceph-create-keys --id a',
-        }
-        ->
-        ceph::osd { '/srv/data': }
-
-        # setup ceph radosgw
-        host { $::fqdn: # workaround for bad 'hostname -f' in vagrant box
-          ip           => $ipaddress,
-          host_aliases => [$::hostname],
-        }
-        ->
-        file { '/var/run/ceph': # workaround for bad sysvinit script (ignores socket)
-          ensure => directory,
-          owner  => $apache_user,
-        }
-        ->
-        ceph::rgw { 'radosgw.gateway':
-          rgw_socket_path => '/var/run/ceph/ceph-client.radosgw.gateway.asok',
-        }
-        Ceph::Osd['/srv/data'] -> Service['radosgw-radosgw.gateway']
-
-        ceph::rgw::apache { 'radosgw.gateway':
-          rgw_port        => '8080',
-          rgw_socket_path => '/var/run/ceph/ceph-client.radosgw.gateway.asok',
-        }
-
-        package { 'python-swiftclient':  # required for tests below
-          ensure => present,
-        }
-        ceph_config {
-         'global/mon_data_avail_warn': value => 10; # workaround for health warn in mon
-         'global/osd_journal_size':    value => 100;
-        }
-
-        # add the require keystone endpoints for radosgw (object-store)
         Service['keystone'] -> Ceph::Rgw::Keystone['radosgw.gateway']
-        ceph::rgw::keystone { 'radosgw.gateway':
-          rgw_keystone_url         => "http://${::ipaddress}:5000",
-          rgw_keystone_admin_token => '#{keystone_admin_token}',
-        }
 
         keystone_service { 'swift':
           ensure      => present,
@@ -176,7 +248,6 @@ describe 'ceph rgw' do
           description => 'Openstack Object Storage Service',
         }
         Keystone_service<||> -> Ceph::Rgw::Keystone['radosgw.gateway']
-
         keystone_endpoint { 'example-1/swift':
           ensure       => present,
           public_url   => "http://${::fqdn}:8080/swift/v1",
@@ -194,12 +265,20 @@ describe 'ceph rgw' do
           tenant   => '#{test_tenant}',
         }
         Keystone_user<||> -> Ceph::Rgw::Keystone['radosgw.gateway']
-
         keystone_user_role { 'testuser@openstack':
           ensure => present,
           roles  => ['_member_'],
         }
         Keystone_user_role<||> -> Ceph::Rgw::Keystone['radosgw.gateway']
+
+        package { 'python-swiftclient':  # required for tests below
+          ensure => present,
+        }
+
+        ceph::rgw::keystone { 'radosgw.gateway':
+          rgw_keystone_url         => "http://${::ipaddress}:5000",
+          rgw_keystone_admin_token => '#{keystone_admin_token}',
+        }
       EOS
 
       osfamily = fact 'osfamily'
