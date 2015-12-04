@@ -43,11 +43,15 @@
 #   Optional. Default is undef.
 #   Increase or decrease the replica level of a pool.
 #
+# [*exec_timeout*] The default exec resource timeout, in seconds
+#   Optional. Defaults to $::ceph::params::exec_timeout
+#
 define ceph::pool (
   $ensure = present,
   $pg_num = 64,
   $pgp_num = undef,
   $size = undef,
+  $exec_timeout = $::ceph::params::exec_timeout,
 ) {
 
   if $ensure == present {
@@ -62,6 +66,7 @@ ceph osd pool create ${name} ${pg_num}",
       unless  => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 ceph osd lspools | grep ' ${name},'",
+      timeout => $exec_timeout,
     }
 
     exec { "set-${name}-pg_num":
@@ -72,6 +77,7 @@ ceph osd pool set ${name} pg_num ${pg_num}",
 set -ex
 test $(ceph osd pool get ${name} pg_num | sed 's/.*:\s*//g') -ge ${pg_num}",
       require => Exec["create-${name}"],
+      timeout => $exec_timeout,
     }
 
     if $pgp_num {
@@ -83,6 +89,7 @@ ceph osd pool set ${name} pgp_num ${pgp_num}",
 set -ex
 test $(ceph osd pool get ${name} pgp_num | sed 's/.*:\s*//g') -ge ${pgp_num}",
         require => Exec["create-${name}"],
+        timeout => $exec_timeout,
       }
     }
 
@@ -95,6 +102,7 @@ ceph osd pool set ${name} size ${size}",
 set -ex
 test $(ceph osd pool get ${name} size | sed 's/.*:\s*//g') -eq ${size}",
         require => Exec["create-${name}"],
+        timeout => $exec_timeout,
       }
     }
 
@@ -107,6 +115,7 @@ ceph osd pool delete ${name} ${name} --yes-i-really-really-mean-it",
       onlyif  => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 ceph osd lspools | grep ${name}",
+      timeout => $exec_timeout,
     } -> Ceph::Mon<| ensure == absent |>
 
   } else {

@@ -22,6 +22,8 @@
 # should be considered to be constant
 #
 # === Parameters:
+# [*exec_timeout*] The default exec resource timeout, in seconds
+#   Optional. Defaults to 600
 #
 # [*packages*] The ceph package name
 #   Optional. Defaults to 'ceph'
@@ -30,6 +32,7 @@
 #   Optional. Defaults to '/tmp/radosgw.sock'
 #
 class ceph::params (
+  $exec_timeout = 600,
   $packages = 'ceph', # just provide the minimum per default
   $rgw_socket_path = '/tmp/radosgw.sock',
 ) {
