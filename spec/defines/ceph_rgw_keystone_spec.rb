@@ -141,13 +141,14 @@ openssl x509 -in /tmp/signing -pubkey | certutil -A -d /some/path/to/nss -n sign
 
     let :facts do
       {
-        :concat_basedir         => '/var/lib/puppet/concat',
-        :fqdn                   => 'myhost.domain',
-        :hostname               => 'myhost',
-        :lsbdistcodename        => 'Final',
-        :osfamily               => 'RedHat',
-        :operatingsystem        => 'RedHat',
-        :operatingsystemrelease => '6',
+        :concat_basedir            => '/var/lib/puppet/concat',
+        :fqdn                      => 'myhost.domain',
+        :hostname                  => 'myhost',
+        :lsbdistcodename           => 'Final',
+        :osfamily                  => 'RedHat',
+        :operatingsystem           => 'RedHat',
+        :operatingsystemrelease    => '6',
+        :operatingsystemmajrelease => '6',
       }
     end
 

@@ -126,13 +126,14 @@ exec /usr/bin/radosgw -c /etc/ceph/ceph.conf -n radosgw.gateway",
 
     let :facts do
       {
-        :concat_basedir         => '/var/lib/puppet/concat',
-        :fqdn                   => 'myhost.domain',
-        :hostname               => 'myhost',
-        :osfamily               => 'RedHat',
-        :operatingsystem        => 'RedHat',
-        :operatingsystemrelease => '6',
-        :pkg_fastcgi            => 'libapache2-mod-fastcgi',
+        :concat_basedir            => '/var/lib/puppet/concat',
+        :fqdn                      => 'myhost.domain',
+        :hostname                  => 'myhost',
+        :osfamily                  => 'RedHat',
+        :operatingsystem           => 'RedHat',
+        :operatingsystemrelease    => '6',
+        :operatingsystemmajrelease => '6',
+        :pkg_fastcgi               => 'libapache2-mod-fastcgi',
       }
     end
 
