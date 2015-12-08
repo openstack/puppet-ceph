@@ -112,6 +112,17 @@ describe 'ceph usecases' do
         class { 'ceph::repo':
           ensure  => absent,
         }
+        file { [
+           '/var/lib/ceph',
+           '/var/run/ceph',
+           '/srv/data',
+          ]:
+          ensure => absent,
+          recurse => true,
+          purge => true,
+          force => true,
+        }
+
       EOS
 
       apply_manifest(pp, :catch_failures => true)

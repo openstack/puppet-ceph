@@ -39,6 +39,19 @@ describe 'ceph rgw' do
 
     it 'should install one monitor/osd with cephx keys for rgw-fcgi' do
       pp = <<-EOS
+        if $::osfamily == 'Debian' {
+          #trusty ships with pbr 0.7
+          #openstackclient.shell raises an requiring pbr!=0.7,<1.0,>=0.6'
+          #the latest is 0.10
+          package { 'python-pbr':
+            ensure => 'latest',
+          }
+        }
+        $apache_user = $::osfamily ? {
+          'RedHat' => 'apache',
+          default => 'www-data',
+        }
+
         class { 'ceph::repo':
           release => '#{release}',
           fastcgi => true,
@@ -340,8 +353,14 @@ describe 'ceph rgw' do
            '/var/lib/ceph/nss',
            '/etc/ceph/ceph.client.admin.keyring',
            '/etc/ceph/ceph.client.radosgw.gateway',
+           '/var/lib/ceph',
+           '/var/run/ceph',
+           '/srv/data',
           ]:
-          ensure => absent
+          ensure => absent,
+          recurse => true,
+          purge => true,
+          force => true,
         }
         ->
         package { $radosgw: ensure => purged }

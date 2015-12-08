@@ -121,12 +121,13 @@ describe 'ceph::rgw' do
 
     let :facts do
       {
-        :concat_basedir         => '/var/lib/puppet/concat',
-        :fqdn                   => 'myhost.domain',
-        :hostname               => 'myhost',
-        :osfamily               => 'RedHat',
-        :operatingsystem        => 'RedHat',
-        :operatingsystemrelease => '7.2',
+        :concat_basedir            => '/var/lib/puppet/concat',
+        :fqdn                      => 'myhost.domain',
+        :hostname                  => 'myhost',
+        :osfamily                  => 'RedHat',
+        :operatingsystem           => 'RedHat',
+        :operatingsystemrelease    => '7.2',
+        :operatingsystemmajrelease => '7',
       }
     end
 
