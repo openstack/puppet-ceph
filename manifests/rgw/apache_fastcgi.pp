@@ -50,23 +50,54 @@
 #   http://ceph.com/docs/master/install/install-ceph-gateway/
 #   for more info on repository recommendations.
 #
+# [*apache_mods*] Whether to configure and enable a set of default Apache modules.
+#   Optional. Defaults to false.
+#
+# [*apache_vhost*] Configures a default virtual host.
+#   Optional. Defaults to false.
+#
+# [*apache_purge_configs*] Removes all other Apache configs and virtual hosts.
+#   Optional. Defaults to true.
+#
+# [*apache_purge_vhost*] Whether to remove any configurations inside vhost_dir not managed
+#   by Puppet.
+#   Optional. Defaults to true.
+#
+# [*custom_apache_ports*] Array of ports to listen by Apache.
+#   Optional. Works only if custom_apache set to true. Default is undef.
+#
 define ceph::rgw::apache_fastcgi (
-  $admin_email = 'root@localhost',
-  $docroot = '/var/www',
-  $fcgi_file = '/var/www/s3gw.fcgi',
-  $rgw_dns_name = $::fqdn,
-  $rgw_port = 80,
-  $rgw_socket_path = $::ceph::params::rgw_socket_path,
-  $syslog = true,
-  $ceph_apache_repo = true,
+  $admin_email          = 'root@localhost',
+  $docroot              = '/var/www',
+  $fcgi_file            = '/var/www/s3gw.fcgi',
+  $rgw_dns_name         = $::fqdn,
+  $rgw_port             = '80',
+  $rgw_socket_path      = $::ceph::params::rgw_socket_path,
+  $syslog               = true,
+  $ceph_apache_repo     = true,
+  $apache_mods          = false,
+  $apache_vhost         = false,
+  $apache_purge_configs = true,
+  $apache_purge_vhost   = true,
+  $custom_apache_ports  = undef,
 ) {
 
   class { '::apache':
-    default_mods  => false,
-    default_vhost => false,
+    default_mods    => $apache_mods,
+    default_vhost   => $apache_vhost,
+    purge_configs   => $apache_purge_configs,
+    purge_vhost_dir => $apache_purge_vhost,
   }
+
+  if $custom_apache_ports {
+    apache::listen { $custom_apache_ports: }
+  }
+
+  if !$apache_mods {
+    include ::apache::mod::auth_basic
+  }
+
   include ::apache::mod::alias
-  include ::apache::mod::auth_basic
   include ::apache::mod::mime
   include ::apache::mod::rewrite
 
