@@ -234,7 +234,10 @@ test ! -d \$mon_data
       it { is_expected.to contain_exec('ceph-mon-ceph.client.admin.keyring-A').with(
         'command' => '/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-touch /etc/ceph/ceph.client.admin.keyring'
+touch /etc/ceph/ceph.client.admin.keyring',
+        'unless'  => '/bin/true # comment to satisfy puppet syntax requirements
+set -ex
+test -e /etc/ceph/ceph.client.admin.keyring'
        ) }
       it { is_expected.to contain_exec('ceph-mon-mkfs-A').with(
         'command' => "/bin/true # comment to satisfy puppet syntax requirements
@@ -257,7 +260,12 @@ fi
       it { is_expected.to contain_file('/tmp/ceph-mon-keyring-A').with(
         'mode' => '0444',
         'content' => "[mon.]\n\tkey = AQATGHJTUCBqIBAA7M2yafV1xctn1pgr3GcKPg==\n\tcaps mon = \"allow *\"\n") }
-      it { is_expected.to contain_exec('rm-keyring-A').with('command' => '/bin/rm /tmp/ceph-mon-keyring-A') }
+      it { is_expected.to contain_exec('rm-keyring-A').with(
+          'command' => '/bin/rm /tmp/ceph-mon-keyring-A',
+          'unless'  => '/bin/true # comment to satisfy puppet syntax requirements
+set -ex
+test ! -e /tmp/ceph-mon-keyring-A
+') }
     end
 
     describe 'with keyring' do
