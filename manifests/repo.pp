@@ -107,7 +107,11 @@ class ceph::repo (
         $el = '7'
       }
 
-      if ($::operatingsystem == 'CentOS') {
+      # Firefly is the last ceph.com supported release which conflicts with
+      # the CentOS 7 base channel. Therefore make sure to only exclude the
+      # conflicting packages in the exact combination of CentOS7 and Firefly.
+      # TODO: Remove this once Firefly becomes EOL
+      if ($::operatingsystem == 'CentOS' and $el == '7' and $release == 'firefly') {
         file_line { 'exclude base':
           ensure => $ensure,
           path   => '/etc/yum.repos.d/CentOS-Base.repo',
