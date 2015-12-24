@@ -38,10 +38,14 @@
 # [*cluster*] The ceph cluster
 #   Optional. Same default as ceph.
 #
+# [*exec_timeout*] The default exec resource timeout, in seconds
+#   Optional. Defaults to $::ceph::params::exec_timeout
+#
 define ceph::osd (
   $ensure = present,
   $journal = undef,
   $cluster = undef,
+  $exec_timeout = $::ceph::params::exec_timeout,
   ) {
 
     $data = $name
@@ -76,6 +80,7 @@ ceph-disk list | grep -E ' *${data}1? .*ceph data, (prepared|active)' ||
 ls -l /var/lib/ceph/osd/${cluster_name}-* | grep ' ${data}\$'
 ",
         logoutput => true,
+        timeout   => $exec_timeout,
       }
 
       Exec[$ceph_prepare] -> Exec[$ceph_activate]
@@ -135,6 +140,7 @@ else
 fi
 ",
         logoutput => true,
+        timeout   => $exec_timeout,
       } -> Ceph::Mon<| ensure == absent |>
     }
 

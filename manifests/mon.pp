@@ -51,6 +51,9 @@
 # [*keyring*] Path of the [mon.] keyring file
 #   Optional. $key and $keyring are mutually exclusive.
 #
+# [*exec_timeout*] The default exec resource timeout, in seconds
+#   Optional. Defaults to $::ceph::params::exec_timeout
+#
 define ceph::mon (
   $ensure = present,
   $public_addr = undef,
@@ -58,6 +61,7 @@ define ceph::mon (
   $authentication_type = 'cephx',
   $key = undef,
   $keyring  = undef,
+  $exec_timeout = $::ceph::params::exec_timeout,
   ) {
 
     # a puppet name translates into a ceph id, the meaning is different
@@ -161,6 +165,7 @@ mon_data=\$(ceph-mon ${cluster_option} --id ${id} --show-config-value mon_data)
 test -d  \$mon_data
 ",
         logoutput => true,
+        timeout   => $exec_timeout,
       }
       ->
       service { $mon_service:
@@ -199,6 +204,7 @@ mon_data=\$(ceph-mon ${cluster_option} --id ${id} --show-config-value mon_data)
 test ! -d \$mon_data
 ",
         logoutput => true,
+        timeout   => $exec_timeout,
       } -> Package<| tag == 'ceph' |>
     }
   }
