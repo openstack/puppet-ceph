@@ -1,3 +1,4 @@
+#
 # Copyright (C) 2014 Catalyst IT Limited.
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +18,7 @@
 #
 require 'spec_helper'
 
-describe 'ceph::rgw::apache' do
+describe 'ceph::rgw::apache_fastcgi' do
 
   let :pre_condition do
     "include ceph::params
@@ -35,8 +36,8 @@ describe 'ceph::rgw::apache' do
         :hostname               => 'myhost',
         :osfamily               => 'Debian',
         :operatingsystem        => 'Ubuntu',
-        :operatingsystemrelease => '14.04',
         :lsbdistid              => 'Ubuntu',
+        :operatingsystemrelease => '14.04',
         :lsbdistcodename        => 'trusty',
         :pkg_fastcgi            => 'libapache2-mod-fastcgi',
       }

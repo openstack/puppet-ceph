@@ -15,9 +15,9 @@
 #
 # Author: Ricardo Rocha <ricardo@catalyst.net.nz>
 #
-# Configures a ceph radosgw apache frontend.
+# Configures a ceph radosgw apache frontend with mod_fastcgi.
 #
-## == Define: ceph::rgw::apache
+## == Define: ceph::rgw::apache_fastcgi
 #
 # The RGW id. An alphanumeric string uniquely identifying the RGW.
 # ( example: radosgw.gateway )
@@ -50,7 +50,7 @@
 #   http://ceph.com/docs/master/install/install-ceph-gateway/
 #   for more info on repository recommendations.
 #
-define ceph::rgw::apache (
+define ceph::rgw::apache_fastcgi (
   $admin_email = 'root@localhost',
   $docroot = '/var/www',
   $fcgi_file = '/var/www/s3gw.fcgi',
@@ -61,16 +61,57 @@ define ceph::rgw::apache (
   $ceph_apache_repo = true,
 ) {
 
-  warning ('Class rgw::apache is deprecated in favor of rgw::apache_fastcgi')
-
-  ceph::rgw::apache_fastcgi { $name:
-    admin_email      => $admin_email,
-    docroot          => $docroot,
-    fcgi_file        => $fcgi_file,
-    rgw_dns_name     => $rgw_dns_name,
-    rgw_port         => $rgw_port,
-    rgw_socket_path  => $rgw_socket_path,
-    syslog           => $syslog,
-    ceph_apache_repo => $ceph_apache_repo,
+  class { '::apache':
+    default_mods  => false,
+    default_vhost => false,
   }
+  include ::apache::mod::alias
+  include ::apache::mod::auth_basic
+  include ::apache::mod::mime
+  include ::apache::mod::rewrite
+
+  apache::vhost { "${rgw_dns_name}-radosgw":
+    servername     => $rgw_dns_name,
+    serveradmin    => $admin_email,
+    port           => $rgw_port,
+    docroot        => $docroot,
+    rewrite_rule   => '^/([a-zA-Z0-9-_.]*)([/]?.*) /s3gw.fcgi?page=$1&params=$2&%{QUERY_STRING} [E=HTTP_AUTHORIZATION:%{HTTP:Authorization},L]',
+    access_log     => $syslog,
+    error_log      => $syslog,
+    fastcgi_server => $fcgi_file,
+    fastcgi_socket => $rgw_socket_path,
+    fastcgi_dir    => $docroot,
+  }
+
+  # radosgw fast-cgi script
+  file { $fcgi_file:
+    ensure  => file,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0750',
+    content => "#!/bin/sh
+exec /usr/bin/radosgw -c /etc/ceph/ceph.conf -n ${name}",
+  }
+
+  File[$fcgi_file]
+  ~> Service['httpd']
+
+  # dependency on ceph apache repo if set
+  $pkg_fastcgi = $::apache::params::mod_packages['fastcgi']
+  if $ceph_apache_repo {
+    case $::osfamily {
+      'Debian': {
+        Apt::Source['ceph-fastcgi']
+        -> Package[$pkg_fastcgi]
+      }
+      'RedHat': {
+        Yumrepo['ext-ceph-fastcgi']
+        -> Package[$pkg_fastcgi]
+      }
+      default: {
+        fail("Unsupported osfamily: ${::osfamily} operatingsystem: ${::operatingsystem}, module ${module_name} only supports osfamily Debian and RedHat")
+      }
+    }
+  }
+
 }

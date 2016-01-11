@@ -1,3 +1,4 @@
+#
 # Copyright (C) 2014 Catalyst IT Limited.
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,17 +15,11 @@
 #
 # Author: Ricardo Rocha <ricardo@catalyst.net.nz>
 # Author: David Gurtner <aldavud@crimson.ch>
+# Author: Oleksiy Molchanov <omolchanov@mirantis.com>
 #
 require 'spec_helper'
 
-describe 'ceph::rgw::apache' do
-
-  let :pre_condition do
-    "include ceph::params
-     class { 'ceph::repo':
-       fastcgi => true,
-     }"
-  end
+describe 'ceph::rgw::apache_proxy_fcgi' do
 
   describe 'Debian Family' do
 
@@ -35,10 +30,9 @@ describe 'ceph::rgw::apache' do
         :hostname               => 'myhost',
         :osfamily               => 'Debian',
         :operatingsystem        => 'Ubuntu',
-        :operatingsystemrelease => '14.04',
         :lsbdistid              => 'Ubuntu',
+        :operatingsystemrelease => '14.04',
         :lsbdistcodename        => 'trusty',
-        :pkg_fastcgi            => 'libapache2-mod-fastcgi',
       }
     end
 
@@ -53,29 +47,19 @@ describe 'ceph::rgw::apache' do
         'serveradmin'       => 'root@localhost',
         'port'              => 80,
         'docroot'           => '/var/www',
-        'rewrite_rule'      => '^/([a-zA-Z0-9-_.]*)([/]?.*) /s3gw.fcgi?page=$1&params=$2&%{QUERY_STRING} [E=HTTP_AUTHORIZATION:%{HTTP:Authorization},L]',
         'access_log'        => true,
         'error_log'         => true,
-        'fastcgi_server'    => '/var/www/s3gw.fcgi',
-        'fastcgi_socket'    => '/tmp/radosgw.sock',
-        'fastcgi_dir'       => '/var/www',
+        'rewrite_rule'      => '.* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization},L]',
+        'setenv'            => 'proxy-nokeepalive 1',
+        'proxy_pass'        => {'path' => '/', 'url' => 'fcgi://127.0.0.1:9000/'},
       })}
 
       it { is_expected.to contain_class('apache') }
       it { is_expected.to contain_class('apache::mod::alias') }
       it { is_expected.to contain_class('apache::mod::auth_basic') }
-      it { is_expected.to contain_class('apache::mod::fastcgi') }
+      it { is_expected.to contain_class('apache::mod::proxy') }
       it { is_expected.to contain_class('apache::mod::mime') }
       it { is_expected.to contain_class('apache::mod::rewrite') }
-
-      it { is_expected.to contain_file('/var/www/s3gw.fcgi').with({
-        'ensure'  => 'file',
-        'owner'   => 'root',
-        'group'   => 'root',
-        'mode'    => '0750',
-        'content' => "#!/bin/sh
-exec /usr/bin/radosgw -c /etc/ceph/ceph.conf -n radosgw.gateway",
-      })}
 
     end
 
@@ -88,11 +72,10 @@ exec /usr/bin/radosgw -c /etc/ceph/ceph.conf -n radosgw.gateway",
       let :params do
         {
           :rgw_dns_name    => 'mydns.hostname',
-          :rgw_socket_path => '/some/location/radosgw.sock',
           :rgw_port        => 1111,
           :admin_email     => 'admin@hostname',
-          :fcgi_file       => '/some/fcgi/filepath',
           :syslog          => false,
+          :proxy_pass      => {'path' => '/', 'url' => 'fcgi://127.0.0.1:9999/'},
         }
       end
 
@@ -101,22 +84,19 @@ exec /usr/bin/radosgw -c /etc/ceph/ceph.conf -n radosgw.gateway",
         'serveradmin'       => 'admin@hostname',
         'port'              => 1111,
         'docroot'           => '/var/www',
-        'rewrite_rule'      => '^/([a-zA-Z0-9-_.]*)([/]?.*) /s3gw.fcgi?page=$1&params=$2&%{QUERY_STRING} [E=HTTP_AUTHORIZATION:%{HTTP:Authorization},L]',
         'access_log'        => false,
         'error_log'         => false,
-        'fastcgi_server'    => '/some/fcgi/filepath',
-        'fastcgi_socket'    => '/some/location/radosgw.sock',
-        'fastcgi_dir'       => '/var/www',
+        'rewrite_rule'      => '.* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization},L]',
+        'setenv'            => 'proxy-nokeepalive 1',
+        'proxy_pass'        => {'path' => '/', 'url' => 'fcgi://127.0.0.1:9999/'},
       } ) }
 
       it { is_expected.to contain_class('apache') }
       it { is_expected.to contain_class('apache::mod::alias') }
       it { is_expected.to contain_class('apache::mod::auth_basic') }
-      it { is_expected.to contain_class('apache::mod::fastcgi') }
+      it { is_expected.to contain_class('apache::mod::proxy') }
       it { is_expected.to contain_class('apache::mod::mime') }
       it { is_expected.to contain_class('apache::mod::rewrite') }
-
-      it { is_expected.to contain_file('/some/fcgi/filepath') }
 
     end
   end
@@ -132,7 +112,6 @@ exec /usr/bin/radosgw -c /etc/ceph/ceph.conf -n radosgw.gateway",
         :operatingsystem           => 'RedHat',
         :operatingsystemrelease    => '7.2',
         :operatingsystemmajrelease => '7',
-        :pkg_fastcgi               => 'libapache2-mod-fastcgi',
       }
     end
 
@@ -147,29 +126,19 @@ exec /usr/bin/radosgw -c /etc/ceph/ceph.conf -n radosgw.gateway",
         'serveradmin'       => 'root@localhost',
         'port'              => 80,
         'docroot'           => '/var/www',
-        'rewrite_rule'      => '^/([a-zA-Z0-9-_.]*)([/]?.*) /s3gw.fcgi?page=$1&params=$2&%{QUERY_STRING} [E=HTTP_AUTHORIZATION:%{HTTP:Authorization},L]',
         'access_log'        => true,
         'error_log'         => true,
-        'fastcgi_server'    => '/var/www/s3gw.fcgi',
-        'fastcgi_socket'    => '/tmp/radosgw.sock',
-        'fastcgi_dir'       => '/var/www',
+        'rewrite_rule'      => '.* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization},L]',
+        'setenv'            => 'proxy-nokeepalive 1',
+        'proxy_pass'        => {'path' => '/', 'url' => 'fcgi://127.0.0.1:9000/'},
       })}
 
       it { is_expected.to contain_class('apache') }
       it { is_expected.to contain_class('apache::mod::alias') }
       it { is_expected.to contain_class('apache::mod::auth_basic') }
-      it { is_expected.to contain_class('apache::mod::fastcgi') }
+      it { is_expected.to contain_class('apache::mod::proxy') }
       it { is_expected.to contain_class('apache::mod::mime') }
       it { is_expected.to contain_class('apache::mod::rewrite') }
-
-      it { is_expected.to contain_file('/var/www/s3gw.fcgi').with({
-        'ensure'  => 'file',
-        'owner'   => 'root',
-        'group'   => 'root',
-        'mode'    => '0750',
-        'content' => "#!/bin/sh
-exec /usr/bin/radosgw -c /etc/ceph/ceph.conf -n radosgw.gateway",
-      })}
 
     end
 
@@ -182,11 +151,10 @@ exec /usr/bin/radosgw -c /etc/ceph/ceph.conf -n radosgw.gateway",
       let :params do
         {
           :rgw_dns_name    => 'mydns.hostname',
-          :rgw_socket_path => '/some/location/radosgw.sock',
           :rgw_port        => 1111,
           :admin_email     => 'admin@hostname',
-          :fcgi_file       => '/some/fcgi/filepath',
           :syslog          => false,
+          :proxy_pass      => {'path'=>'/', 'url'=>'fcgi://127.0.0.1:9999/'},
         }
       end
 
@@ -195,22 +163,19 @@ exec /usr/bin/radosgw -c /etc/ceph/ceph.conf -n radosgw.gateway",
         'serveradmin'       => 'admin@hostname',
         'port'              => 1111,
         'docroot'           => '/var/www',
-        'rewrite_rule'      => '^/([a-zA-Z0-9-_.]*)([/]?.*) /s3gw.fcgi?page=$1&params=$2&%{QUERY_STRING} [E=HTTP_AUTHORIZATION:%{HTTP:Authorization},L]',
         'access_log'        => false,
         'error_log'         => false,
-        'fastcgi_server'    => '/some/fcgi/filepath',
-        'fastcgi_socket'    => '/some/location/radosgw.sock',
-        'fastcgi_dir'       => '/var/www',
+        'rewrite_rule'      => '.* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization},L]',
+        'setenv'            => 'proxy-nokeepalive 1',
+        'proxy_pass'        => {'path' => '/', 'url' => 'fcgi://127.0.0.1:9999/'},
       } ) }
 
       it { is_expected.to contain_class('apache') }
       it { is_expected.to contain_class('apache::mod::alias') }
       it { is_expected.to contain_class('apache::mod::auth_basic') }
-      it { is_expected.to contain_class('apache::mod::fastcgi') }
+      it { is_expected.to contain_class('apache::mod::proxy') }
       it { is_expected.to contain_class('apache::mod::mime') }
       it { is_expected.to contain_class('apache::mod::rewrite') }
-
-      it { is_expected.to contain_file('/some/fcgi/filepath') }
 
     end
   end
