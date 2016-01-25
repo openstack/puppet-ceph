@@ -71,6 +71,9 @@
 #   individually through ceph::mon.
 #   Optional. String like e.g. 'a, b, c'.
 #
+# [*ms_bind_ipv6*] Enables Ceph daemons to bind to IPv6 addresses.
+#   Optional. Boolean. Default provided by Ceph.
+#
 # [*require_signatures*] If Ceph requires signatures on all
 #   message traffic (client<->cluster and between cluster daemons).
 #   Optional. Boolean. Default provided by Ceph.
@@ -110,6 +113,7 @@ class ceph (
   $mon_osd_nearfull_ratio     = undef,
   $mon_initial_members        = undef,
   $mon_host                   = undef,
+  $ms_bind_ipv6               = undef,
   $require_signatures         = undef,
   $cluster_require_signatures = undef,
   $service_require_signatures = undef,
@@ -141,6 +145,7 @@ class ceph (
       'global/mon_osd_nearfull_ratio':      value => $mon_osd_nearfull_ratio;
       'global/mon_initial_members':         value => $mon_initial_members;
       'global/mon_host':                    value => $mon_host;
+      'global/ms_bind_ipv6':                value => $ms_bind_ipv6;
       'global/require_signatures':          value => $require_signatures;
       'global/cluster_require_signatures':  value => $cluster_require_signatures;
       'global/service_require_signatures':  value => $service_require_signatures;

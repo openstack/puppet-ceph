@@ -41,6 +41,7 @@ describe 'ceph' do
       it { is_expected.to_not contain_ceph_config('global/mon_osd_nearfull_ratio').with_value('85') }
       it { is_expected.to_not contain_ceph_config('global/mon_initial_members').with_value('mon.01') }
       it { is_expected.to_not contain_ceph_config('global/mon_host').with_value('mon01.ceph, mon02.ceph') }
+      it { is_expected.to_not contain_ceph_config('global/ms_bind_ipv6').with_value('false') }
       it { is_expected.to_not contain_ceph_config('global/require_signatures').with_value('false') }
       it { is_expected.to_not contain_ceph_config('global/cluster_require_signatures').with_value('false') }
       it { is_expected.to_not contain_ceph_config('global/service_require_signatures').with_value('false') }
@@ -75,6 +76,7 @@ describe 'ceph' do
           :mon_osd_nearfull_ratio     => '90',
           :mon_initial_members        => 'mon.01',
           :mon_host                   => 'mon01.ceph, mon02.ceph',
+          :ms_bind_ipv6               => 'true',
           :require_signatures         => 'true',
           :cluster_require_signatures => 'true',
           :service_require_signatures => 'true',
@@ -100,6 +102,7 @@ describe 'ceph' do
       it { is_expected.to contain_ceph_config('global/mon_osd_nearfull_ratio').with_value('90') }
       it { is_expected.to contain_ceph_config('global/mon_initial_members').with_value('mon.01') }
       it { is_expected.to contain_ceph_config('global/mon_host').with_value('mon01.ceph, mon02.ceph') }
+      it { is_expected.to contain_ceph_config('global/ms_bind_ipv6').with_value('true') }
       it { is_expected.to contain_ceph_config('global/require_signatures').with_value('true') }
       it { is_expected.to contain_ceph_config('global/cluster_require_signatures').with_value('true') }
       it { is_expected.to contain_ceph_config('global/service_require_signatures').with_value('true') }

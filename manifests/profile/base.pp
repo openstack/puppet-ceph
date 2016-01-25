@@ -40,6 +40,7 @@ class ceph::profile::base {
     osd_pool_default_min_size => $ceph::profile::params::osd_pool_default_min_size,
     mon_initial_members       => $ceph::profile::params::mon_initial_members,
     mon_host                  => $ceph::profile::params::mon_host,
+    ms_bind_ipv6              => $ceph::profile::params::ms_bind_ipv6,
     cluster_network           => $ceph::profile::params::cluster_network,
     public_network            => $ceph::profile::params::public_network,
   }
