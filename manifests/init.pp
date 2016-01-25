@@ -92,6 +92,9 @@
 # [*public_network*] The address of the public network.
 #   Optional. {public-network-ip/netmask}
 #
+# [*public_addr*] The address of the node (on public network.)
+#   Optional. {public-network-ip}
+#
 class ceph (
   $fsid,
   $ensure                     = present,
@@ -113,6 +116,7 @@ class ceph (
   $sign_messages              = undef,
   $cluster_network            = undef,
   $public_network             = undef,
+  $public_addr                = undef,
 ) {
   include ::ceph::params
 
@@ -143,6 +147,7 @@ class ceph (
       'global/sign_messages':               value => $sign_messages;
       'global/cluster_network':             value => $cluster_network;
       'global/public_network':              value => $public_network;
+      'global/public_addr':                 value => $public_addr;
       'osd/osd_journal_size':               value => $osd_journal_size;
     }
 
