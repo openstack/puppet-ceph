@@ -14,6 +14,7 @@
 #   limitations under the License.
 #
 # Author: Ricardo Rocha <ricardo@catalyst.net.nz>
+# Author: Oleksiy Molchanov <omolchanov@mirantis.com>
 #
 # Configures a ceph radosgw.
 #
@@ -26,6 +27,12 @@
 #
 # [*pkg_radosgw*] Package name for the ceph radosgw.
 #   Optional. Default is osfamily dependent (check ceph::params).
+#
+# [*rgw_ensure*] Whether to start radosgw service.
+#   Optional. Default is running.
+#
+# [*rgw_enable*] Whether to enable radosgw service on boot.
+#   Optional. Default is true.
 #
 # [*rgw_data*] The path where the radosgw data should be stored.
 #   Optional. Default is '/var/lib/ceph/radosgw/${cluster}-${name}.
@@ -55,16 +62,18 @@
 #   Optional. Default is true.
 #
 define ceph::rgw (
-  $pkg_radosgw = $::ceph::params::pkg_radosgw,
-  $rgw_data = "/var/lib/ceph/radosgw/ceph-${name}",
-  $user = $::ceph::params::user_radosgw,
-  $keyring_path = "/etc/ceph/ceph.client.${name}.keyring",
-  $log_file = '/var/log/ceph/radosgw.log',
-  $rgw_dns_name = $::fqdn,
-  $rgw_socket_path = $::ceph::params::rgw_socket_path,
+  $pkg_radosgw        = $::ceph::params::pkg_radosgw,
+  $rgw_ensure         = 'running',
+  $rgw_enable         = true,
+  $rgw_data           = "/var/lib/ceph/radosgw/ceph-${name}",
+  $user               = $::ceph::params::user_radosgw,
+  $keyring_path       = "/etc/ceph/ceph.client.${name}.keyring",
+  $log_file           = '/var/log/ceph/radosgw.log',
+  $rgw_dns_name       = $::fqdn,
+  $rgw_socket_path    = $::ceph::params::rgw_socket_path,
   $rgw_print_continue = false,
-  $rgw_port = undef,
-  $syslog = true,
+  $rgw_port           = undef,
+  $syslog             = true,
 ) {
 
   ceph_config {
@@ -104,7 +113,13 @@ define ceph::rgw (
 
   # service definition
   if $::operatingsystem == 'Ubuntu' {
-    $init = 'upstart'
+    if $rgw_enable {
+      file { "${rgw_data}/done":
+        ensure => present,
+        before => Service["radosgw-${name}"],
+      }
+    }
+
     Service {
       name     => "radosgw-${name}",
       provider => 'init',
@@ -112,21 +127,19 @@ define ceph::rgw (
       stop     => "stop radosgw id=${name}",
       status   => "status radosgw id=${name}",
     }
-  } elsif ($::operatingsystem == 'Debian') {
-    $init = 'sysvinit'
-    Service {
-      name     => "radosgw-${name}",
-      start    => "service radosgw start id=${name}",
-      stop     => "service radosgw stop id=${name}",
-      status   => "service radosgw status id=${name}",
+  } elsif ($::operatingsystem == 'Debian') or ($::osfamily == 'RedHat') {
+    if $rgw_enable {
+      file { "${rgw_data}/sysvinit":
+        ensure => present,
+        before => Service["radosgw-${name}"],
+      }
     }
-  } elsif ($::osfamily == 'RedHat') {
-    $init = 'sysvinit'
+
     Service {
       name     => "radosgw-${name}",
-      start    => "service ceph-radosgw start id=${name}",
-      stop     => "service ceph-radosgw stop id=${name}",
-      status   => "service ceph-radosgw status id=${name}",
+      start    => 'service radosgw start',
+      stop     => 'service radosgw stop',
+      status   => 'service radosgw status',
     }
   }
   else {
@@ -134,7 +147,7 @@ define ceph::rgw (
   }
 
   service { "radosgw-${name}":
-    ensure => running,
+    ensure => $rgw_ensure,
   }
 
   Ceph_config<||> -> Service["radosgw-${name}"]
