@@ -28,7 +28,7 @@ describe 'ceph usecases' do
       pp = <<-EOS
         class { 'ceph::repo': }
         class { 'ceph':
-          fsid                       => generate('/usr/bin/uuidgen'),
+          fsid                       => '82274746-9a2c-426b-8c51-107fb0d890c6',
           mon_host                   => $::ipaddress,
           authentication_type        => 'none',
           osd_pool_default_size      => '1',
@@ -44,9 +44,8 @@ describe 'ceph usecases' do
         ceph::osd { '/srv/data': }
       EOS
 
-      # due to the generate() the above is not idempotent
-      # so we don't run twice as usual
       apply_manifest(pp, :catch_failures => true)
+      apply_manifest(pp, :catch_changes => true)
 
       shell 'sleep 10' # we need to wait a bit until the OSD is up
 

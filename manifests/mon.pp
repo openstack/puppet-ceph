@@ -88,6 +88,7 @@ define ceph::mon (
       $init = 'sysvinit'
       Service {
         name     => "ceph-mon-${id}",
+        provider => 'init',
         start    => "service ceph start mon.${id}",
         stop     => "service ceph stop mon.${id}",
         status   => "service ceph status mon.${id}",
