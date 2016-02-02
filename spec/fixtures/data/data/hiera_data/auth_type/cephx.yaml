@@ -1,9 +1,0 @@
----
-#################
-# Data Mappings #
-#################
-
-ceph::mons::defaults:
-  authentication_type: cephx
-  key: "%{hiera('mon_key')}"
-

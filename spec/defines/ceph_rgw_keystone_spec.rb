@@ -30,7 +30,7 @@ describe 'ceph::rgw::keystone' do
         :lsbdistcodename        => 'precise',
         :osfamily               => 'Debian',
         :operatingsystem        => 'Ubuntu',
-        :operatingsystemrelease => '12.04',
+        :operatingsystemrelease => '14.04',
       }
     end
 
@@ -147,8 +147,8 @@ openssl x509 -in /tmp/signing -pubkey | certutil -A -d /some/path/to/nss -n sign
         :lsbdistcodename           => 'Final',
         :osfamily                  => 'RedHat',
         :operatingsystem           => 'RedHat',
-        :operatingsystemrelease    => '6',
-        :operatingsystemmajrelease => '6',
+        :operatingsystemrelease    => '7.2',
+        :operatingsystemmajrelease => '7',
       }
     end
 

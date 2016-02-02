@@ -63,17 +63,20 @@ describe 'ceph::profile::params' do
     let :facts do
       {
         :osfamily        => 'Debian',
-        :lsbdistcodename => 'Precise'
+        :lsbdistcodename => 'trusty'
       }
     end
 
     it_configures 'ceph profile params'
   end
 
-  context 'on RHEL6' do
+  context 'on RHEL7' do
 
     let :facts do
-      { :osfamily => 'RedHat', }
+      {
+        :osfamily => 'RedHat',
+        :operatingsystemmajrelease => '7'
+      }
     end
 
     it_configures 'ceph profile params'

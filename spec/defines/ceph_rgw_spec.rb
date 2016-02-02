@@ -110,7 +110,7 @@ describe 'ceph::rgw' do
         :hostname               => 'myhost',
         :osfamily               => 'Debian',
         :operatingsystem        => 'Ubuntu',
-        :operatingsystemrelease => '12.04',
+        :operatingsystemrelease => '14.04',
       }
     end
 
@@ -133,7 +133,7 @@ describe 'ceph::rgw' do
         :hostname               => 'myhost',
         :osfamily               => 'RedHat',
         :operatingsystem        => 'RedHat',
-        :operatingsystemrelease => '6',
+        :operatingsystemrelease => '7.2',
       }
     end
 

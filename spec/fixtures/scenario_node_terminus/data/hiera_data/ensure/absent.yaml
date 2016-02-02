@@ -1,9 +1,0 @@
-ceph::mons::args:
-  'first':
-    ensure: absent
-  'second':
-    ensure: absent
-ceph::keys::args: {}
-ceph::osds::args:
-  '/dev/sdb':
-    ensure: absent

@@ -1,8 +1,0 @@
----
-ceph::mons::args:
-  'first':
-    public_addr: '10.11.12.2'
-key_defaults:
-  inject: true
-  inject_as_id: 'mon.'
-  inject_keyring: "/var/lib/ceph/mon/ceph-first/keyring"

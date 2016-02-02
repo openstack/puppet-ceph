@@ -6,6 +6,5 @@ pkg
 Gemfile.lock
 .bundle
 vendor
-.rspec_system
-Gemfile-rspec-system.lock
 .vagrant/*
+log

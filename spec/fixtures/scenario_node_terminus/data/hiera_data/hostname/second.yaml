@@ -1,8 +1,0 @@
----
-ceph::mons::args:
-  'second':
-    public_addr: '10.11.12.3'
-key_defaults:
-  inject: true
-  inject_as_id: 'mon.'
-  inject_keyring: "/var/lib/ceph/mon/ceph-second/keyring"

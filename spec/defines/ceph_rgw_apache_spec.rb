@@ -37,8 +37,8 @@ describe 'ceph::rgw::apache' do
         :hostname               => 'myhost',
         :osfamily               => 'Debian',
         :operatingsystem        => 'Ubuntu',
-        :operatingsystemrelease => '12.04',
-        :lsbdistcodename        => 'precise',
+        :operatingsystemrelease => '14.04',
+        :lsbdistcodename        => 'trusty',
         :pkg_fastcgi            => 'libapache2-mod-fastcgi',
       }
     end
@@ -131,8 +131,8 @@ exec /usr/bin/radosgw -c /etc/ceph/ceph.conf -n radosgw.gateway",
         :hostname                  => 'myhost',
         :osfamily                  => 'RedHat',
         :operatingsystem           => 'RedHat',
-        :operatingsystemrelease    => '6',
-        :operatingsystemmajrelease => '6',
+        :operatingsystemrelease    => '7.2',
+        :operatingsystemmajrelease => '7',
         :pkg_fastcgi               => 'libapache2-mod-fastcgi',
       }
     end
