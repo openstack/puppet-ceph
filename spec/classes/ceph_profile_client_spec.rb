@@ -94,6 +94,7 @@ describe 'ceph::profile::client' do
     let :facts do
       {
         :osfamily         => 'Debian',
+        :lsbdistid        => 'Debian',
         :lsbdistcodename  => 'wheezy',
         :operatingsystem  => 'Debian',
       }
@@ -107,6 +108,7 @@ describe 'ceph::profile::client' do
     let :facts do
       {
         :osfamily         => 'Debian',
+        :lsbdistid        => 'Ubuntu',
         :lsbdistcodename  => 'trusty',
         :operatingsystem  => 'Ubuntu',
       }

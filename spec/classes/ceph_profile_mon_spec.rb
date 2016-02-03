@@ -66,6 +66,7 @@ describe 'ceph::profile::mon' do
     let :facts do
       {
         :osfamily         => 'Debian',
+        :lsbdistid        => 'Debian',
         :lsbdistcodename  => 'wheezy',
         :operatingsystem  => 'Debian',
         :hostname         => 'first',
@@ -80,6 +81,7 @@ describe 'ceph::profile::mon' do
     let :facts do
       {
         :osfamily         => 'Debian',
+        :lsbdistid        => 'Ubuntu',
         :lsbdistcodename  => 'trusty',
         :operatingsystem  => 'Ubuntu',
         :hostname         => 'first',

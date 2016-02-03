@@ -53,9 +53,9 @@ class ceph::repo (
       include ::apt
 
       apt::key { 'ceph':
-        ensure     => $ensure,
-        key        => '08B73419AC32B4E966C1A330E84AC2C0460F3994',
-        key_source => 'https://download.ceph.com/keys/release.asc',
+        ensure => $ensure,
+        id     => '08B73419AC32B4E966C1A330E84AC2C0460F3994',
+        source => 'https://download.ceph.com/keys/release.asc',
       }
 
       apt::source { 'ceph':
@@ -80,9 +80,9 @@ class ceph::repo (
       if $fastcgi {
 
         apt::key { 'ceph-gitbuilder':
-          ensure     => $ensure,
-          key        => 'FCC5CB2ED8E6F6FB79D5B3316EAEAE2203C3951A',
-          key_server => 'keyserver.ubuntu.com',
+          ensure => $ensure,
+          id     => 'FCC5CB2ED8E6F6FB79D5B3316EAEAE2203C3951A',
+          server => 'keyserver.ubuntu.com',
         }
 
         apt::source { 'ceph-fastcgi':

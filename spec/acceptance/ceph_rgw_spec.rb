@@ -200,13 +200,18 @@ describe 'ceph rgw' do
           'Debian': {
             include ::apt
             apt::source { 'cloudarchive-juno':
-              location          => 'http://ubuntu-cloud.archive.canonical.com/ubuntu',
-              release           => 'trusty-updates/juno',
-              repos             => 'main',
-              include_src       => false,
-              required_packages => 'ubuntu-cloud-keyring',
+              location => 'http://ubuntu-cloud.archive.canonical.com/ubuntu',
+              release  => 'trusty-updates/juno',
+              repos    => 'main',
+              include  => {
+                'src'  => 'false',
+              },
             }
-            Apt::Source['cloudarchive-juno'] -> Package['keystone','python-swiftclient']
+            package { 'ubuntu-cloud-keyring':
+              ensure => present,
+            }
+            Apt::Source['cloudarchive-juno'] -> Package['ubuntu-cloud-keyring']
+            Package['ubuntu-cloud-keyring'] -> Package['keystone','python-swiftclient']
             Exec['apt_update'] -> Package['keystone','python-swiftclient']
           }
           'RedHat': {

@@ -47,6 +47,7 @@ describe 'ceph::profile::osd' do
     let :facts do
       {
         :osfamily         => 'Debian',
+        :lsbdistid        => 'Debian',
         :lsbdistcodename  => 'wheezy',
         :operatingsystem  => 'Debian',
       }
@@ -60,6 +61,7 @@ describe 'ceph::profile::osd' do
     let :facts do
       {
         :osfamily         => 'Debian',
+        :lsbdistid        => 'Ubuntu',
         :lsbdistcodename  => 'trusty',
         :operatingsystem  => 'Ubuntu',
       }

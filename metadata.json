@@ -31,7 +31,7 @@
   ],
   "description": "Installs and configures Ceph.",
   "dependencies": [
-    { "name": "puppetlabs/apt", "version_requirement": ">=1.4.0 <2.0.0" },
+    { "name": "puppetlabs/apt", "version_requirement": ">=2.0.0 <3.0.0" },
     { "name": "puppetlabs/apache", "version_requirement": ">=1.4.1 <2.0.0" },
     { "name": "puppetlabs/concat", "version_requirement": ">=1.2.1 <2.0.0" },
     { "name": "puppetlabs/inifile", "version_requirement": ">=1.0.0 <2.0.0" },

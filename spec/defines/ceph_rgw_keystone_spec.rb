@@ -27,6 +27,7 @@ describe 'ceph::rgw::keystone' do
         :concat_basedir         => '/var/lib/puppet/concat',
         :fqdn                   => 'myhost.domain',
         :hostname               => 'myhost',
+        :lsbdistid              => 'Ubuntu',
         :lsbdistcodename        => 'precise',
         :osfamily               => 'Debian',
         :operatingsystem        => 'Ubuntu',

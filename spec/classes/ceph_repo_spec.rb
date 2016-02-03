@@ -26,6 +26,7 @@ describe 'ceph::repo' do
     let :facts do
     {
       :osfamily        => 'Debian',
+      :lsbdistid       => 'Debian',
       :lsbdistcodename => 'wheezy',
     }
     end
@@ -33,8 +34,8 @@ describe 'ceph::repo' do
     describe "with default params" do
 
       it { is_expected.to contain_apt__key('ceph').with(
-        :key        => '08B73419AC32B4E966C1A330E84AC2C0460F3994',
-        :key_source => 'https://download.ceph.com/keys/release.asc'
+        :id     => '08B73419AC32B4E966C1A330E84AC2C0460F3994',
+        :source => 'https://download.ceph.com/keys/release.asc'
       ) }
 
       it { is_expected.to contain_apt__source('ceph').with(
@@ -66,6 +67,7 @@ describe 'ceph::repo' do
     let :facts do
     {
       :osfamily        => 'Debian',
+      :lsbdistid       => 'Ubuntu',
       :lsbdistcodename => 'trusty',
       :hardwaremodel   => 'x86_64',
     }
@@ -74,8 +76,8 @@ describe 'ceph::repo' do
     describe "with default params" do
 
       it { is_expected.to contain_apt__key('ceph').with(
-        :key        => '08B73419AC32B4E966C1A330E84AC2C0460F3994',
-        :key_source => 'https://download.ceph.com/keys/release.asc'
+        :id     => '08B73419AC32B4E966C1A330E84AC2C0460F3994',
+        :source => 'https://download.ceph.com/keys/release.asc'
       ) }
 
       it { is_expected.to contain_apt__source('ceph').with(
@@ -130,8 +132,8 @@ describe 'ceph::repo' do
       end
 
       it { is_expected.to contain_apt__key('ceph-gitbuilder').with(
-        :key        => 'FCC5CB2ED8E6F6FB79D5B3316EAEAE2203C3951A',
-        :key_server => 'keyserver.ubuntu.com'
+        :id     => 'FCC5CB2ED8E6F6FB79D5B3316EAEAE2203C3951A',
+        :server => 'keyserver.ubuntu.com'
       ) }
 
       it { is_expected.to contain_apt__source('ceph').with(
