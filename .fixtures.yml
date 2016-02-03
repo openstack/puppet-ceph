@@ -10,7 +10,7 @@ fixtures:
       ref: '1.4.1'
     'concat':
       repo: 'git://github.com/puppetlabs/puppetlabs-concat'
-      ref: '1.2.1'
+      ref: '2.1.0'
 
   symlinks:
     'ceph': "#{source_dir}"
