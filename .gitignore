@@ -8,3 +8,4 @@ Gemfile.lock
 vendor
 .vagrant/*
 log
+.bundled_gems/

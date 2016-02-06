@@ -23,7 +23,6 @@ describe 'ceph::rgw::apache' do
   let :pre_condition do
     "include ceph::params
      class { 'ceph::repo':
-       extras  => true,
        fastcgi => true,
      }"
   end

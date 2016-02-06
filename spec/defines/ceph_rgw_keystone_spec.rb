@@ -40,7 +40,7 @@ describe 'ceph::rgw::keystone' do
         "
           include ceph::params
           class { 'ceph': fsid => 'd5252e7d-75bc-4083-85ed-fe51fa83f62b' }
-          class { 'ceph::repo': extras => true, fastcgi => true, }
+          class { 'ceph::repo': fastcgi => true, }
           include ceph
           ceph::rgw { 'radosgw.gateway': }
           ceph::rgw::apache { 'radosgw.gateway': }
@@ -90,7 +90,7 @@ openssl x509 -in /tmp/signing -pubkey | certutil -A -d /var/lib/ceph/nss -n sign
         "
           include ceph::params
           class { 'ceph': fsid => 'd5252e7d-75bc-4083-85ed-fe51fa83f62b' }
-          class { 'ceph::repo': extras => true, fastcgi => true, }
+          class { 'ceph::repo': fastcgi => true, }
           ceph::rgw { 'radosgw.custom': }
           ceph::rgw::apache { 'radosgw.custom': }
         "
@@ -158,7 +158,7 @@ openssl x509 -in /tmp/signing -pubkey | certutil -A -d /some/path/to/nss -n sign
         "
           include ceph::params
           class { 'ceph': fsid => 'd5252e7d-75bc-4083-85ed-fe51fa83f62b' }
-          class { 'ceph::repo': extras => true, fastcgi => true, }
+          class { 'ceph::repo': fastcgi => true, }
           include ceph
           ceph::rgw { 'radosgw.gateway': }
           ceph::rgw::apache { 'radosgw.gateway': }
@@ -208,7 +208,7 @@ openssl x509 -in /tmp/signing -pubkey | certutil -A -d /var/lib/ceph/nss -n sign
         "
           include ceph::params
           class { 'ceph': fsid => 'd5252e7d-75bc-4083-85ed-fe51fa83f62b' }
-          class { 'ceph::repo': extras => true, fastcgi => true, }
+          class { 'ceph::repo': fastcgi => true, }
           ceph::rgw { 'radosgw.custom': }
           ceph::rgw::apache { 'radosgw.custom': }
         "
