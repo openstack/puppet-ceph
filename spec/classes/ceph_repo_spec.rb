@@ -27,7 +27,7 @@ describe 'ceph::repo' do
     {
       :osfamily        => 'Debian',
       :lsbdistid       => 'Debian',
-      :lsbdistcodename => 'wheezy',
+      :lsbdistcodename => 'jessie',
     }
     end
 
@@ -40,7 +40,7 @@ describe 'ceph::repo' do
 
       it { is_expected.to contain_apt__source('ceph').with(
         :location => 'http://download.ceph.com/debian-hammer/',
-        :release  => 'wheezy',
+        :release  => 'jessie',
         :require  => 'Apt::Key[ceph]'
       ) }
 
@@ -55,7 +55,7 @@ describe 'ceph::repo' do
 
       it { is_expected.to contain_apt__source('ceph').with(
         :location => 'http://download.ceph.com/debian-firefly/',
-        :release  => 'wheezy',
+        :release  => 'jessie',
         :require  => 'Apt::Key[ceph]'
       ) }
     end
