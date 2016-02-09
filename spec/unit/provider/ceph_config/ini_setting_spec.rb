@@ -42,7 +42,7 @@ describe provider_class do
       :path    => tmpfile,
   } }
 
-  def validate(expected, tmpfile = tmpfile)
+  def validate(expected)
     expect(File.read(tmpfile)).to eq(expected)
   end
 
