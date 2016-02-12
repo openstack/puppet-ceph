@@ -89,7 +89,7 @@ define ceph::key (
   $inject_keyring = undef,
 ) {
 
-  if $key_name {
+  if $key_name != undef {
     $final_name = $key_name
   } else {
     $final_name = $name
