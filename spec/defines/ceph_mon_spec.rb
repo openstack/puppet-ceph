@@ -85,7 +85,6 @@ mon_data=\$(ceph-mon  --id A --show-config-value mon_data)
 if [ ! -d \$mon_data ] ; then
   mkdir -p \$mon_data
   if ceph-mon  \
-         \
         --mkfs \
         --id A \
         --keyring /tmp/ceph-mon-keyring-A ; then
@@ -124,7 +123,6 @@ mon_data=\$(ceph-mon  --id A --show-config-value mon_data)
 if [ ! -d \$mon_data ] ; then
   mkdir -p \$mon_data
   if ceph-mon  \
-         \
         --mkfs \
         --id A \
         --keyring /etc/ceph/ceph.mon.keyring ; then
@@ -152,6 +150,7 @@ fi
       end
 
       it { is_expected.to contain_service('ceph-mon-A').with('ensure' => 'running') }
+      it { is_expected.to contain_ceph_config('mon.A/public_addr').with_value("127.0.0.1") }
       it { is_expected.to contain_exec('ceph-mon-testcluster.client.admin.keyring-A').with(
         'command' => '/bin/true # comment to satisfy puppet syntax requirements
 set -ex
@@ -164,7 +163,6 @@ mon_data=\$(ceph-mon --cluster testcluster --id A --show-config-value mon_data)
 if [ ! -d \$mon_data ] ; then
   mkdir -p \$mon_data
   if ceph-mon --cluster testcluster \
-        --public_addr 127.0.0.1 \
         --mkfs \
         --id A \
         --keyring /dev/null ; then
@@ -275,7 +273,6 @@ mon_data=\$(ceph-mon  --id A --show-config-value mon_data)
 if [ ! -d \$mon_data ] ; then
   mkdir -p \$mon_data
   if ceph-mon  \
-         \
         --mkfs \
         --id A \
         --keyring /tmp/ceph-mon-keyring-A ; then
@@ -319,7 +316,6 @@ mon_data=\$(ceph-mon  --id A --show-config-value mon_data)
 if [ ! -d \$mon_data ] ; then
   mkdir -p \$mon_data
   if ceph-mon  \
-         \
         --mkfs \
         --id A \
         --keyring /etc/ceph/ceph.mon.keyring ; then
@@ -347,6 +343,7 @@ fi
       end
 
       it { is_expected.to contain_service('ceph-mon-A').with('ensure' => 'running') }
+      it { is_expected.to contain_ceph_config('mon.A/public_addr').with_value("127.0.0.1") }
       it { is_expected.to contain_exec('ceph-mon-testcluster.client.admin.keyring-A').with(
         'command' => '/bin/true # comment to satisfy puppet syntax requirements
 set -ex
@@ -359,7 +356,6 @@ mon_data=\$(ceph-mon --cluster testcluster --id A --show-config-value mon_data)
 if [ ! -d \$mon_data ] ; then
   mkdir -p \$mon_data
   if ceph-mon --cluster testcluster \
-        --public_addr 127.0.0.1 \
         --mkfs \
         --id A \
         --keyring /dev/null ; then
