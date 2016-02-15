@@ -28,12 +28,15 @@
 # [*secret*] Key secret.
 #   Mandatory. Can be created with ceph-authtool --gen-print-key.
 #
+# [*key_name*] The name of the key.
+#   Mandatory. 
+#
 # [*cluster*] The ceph cluster
 #   Optional. Same default as ceph.
 #
 # [*keyring_path*] Path to the keyring file.
 #   Optional. Absolute path to the keyring file, including the file name.
-#   Defaults to /etc/ceph/ceph.${name}.keyring.
+#   Defaults to /etc/ceph/ceph.${key_name}.keyring.
 #
 # [*cap_mon*] cephx capabilities for MON access.
 #   Optional. e.g. 'allow *'
@@ -72,8 +75,9 @@
 #
 define ceph::key (
   $secret,
+  $key_name,
   $cluster = undef,
-  $keyring_path = "/etc/ceph/ceph.${name}.keyring",
+  $keyring_path = "/etc/ceph/ceph.${key_name}.keyring",
   $cap_mon = undef,
   $cap_osd = undef,
   $cap_mds = undef,
@@ -115,10 +119,10 @@ define ceph::key (
   exec { "ceph-key-${name}":
     command   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-ceph-authtool ${keyring_path} --name '${name}' --add-key '${secret}' ${caps}",
+ceph-authtool ${keyring_path} --name '${key_name}' --add-key '${secret}' ${caps}",
     unless    => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-sed -n 'N;\\%.*${name}.*\\n\\s*key = ${secret}%p' ${keyring_path} | grep ${name}",
+sed -n 'N;\\%.*${key_name}.*\\n\\s*key = ${secret}%p' ${keyring_path} | grep ${key_name}",
     require   => [ Package['ceph'], File[$keyring_path], ],
     logoutput => true,
   }
@@ -138,10 +142,10 @@ sed -n 'N;\\%.*${name}.*\\n\\s*key = ${secret}%p' ${keyring_path} | grep ${name}
     exec { "ceph-injectkey-${name}":
       command   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-ceph ${cluster_option} ${inject_id_option} ${inject_keyring_option} auth add ${name} --in-file=${keyring_path}",
+ceph ${cluster_option} ${inject_id_option} ${inject_keyring_option} auth add ${key_name} --in-file=${keyring_path}",
       unless    => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-ceph ${cluster_option} ${inject_id_option} ${inject_keyring_option} auth get ${name} | grep ${secret}",
+ceph ${cluster_option} ${inject_id_option} ${inject_keyring_option} auth get ${key_name} | grep ${secret}",
       require   => [ Package['ceph'], Exec["ceph-key-${name}"], ],
       logoutput => true,
     }
