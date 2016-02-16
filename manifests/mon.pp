@@ -113,12 +113,26 @@ define ceph::mon (
         if $key {
           $keyring_path = "/tmp/ceph-mon-keyring-${id}"
 
-          file { $keyring_path:
-            mode    => '0444',
-            content => "[mon.]\n\tkey = ${key}\n\tcaps mon = \"allow *\"\n",
+          Ceph_Config<||> ->
+          exec { "create-keyring-${id}":
+            command => "/bin/true # comment to satisfy puppet syntax requirements
+set -ex
+cat > ${keyring_path} << EOF
+[mon.]
+    key = ${key}
+    caps mon = \"allow *\"
+EOF
+
+chmod 0444 ${keyring_path}
+",
+            unless  => "/bin/true # comment to satisfy puppet syntax requirements
+set -ex
+mon_data=\$(ceph-mon ${cluster_option} --id ${id} --show-config-value mon_data) || exit 1 # if ceph-mon fails then the mon is probably not configured yet
+test -e \$mon_data/done
+",
           }
 
-          File[$keyring_path] -> Exec[$ceph_mkfs]
+          Exec["create-keyring-${id}"] -> Exec[$ceph_mkfs]
 
         } else {
           $keyring_path = $keyring

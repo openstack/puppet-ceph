@@ -76,9 +76,10 @@ describe 'ceph rgw' do
           cap_osd => 'allow rwx',
           inject  => true,
         }
-        ->
+        ~>
         exec { 'bootstrap-key':
-          command => '/usr/sbin/ceph-create-keys --id a',
+          command     => '/usr/sbin/ceph-create-keys --id a',
+          refreshonly => true,
         }
         ->
         ceph::osd { '/srv/data': }
@@ -89,8 +90,7 @@ describe 'ceph rgw' do
       # RGW on CentOS is currently broken, so lets disable tests for now.
       if osfamily != 'RedHat'
         apply_manifest(pp, :catch_failures => true)
-        # Enable as soon as remaining changes are fixed
-        #apply_manifest(pp, :catch_changes => true)
+        apply_manifest(pp, :catch_changes => true)
 
         shell 'sleep 10' # we need to wait a bit until the OSD is up
 

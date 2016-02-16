@@ -57,6 +57,22 @@ describe 'ceph::mon' do
       end
 
       it { is_expected.to contain_service('ceph-mon-A').with('ensure' => 'running') }
+      it { is_expected.to contain_exec('create-keyring-A').with(
+        'command' => '/bin/true # comment to satisfy puppet syntax requirements
+set -ex
+cat > /tmp/ceph-mon-keyring-A << EOF
+[mon.]
+    key = AQATGHJTUCBqIBAA7M2yafV1xctn1pgr3GcKPg==
+    caps mon = "allow *"
+EOF
+
+chmod 0444 /tmp/ceph-mon-keyring-A
+',
+        'unless' => '/bin/true # comment to satisfy puppet syntax requirements
+set -ex
+mon_data=$(ceph-mon  --id A --show-config-value mon_data) || exit 1 # if ceph-mon fails then the mon is probably not configured yet
+test -e $mon_data/done
+') }
       it { is_expected.to contain_exec('ceph-mon-ceph.client.admin.keyring-A').with(
         'command' => '/bin/true # comment to satisfy puppet syntax requirements
 set -ex
@@ -80,9 +96,6 @@ if [ ! -d \$mon_data ] ; then
 fi
 ",
         'logoutput' => true) }
-      it { is_expected.to contain_file('/tmp/ceph-mon-keyring-A').with(
-        'mode' => '0444',
-        'content' => "[mon.]\n\tkey = AQATGHJTUCBqIBAA7M2yafV1xctn1pgr3GcKPg==\n\tcaps mon = \"allow *\"\n") }
       it { is_expected.to contain_exec('rm-keyring-A').with('command' => '/bin/rm /tmp/ceph-mon-keyring-A') }
     end
 
@@ -231,6 +244,22 @@ test ! -d \$mon_data
       end
 
       it { is_expected.to contain_service('ceph-mon-A').with('ensure' => 'running') }
+      it { is_expected.to contain_exec('create-keyring-A').with(
+        'command' => '/bin/true # comment to satisfy puppet syntax requirements
+set -ex
+cat > /tmp/ceph-mon-keyring-A << EOF
+[mon.]
+    key = AQATGHJTUCBqIBAA7M2yafV1xctn1pgr3GcKPg==
+    caps mon = "allow *"
+EOF
+
+chmod 0444 /tmp/ceph-mon-keyring-A
+',
+        'unless' => '/bin/true # comment to satisfy puppet syntax requirements
+set -ex
+mon_data=$(ceph-mon  --id A --show-config-value mon_data) || exit 1 # if ceph-mon fails then the mon is probably not configured yet
+test -e $mon_data/done
+') }
       it { is_expected.to contain_exec('ceph-mon-ceph.client.admin.keyring-A').with(
         'command' => '/bin/true # comment to satisfy puppet syntax requirements
 set -ex
@@ -257,9 +286,6 @@ if [ ! -d \$mon_data ] ; then
 fi
 ",
         'logoutput' => true) }
-      it { is_expected.to contain_file('/tmp/ceph-mon-keyring-A').with(
-        'mode' => '0444',
-        'content' => "[mon.]\n\tkey = AQATGHJTUCBqIBAA7M2yafV1xctn1pgr3GcKPg==\n\tcaps mon = \"allow *\"\n") }
       it { is_expected.to contain_exec('rm-keyring-A').with(
           'command' => '/bin/rm /tmp/ceph-mon-keyring-A',
           'unless'  => '/bin/true # comment to satisfy puppet syntax requirements
