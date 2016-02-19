@@ -113,7 +113,7 @@ define ceph::mon (
         if $key {
           $keyring_path = "/tmp/ceph-mon-keyring-${id}"
 
-          Ceph_Config<||> ->
+          Ceph_config<||> ->
           exec { "create-keyring-${id}":
             command => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
