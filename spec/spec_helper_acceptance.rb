@@ -43,7 +43,7 @@ RSpec.configure do |c|
       on host, puppet('module install puppetlabs/stdlib --version ">=4.0.0 <5.0.0"'), { :acceptable_exit_codes => [0,1] }
       on host, puppet('module install puppetlabs/inifile --version ">=1.0.0 <2.0.0"'), { :acceptable_exit_codes => [0,1] }
       on host, puppet('module install puppetlabs/apt --version ">=2.0.0 <3.0.0"'), { :acceptable_exit_codes => [0,1] }
-      on host, puppet('module install puppetlabs/concat --version ">=1.2.1 <2.0.0"'), { :acceptable_exit_codes => [0,1] }
+      on host, puppet('module install puppetlabs/concat --version ">=1.2.1 <3.0.0"'), { :acceptable_exit_codes => [0,1] }
       on host, puppet('module install puppetlabs/apache --version ">=1.4.1 <2.0.0"'), { :acceptable_exit_codes => [0,1] }
       on host, puppet('module install stackforge/keystone --version ">=5.1.0 <6.0.0"'), { :acceptable_exit_codes => [0,1] } # keystone >=5.1.0 <6.0.0 is not present in openstack/keystone
       puppet_module_install(:source => proj_root, :module_name => 'ceph')
