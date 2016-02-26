@@ -113,7 +113,7 @@ define ceph::mon (
         if $key {
           $keyring_path = "/tmp/ceph-mon-keyring-${id}"
 
-          Ceph_Config<||> ->
+          Ceph_config<||> ->
           exec { "create-keyring-${id}":
             command => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
@@ -146,7 +146,7 @@ test -e \$mon_data/done
         $public_addr_option = "--public_addr ${public_addr}"
       }
 
-      Ceph_Config<||> ->
+      Ceph_config<||> ->
       # prevent automatic creation of the client.admin key by ceph-create-keys
       exec { "ceph-mon-${cluster_name}.client.admin.keyring-${id}":
         command => "/bin/true # comment to satisfy puppet syntax requirements

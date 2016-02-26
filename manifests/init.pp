@@ -131,7 +131,7 @@ class ceph (
 
   if $ensure !~ /(absent|purged)/ {
     # Make sure ceph is installed before managing the configuration
-    Package<| tag == 'ceph' |> -> Ceph_Config<| |>
+    Package<| tag == 'ceph' |> -> Ceph_config<| |>
     # [global]
     ceph_config {
       'global/fsid':                        value => $fsid;

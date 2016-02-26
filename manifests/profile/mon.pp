@@ -23,7 +23,7 @@
 class ceph::profile::mon {
   require ::ceph::profile::base
 
-  Ceph_Config<| |> ->
+  Ceph_config<| |> ->
   ceph::mon { $::hostname:
     authentication_type => $ceph::profile::params::authentication_type,
     key                 => $ceph::profile::params::mon_key,

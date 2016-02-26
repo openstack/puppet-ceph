@@ -56,7 +56,7 @@ define ceph::pool (
 
   if $ensure == present {
 
-    Ceph_Config<||> -> Exec["create-${name}"]
+    Ceph_config<||> -> Exec["create-${name}"]
     Ceph::Mon<||> -> Exec["create-${name}"]
     Ceph::Key<||> -> Exec["create-${name}"]
     exec { "create-${name}":

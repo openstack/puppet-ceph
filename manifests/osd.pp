@@ -64,7 +64,7 @@ define ceph::osd (
       $ceph_activate = "ceph-osd-activate-${name}"
 
       Package<| tag == 'ceph' |> -> Exec[$ceph_check_udev]
-      Ceph_Config<||> -> Exec[$ceph_prepare]
+      Ceph_config<||> -> Exec[$ceph_prepare]
       Ceph::Mon<||> -> Exec[$ceph_prepare]
       Ceph::Key<||> -> Exec[$ceph_prepare]
 
