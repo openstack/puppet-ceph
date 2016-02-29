@@ -59,19 +59,13 @@
 #   Optional. Default is undef.
 #
 # [*frontend_type*] What type of frontend to use
-#   Optional. Default is apache-fastcgi. Other option is apache-proxy-fcgi.
-#
-# [*rgw_frontends*] String for rgw_frontends config.
-#   Optional. Default is 'fastcgi socket_port=9000 socket_host=127.0.0.1'.
-#
-# [*syslog*] Whether or not to log to syslog.
-#   Optional. Default is true.
-#
-# [*frontend_type*] What type of frontend to use
 #   Optional. Default is apache-fastcgi. Other options are apache-proxy-fcgi or civetweb
 #
 # [*rgw_frontends*] Arguments to the rgw frontend
 #   Optional. Default is 'fastcgi socket_port=9000 socket_host=127.0.0.1'. Example: "civetweb port=7480"
+#
+# [*syslog*] Whether or not to log to syslog.
+#   Optional. Default is true.
 #
 define ceph::rgw (
   $pkg_radosgw        = $::ceph::params::pkg_radosgw,
