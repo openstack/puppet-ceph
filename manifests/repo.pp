@@ -39,10 +39,22 @@
 # [*fastcgi*] Install Ceph fastcgi apache module for Ceph
 #   Optional. Defaults to 'false'
 #
+# [*proxy*] Proxy URL to be used for the yum repository, useful if you're behind a corporate firewall
+#   Optional. Defaults to 'undef'
+#
+# [*proxy_username*] The username to be used for the proxy if one should be required
+#   Optional. Defaults to 'undef'
+#
+# [*proxy_password*] The password to be used for the proxy if one should be required
+#   Optional. Defaults to 'undef'
+#
 class ceph::repo (
-  $ensure  = present,
-  $release = 'hammer',
-  $fastcgi = false,
+  $ensure         = present,
+  $release        = 'hammer',
+  $fastcgi        = false,
+  $proxy          = undef,
+  $proxy_username = undef,
+  $proxy_password = undef,
 ) {
   case $::osfamily {
     'Debian': {
@@ -104,7 +116,12 @@ class ceph::repo (
           line   => 'exclude=python-ceph-compat python-rbd python-rados python-cephfs',
         } -> Package<| tag == 'ceph' |>
       }
-
+      
+      Yumrepo {
+        proxy          => $proxy,
+        proxy_username => $proxy_username,
+        proxy_password => $proxy_password,
+      }
       yumrepo { "ext-epel-${el}":
         # puppet versions prior to 3.5 do not support ensure, use enabled instead
         enabled    => $enabled,
