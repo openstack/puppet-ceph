@@ -35,6 +35,13 @@ A [blueprint](https://wiki.openstack.org/wiki/Puppet-openstack/ceph-blueprint) c
 Limitations
 -----------
 
+We follow the OS compatibility of Ceph. With the release of infernalis this is currently:
+
+* CentOS 7 or later
+* Debian Jessie 8.x or later
+* Ubuntu Trusty 14.04 or later
+* Fedora 22 or later
+
 Use Cases
 ---------
 

@@ -51,7 +51,7 @@ describe 'ceph::profile::params' do
     let :facts do
       {
         :osfamily        => 'Debian',
-        :lsbdistcodename => 'wheezy'
+        :lsbdistcodename => 'jessie'
       }
     end
 

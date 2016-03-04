@@ -14,19 +14,19 @@
   "operatingsystem_support": [
     {
       "operatingsystem": "Debian",
-      "operatingsystemrelease": ["6","7"]
+      "operatingsystemrelease": ["8"]
     },
     {
       "operatingsystem": "Fedora",
-      "operatingsystemrelease": ["20"]
+      "operatingsystemrelease": ["22","23"]
     },
     {
       "operatingsystem": "RedHat",
-      "operatingsystemrelease": ["5","6","7"]
+      "operatingsystemrelease": ["7"]
     },
     {
       "operatingsystem": "Ubuntu",
-      "operatingsystemrelease": ["12.04","14.04"]
+      "operatingsystemrelease": ["14.04"]
     }
   ],
   "description": "Installs and configures Ceph.",

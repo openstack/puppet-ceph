@@ -48,7 +48,7 @@ describe 'ceph::profile::osd' do
       {
         :osfamily         => 'Debian',
         :lsbdistid        => 'Debian',
-        :lsbdistcodename  => 'wheezy',
+        :lsbdistcodename  => 'jessie',
         :operatingsystem  => 'Debian',
       }
     end

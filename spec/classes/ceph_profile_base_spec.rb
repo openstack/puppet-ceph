@@ -42,7 +42,7 @@ describe 'ceph::profile::base' do
       {
         :osfamily        => 'Debian',
         :lsbdistid       => 'Debian',
-        :lsbdistcodename => 'wheezy'
+        :lsbdistcodename => 'jessie'
       }
     end
 
