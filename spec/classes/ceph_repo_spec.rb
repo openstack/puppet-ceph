@@ -248,6 +248,61 @@ describe 'ceph::repo' do
       ) }
     end
 
+    describe "when using a proxy for yum repositories" do
+      let :params do
+        {
+         :proxy => 'http://someproxy.com:8080/',
+         :proxy_username => 'proxyuser',
+         :proxy_password => 'proxypassword'
+        }
+      end
+
+      it { is_expected.not_to contain_file_line('exclude base') }
+
+      it { is_expected.to contain_yumrepo('ext-epel-7').with(
+        :enabled        => '1',
+        :descr          => 'External EPEL 7',
+        :name           => 'ext-epel-7',
+        :baseurl        => 'absent',
+        :gpgcheck       => '1',
+        :gpgkey         => 'https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-7',
+        :mirrorlist     => 'http://mirrors.fedoraproject.org/metalink?repo=epel-7&arch=$basearch',
+        :priority       => '20',
+        :exclude        => 'python-ceph-compat python-rbd python-rados python-cephfs',
+        :proxy          => 'http://someproxy.com:8080/',
+        :proxy_username => 'proxyuser',
+        :proxy_password => 'proxypassword',
+      ) }
+
+      it { is_expected.to contain_yumrepo('ext-ceph').with(
+        :enabled        => '1',
+        :descr          => 'External Ceph hammer',
+        :name           => 'ext-ceph-hammer',
+        :baseurl        => 'http://download.ceph.com/rpm-hammer/el7/$basearch',
+        :gpgcheck       => '1',
+        :gpgkey         => 'https://download.ceph.com/keys/release.asc',
+        :mirrorlist     => 'absent',
+        :priority       => '10',
+        :proxy          => 'http://someproxy.com:8080/',
+        :proxy_username => 'proxyuser',
+        :proxy_password => 'proxypassword',
+     ) }
+
+      it { is_expected.to contain_yumrepo('ext-ceph-noarch').with(
+        :enabled        => '1',
+        :descr          => 'External Ceph noarch',
+        :name           => 'ext-ceph-hammer-noarch',
+        :baseurl        => 'http://download.ceph.com/rpm-hammer/el7/noarch',
+        :gpgcheck       => '1',
+        :gpgkey         => 'https://download.ceph.com/keys/release.asc',
+        :mirrorlist     => 'absent',
+        :priority       => '10',
+        :proxy          => 'http://someproxy.com:8080/',
+        :proxy_username => 'proxyuser',
+        :proxy_password => 'proxypassword',
+      ) }
+    end
+
     describe "with ensure => absent to disable" do
       let :params do
         {
