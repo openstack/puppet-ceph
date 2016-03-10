@@ -143,7 +143,9 @@ test -e \$mon_data/done
       }
 
       if $public_addr {
-        $public_addr_option = "--public_addr ${public_addr}"
+        ceph_config {
+          "mon.${id}/public_addr": value => $public_addr;
+        }
       }
 
       Ceph_config<||> ->
@@ -164,7 +166,6 @@ mon_data=\$(ceph-mon ${cluster_option} --id ${id} --show-config-value mon_data)
 if [ ! -d \$mon_data ] ; then
   mkdir -p \$mon_data
   if ceph-mon ${cluster_option} \
-        ${public_addr_option} \
         --mkfs \
         --id ${id} \
         --keyring ${keyring_path} ; then
@@ -220,6 +221,9 @@ test ! -d \$mon_data
 ",
         logoutput => true,
         timeout   => $exec_timeout,
+      } ->
+      ceph_config {
+        "mon.${id}/public_addr": ensure => absent;
       } -> Package<| tag == 'ceph' |>
     }
   }

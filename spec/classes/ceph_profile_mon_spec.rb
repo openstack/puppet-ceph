@@ -23,7 +23,8 @@ describe 'ceph::profile::mon' do
 
     it { is_expected.to contain_ceph__mon('first').with(
       :authentication_type => 'cephx',
-      :key                 => 'AQATGHJTUCBqIBAA7M2yafV1xctn1pgr3GcKPg==')
+      :key                 => 'AQATGHJTUCBqIBAA7M2yafV1xctn1pgr3GcKPg==',
+      :public_addr         => '10.11.12.2')
     }
     it { is_expected.to contain_class('ceph::keys').with(
       'args' => {

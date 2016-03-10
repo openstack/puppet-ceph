@@ -23,11 +23,11 @@
 class ceph::profile::mon {
   require ::ceph::profile::base
 
-  Ceph_config<| |> ->
   ceph::mon { $::hostname:
     authentication_type => $ceph::profile::params::authentication_type,
     key                 => $ceph::profile::params::mon_key,
     keyring             => $ceph::profile::params::mon_keyring,
+    public_addr         => $ceph::profile::params::public_addr,
   }
 
   $defaults = {
