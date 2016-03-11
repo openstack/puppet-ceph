@@ -21,15 +21,12 @@
 #
 class ceph::profile::rgw {
   require ::ceph::profile::base
-
+  $rgw_name = $::ceph::profile::params::rgw_name
   if $ceph::profile::params::enable_rgw
   {
-    ceph::rgw { 'radosgw.gateway':
+    ceph::rgw { $rgw_name:
       pkg_radosgw        => $::ceph::params::pkg_radosgw,
-      rgw_data           => "/var/lib/ceph/radosgw/ceph-${name}",
       user               => $ceph::profile::params::rgw_user,
-      keyring_path       => "/etc/ceph/ceph.client.${name}.keyring",
-      log_file           => '/var/log/ceph/radosgw.log',
       rgw_dns_name       => $::fqdn,
       rgw_socket_path    => $::ceph::params::rgw_socket_path,
       rgw_print_continue => $::ceph::params::rgw_print_continue,

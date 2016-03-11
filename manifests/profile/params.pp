@@ -106,6 +106,10 @@
 # [*rgw_user*] the user ID radosgw should run as.
 #   Optional. Default to root
 #
+# [*rgw_name*] the name for the radosgw cluster. Must be in the format
+#  "radosgw.${name}" where name is whatever you want
+#   Optional. Defaults to 'radosgw.gateway'
+#
 # [*rgw_print_continue*] should http 100 continue be used
 #  Optional. Default to false
 #
@@ -138,6 +142,7 @@ class ceph::profile::params (
   $manage_repo = true,
   $enable_rgw = false,
   $rgw_user = 'root',
+  $rgw_name = 'radosgw.gateway',
   $rgw_print_continue = false,
   $frontend_type = 'apache-fastcgi',
   $rgw_frontends = 'fastcgi socket_port=9000 socket_host=127.0.0.1',
