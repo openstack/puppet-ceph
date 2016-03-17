@@ -54,14 +54,17 @@ describe 'ceph usecases' do
         expect(r.stderr).to be_empty
       end
 
-      shell 'ceph osd tree', { :acceptable_exit_codes => [0] } do |r|
-        expect(r.stdout).to match(/osd.0/)
+      shell 'ceph osd tree | grep osd.0', { :acceptable_exit_codes => [0] } do |r|
+        expect(r.stdout).to match(/up/)
         expect(r.stderr).to be_empty
       end
     end
 
     it 'should uninstall one osd' do
-      shell 'ceph osd tree | grep DNE', { :acceptable_exit_codes => [1] }
+      shell 'ceph osd tree | grep osd.0', { :acceptable_exit_codes => [0] } do |r|
+        expect(r.stdout).to match(/up/)
+        expect(r.stderr).to be_empty
+      end
 
       pp = <<-EOS
         ceph::osd { '/srv/data':
@@ -74,7 +77,7 @@ describe 'ceph usecases' do
 
       shell 'sleep 10' # we need to wait a bit until the OSD is down
 
-      shell 'ceph osd tree | grep DNE', { :acceptable_exit_codes => [0] }
+      shell 'ceph osd tree | grep osd.0', { :acceptable_exit_codes => [1] }
     end
 
     it 'should uninstall one monitor' do

@@ -140,8 +140,9 @@ fi
 if [ \"\$id\" ] ; then
   stop ceph-osd cluster=${cluster_name} id=\$id || true
   service ceph stop osd.\$id || true
+  ceph ${cluster_option} osd crush remove osd.\$id
+  ceph ${cluster_option} auth del osd.\$id
   ceph ${cluster_option} osd rm \$id
-  ceph auth del osd.\$id
   rm -fr /var/lib/ceph/osd/${cluster_name}-\$id/*
   umount /var/lib/ceph/osd/${cluster_name}-\$id || true
   rm -fr /var/lib/ceph/osd/${cluster_name}-\$id
