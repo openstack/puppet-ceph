@@ -114,7 +114,6 @@ describe 'ceph usecases' do
         }
         file { [
            '/var/lib/ceph',
-           '/var/run/ceph',
            '/srv/data',
           ]:
           ensure => absent,

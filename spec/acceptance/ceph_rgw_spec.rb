@@ -354,7 +354,6 @@ describe 'ceph rgw' do
            '/etc/ceph/ceph.client.admin.keyring',
            '/etc/ceph/ceph.client.radosgw.gateway',
            '/var/lib/ceph',
-           '/var/run/ceph',
            '/srv/data',
           ]:
           ensure => absent,
