@@ -54,7 +54,7 @@ udevadm settle
         'unless'    => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 ceph-disk list | grep -E ' */srv1? .*ceph data, (prepared|active)' ||
-ls -l /var/lib/ceph/osd/ceph-* | grep ' /srv\$'
+{ test -f /srv/fsid && test -f /srv/ceph_fsid && test -f /srv/magic ;}
 ",
         'logoutput' => true
       ) }
@@ -118,7 +118,7 @@ udevadm settle
         'unless'    => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 ceph-disk list | grep -E ' */srv/data1? .*ceph data, (prepared|active)' ||
-ls -l /var/lib/ceph/osd/testcluster-* | grep ' /srv/data\$'
+{ test -f /srv/data/fsid && test -f /srv/data/ceph_fsid && test -f /srv/data/magic ;}
 ",
         'logoutput' => true
       ) }

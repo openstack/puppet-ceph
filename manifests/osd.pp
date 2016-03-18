@@ -97,7 +97,7 @@ udevadm settle
         unless    => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 ceph-disk list | grep -E ' *${data}1? .*ceph data, (prepared|active)' ||
-ls -l /var/lib/ceph/osd/${cluster_name}-* | grep ' ${data}\$'
+{ test -f ${data}/fsid && test -f ${data}/ceph_fsid && test -f ${data}/magic ;}
 ",
         logoutput => true,
         timeout   => $exec_timeout,
