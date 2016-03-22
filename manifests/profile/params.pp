@@ -99,25 +99,21 @@
 #   the repo by yourself.
 #   Optional. Defaults to true
 #
-# [*enable_rgw*] boolean to enable the installation and configuration of
-#   radosgw on the controller
-#   Optional. Default to false
-#
-# [*rgw_user*] the user ID radosgw should run as.
-#   Optional. Default to root
-#
 # [*rgw_name*] the name for the radosgw cluster. Must be in the format
 #  "radosgw.${name}" where name is whatever you want
-#   Optional. Defaults to 'radosgw.gateway'
+#   Optional.
+#
+# [*rgw_user*] the user ID radosgw should run as.
+#   Optional.
 #
 # [*rgw_print_continue*] should http 100 continue be used
-#  Optional. Default to false
+#  Optional.
 #
 # [*frontend_type*] What type of frontend to use
-#   Optional. Default is apache-fastcgi. Other options are apache-proxy-fcgi or civetweb
+#   Optional. Options are apache-fastcgi, apache-proxy-fcgi or civetweb
 #
 # [*rgw_frontends*] Arguments to the rgw frontend
-#   Optional. Default is 'fastcgi socket_port=9000 socket_host=127.0.0.1'. Example: "civetweb port=7480"
+#   Optional. Example: "civetweb port=7480"
 #
 
 class ceph::profile::params (
@@ -140,12 +136,11 @@ class ceph::profile::params (
   $client_keys = {},
   $osds = undef,
   $manage_repo = true,
-  $enable_rgw = false,
-  $rgw_user = 'root',
-  $rgw_name = 'radosgw.gateway',
-  $rgw_print_continue = false,
-  $frontend_type = 'apache-fastcgi',
-  $rgw_frontends = 'fastcgi socket_port=9000 socket_host=127.0.0.1',
+  $rgw_name = undef,
+  $rgw_user = undef,
+  $rgw_print_continue = undef,
+  $frontend_type = undef,
+  $rgw_frontends = undef,
 ) {
   validate_hash($client_keys)
 
