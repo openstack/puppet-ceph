@@ -54,7 +54,12 @@ describe 'ceph::rgw::apache_proxy_fcgi' do
         'proxy_pass'        => {'path' => '/', 'url' => 'fcgi://127.0.0.1:9000/'},
       })}
 
-      it { is_expected.to contain_class('apache') }
+      it { is_expected.to contain_class('apache').with(
+        'default_mods'    => false,
+        'default_vhost'   => false,
+        'purge_configs'   => true,
+        'purge_vhost_dir' => true,
+      )}
       it { is_expected.to contain_class('apache::mod::alias') }
       it { is_expected.to contain_class('apache::mod::auth_basic') }
       it { is_expected.to contain_class('apache::mod::proxy') }
@@ -71,14 +76,26 @@ describe 'ceph::rgw::apache_proxy_fcgi' do
 
       let :params do
         {
-          :rgw_dns_name    => 'mydns.hostname',
-          :rgw_port        => 1111,
-          :admin_email     => 'admin@hostname',
-          :syslog          => false,
-          :proxy_pass      => {'path' => '/', 'url' => 'fcgi://127.0.0.1:9999/'},
+          :rgw_dns_name         => 'mydns.hostname',
+          :rgw_port             => 1111,
+          :admin_email          => 'admin@hostname',
+          :syslog               => false,
+          :proxy_pass           => {'path' => '/', 'url' => 'fcgi://127.0.0.1:9999/'},
+          :apache_mods          => true,
+          :apache_vhost         => true,
+          :apache_purge_configs => false,
+          :apache_purge_vhost   => false,
+          :custom_apache_ports  => '8888',
         }
       end
 
+      it { is_expected.to contain_class('apache').with(
+        'default_mods'    => true,
+        'default_vhost'   => true,
+        'purge_configs'   => false,
+        'purge_vhost_dir' => false,
+      )}
+      it { is_expected.to contain_apache__listen('8888') }
       it { is_expected.to contain_apache__vhost('mydns.hostname-radosgw').with( {
         'servername'        => 'mydns.hostname',
         'serveradmin'       => 'admin@hostname',
@@ -91,9 +108,7 @@ describe 'ceph::rgw::apache_proxy_fcgi' do
         'proxy_pass'        => {'path' => '/', 'url' => 'fcgi://127.0.0.1:9999/'},
       } ) }
 
-      it { is_expected.to contain_class('apache') }
       it { is_expected.to contain_class('apache::mod::alias') }
-      it { is_expected.to contain_class('apache::mod::auth_basic') }
       it { is_expected.to contain_class('apache::mod::proxy') }
       it { is_expected.to contain_class('apache::mod::mime') }
       it { is_expected.to contain_class('apache::mod::rewrite') }
@@ -133,7 +148,12 @@ describe 'ceph::rgw::apache_proxy_fcgi' do
         'proxy_pass'        => {'path' => '/', 'url' => 'fcgi://127.0.0.1:9000/'},
       })}
 
-      it { is_expected.to contain_class('apache') }
+      it { is_expected.to contain_class('apache').with(
+        'default_mods'    => false,
+        'default_vhost'   => false,
+        'purge_configs'   => true,
+        'purge_vhost_dir' => true,
+      )}
       it { is_expected.to contain_class('apache::mod::alias') }
       it { is_expected.to contain_class('apache::mod::auth_basic') }
       it { is_expected.to contain_class('apache::mod::proxy') }
@@ -150,14 +170,26 @@ describe 'ceph::rgw::apache_proxy_fcgi' do
 
       let :params do
         {
-          :rgw_dns_name    => 'mydns.hostname',
-          :rgw_port        => 1111,
-          :admin_email     => 'admin@hostname',
-          :syslog          => false,
-          :proxy_pass      => {'path'=>'/', 'url'=>'fcgi://127.0.0.1:9999/'},
+          :rgw_dns_name         => 'mydns.hostname',
+          :rgw_port             => 1111,
+          :admin_email          => 'admin@hostname',
+          :syslog               => false,
+          :proxy_pass           => {'path'=>'/', 'url'=>'fcgi://127.0.0.1:9999/'},
+          :apache_mods          => true,
+          :apache_vhost         => true,
+          :apache_purge_configs => false,
+          :apache_purge_vhost   => false,
+          :custom_apache_ports  => '8888',
         }
       end
 
+      it { is_expected.to contain_class('apache').with(
+        'default_mods'    => true,
+        'default_vhost'   => true,
+        'purge_configs'   => false,
+        'purge_vhost_dir' => false,
+      )}
+      it { is_expected.to contain_apache__listen('8888') }
       it { is_expected.to contain_apache__vhost('mydns.hostname-radosgw').with( {
         'servername'        => 'mydns.hostname',
         'serveradmin'       => 'admin@hostname',
@@ -170,9 +202,7 @@ describe 'ceph::rgw::apache_proxy_fcgi' do
         'proxy_pass'        => {'path' => '/', 'url' => 'fcgi://127.0.0.1:9999/'},
       } ) }
 
-      it { is_expected.to contain_class('apache') }
       it { is_expected.to contain_class('apache::mod::alias') }
-      it { is_expected.to contain_class('apache::mod::auth_basic') }
       it { is_expected.to contain_class('apache::mod::proxy') }
       it { is_expected.to contain_class('apache::mod::mime') }
       it { is_expected.to contain_class('apache::mod::rewrite') }
