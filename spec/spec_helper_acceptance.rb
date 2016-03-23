@@ -39,7 +39,6 @@ RSpec.configure do |c|
       # https://tickets.puppetlabs.com/browse/PUP-2566
       on host, 'sed -i "/templatedir/d" /etc/puppet/puppet.conf'
       install_package host, 'git'
-      on host, "git clone https://github.com/bodepd/scenario_node_terminus.git #{host['distmoduledir']}/scenario_node_terminus"
       on host, puppet('module install puppetlabs/stdlib --version ">=4.0.0 <5.0.0"'), { :acceptable_exit_codes => [0,1] }
       on host, puppet('module install puppetlabs/inifile --version ">=1.0.0 <2.0.0"'), { :acceptable_exit_codes => [0,1] }
       on host, puppet('module install puppetlabs/apt --version ">=2.0.0 <3.0.0"'), { :acceptable_exit_codes => [0,1] }
