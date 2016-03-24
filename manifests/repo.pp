@@ -48,6 +48,9 @@
 # [*proxy_password*] The password to be used for the proxy if one should be required
 #   Optional. Defaults to 'undef'
 #
+# [*enable_epel*] Whether or not enable EPEL repository.
+#   Optional. Defaults to True
+#
 class ceph::repo (
   $ensure         = present,
   $release        = 'hammer',
@@ -55,6 +58,7 @@ class ceph::repo (
   $proxy          = undef,
   $proxy_username = undef,
   $proxy_password = undef,
+  $enable_epel    = true,
 ) {
   case $::osfamily {
     'Debian': {
@@ -122,18 +126,21 @@ class ceph::repo (
         proxy_username => $proxy_username,
         proxy_password => $proxy_password,
       }
-      yumrepo { "ext-epel-${el}":
-        # puppet versions prior to 3.5 do not support ensure, use enabled instead
-        enabled    => $enabled,
-        descr      => "External EPEL ${el}",
-        name       => "ext-epel-${el}",
-        baseurl    => absent,
-        gpgcheck   => '1',
-        gpgkey     => "https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-${el}",
-        mirrorlist => "http://mirrors.fedoraproject.org/metalink?repo=epel-${el}&arch=\$basearch",
-        priority   => '20', # prefer ceph repos over EPEL
-        tag        => 'ceph',
-        exclude    => 'python-ceph-compat python-rbd python-rados python-cephfs',
+
+      if $enable_epel {
+        yumrepo { "ext-epel-${el}":
+          # puppet versions prior to 3.5 do not support ensure, use enabled instead
+          enabled    => $enabled,
+          descr      => "External EPEL ${el}",
+          name       => "ext-epel-${el}",
+          baseurl    => absent,
+          gpgcheck   => '1',
+          gpgkey     => "https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-${el}",
+          mirrorlist => "http://mirrors.fedoraproject.org/metalink?repo=epel-${el}&arch=\$basearch",
+          priority   => '20', # prefer ceph repos over EPEL
+          tag        => 'ceph',
+          exclude    => 'python-ceph-compat python-rbd python-rados python-cephfs',
+        }
       }
 
       yumrepo { 'ext-ceph':

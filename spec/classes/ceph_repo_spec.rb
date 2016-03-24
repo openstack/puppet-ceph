@@ -248,6 +248,16 @@ describe 'ceph::repo' do
       ) }
     end
 
+    describe "when disabling EPEL" do
+      let :params do
+        {
+         :enable_epel => false,
+        }
+      end
+
+      it { is_expected.to_not contain_yumrepo('ext-epel-7') }
+    end
+
     describe "when using a proxy for yum repositories" do
       let :params do
         {
