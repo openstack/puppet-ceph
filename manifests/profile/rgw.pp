@@ -21,19 +21,14 @@
 #
 class ceph::profile::rgw {
   require ::ceph::profile::base
-  $rgw_name = $::ceph::profile::params::rgw_name
-  if $ceph::profile::params::enable_rgw
-  {
-    ceph::rgw { $rgw_name:
-      pkg_radosgw        => $::ceph::params::pkg_radosgw,
-      user               => $ceph::profile::params::rgw_user,
-      rgw_dns_name       => $::fqdn,
-      rgw_socket_path    => $::ceph::params::rgw_socket_path,
-      rgw_print_continue => $::ceph::params::rgw_print_continue,
-      rgw_port           => undef,
-      syslog             => true,
-      frontend_type      => $ceph::profile::params::frontend_type,
-      rgw_frontends      => $ceph::profile::params::rgw_frontends,
-    }
+  $rgw_name = $::ceph::profile::params::rgw_name ? {
+    undef   => 'radosgw.gateway',
+    default => $::ceph::profile::params::rgw_name,
+  }
+  ceph::rgw { $rgw_name:
+    user               => $::ceph::profile::params::rgw_user,
+    rgw_print_continue => $::ceph::profile::params::rgw_print_continue,
+    frontend_type      => $::ceph::profile::params::frontend_type,
+    rgw_frontends      => $::ceph::profile::params::rgw_frontends,
   }
 }
