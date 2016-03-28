@@ -75,29 +75,35 @@ define ceph::mon (
     }
 
     if $::operatingsystem == 'Ubuntu' {
+      $mon_service = "ceph-mon-${id}"
       $init = 'upstart'
       Service {
         name     => "ceph-mon-${id}",
         # workaround for bug https://projects.puppetlabs.com/issues/23187
-        provider => 'init',
+        provider => $::ceph::params::service_provider,
         start    => "start ceph-mon id=${id}",
         stop     => "stop ceph-mon id=${id}",
         status   => "status ceph-mon id=${id}",
       }
-    } elsif ($::operatingsystem == 'Debian') or ($::osfamily == 'RedHat') {
+    } elsif $::osfamily in ['RedHat', 'Debian'] {
+      # used later in touch /var/lib/ceph/mon/ceph-node1/$init (and probably different for systemd?)
       $init = 'sysvinit'
-      Service {
-        name     => "ceph-mon-${id}",
-        provider => 'init',
-        start    => "service ceph start mon.${id}",
-        stop     => "service ceph stop mon.${id}",
-        status   => "service ceph status mon.${id}",
+      if (($::cephmajor + 0) < 9) {
+        $mon_service = "ceph-mon-${id}"
+        Service {
+          name     => "ceph-mon-${id}",
+          provider => 'init',
+          start    => "service ceph start mon.${id}",
+          stop     => "service ceph stop mon.${id}",
+          status   => "service ceph status mon.${id}",
+        }
+      } else {
+        # use native systemd provider
+        $mon_service = "ceph-mon@${id}"
       }
     } else {
       fail("operatingsystem = ${::operatingsystem} is not supported")
     }
-
-    $mon_service = "ceph-mon-${id}"
 
     if $ensure == present {
 
@@ -185,7 +191,7 @@ test -d  \$mon_data
       }
       ->
       service { $mon_service:
-        ensure => running,
+        ensure => running
       }
 
       if $authentication_type == 'cephx' {
