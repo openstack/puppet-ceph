@@ -52,7 +52,7 @@ describe 'ceph::rgw' do
         :user          => 'root',
       }
       end
-      #it { is_expected.to contain_ceph_config('client.custom.civetweb/rgw_frontends').with_value('civetweb port=7481') }
+      it { is_expected.to contain_ceph_config('client.custom.civetweb/rgw_frontends').with_value('civetweb port=7481') }
       #it { is_expected.to contain_ceph_config('client.custom.civetweb/rgw_frontends') }
       it { is_expected.to contain_ceph_config('client.custom.civetweb/user').with_value('root') }
       it { is_expected.to contain_ceph_config('client.custom.civetweb/host').with_value('myhost') }
