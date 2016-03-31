@@ -79,16 +79,16 @@ define ceph::mon (
       Service {
         name     => "ceph-mon-${id}",
         # workaround for bug https://projects.puppetlabs.com/issues/23187
-        provider => 'init',
+        provider => $::ceph::params::service_provider,
         start    => "start ceph-mon id=${id}",
         stop     => "stop ceph-mon id=${id}",
         status   => "status ceph-mon id=${id}",
       }
-    } elsif ($::operatingsystem == 'Debian') or ($::osfamily == 'RedHat') {
+    } elsif $::osfamily in ['RedHat', 'Debian'] {
       $init = 'sysvinit'
       Service {
         name     => "ceph-mon-${id}",
-        provider => 'init',
+        provider => $::ceph::params::service_provider,
         start    => "service ceph start mon.${id}",
         stop     => "service ceph stop mon.${id}",
         status   => "service ceph status mon.${id}",

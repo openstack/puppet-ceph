@@ -154,10 +154,10 @@ define ceph::rgw (
 
     Service {
       name     => "radosgw-${name}",
-      provider => 'init',
       start    => "start radosgw id=${name}",
       stop     => "stop radosgw id=${name}",
       status   => "status radosgw id=${name}",
+      provider => $::ceph::params::service_provider,
     }
   } elsif ($::operatingsystem == 'Debian') or ($::osfamily == 'RedHat') {
     if $rgw_enable {
