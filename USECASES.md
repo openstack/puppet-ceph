@@ -6,7 +6,7 @@ I want to try this module, heard of ceph, want to see it in action
 
 I want to run it on a virtual machine, all in one. The **ceph::repo** class will enable the official ceph repository with the most current branch selected. The **ceph** class will create a configuration file with no authentication enabled. The **ceph::mon** resource configures and runs a monitor to which a **ceph::osd** daemon will connect to provide disk storage backed by the /srv/data folder (note that storing OSD data on an existing filesystem is only recommended for simple tests like this one).
 
-* install puppet and this module and its dependences (see the Modulefile and Puppetfile)
+* install puppet and this module and its dependences (see metadata.json)
 * paste the snippet above into /tmp/ceph.puppet
 * `puppet apply /tmp/ceph.puppet`
 * `ceph -s`: it will connect to the monitor and report that the cluster is ready to be used
@@ -36,7 +36,7 @@ I want to operate a production cluster
 _Notice : Please note that the code below is a sample which is not expected to work without further configuration. You will need to at least adapt the hostnames, the IP addresses of the monitor hosts and the OSD disks to your setup._
 
 On all machines:
-* install puppet and this module and its dependences (see the Modulefile and Puppetfile)
+* install puppet and this module and its dependences (see metadata.json)
 * paste the snippet below into /tmp/ceph.puppet
 
 On the monitor hosts:
@@ -120,7 +120,7 @@ _Notice : Please note that the code below is a sample which is not expected to w
 There are four machines, 3 OSDs, one of which also doubles as the single monitor and one machine that is the client from which the user runs the benchmark.
 
 On all four machines:
-* install puppet and this module and its dependences (see the Modulefile and Puppetfile)
+* install puppet and this module and its dependences (see metadata.json)
 * paste the snippet below into /tmp/ceph.puppet
 * `puppet apply /tmp/ceph.puppet`
 
