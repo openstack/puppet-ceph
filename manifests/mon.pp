@@ -188,11 +188,14 @@ test -d  \$mon_data
 ",
         logoutput => true,
         timeout   => $exec_timeout,
-      }
-      ->
+      }->
       service { $mon_service:
         ensure => running
       }
+
+      # if the service is running before we setup the configs, notify service
+      Ceph_config<||> ~>
+        Service[$mon_service]
 
       if $authentication_type == 'cephx' {
         if $key {
