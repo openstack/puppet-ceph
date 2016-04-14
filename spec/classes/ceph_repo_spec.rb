@@ -525,6 +525,26 @@ describe 'ceph::repo' do
       ) }
     end
 
+    describe "when using CentOS SIG repository" do
+      let :params do
+        {
+         :enable_sig => true,
+        }
+      end
+
+      it { is_expected.to_not contain_file_line('exclude base') }
+      it { is_expected.to_not contain_yumrepo('ext-epel-7') }
+      it { is_expected.to_not contain_yumrepo('ext-ceph') }
+      it { is_expected.to_not contain_yumrepo('ext-ceph-noarch') }
+      it { is_expected.to contain_exec('installing_centos-release-ceph').with(
+        :command   => '/usr/bin/yum install -y centos-release-ceph',
+        :logoutput => 'on_failure',
+        :tries     => 3,
+        :try_sleep => 1,
+        :unless    => '/usr/bin/rpm -qa | /usr/bin/grep -q centos-release-ceph',
+      ) }
+    end
+
     describe "with ensure => absent to disable" do
       let :params do
         {
