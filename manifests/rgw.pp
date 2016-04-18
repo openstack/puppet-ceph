@@ -84,6 +84,10 @@ define ceph::rgw (
   $syslog             = true,
 ) {
 
+  unless $name =~ /^radosgw\..+/ {
+    fail("Define name must be started with 'radosgw.'")
+  }
+
   ceph_config {
     "client.${name}/host":               value => $::hostname;
     "client.${name}/keyring":            value => $keyring_path;

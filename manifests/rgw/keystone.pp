@@ -61,6 +61,10 @@ define ceph::rgw::keystone (
   $user = $::ceph::params::user_radosgw,
 ) {
 
+  unless $name =~ /^radosgw\..+/ {
+    fail("Define name must be started with 'radosgw.'")
+  }
+
   ceph_config {
     "client.${name}/rgw_keystone_admin_token":         value => $rgw_keystone_admin_token;
     "client.${name}/rgw_keystone_url":                 value => $rgw_keystone_url;

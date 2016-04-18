@@ -25,8 +25,11 @@ define ceph::rgw::civetweb (
   $rgw_frontends = undef,
 ) {
 
-    ceph_config {
-      "client.${name}/rgw_frontends": value => $rgw_frontends;
-    }
+  unless $name =~ /^radosgw\..+/ {
+    fail("Define name must be started with 'radosgw.'")
+  }
 
+  ceph_config {
+    "client.${name}/rgw_frontends": value => $rgw_frontends;
+  }
 }
