@@ -21,8 +21,8 @@ Puppet::Type.newtype(:ceph_config) do
   ensurable
 
   newparam(:name, :namevar => true) do
-    desc 'Section/setting name to manage from ./ceph.conf'
-    newvalues(/\S+\/\S+/)
+    desc 'Cluster/Section/setting name to manage from <cluster>.conf'
+    newvalues(/\S+\/\S+\/\S+/)
   end
 
   # required in order to be able to unit test file contents

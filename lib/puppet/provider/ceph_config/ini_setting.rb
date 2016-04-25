@@ -21,19 +21,25 @@ Puppet::Type.type(:ceph_config).provide(
 ) do
 
   def section
-    resource[:name].split('/', 2).first
+    resource[:name].split('/', 3)[1]
   end
 
   def setting
-    resource[:name].split('/', 2).last
+    resource[:name].split('/', 3)[2]
   end
 
   def separator
     ' = '
   end
 
+  # I don't understand how to make this properly set using the value of the :name resource
+  # it seems impossible to reference the resource[] variable in any class definition
+  # and I'm not sure if there is some other global var that I can reference to find it
+  # so I guess I don't understand puppet and/or ruby here (bmeekhof@umich.edu)
+
+  # ultimately the net effect is we can't (automatically) purge any files besides the default here
   def self.file_path
-    '/etc/ceph/ceph.conf'
+        '/etc/ceph/ceph.conf'
   end
 
   # required to be able to hack the path in unit tests
@@ -41,7 +47,7 @@ Puppet::Type.type(:ceph_config).provide(
   # Note: purge will not work on over-ridden file_path
   def file_path
     if not resource[:path]
-      self.class.file_path
+      '/etc/ceph/' + resource[:name].split('/', 3)[0] + '.conf'
     else
       resource[:path]
     end

@@ -21,7 +21,7 @@
 #
 # == Define: ceph::key
 #
-# The full ceph ID name, e.g. 'client.admin' or 'mon.'.
+# If keyid not specified, the resource title is used as ceph ID name, e.g. 'client.admin' or 'mon.'.  
 #
 # === Parameters:
 #
@@ -29,11 +29,14 @@
 #   Mandatory. Can be created with ceph-authtool --gen-print-key.
 #
 # [*cluster*] The ceph cluster
-#   Optional. Same default as ceph.
+#   Optional. Defaults to 'ceph' 
+#
+# [*keyid*] ceph key ID such as 'client.admin'
+#   Optional.  Defaults to resource title.
 #
 # [*keyring_path*] Path to the keyring file.
 #   Optional. Absolute path to the keyring file, including the file name.
-#   Defaults to /etc/ceph/ceph.${name}.keyring.
+#   Defaults to /etc/ceph/${cluster}.${name}.keyring.
 #
 # [*cap_mon*] cephx capabilities for MON access.
 #   Optional. e.g. 'allow *'
@@ -73,7 +76,8 @@
 define ceph::key (
   $secret,
   $cluster = undef,
-  $keyring_path = "/etc/ceph/ceph.${name}.keyring",
+  $keyid = "${name}",
+  $keyring_path = undef,
   $cap_mon = undef,
   $cap_osd = undef,
   $cap_mds = undef,
@@ -85,8 +89,17 @@ define ceph::key (
   $inject_keyring = undef,
 ) {
 
-  if $cluster {
+  if ($cluster) {
     $cluster_option = "--cluster ${cluster}"
+    $cluster_name = $cluster
+  } else {
+    $cluster_name = 'ceph'
+  }
+  
+  if ! $keyring_path {
+    $keyring_file = "/etc/ceph/${cluster_name}.${keyid}.keyring"
+  } else {
+    $keyring_file = $keyring_path
   }
 
   if $cap_mon {
@@ -102,8 +115,8 @@ define ceph::key (
 
   # this allows multiple defines for the same 'keyring file',
   # which is supported by ceph-authtool
-  if ! defined(File[$keyring_path]) {
-    file { $keyring_path:
+  if ! defined(File[$keyring_file]) {
+    file { $keyring_file:
       ensure  => file,
       owner   => $user,
       group   => $group,
@@ -112,14 +125,14 @@ define ceph::key (
     }
   }
 
-  exec { "ceph-key-${name}":
+  exec { "ceph-key-${keyid}":
     command   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-ceph-authtool ${keyring_path} --name '${name}' --add-key '${secret}' ${caps}",
+ceph-authtool ${keyring_file} --name '${keyid}' --add-key '${secret}' ${caps}",
     unless    => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-sed -n 'N;\\%.*${name}.*\\n\\s*key = ${secret}%p' ${keyring_path} | grep ${name}",
-    require   => [ Package['ceph'], File[$keyring_path], ],
+sed -n 'N;\\%.*${keyid}.*\\n\\s*key = ${secret}%p' ${keyring_file} | grep ${keyid}",
+    require   => [ Package['ceph'], File[$keyring_file], ],
     logoutput => true,
   }
 
@@ -133,16 +146,16 @@ sed -n 'N;\\%.*${name}.*\\n\\s*key = ${secret}%p' ${keyring_path} | grep ${name}
       $inject_keyring_option = " --keyring '${inject_keyring}' "
     }
 
-    Ceph_config<||> -> Exec["ceph-injectkey-${name}"]
-    Ceph::Mon<||> -> Exec["ceph-injectkey-${name}"]
-    exec { "ceph-injectkey-${name}":
+    Ceph_config<||> -> Exec["ceph-injectkey-${keyid}"]
+    Ceph::Mon<||> -> Exec["ceph-injectkey-${keyid}"]
+    exec { "ceph-injectkey-${keyid}":
       command   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-ceph ${cluster_option} ${inject_id_option} ${inject_keyring_option} auth add ${name} --in-file=${keyring_path}",
+ceph ${cluster_option} ${inject_id_option} ${inject_keyring_option} auth add ${keyid} --in-file=${keyring_file}",
       unless    => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-ceph ${cluster_option} ${inject_id_option} ${inject_keyring_option} auth get ${name} | grep ${secret}",
-      require   => [ Package['ceph'], Exec["ceph-key-${name}"], ],
+ceph ${cluster_option} ${inject_id_option} ${inject_keyring_option} auth get ${keyid} | grep ${secret}",
+      require   => [ Package['ceph'], Exec["ceph-key-${keyid}"], ],
       logoutput => true,
     }
 

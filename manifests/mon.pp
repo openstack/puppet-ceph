@@ -2,6 +2,7 @@
 #   Copyright (C) 2013 Cloudwatt <libre.licensing@cloudwatt.com>
 #   Copyright (C) 2013, 2014 iWeb Technologies Inc.
 #   Copyright (C) 2014 Nine Internet Solutions AG
+#   Copyright (C) 2016 OSiRIS Project, funded by the NSF
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -18,6 +19,7 @@
 # Author: Loic Dachary <loic@dachary.org>
 # Author: David Moreau Simard <dmsimard@iweb.com>
 # Author: David Gurtner <aldavud@crimson.ch>
+# Author: Ben Meekhof <bmeekhof@umich.edu>
 #
 # == Define: ceph::mon
 #
@@ -54,6 +56,7 @@
 # [*exec_timeout*] The default exec resource timeout, in seconds
 #   Optional. Defaults to $::ceph::params::exec_timeout
 #
+
 define ceph::mon (
   $ensure = present,
   $public_addr = undef,
@@ -63,6 +66,14 @@ define ceph::mon (
   $keyring  = undef,
   $exec_timeout = $::ceph::params::exec_timeout,
   ) {
+
+    if ($::ceph::releasechar >= 'i') {
+      $setuser = 'ceph'
+      $setgroup = 'ceph'
+    } else {
+      $setuser = 'root'
+      $setgroup = 'root'
+    }
 
     # a puppet name translates into a ceph id, the meaning is different
     $id = $name
@@ -88,7 +99,7 @@ define ceph::mon (
     } elsif $::osfamily in ['RedHat', 'Debian'] {
       # used later in touch /var/lib/ceph/mon/ceph-node1/$init (and probably different for systemd?)
       $init = 'sysvinit'
-      if (($::cephmajor + 0) < 9) {
+      if ($::ceph::releasechar < 'i') {
         $mon_service = "ceph-mon-${id}"
         Service {
           name     => "ceph-mon-${id}",
@@ -106,6 +117,16 @@ define ceph::mon (
     }
 
     if $ensure == present {
+
+      if $::osfamily == 'RedHat' {
+        file_line { '/etc/sysconfig/ceph':
+          path => '/etc/sysconfig/ceph',
+          line  => "CLUSTER=${cluster_name}",
+          match => '^CLUSTER=[a-z0-9]+',
+          require => Package['ceph'],
+          notify => Service["$mon_service"]
+        }
+      }
 
       $ceph_mkfs = "ceph-mon-mkfs-${id}"
 
@@ -150,7 +171,7 @@ test -e \$mon_data/done
 
       if $public_addr {
         ceph_config {
-          "mon.${id}/public_addr": value => $public_addr;
+          "${cluster}/mon.${id}/public_addr": value => $public_addr;
         }
       }
 
@@ -170,10 +191,12 @@ test -e /etc/ceph/${cluster_name}.client.admin.keyring",
 set -ex
 mon_data=\$(ceph-mon ${cluster_option} --id ${id} --show-config-value mon_data)
 if [ ! -d \$mon_data ] ; then
-  mkdir -p \$mon_data
+  mkdir -p \$mon_data ; chown ceph:ceph \$mon_data
   if ceph-mon ${cluster_option} \
         --mkfs \
         --id ${id} \
+        --setuser ${setuser} \
+        --setgroup ${setgroup} \
         --keyring ${keyring_path} ; then
     touch \$mon_data/done \$mon_data/${init} \$mon_data/keyring
   else
@@ -212,6 +235,15 @@ test ! -e ${keyring_path}
       }
 
     } else {
+
+      if $::osfamily == 'RedHat' {
+        file_line { '/etc/sysconfig/ceph':
+          path => '/etc/sysconfig/ceph',
+          line => "CLUSTER=${cluster_name}",
+          ensure => absent
+        }
+      }
+
       service { $mon_service:
         ensure => stopped
       }
@@ -232,7 +264,7 @@ test ! -d \$mon_data
         timeout   => $exec_timeout,
       } ->
       ceph_config {
-        "mon.${id}/public_addr": ensure => absent;
+        "${cluster}/mon.${id}/public_addr": ensure => absent;
       } -> Package<| tag == 'ceph' |>
     }
   }

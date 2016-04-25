@@ -1,5 +1,9 @@
 #   Copyright (C) 2013, 2014 iWeb Technologies Inc.
+#   Copyright (C) 2013 Cloudwatt <libre.licensing@cloudwatt.com>
 #   Copyright (C) 2014 Nine Internet Solutions AG
+#   Copyright (C) 2014 Catalyst IT Limited
+#   Copyright (C) 2015 Red Hat
+#   
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -13,116 +17,62 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
+# Author: Loic Dachary <loic@dachary.org>
+# Author: Francois Charlier <francois.charlier@enovance.com>
 # Author: David Moreau Simard <dmsimard@iweb.com>
+# Author: Andrew Woodward <awoodward@mirantis.com>
 # Author: David Gurtner <aldavud@crimson.ch>
+# Author: Ricardo Rocha <ricardo@catalyst.net.nz>
+# Author: Emilien Macchi <emilien@redhat.com>
 #
-# == Class: ceph
+# == Class: ceph::
 #
-# init takes care of installing/configuring the common dependencies across classes
-# it also takes care of the global configuration values
+# Install ceph packages.  Use ceph::cluster resource to define a cluster
 #
 # === Parameters:
 #
-# [*fsid*] The cluster's fsid.
-#   Mandatory. Get one with `uuidgen -r`.
+# [*ensure*] The ensure state for package ressources.
+#  Optional. Defaults to 'present'.
 #
-# [*ensure*] Installs ( present ) or removes ( absent ) ceph.
-#   Optional. Defaults to present.
+# [*release*] The name of the Ceph release to install
+#   Optional. Default to 'hammer'.
 #
-# [*authentication_type*] Authentication type.
-#   Optional. none or 'cephx'. Defaults to 'cephx'.
+# [*fastcgi*] Install Ceph fastcgi apache module for Ceph
+#   Optional. Defaults to 'false'
 #
-# [*keyring*] The location of the keyring retrieved by default
-#   Optional. Defaults to /etc/ceph/keyring.
+# [*proxy*] Proxy URL to be used for the yum repository, useful if you're behind a corporate firewall
+#   Optional. Defaults to 'undef'
 #
-# [*osd_journal_size*] The size of the journal file/device.
-#   Optional. Integer. Default provided by Ceph.
+# [*proxy_username*] The username to be used for the proxy if one should be required
+#   Optional. Defaults to 'undef'
 #
-# [*osd_pool_default_pg_num*] The default number of PGs per pool.
-#   Optional. Integer. Default provided by Ceph.
+# [*proxy_password*] The password to be used for the proxy if one should be required
+#   Optional. Defaults to 'undef'
 #
-# [*osd_pool_default_pgp_num*] The default flags for new pools.
-#   Optional. Integer. Default provided by Ceph.
+# [*enable_epel*] Whether or not enable EPEL repository.
+#   Optional. Defaults to True
 #
-# [*osd_pool_default_size*] Number of replicas for objects in the pool
-#   Optional. Integer. Default provided by Ceph.
+# [*enable_sig*] Whether or not enable SIG repository.
+#   CentOS SIG repository contains Ceph packages built by CentOS community.
+#   https://wiki.centos.org/SpecialInterestGroup/Storage/
+#   Optional. Defaults to False
 #
-# [*osd_pool_default_min_size*] The default minimum num of replicas.
-#   Optional. Integer. Default provided by Ceph.
-#
-# [*osd_pool_default_crush_rule*] The default CRUSH ruleset to use
-#   when creating a pool.
-#   Optional. Integer. Default provided by Ceph.
-#
-# [*mon_osd_full_ratio*] Percentage of disk space used before
-#   an OSD considered full
-#   Optional. Integer e.g. 95, NOTE: ends in config as .95
-#   Default provided by Ceph.
-#
-# [*mon_osd_nearfull_ratio*] Percentage of disk space used before
-#   an OSD considered nearfull
-#   Optional. Float e.g. 90, NOTE: ends in config as .90
-#   Default provided by Ceph.
-#
-# [*mon_initial_members*] The IDs of initial MONs in the cluster during startup.
-#   Optional. String like e.g. 'a, b, c'.
-#
-# [*mon_host*] The fqdn of MONs in the cluster. They can also be declared
-#   individually through ceph::mon.
-#   Optional. String like e.g. 'a, b, c'.
-#
-# [*ms_bind_ipv6*] Enables Ceph daemons to bind to IPv6 addresses.
-#   Optional. Boolean. Default provided by Ceph.
-#
-# [*require_signatures*] If Ceph requires signatures on all
-#   message traffic (client<->cluster and between cluster daemons).
-#   Optional. Boolean. Default provided by Ceph.
-#
-# [*cluster_require_signatures*] If Ceph requires signatures on all
-#   message traffic between the cluster daemons.
-#   Optional. Boolean. Default provided by Ceph.
-#
-# [*service_require_signatures*] If Ceph requires signatures on all
-#   message traffic between clients and the cluster.
-#   Optional. Boolean. Default provided by Ceph.
-#
-# [*sign_messages*] If all ceph messages should be signed.
-#   Optional. Boolean. Default provided by Ceph.
-#
-# [*cluster_network*] The address of the cluster network.
-#   Optional. {cluster-network-ip/netmask}
-#
-# [*public_network*] The address of the public network.
-#   Optional. {public-network-ip/netmask}
-#
-# [*public_addr*] The address of the node (on public network.)
-#   Optional. {public-network-ip}
-#
+
 class ceph (
-  $fsid,
-  $ensure                     = present,
-  $authentication_type        = 'cephx',
-  $keyring                    = undef,
-  $osd_journal_size           = undef,
-  $osd_pool_default_pg_num    = undef,
-  $osd_pool_default_pgp_num   = undef,
-  $osd_pool_default_size      = undef,
-  $osd_pool_default_min_size  = undef,
-  $osd_pool_default_crush_rule= undef,
-  $mon_osd_full_ratio         = undef,
-  $mon_osd_nearfull_ratio     = undef,
-  $mon_initial_members        = undef,
-  $mon_host                   = undef,
-  $ms_bind_ipv6               = undef,
-  $require_signatures         = undef,
-  $cluster_require_signatures = undef,
-  $service_require_signatures = undef,
-  $sign_messages              = undef,
-  $cluster_network            = undef,
-  $public_network             = undef,
-  $public_addr                = undef,
+  $ensure         = present,
+  $release        = 'jewel',
+  $fastcgi        = false,
+  $proxy          = undef,
+  $proxy_username = undef,
+  $proxy_password = undef,
+  $enable_epel    = true,
+  $enable_sig     = false,
 ) {
+
   include ::ceph::params
+
+  # for use in version comparisons with < >
+  $releasechar = join("${release}".match(/[a-z]/), "")
 
   package { $::ceph::params::packages :
     ensure => $ensure,
@@ -132,44 +82,160 @@ class ceph (
   if $ensure !~ /(absent|purged)/ {
     # Make sure ceph is installed before managing the configuration
     Package<| tag == 'ceph' |> -> Ceph_config<| |>
-    # [global]
-    ceph_config {
-      'global/fsid':                        value => $fsid;
-      'global/keyring':                     value => $keyring;
-      'global/osd_pool_default_pg_num':     value => $osd_pool_default_pg_num;
-      'global/osd_pool_default_pgp_num':    value => $osd_pool_default_pgp_num;
-      'global/osd_pool_default_size':       value => $osd_pool_default_size;
-      'global/osd_pool_default_min_size':   value => $osd_pool_default_min_size;
-      'global/osd_pool_default_crush_rule': value => $osd_pool_default_crush_rule;
-      'global/mon_osd_full_ratio':          value => $mon_osd_full_ratio;
-      'global/mon_osd_nearfull_ratio':      value => $mon_osd_nearfull_ratio;
-      'global/mon_initial_members':         value => $mon_initial_members;
-      'global/mon_host':                    value => $mon_host;
-      'global/ms_bind_ipv6':                value => $ms_bind_ipv6;
-      'global/require_signatures':          value => $require_signatures;
-      'global/cluster_require_signatures':  value => $cluster_require_signatures;
-      'global/service_require_signatures':  value => $service_require_signatures;
-      'global/sign_messages':               value => $sign_messages;
-      'global/cluster_network':             value => $cluster_network;
-      'global/public_network':              value => $public_network;
-      'global/public_addr':                 value => $public_addr;
-      'osd/osd_journal_size':               value => $osd_journal_size;
+  }
+
+  case $::osfamily {
+    'Debian': {
+      include ::apt
+
+      apt::key { 'ceph':
+        ensure => $ensure,
+        id     => '08B73419AC32B4E966C1A330E84AC2C0460F3994',
+        source => 'https://download.ceph.com/keys/release.asc',
+      }
+
+      apt::source { 'ceph':
+        ensure   => $ensure,
+        location => "http://download.ceph.com/debian-${release}/",
+        release  => $::lsbdistcodename,
+        require  => Apt::Key['ceph'],
+        tag      => 'ceph',
+      }
+
+      if $fastcgi {
+
+        apt::key { 'ceph-gitbuilder':
+          ensure => $ensure,
+          id     => 'FCC5CB2ED8E6F6FB79D5B3316EAEAE2203C3951A',
+          server => 'keyserver.ubuntu.com',
+        }
+
+        apt::source { 'ceph-fastcgi':
+          ensure   => $ensure,
+          location => "http://gitbuilder.ceph.com/libapache-mod-fastcgi-deb-${::lsbdistcodename}-${::hardwaremodel}-basic/ref/master",
+          release  => $::lsbdistcodename,
+          require  => Apt::Key['ceph-gitbuilder'],
+        }
+
+      }
+
+      Apt::Source<| tag == 'ceph' |> -> Package<| tag == 'ceph' |>
+      Exec['apt_update'] -> Package<| tag == 'ceph' |>
     }
 
-    if $authentication_type == 'cephx' {
-      ceph_config {
-        'global/auth_cluster_required': value => 'cephx';
-        'global/auth_service_required': value => 'cephx';
-        'global/auth_client_required':  value => 'cephx';
-        'global/auth_supported':        value => 'cephx';
+    'RedHat': {
+      $enabled = $ensure ? { 'present' => '1', 'absent' => '0', default => absent, }
+
+      # If you want to deploy Ceph using packages provided by CentOS SIG
+      # https://wiki.centos.org/SpecialInterestGroup/Storage/
+      if $enable_sig {
+        if $::operatingsystem != 'CentOS' {
+          warning("CentOS SIG repository is only supported on CentOS operating system, not on ${::operatingsystem}, which can lead to packaging issues.")
+        }
+        exec { 'installing_centos-release-ceph':
+          command   => '/usr/bin/yum install -y centos-release-ceph',
+          logoutput => 'on_failure',
+          tries     => 3,
+          try_sleep => 1,
+          unless    => '/usr/bin/rpm -qa | /usr/bin/grep -q centos-release-ceph',
+        }
+        # Make sure we install the repo before any Package resource
+        Exec['installing_centos-release-ceph'] -> Package<| tag == 'ceph' |>
+      } else {
+        # If you want to deploy Ceph using packages provided by ceph.com repositories.
+        if ((($::operatingsystem == 'RedHat' or $::operatingsystem == 'CentOS') and (versioncmp($::operatingsystemmajrelease, '7') < 0)) or ($::operatingsystem == 'Fedora' and (versioncmp($::operatingsystemmajrelease, '19') < 0))) {
+          $el = '6'
+        } else {
+          $el = '7'
+        }
+
+        # Firefly is the last ceph.com supported release which conflicts with
+        # the CentOS 7 base channel. Therefore make sure to only exclude the
+        # conflicting packages in the exact combination of CentOS7 and Firefly.
+        # TODO: Remove this once Firefly becomes EOL
+        if ($::operatingsystem == 'CentOS' and $el == '7' and $release == 'firefly') {
+          file_line { 'exclude base':
+            ensure => $ensure,
+            path   => '/etc/yum.repos.d/CentOS-Base.repo',
+            after  => '^\[base\]$',
+            line   => 'exclude=python-ceph-compat python-rbd python-rados python-cephfs',
+          } -> Package<| tag == 'ceph' |>
+        }
+
+        Yumrepo {
+          proxy          => $proxy,
+          proxy_username => $proxy_username,
+          proxy_password => $proxy_password,
+        }
+
+
+        yumrepo { 'ext-ceph':
+          # puppet versions prior to 3.5 do not support ensure, use enabled instead
+          enabled    => $enabled,
+          descr      => "External Ceph ${release}",
+          name       => "ext-ceph-${release}",
+          baseurl    => "http://download.ceph.com/rpm-${release}/el${el}/\$basearch",
+          gpgcheck   => '1',
+          gpgkey     => 'https://download.ceph.com/keys/release.asc',
+          mirrorlist => absent,
+          priority   => '10', # prefer ceph repos over EPEL
+          tag        => 'ceph',
+        }
+
+        yumrepo { 'ext-ceph-noarch':
+          # puppet versions prior to 3.5 do not support ensure, use enabled instead
+          enabled    => $enabled,
+          descr      => 'External Ceph noarch',
+          name       => "ext-ceph-${release}-noarch",
+          baseurl    => "http://download.ceph.com/rpm-${release}/el${el}/noarch",
+          gpgcheck   => '1',
+          gpgkey     => 'https://download.ceph.com/keys/release.asc',
+          mirrorlist => absent,
+          priority   => '10', # prefer ceph repos over EPEL
+          tag        => 'ceph',
+        }
+
+        if $fastcgi {
+          yumrepo { 'ext-ceph-fastcgi':
+            enabled    => $enabled,
+            descr      => 'FastCGI basearch packages for Ceph',
+            name       => 'ext-ceph-fastcgi',
+            baseurl    => "http://gitbuilder.ceph.com/mod_fastcgi-rpm-rhel${el}-x86_64-basic/ref/master",
+            gpgcheck   => '1',
+            gpgkey     => 'https://download.ceph.com/keys/autobuild.asc',
+            mirrorlist => absent,
+            priority   => '20', # prefer ceph repos over EPEL
+            tag        => 'ceph',
+          }
+        }
+
+        # prefer ceph.com repos over EPEL
+        package { 'yum-plugin-priorities':
+          ensure => present,
+        }
       }
-    } else {
-      ceph_config {
-        'global/auth_cluster_required': value => 'none';
-        'global/auth_service_required': value => 'none';
-        'global/auth_client_required':  value => 'none';
-        'global/auth_supported':        value => 'none';
+
+      if $enable_epel {
+        yumrepo { "ext-epel-${el}":
+          # puppet versions prior to 3.5 do not support ensure, use enabled instead
+          enabled    => $enabled,
+          descr      => "External EPEL ${el}",
+          name       => "ext-epel-${el}",
+          baseurl    => absent,
+          gpgcheck   => '1',
+          gpgkey     => "https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-${el}",
+          mirrorlist => "http://mirrors.fedoraproject.org/metalink?repo=epel-${el}&arch=\$basearch",
+          priority   => '20', # prefer ceph repos over EPEL
+          tag        => 'ceph',
+          exclude    => 'python-ceph-compat python-rbd python-rados python-cephfs',
+        }
       }
+
+      Yumrepo<| tag == 'ceph' |> -> Package<| tag == 'ceph' |>
+    }
+
+    default: {
+      fail("Unsupported osfamily: ${::osfamily} operatingsystem: ${::operatingsystem}, module ${module_name} only supports osfamily Debian and RedHat")
     }
   }
 }
