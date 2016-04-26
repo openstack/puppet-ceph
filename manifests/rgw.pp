@@ -91,10 +91,13 @@ define ceph::rgw (
     "client.${name}/user":               value => $user;
   }
 
-  if ($frontend_type == 'civetweb')
+  if($frontend_type == 'civetweb')
   {
-    ceph::rgw::civetweb { 'radosgw.gateway':
-      rgw_frontends => $rgw_frontends,
+    if( $rgw_frontends =~ /civetweb/ )
+    {
+      ceph::rgw::civetweb { $name:
+        rgw_frontends => $rgw_frontends,
+      }
     }
   }
   elsif ( ( $frontend_type == 'apache-fastcgi' ) or ( $frontend_type == 'apache-proxy-fcgi' ) )
