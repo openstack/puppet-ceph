@@ -125,7 +125,7 @@ define ceph::key (
     }
   }
 
-  exec { "ceph-key-${keyid}":
+  exec { "ceph-key-${cluster_name}.${keyid}":
     command   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 ceph-authtool ${keyring_file} --name '${keyid}' --add-key '${secret}' ${caps}",
@@ -146,16 +146,16 @@ sed -n 'N;\\%.*${keyid}.*\\n\\s*key = ${secret}%p' ${keyring_file} | grep ${keyi
       $inject_keyring_option = " --keyring '${inject_keyring}' "
     }
 
-    Ceph_config<||> -> Exec["ceph-injectkey-${keyid}"]
-    Ceph::Mon<||> -> Exec["ceph-injectkey-${keyid}"]
-    exec { "ceph-injectkey-${keyid}":
+    Ceph_config<||> -> Exec["ceph-injectkey-${cluster_name}.${keyid}"]
+    Ceph::Mon<||> -> Exec["ceph-injectkey-${cluster_name}.${keyid}"]
+    exec { "ceph-injectkey-${cluster_name}.${keyid}":
       command   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 ceph ${cluster_option} ${inject_id_option} ${inject_keyring_option} auth add ${keyid} --in-file=${keyring_file}",
       unless    => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 ceph ${cluster_option} ${inject_id_option} ${inject_keyring_option} auth get ${keyid} | grep ${secret}",
-      require   => [ Package['ceph'], Exec["ceph-key-${keyid}"], ],
+      require   => [ Package['ceph'], Exec["ceph-key-${cluster_name}.${keyid}"], ],
       logoutput => true,
     }
 
