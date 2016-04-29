@@ -29,9 +29,13 @@ describe 'ceph rgw/civetweb' do
   # passing it directly as unqoted array is not supported everywhere
   packages = "[ 'python-ceph', 'ceph-common', 'librados2', 'librbd1', 'libcephfs1' ]"
 
+  keystone_admin_token = 'keystonetoken'
+  keystone_password = '123456'
+
   test_user = 'testuser'
   test_password = '123456'
   test_email = 'testuser@example.com'
+  test_tenant = 'openstack'
 
   describe 'ceph::rgw::civetweb' do
 
@@ -42,12 +46,15 @@ describe 'ceph rgw/civetweb' do
         case $::osfamily {
           'Debian': {
             include ::apt
-            apt::source { 'cloudarchive-juno':
+            apt::source { 'cloudarchive-kilo':
               location          => 'http://ubuntu-cloud.archive.canonical.com/ubuntu',
-              release           => 'trusty-updates/juno',
+              release           => 'trusty-updates/kilo',
               repos             => 'main',
               include_src       => false,
               required_packages => 'ubuntu-cloud-keyring',
+            }
+            package { 'python-tz':
+              ensure => latest,
             }
           }
           'RedHat': {
@@ -55,17 +62,14 @@ describe 'ceph rgw/civetweb' do
             file { '/etc/security/limits.d/80-nofile.conf':
               content => '*          hard    nofile     32768',
             }
-            yumrepo { 'openstack-juno':
-              descr    => 'OpenStack Juno Repository',
-              #baseurl  => 'http://repos.fedorapeople.org/repos/openstack/openstack-juno/epel-7/',
+            yumrepo { 'openstack-kilo':
+              descr    => 'OpenStack Kilo Repository',
               baseurl  => 'http://repos.fedorapeople.org/repos/openstack/openstack-kilo/el7/',
               enabled  => '1',
               gpgcheck => '0',
-              #gpgkey   => 'https://raw.githubusercontent.com/redhat-openstack/rdo-release/juno/RPM-GPG-KEY-RDO-Juno',
               gpgkey   => 'https://raw.githubusercontent.com/redhat-openstack/rdo-release/kilo/RPM-GPG-KEY-RDO-Kilo',
               priority => '15', # prefer over EPEL, but below ceph
             }
-            Yumrepo<||> -> Package['python-swiftclient']
           }
           default: {
             fail ("Unsupported OS family ${::osfamily}")
@@ -100,7 +104,7 @@ describe 'ceph rgw/civetweb' do
         }
         ->
         ceph::key { 'client.radosgw.gateway':
-          user    => $apache_user,
+          user    => $user,
           secret  => '#{radosgw_key}',
           cap_mon => 'allow rwx',
           cap_osd => 'allow rwx',
@@ -149,8 +153,6 @@ describe 'ceph rgw/civetweb' do
       }
 
       apply_manifest(pp, :catch_failures => true)
-      # Enable as soon as remaining changes are fixed
-      #apply_manifest(pp, :catch_changes => true)
 
       shell servicequery[osfamily] do |r|
         expect(r.exit_code).to be_zero
@@ -168,19 +170,170 @@ describe 'ceph rgw/civetweb' do
         expect(r.exit_code).to be_zero
       end
 
-      #shell "swift -A http://127.0.0.1:7480/auth/1.0 -U #{test_user}:swift -K #{test_password} stat" do |r|
-      shell "swift -A http://127.0.0.1:80/auth/1.0 -U #{test_user}:swift -K #{test_password} stat" do |r|
+      shell "curl -i -H 'X-Auth-User: #{test_user}:swift' -H 'X-Auth-Key: #{test_password}' http://127.0.0.1:80/auth/v1.0/" do |r|
         expect(r.exit_code).to be_zero
-        expect(r.stdout).to match(/Content-Type: text\/plain; charset=utf-8/)
+        expect(r.stdout).to match(/HTTP\/1\.1 204 No Content/)
         expect(r.stdout).not_to match(/401 Unauthorized/)
       end
     end
 
+    it 'should configure keystone and ceph-rgw' do
+      pp = <<-EOS
+        $user = 'root'
+        class { 'ceph::repo':
+          release => '#{release}',
+          fastcgi => false,
+        } 
+        class { 'ceph':
+          fsid                       => '#{fsid}',
+          mon_host                   => $::ipaddress,
+          mon_initial_members        => 'a',
+          osd_pool_default_size      => '1',
+          osd_pool_default_min_size  => '1',
+        }
+        ceph::rgw { 'radosgw.gateway':
+          user            => $user,
+          frontend_type => 'civetweb',
+          rgw_frontends => 'civetweb port=80',
+        }
+
+        case $::osfamily {
+          'Debian': {
+            #trusty ships with pbr 0.7
+            #openstackclient.shell raises an requiring pbr!=0.7,<1.0,>=0.6'
+            #the latest is 0.10
+            package { 'python-pbr':
+              ensure => 'latest',
+            }
+            include ::apt
+            apt::source { 'cloudarchive-kilo':
+              location => 'http://ubuntu-cloud.archive.canonical.com/ubuntu',
+              release  => 'trusty-updates/kilo',
+              repos    => 'main',
+              include  => {
+                'src'  => 'false',
+              },
+            }
+            package { 'ubuntu-cloud-keyring':
+              ensure => present,
+            }
+            package { 'python-tz':
+              ensure => latest,
+            }
+            Apt::Source['cloudarchive-kilo'] -> Package['ubuntu-cloud-keyring']
+            #Package['ubuntu-cloud-keyring'] -> Package['keystone','python-swiftclient']
+            #Exec['apt_update'] -> Package['keystone','python-swiftclient']
+            #xec['apt_update'] -> Package['keystone']
+          }
+          'RedHat': {
+            yumrepo { 'openstack-kilo':
+              descr    => 'OpenStack Kilo Repository',
+              baseurl  => 'http://repos.fedorapeople.org/repos/openstack/openstack-kilo/el7/',
+              enabled  => '1',
+              gpgcheck => '0',
+              gpgkey   => 'https://raw.githubusercontent.com/redhat-openstack/rdo-release/kilo/RPM-GPG-KEY-RDO-Kilo',
+              priority => '15', # prefer over EPEL, but below ceph
+            }
+            Yumrepo<||> -> Package['keystone']
+          }
+        }
+
+        class { 'keystone':
+          verbose             => true,
+          catalog_type        => 'sql',
+          admin_token         => '#{keystone_admin_token}',
+          admin_endpoint      => "http://${::ipaddress}:35357",
+        }
+        ->
+        class { 'keystone::roles::admin':
+          email        => 'admin@example.com',
+          password     => '#{keystone_password}',
+        }
+        ->
+        class { 'keystone::endpoint':
+          public_url   => "http://${::ipaddress}:5000",
+          admin_url    => "http://${::ipaddress}:35357",
+          internal_url => "http://${::ipaddress}:5000",
+          region       => 'example-1',
+        }
+        Service['keystone'] -> Ceph::Rgw::Keystone['radosgw.gateway']
+
+        keystone_service { 'swift':
+          ensure      => present,
+          type        => 'object-store',
+          description => 'Openstack Object Storage Service',
+        }
+        Keystone_service<||> -> Ceph::Rgw::Keystone['radosgw.gateway']
+        keystone_endpoint { 'example-1/swift':
+          ensure       => present,
+          public_url   => "http://${::fqdn}:8080/swift/v1",
+          admin_url    => "http://${::fqdn}:8080/swift/v1",
+          internal_url => "http://${::fqdn}:8080/swift/v1",
+        }
+        Keystone_endpoint<||> -> Ceph::Rgw::Keystone['radosgw.gateway']
+
+        keystone_user { '#{test_user}':
+          ensure   => present,
+          enabled  => true,
+          email    => '#{test_email}',
+          password => '#{test_password}',
+          tenant   => '#{test_tenant}',
+        }
+        Keystone_user<||> -> Ceph::Rgw::Keystone['radosgw.gateway']
+        keystone_user_role { 'testuser@openstack':
+          ensure => present,
+          roles  => ['_member_'],
+        }
+        Keystone_user_role<||> -> Ceph::Rgw::Keystone['radosgw.gateway']
+
+        #wget is used by ceph::rgw::keystone to pull down files
+        package { 'wget':  # required for tests below
+          ensure => present,
+        } ->
+        ceph::rgw::keystone { 'radosgw.gateway':
+          rgw_keystone_url         => "http://${::ipaddress}:5000",
+          rgw_keystone_admin_token => '#{keystone_admin_token}',
+          rgw_keystone_version     => "v2.0",
+          user                     => $user,
+        }
+      EOS
+
+      osfamily = fact 'osfamily'
+
+      servicequery = {
+        'Debian' => 'status radosgw id=radosgw.gateway',
+        'RedHat' => 'service ceph-radosgw status id=radosgw.gateway',
+      }
+
+      apply_manifest(pp, :catch_failures => true)
+      shell servicequery[osfamily] do |r|
+        expect(r.exit_code).to be_zero
+      end
+
+      shell "curl -i -H 'X-Auth-User: #{test_user}:swift' -H 'X-Auth-Key: #{test_password}' http://127.0.0.1:80/auth/v1.0/" do |r|
+        expect(r.exit_code).to be_zero
+        expect(r.stdout).to match(/HTTP\/1\.1 204 No Content/)
+        expect(r.stdout).not_to match(/401 Unauthorized/)
+      end
+
+    end
+
     it 'should purge everything' do
       purge = <<-EOS
-        $radosgw = $::osfamily ? {
-          'RedHat' => 'ceph-radosgw',
-          default => 'radosgw',
+        case $::osfamily {
+          'Debian': {
+            $radosgw = 'radosgw'
+            include ::apt
+            apt::source { 'cloudarchive-kilo':
+               ensure  => absent,
+            }
+          }
+          'RedHat': {
+            $radosgw = 'ceph-radosgw'
+             yumrepo { 'openstack-kilo':
+               ensure  => absent,
+             }
+          }
         }
         ceph::osd { '/srv/data':
           ensure => absent,
@@ -222,10 +375,7 @@ describe 'ceph rgw/civetweb' do
 
       osfamily = fact 'osfamily'
 
-      # RGW on CentOS is currently broken, so lets disable tests for now.
-      #if osfamily != 'RedHat'
-        apply_manifest(purge, :catch_failures => true)
-      #end
+      apply_manifest(purge, :catch_failures => true)
     end
   end
 end
