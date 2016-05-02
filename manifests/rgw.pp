@@ -84,6 +84,8 @@ define ceph::rgw (
   $syslog             = true,
 ) {
 
+  include ::stdlib
+
   unless $name =~ /^radosgw\..+/ {
     fail("Define name must be started with 'radosgw.'")
   }
@@ -151,7 +153,8 @@ define ceph::rgw (
   }
 
   # service definition
-  if $::operatingsystem == 'Ubuntu' {
+  # if Ubuntu does not use systemd
+  if $::service_provider == 'upstart' {
     if $rgw_enable {
       file { "${rgw_data}/done":
         ensure => present,
@@ -166,7 +169,8 @@ define ceph::rgw (
       status   => "status radosgw id=${name}",
       provider => $::ceph::params::service_provider,
     }
-  } elsif ($::operatingsystem == 'Debian') or ($::osfamily == 'RedHat') {
+  # Everything else that is supported by puppet-ceph should run systemd.
+  } else {
     if $rgw_enable {
       file { "${rgw_data}/sysvinit":
         ensure => present,
@@ -179,10 +183,8 @@ define ceph::rgw (
       start    => 'service radosgw start',
       stop     => 'service radosgw stop',
       status   => 'service radosgw status',
+      provider => $::ceph::params::service_provider,
     }
-  }
-  else {
-    fail("operatingsystem = ${::operatingsystem} is not supported")
   }
 
   #for RHEL/CentOS7, systemctl needs to reload to pickup the ceph-radosgw init file

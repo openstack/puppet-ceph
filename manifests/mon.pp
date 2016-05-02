@@ -64,6 +64,8 @@ define ceph::mon (
   $exec_timeout = $::ceph::params::exec_timeout,
   ) {
 
+    include ::stdlib
+
     # a puppet name translates into a ceph id, the meaning is different
     $id = $name
 
@@ -74,17 +76,18 @@ define ceph::mon (
       $cluster_name = 'ceph'
     }
 
-    if $::operatingsystem == 'Ubuntu' {
+    # if Ubuntu does not use systemd
+    if $::service_provider == 'upstart' {
       $init = 'upstart'
       Service {
         name     => "ceph-mon-${id}",
-        # workaround for bug https://projects.puppetlabs.com/issues/23187
         provider => $::ceph::params::service_provider,
         start    => "start ceph-mon id=${id}",
         stop     => "stop ceph-mon id=${id}",
         status   => "status ceph-mon id=${id}",
       }
-    } elsif $::osfamily in ['RedHat', 'Debian'] {
+    # Everything else that is supported by puppet-ceph should run systemd.
+    } else {
       $init = 'sysvinit'
       Service {
         name     => "ceph-mon-${id}",
@@ -93,8 +96,6 @@ define ceph::mon (
         stop     => "service ceph stop mon.${id}",
         status   => "service ceph status mon.${id}",
       }
-    } else {
-      fail("operatingsystem = ${::operatingsystem} is not supported")
     }
 
     $mon_service = "ceph-mon-${id}"

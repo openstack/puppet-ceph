@@ -23,7 +23,7 @@ describe 'ceph::rgw' do
     'include ceph::params'
   end
 
-  describe 'Debian Family' do
+  describe 'Ubuntu 14.04' do
 
     let :facts do
       {
@@ -33,6 +33,7 @@ describe 'ceph::rgw' do
         :osfamily               => 'Debian',
         :operatingsystem        => 'Ubuntu',
         :operatingsystemrelease => '14.04',
+        :service_provider       => 'upstart',
       }
     end
 
@@ -64,6 +65,99 @@ describe 'ceph::rgw' do
       })}
 
       it { is_expected.to contain_file('/var/lib/ceph/radosgw/ceph-radosgw.gateway/done') }
+
+      it { is_expected.to contain_service('radosgw-radosgw.gateway') }
+
+    end
+
+    describe "activated with custom params" do
+
+      let :title do
+        'radosgw.custom'
+      end
+
+      let :params do
+        {
+          :pkg_radosgw        => 'pkgradosgw',
+          :rgw_ensure         => 'stopped',
+          :rgw_enable         => false,
+          :rgw_data           => "/var/lib/ceph/radosgw/ceph-radosgw.custom",
+          :user               => 'wwwuser',
+          :keyring_path       => "/etc/ceph/ceph.radosgw.custom.keyring",
+          :log_file           => '/var/log/ceph/mylogfile.log',
+          :rgw_dns_name       => 'mydns.hostname',
+          :rgw_socket_path    => '/some/location/radosgw.sock',
+          :rgw_print_continue => true,
+          :rgw_port           => 1111,
+          :syslog             => false,
+        }
+      end
+
+      it { is_expected.to contain_package('pkgradosgw').with('ensure' => 'installed') }
+
+      it { is_expected.to contain_ceph_config('client.radosgw.custom/host').with_value('myhost') }
+      it { is_expected.to contain_ceph_config('client.radosgw.custom/keyring').with_value('/etc/ceph/ceph.radosgw.custom.keyring') }
+      it { is_expected.to contain_ceph_config('client.radosgw.custom/log_file').with_value('/var/log/ceph/mylogfile.log') }
+      it { is_expected.to contain_ceph_config('client.radosgw.custom/rgw_dns_name').with_value('mydns.hostname') }
+      it { is_expected.to contain_ceph_config('client.radosgw.custom/rgw_print_continue').with_value(true) }
+      it { is_expected.to contain_ceph_config('client.radosgw.custom/rgw_socket_path').with_value('/some/location/radosgw.sock') }
+      it { is_expected.to contain_ceph_config('client.radosgw.custom/rgw_port').with_value(1111) }
+      it { is_expected.to contain_ceph_config('client.radosgw.custom/user').with_value('wwwuser') }
+
+      it { is_expected.to contain_file('/var/lib/ceph/radosgw/ceph-radosgw.custom').with( {
+        'ensure' => 'directory',
+        'owner'  => 'root',
+        'group'  => 'root',
+        'mode'   => '0750',
+      } ) }
+
+      it { is_expected.to_not contain_file('/var/lib/ceph/radosgw/ceph-radosgw.gateway/done') }
+
+      it { is_expected.to contain_service('radosgw-radosgw.custom').with('ensure' => 'stopped' ) }
+
+    end
+  end
+
+  describe 'Ubuntu 16.04' do
+
+    let :facts do
+      {
+        :concat_basedir         => '/var/lib/puppet/concat',
+        :fqdn                   => 'myhost.domain',
+        :hostname               => 'myhost',
+        :osfamily               => 'Debian',
+        :operatingsystem        => 'Ubuntu',
+        :operatingsystemrelease => '16.04',
+        :service_provider       => 'systemd',
+      }
+    end
+
+    describe "activated with default params" do
+
+      let :title do
+        'radosgw.gateway'
+      end
+
+      it { is_expected.to contain_package('radosgw').with('ensure' => 'installed') }
+      it { is_expected.to contain_ceph_config('client.radosgw.gateway/user').with_value('www-data') }
+      it { is_expected.to contain_ceph_config('client.radosgw.gateway/host').with_value('myhost') }
+      it { is_expected.to contain_ceph_config('client.radosgw.gateway/keyring').with_value('/etc/ceph/ceph.client.radosgw.gateway.keyring') }
+      it { is_expected.to contain_ceph_config('client.radosgw.gateway/log_file').with_value('/var/log/ceph/radosgw.log') }
+      it { is_expected.to contain_ceph_config('client.radosgw.gateway/rgw_dns_name').with_value('myhost.domain') }
+      it { is_expected.to contain_ceph_config('client.radosgw.gateway/rgw_print_continue').with_value(false) }
+      it { is_expected.to contain_ceph_config('client.radosgw.gateway/rgw_socket_path').with_value('/tmp/radosgw.sock') }
+
+      it { is_expected.to contain_file('/var/lib/ceph/radosgw').with({
+        'ensure' => 'directory',
+        'mode'   => '0755',
+      })}
+
+      it { is_expected.to contain_file('/var/lib/ceph/radosgw/ceph-radosgw.gateway').with({
+        'ensure' => 'directory',
+        'owner'  => 'root',
+        'group'  => 'root',
+        'mode'   => '0750',
+      })}
 
       it { is_expected.to contain_service('radosgw-radosgw.gateway') }
 
