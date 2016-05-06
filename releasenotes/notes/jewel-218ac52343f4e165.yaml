@@ -1,0 +1,3 @@
+---
+prelude: >
+    This is the first release that will support Ceph Jewel deployments.

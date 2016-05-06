@@ -22,11 +22,19 @@ describe 'ceph usecases' do
   # passing it directly as unqoted array is not supported everywhere
   packages = "[ 'python-ceph', 'ceph-common', 'librados2', 'librbd1', 'libcephfs1' ]"
 
+  if os[:family].casecmp('RedHat') == 0
+    release = 'hammer'
+  else
+    release = 'jewel'
+  end
+
   describe 'I want to try this module, heard of ceph, want to see it in action' do
 
     it 'should install one monitor and one OSD on /srv/data' do
       pp = <<-EOS
-        class { 'ceph::repo': }
+        class { 'ceph::repo':
+          release => #{release},
+        }
         class { 'ceph':
           fsid                       => '82274746-9a2c-426b-8c51-107fb0d890c6',
           mon_host                   => $::ipaddress,
@@ -35,7 +43,9 @@ describe 'ceph usecases' do
           osd_pool_default_min_size  => '1',
         }
         ceph_config {
-         'global/osd_journal_size': value => '100';
+         'global/osd_journal_size':             value => '100';
+         'global/osd_max_object_namespace_len': value => '64';
+         'global/osd_max_object_name_len':      value => '256';
         }
         ceph::mon { 'a':
           public_addr         => $::ipaddress,
@@ -100,8 +110,8 @@ describe 'ceph usecases' do
         end
       end
       if osfamily == 'RedHat'
-        shell 'service ceph status mon.a', { :acceptable_exit_codes => [1] } do |r|
-          expect(r.stdout).to match(/mon.a not found/)
+        shell 'systemctl status ceph-mon@a', { :acceptable_exit_codes => [1] } do |r|
+          expect(r.stdout).to match(/Active: inactive/)
           expect(r.stderr).to be_empty
         end
       end

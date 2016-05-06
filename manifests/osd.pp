@@ -89,7 +89,10 @@ test -f ${udev_rules_file} && test \$DISABLE_UDEV -eq 1
         command   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 if ! test -b ${data} ; then
-  mkdir -p ${data}
+    mkdir -p ${data}
+    if getent passwd ceph >/dev/null 2>&1; then
+        chown -h ceph:ceph ${data}
+    fi
 fi
 ceph-disk prepare ${cluster_option} ${data} ${journal}
 udevadm settle
@@ -108,7 +111,10 @@ ceph-disk list | grep -E ' *${data}1? .*ceph data, (prepared|active)' ||
         command   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 if ! test -b ${data} ; then
-  mkdir -p ${data}
+    mkdir -p ${data}
+    if getent passwd ceph >/dev/null 2>&1; then
+        chown -h ceph:ceph ${data}
+    fi
 fi
 # activate happens via udev when using the entire device
 if ! test -b ${data} || ! test -b ${data}1 ; then
@@ -140,6 +146,7 @@ fi
 if [ \"\$id\" ] ; then
   stop ceph-osd cluster=${cluster_name} id=\$id || true
   service ceph stop osd.\$id || true
+  systemctl stop ceph-osd@\$id || true
   ceph ${cluster_option} osd crush remove osd.\$id
   ceph ${cluster_option} auth del osd.\$id
   ceph ${cluster_option} osd rm \$id

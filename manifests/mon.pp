@@ -76,29 +76,43 @@ define ceph::mon (
       $cluster_name = 'ceph'
     }
 
-    # if Ubuntu does not use systemd
+    $mon_service = "ceph-mon-${id}"
+
+    # For Ubuntu Trusty system
     if $::service_provider == 'upstart' {
       $init = 'upstart'
       Service {
-        name     => "ceph-mon-${id}",
+        name     => $mon_service,
         provider => $::ceph::params::service_provider,
         start    => "start ceph-mon id=${id}",
         stop     => "stop ceph-mon id=${id}",
         status   => "status ceph-mon id=${id}",
       }
-    # Everything else that is supported by puppet-ceph should run systemd.
+    }
+    # For Ubuntu Xenial system
+    # Note: once CentOS7 SIG provides ceph packaging on:
+    # http://buildlogs.centos.org/centos/7/storage/x86_64/ceph-jewel/
+    # then we can drop the Ubuntu conditional.
+    elsif $::service_provider == 'systemd' and $::operatingsystem == 'Ubuntu' {
+      $init = 'systemd'
+      Service {
+        name     => $mon_service,
+        provider => $::ceph::params::service_provider,
+        start    => "systemctl start ceph-mon@${id}",
+        stop     => "systemctl stop ceph-mon@${id}",
+        status   => "systemctl status ceph-mon@${id}",
+      }
+    # For Red Hat systems (not supporting Jewel now, only Hammer)
     } else {
       $init = 'sysvinit'
       Service {
-        name     => "ceph-mon-${id}",
+        name     => $mon_service,
         provider => $::ceph::params::service_provider,
         start    => "service ceph start mon.${id}",
         stop     => "service ceph stop mon.${id}",
         status   => "service ceph status mon.${id}",
       }
     }
-
-    $mon_service = "ceph-mon-${id}"
 
     if $ensure == present {
 
@@ -165,15 +179,29 @@ test -e /etc/ceph/${cluster_name}.client.admin.keyring",
 set -ex
 mon_data=\$(ceph-mon ${cluster_option} --id ${id} --show-config-value mon_data)
 if [ ! -d \$mon_data ] ; then
-  mkdir -p \$mon_data
-  if ceph-mon ${cluster_option} \
-        --mkfs \
-        --id ${id} \
-        --keyring ${keyring_path} ; then
-    touch \$mon_data/done \$mon_data/${init} \$mon_data/keyring
-  else
-    rm -fr \$mon_data
-  fi
+    mkdir -p \$mon_data
+    if getent passwd ceph >/dev/null 2>&1; then
+        chown -h ceph:ceph \$mon_data
+        if ceph-mon ${cluster_option} \
+              --setuser ceph --setgroup ceph \
+              --mkfs \
+              --id ${id} \
+              --keyring ${keyring_path} ; then
+            touch \$mon_data/done \$mon_data/${init} \$mon_data/keyring
+            chown -h ceph:ceph \$mon_data/done \$mon_data/${init} \$mon_data/keyring
+        else
+            rm -fr \$mon_data
+        fi
+    else
+        if ceph-mon ${cluster_option} \
+              --mkfs \
+              --id ${id} \
+              --keyring ${keyring_path} ; then
+            touch \$mon_data/done \$mon_data/${init} \$mon_data/keyring
+        else
+            rm -fr \$mon_data
+        fi
+    fi
 fi
 ",
         unless    => "/bin/true # comment to satisfy puppet syntax requirements

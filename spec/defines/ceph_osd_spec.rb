@@ -46,7 +46,10 @@ test -f /usr/lib/udev/rules.d/95-ceph-osd.rules && test \$DISABLE_UDEV -eq 1
         'command'   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 if ! test -b /srv ; then
-  mkdir -p /srv
+    mkdir -p /srv
+    if getent passwd ceph >/dev/null 2>&1; then
+        chown -h ceph:ceph /srv
+    fi
 fi
 ceph-disk prepare  /srv 
 udevadm settle
@@ -62,7 +65,10 @@ ceph-disk list | grep -E ' */srv1? .*ceph data, (prepared|active)' ||
         'command'   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 if ! test -b /srv ; then
-  mkdir -p /srv
+    mkdir -p /srv
+    if getent passwd ceph >/dev/null 2>&1; then
+        chown -h ceph:ceph /srv
+    fi
 fi
 # activate happens via udev when using the entire device
 if ! test -b /srv || ! test -b /srv1 ; then
@@ -110,7 +116,10 @@ test -f /usr/lib/udev/rules.d/95-ceph-osd.rules && test \$DISABLE_UDEV -eq 1
         'command'   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 if ! test -b /srv/data ; then
-  mkdir -p /srv/data
+    mkdir -p /srv/data
+    if getent passwd ceph >/dev/null 2>&1; then
+        chown -h ceph:ceph /srv/data
+    fi
 fi
 ceph-disk prepare --cluster testcluster /srv/data /srv/journal
 udevadm settle
@@ -126,7 +135,10 @@ ceph-disk list | grep -E ' */srv/data1? .*ceph data, (prepared|active)' ||
         'command'   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 if ! test -b /srv/data ; then
-  mkdir -p /srv/data
+    mkdir -p /srv/data
+    if getent passwd ceph >/dev/null 2>&1; then
+        chown -h ceph:ceph /srv/data
+    fi
 fi
 # activate happens via udev when using the entire device
 if ! test -b /srv/data || ! test -b /srv/data1 ; then
@@ -168,6 +180,7 @@ fi
 if [ \"\$id\" ] ; then
   stop ceph-osd cluster=ceph id=\$id || true
   service ceph stop osd.\$id || true
+  systemctl stop ceph-osd@$id || true
   ceph  osd crush remove osd.\$id
   ceph  auth del osd.\$id
   ceph  osd rm \$id

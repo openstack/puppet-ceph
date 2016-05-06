@@ -85,15 +85,29 @@ touch /etc/ceph/ceph.client.admin.keyring'
 set -ex
 mon_data=\$(ceph-mon  --id A --show-config-value mon_data)
 if [ ! -d \$mon_data ] ; then
-  mkdir -p \$mon_data
-  if ceph-mon  \
-        --mkfs \
-        --id A \
-        --keyring /tmp/ceph-mon-keyring-A ; then
-    touch \$mon_data/done \$mon_data/upstart \$mon_data/keyring
-  else
-    rm -fr \$mon_data
-  fi
+    mkdir -p \$mon_data
+    if getent passwd ceph >/dev/null 2>&1; then
+        chown -h ceph:ceph \$mon_data
+        if ceph-mon  \
+              --setuser ceph --setgroup ceph \
+              --mkfs \
+              --id A \
+              --keyring /tmp/ceph-mon-keyring-A ; then
+            touch \$mon_data/done \$mon_data/upstart \$mon_data/keyring
+            chown -h ceph:ceph \$mon_data/done \$mon_data/upstart \$mon_data/keyring
+        else
+            rm -fr \$mon_data
+        fi
+    else
+        if ceph-mon  \
+              --mkfs \
+              --id A \
+              --keyring /tmp/ceph-mon-keyring-A ; then
+            touch \$mon_data/done \$mon_data/upstart \$mon_data/keyring
+        else
+            rm -fr \$mon_data
+        fi
+    fi
 fi
 ",
         'logoutput' => true) }
@@ -123,15 +137,29 @@ touch /etc/ceph/ceph.client.admin.keyring'
 set -ex
 mon_data=\$(ceph-mon  --id A --show-config-value mon_data)
 if [ ! -d \$mon_data ] ; then
-  mkdir -p \$mon_data
-  if ceph-mon  \
-        --mkfs \
-        --id A \
-        --keyring /etc/ceph/ceph.mon.keyring ; then
-    touch \$mon_data/done \$mon_data/upstart \$mon_data/keyring
-  else
-    rm -fr \$mon_data
-  fi
+    mkdir -p \$mon_data
+    if getent passwd ceph >/dev/null 2>&1; then
+        chown -h ceph:ceph \$mon_data
+        if ceph-mon  \
+              --setuser ceph --setgroup ceph \
+              --mkfs \
+              --id A \
+              --keyring /etc/ceph/ceph.mon.keyring ; then
+            touch \$mon_data/done \$mon_data/upstart \$mon_data/keyring
+            chown -h ceph:ceph \$mon_data/done \$mon_data/upstart \$mon_data/keyring
+        else
+            rm -fr \$mon_data
+        fi
+    else
+        if ceph-mon  \
+              --mkfs \
+              --id A \
+              --keyring /etc/ceph/ceph.mon.keyring ; then
+            touch \$mon_data/done \$mon_data/upstart \$mon_data/keyring
+        else
+            rm -fr \$mon_data
+        fi
+    fi
 fi
 ",
         'logoutput' => true) }
@@ -163,15 +191,29 @@ touch /etc/ceph/testcluster.client.admin.keyring'
 set -ex
 mon_data=\$(ceph-mon --cluster testcluster --id A --show-config-value mon_data)
 if [ ! -d \$mon_data ] ; then
-  mkdir -p \$mon_data
-  if ceph-mon --cluster testcluster \
-        --mkfs \
-        --id A \
-        --keyring /dev/null ; then
-    touch \$mon_data/done \$mon_data/upstart \$mon_data/keyring
-  else
-    rm -fr \$mon_data
-  fi
+    mkdir -p \$mon_data
+    if getent passwd ceph >/dev/null 2>&1; then
+        chown -h ceph:ceph \$mon_data
+        if ceph-mon --cluster testcluster \
+              --setuser ceph --setgroup ceph \
+              --mkfs \
+              --id A \
+              --keyring /dev/null ; then
+            touch \$mon_data/done \$mon_data/upstart \$mon_data/keyring
+            chown -h ceph:ceph \$mon_data/done \$mon_data/upstart \$mon_data/keyring
+        else
+            rm -fr \$mon_data
+        fi
+    else
+        if ceph-mon --cluster testcluster \
+              --mkfs \
+              --id A \
+              --keyring /dev/null ; then
+            touch \$mon_data/done \$mon_data/upstart \$mon_data/keyring
+        else
+            rm -fr \$mon_data
+        fi
+    fi
 fi
 ",
         'logoutput' => true) }
@@ -272,15 +314,29 @@ touch /etc/ceph/ceph.client.admin.keyring'
 set -ex
 mon_data=\$(ceph-mon  --id A --show-config-value mon_data)
 if [ ! -d \$mon_data ] ; then
-  mkdir -p \$mon_data
-  if ceph-mon  \
-        --mkfs \
-        --id A \
-        --keyring /tmp/ceph-mon-keyring-A ; then
-    touch \$mon_data/done \$mon_data/sysvinit \$mon_data/keyring
-  else
-    rm -fr \$mon_data
-  fi
+    mkdir -p \$mon_data
+    if getent passwd ceph >/dev/null 2>&1; then
+        chown -h ceph:ceph \$mon_data
+        if ceph-mon  \
+              --setuser ceph --setgroup ceph \
+              --mkfs \
+              --id A \
+              --keyring /tmp/ceph-mon-keyring-A ; then
+            touch \$mon_data/done \$mon_data/systemd \$mon_data/keyring
+            chown -h ceph:ceph \$mon_data/done \$mon_data/systemd \$mon_data/keyring
+        else
+            rm -fr \$mon_data
+        fi
+    else
+        if ceph-mon  \
+              --mkfs \
+              --id A \
+              --keyring /tmp/ceph-mon-keyring-A ; then
+            touch \$mon_data/done \$mon_data/systemd \$mon_data/keyring
+        else
+            rm -fr \$mon_data
+        fi
+    fi
 fi
 ",
         'logoutput' => true) }
@@ -310,15 +366,29 @@ touch /etc/ceph/ceph.client.admin.keyring'
 set -ex
 mon_data=\$(ceph-mon  --id A --show-config-value mon_data)
 if [ ! -d \$mon_data ] ; then
-  mkdir -p \$mon_data
-  if ceph-mon  \
-        --mkfs \
-        --id A \
-        --keyring /etc/ceph/ceph.mon.keyring ; then
-    touch \$mon_data/done \$mon_data/sysvinit \$mon_data/keyring
-  else
-    rm -fr \$mon_data
-  fi
+    mkdir -p \$mon_data
+    if getent passwd ceph >/dev/null 2>&1; then
+        chown -h ceph:ceph \$mon_data
+        if ceph-mon  \
+              --setuser ceph --setgroup ceph \
+              --mkfs \
+              --id A \
+              --keyring /etc/ceph/ceph.mon.keyring ; then
+            touch \$mon_data/done \$mon_data/systemd \$mon_data/keyring
+            chown -h ceph:ceph \$mon_data/done \$mon_data/systemd \$mon_data/keyring
+        else
+            rm -fr \$mon_data
+        fi
+    else
+        if ceph-mon  \
+              --mkfs \
+              --id A \
+              --keyring /etc/ceph/ceph.mon.keyring ; then
+            touch \$mon_data/done \$mon_data/systemd \$mon_data/keyring
+        else
+            rm -fr \$mon_data
+        fi
+    fi
 fi
 ",
         'logoutput' => true) }
@@ -350,15 +420,29 @@ touch /etc/ceph/testcluster.client.admin.keyring'
 set -ex
 mon_data=\$(ceph-mon --cluster testcluster --id A --show-config-value mon_data)
 if [ ! -d \$mon_data ] ; then
-  mkdir -p \$mon_data
-  if ceph-mon --cluster testcluster \
-        --mkfs \
-        --id A \
-        --keyring /dev/null ; then
-    touch \$mon_data/done \$mon_data/sysvinit \$mon_data/keyring
-  else
-    rm -fr \$mon_data
-  fi
+    mkdir -p \$mon_data
+    if getent passwd ceph >/dev/null 2>&1; then
+        chown -h ceph:ceph \$mon_data
+        if ceph-mon --cluster testcluster \
+              --setuser ceph --setgroup ceph \
+              --mkfs \
+              --id A \
+              --keyring /dev/null ; then
+            touch \$mon_data/done \$mon_data/systemd \$mon_data/keyring
+            chown -h ceph:ceph \$mon_data/done \$mon_data/systemd \$mon_data/keyring
+        else
+            rm -fr \$mon_data
+        fi
+    else
+        if ceph-mon --cluster testcluster \
+              --mkfs \
+              --id A \
+              --keyring /dev/null ; then
+            touch \$mon_data/done \$mon_data/systemd \$mon_data/keyring
+        else
+            rm -fr \$mon_data
+        fi
+    fi
 fi
 ",
         'logoutput' => true) }
@@ -460,15 +544,29 @@ test -e /etc/ceph/ceph.client.admin.keyring'
 set -ex
 mon_data=\$(ceph-mon  --id A --show-config-value mon_data)
 if [ ! -d \$mon_data ] ; then
-  mkdir -p \$mon_data
-  if ceph-mon  \
-        --mkfs \
-        --id A \
-        --keyring /tmp/ceph-mon-keyring-A ; then
-    touch \$mon_data/done \$mon_data/sysvinit \$mon_data/keyring
-  else
-    rm -fr \$mon_data
-  fi
+    mkdir -p \$mon_data
+    if getent passwd ceph >/dev/null 2>&1; then
+        chown -h ceph:ceph \$mon_data
+        if ceph-mon  \
+              --setuser ceph --setgroup ceph \
+              --mkfs \
+              --id A \
+              --keyring /tmp/ceph-mon-keyring-A ; then
+            touch \$mon_data/done \$mon_data/sysvinit \$mon_data/keyring
+            chown -h ceph:ceph \$mon_data/done \$mon_data/sysvinit \$mon_data/keyring
+        else
+            rm -fr \$mon_data
+        fi
+    else
+        if ceph-mon  \
+              --mkfs \
+              --id A \
+              --keyring /tmp/ceph-mon-keyring-A ; then
+            touch \$mon_data/done \$mon_data/sysvinit \$mon_data/keyring
+        else
+            rm -fr \$mon_data
+        fi
+    fi
 fi
 ",
         'logoutput' => true) }
@@ -503,15 +601,29 @@ touch /etc/ceph/ceph.client.admin.keyring'
 set -ex
 mon_data=\$(ceph-mon  --id A --show-config-value mon_data)
 if [ ! -d \$mon_data ] ; then
-  mkdir -p \$mon_data
-  if ceph-mon  \
-        --mkfs \
-        --id A \
-        --keyring /etc/ceph/ceph.mon.keyring ; then
-    touch \$mon_data/done \$mon_data/sysvinit \$mon_data/keyring
-  else
-    rm -fr \$mon_data
-  fi
+    mkdir -p \$mon_data
+    if getent passwd ceph >/dev/null 2>&1; then
+        chown -h ceph:ceph \$mon_data
+        if ceph-mon  \
+              --setuser ceph --setgroup ceph \
+              --mkfs \
+              --id A \
+              --keyring /etc/ceph/ceph.mon.keyring ; then
+            touch \$mon_data/done \$mon_data/sysvinit \$mon_data/keyring
+            chown -h ceph:ceph \$mon_data/done \$mon_data/sysvinit \$mon_data/keyring
+        else
+            rm -fr \$mon_data
+        fi
+    else
+        if ceph-mon  \
+              --mkfs \
+              --id A \
+              --keyring /etc/ceph/ceph.mon.keyring ; then
+            touch \$mon_data/done \$mon_data/sysvinit \$mon_data/keyring
+        else
+            rm -fr \$mon_data
+        fi
+    fi
 fi
 ",
         'logoutput' => true) }
@@ -543,15 +655,29 @@ touch /etc/ceph/testcluster.client.admin.keyring'
 set -ex
 mon_data=\$(ceph-mon --cluster testcluster --id A --show-config-value mon_data)
 if [ ! -d \$mon_data ] ; then
-  mkdir -p \$mon_data
-  if ceph-mon --cluster testcluster \
-        --mkfs \
-        --id A \
-        --keyring /dev/null ; then
-    touch \$mon_data/done \$mon_data/sysvinit \$mon_data/keyring
-  else
-    rm -fr \$mon_data
-  fi
+    mkdir -p \$mon_data
+    if getent passwd ceph >/dev/null 2>&1; then
+        chown -h ceph:ceph \$mon_data
+        if ceph-mon --cluster testcluster \
+              --setuser ceph --setgroup ceph \
+              --mkfs \
+              --id A \
+              --keyring /dev/null ; then
+            touch \$mon_data/done \$mon_data/sysvinit \$mon_data/keyring
+            chown -h ceph:ceph \$mon_data/done \$mon_data/sysvinit \$mon_data/keyring
+        else
+            rm -fr \$mon_data
+        fi
+    else
+        if ceph-mon --cluster testcluster \
+              --mkfs \
+              --id A \
+              --keyring /dev/null ; then
+            touch \$mon_data/done \$mon_data/sysvinit \$mon_data/keyring
+        else
+            rm -fr \$mon_data
+        fi
+    fi
 fi
 ",
         'logoutput' => true) }

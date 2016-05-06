@@ -39,7 +39,7 @@ describe 'ceph::repo' do
       ) }
 
       it { is_expected.to contain_apt__source('ceph').with(
-        :location => 'http://download.ceph.com/debian-hammer/',
+        :location => 'http://download.ceph.com/debian-jewel/',
         :release  => 'jessie',
         :require  => 'Apt::Key[ceph]'
       ) }
@@ -81,7 +81,7 @@ describe 'ceph::repo' do
       ) }
 
       it { is_expected.to contain_apt__source('ceph').with(
-        :location => 'http://download.ceph.com/debian-hammer/',
+        :location => 'http://download.ceph.com/debian-jewel/',
         :release  => 'trusty',
         :require  => 'Apt::Key[ceph]'
       ) }
@@ -115,7 +115,7 @@ describe 'ceph::repo' do
       ) }
 
       it { is_expected.to contain_apt__source('ceph').with(
-        :location => 'http://download.ceph.com/debian-hammer/',
+        :location => 'http://download.ceph.com/debian-jewel/',
         :release  => 'trusty',
         :require  => 'Apt::Key[ceph]'
       ) }
@@ -139,7 +139,7 @@ describe 'ceph::repo' do
 
       it { is_expected.to contain_apt__source('ceph').with(
         :ensure   => 'absent',
-        :location => 'http://download.ceph.com/debian-hammer/',
+        :location => 'http://download.ceph.com/debian-jewel/',
         :release  => 'trusty',
         :require  => 'Apt::Key[ceph]'
       ) }
@@ -183,9 +183,9 @@ describe 'ceph::repo' do
 
       it { is_expected.to contain_yumrepo('ext-ceph').with(
         :enabled    => '1',
-        :descr      => 'External Ceph hammer',
-        :name       => 'ext-ceph-hammer',
-        :baseurl    => 'http://download.ceph.com/rpm-hammer/el7/$basearch',
+        :descr      => 'External Ceph jewel',
+        :name       => 'ext-ceph-jewel',
+        :baseurl    => 'http://download.ceph.com/rpm-jewel/el7/$basearch',
         :gpgcheck   => '1',
         :gpgkey     => 'https://download.ceph.com/keys/release.asc',
         :mirrorlist => 'absent',
@@ -195,8 +195,8 @@ describe 'ceph::repo' do
       it { is_expected.to contain_yumrepo('ext-ceph-noarch').with(
         :enabled    => '1',
         :descr      => 'External Ceph noarch',
-        :name       => 'ext-ceph-hammer-noarch',
-        :baseurl    => 'http://download.ceph.com/rpm-hammer/el7/noarch',
+        :name       => 'ext-ceph-jewel-noarch',
+        :baseurl    => 'http://download.ceph.com/rpm-jewel/el7/noarch',
         :gpgcheck   => '1',
         :gpgkey     => 'https://download.ceph.com/keys/release.asc',
         :mirrorlist => 'absent',
@@ -286,9 +286,9 @@ describe 'ceph::repo' do
 
       it { is_expected.to contain_yumrepo('ext-ceph').with(
         :enabled        => '1',
-        :descr          => 'External Ceph hammer',
-        :name           => 'ext-ceph-hammer',
-        :baseurl        => 'http://download.ceph.com/rpm-hammer/el7/$basearch',
+        :descr          => 'External Ceph jewel',
+        :name           => 'ext-ceph-jewel',
+        :baseurl        => 'http://download.ceph.com/rpm-jewel/el7/$basearch',
         :gpgcheck       => '1',
         :gpgkey         => 'https://download.ceph.com/keys/release.asc',
         :mirrorlist     => 'absent',
@@ -301,8 +301,8 @@ describe 'ceph::repo' do
       it { is_expected.to contain_yumrepo('ext-ceph-noarch').with(
         :enabled        => '1',
         :descr          => 'External Ceph noarch',
-        :name           => 'ext-ceph-hammer-noarch',
-        :baseurl        => 'http://download.ceph.com/rpm-hammer/el7/noarch',
+        :name           => 'ext-ceph-jewel-noarch',
+        :baseurl        => 'http://download.ceph.com/rpm-jewel/el7/noarch',
         :gpgcheck       => '1',
         :gpgkey         => 'https://download.ceph.com/keys/release.asc',
         :mirrorlist     => 'absent',
@@ -337,9 +337,9 @@ describe 'ceph::repo' do
 
       it { is_expected.to contain_yumrepo('ext-ceph').with(
         :enabled    => '0',
-        :descr      => 'External Ceph hammer',
-        :name       => 'ext-ceph-hammer',
-        :baseurl    => 'http://download.ceph.com/rpm-hammer/el7/$basearch',
+        :descr      => 'External Ceph jewel',
+        :name       => 'ext-ceph-jewel',
+        :baseurl    => 'http://download.ceph.com/rpm-jewel/el7/$basearch',
         :gpgcheck   => '1',
         :gpgkey     => 'https://download.ceph.com/keys/release.asc',
         :mirrorlist => 'absent',
@@ -349,8 +349,8 @@ describe 'ceph::repo' do
       it { is_expected.to contain_yumrepo('ext-ceph-noarch').with(
         :enabled    => '0',
         :descr      => 'External Ceph noarch',
-        :name       => 'ext-ceph-hammer-noarch',
-        :baseurl    => 'http://download.ceph.com/rpm-hammer/el7/noarch',
+        :name       => 'ext-ceph-jewel-noarch',
+        :baseurl    => 'http://download.ceph.com/rpm-jewel/el7/noarch',
         :gpgcheck   => '1',
         :gpgkey     => 'https://download.ceph.com/keys/release.asc',
         :mirrorlist => 'absent',
@@ -393,9 +393,9 @@ describe 'ceph::repo' do
 
       it { is_expected.to contain_yumrepo('ext-ceph').with(
         :enabled    => '1',
-        :descr      => 'External Ceph hammer',
-        :name       => 'ext-ceph-hammer',
-        :baseurl    => 'http://download.ceph.com/rpm-hammer/el7/$basearch',
+        :descr      => 'External Ceph jewel',
+        :name       => 'ext-ceph-jewel',
+        :baseurl    => 'http://download.ceph.com/rpm-jewel/el7/$basearch',
         :gpgcheck   => '1',
         :gpgkey     => 'https://download.ceph.com/keys/release.asc',
         :mirrorlist => 'absent',
@@ -405,8 +405,8 @@ describe 'ceph::repo' do
       it { is_expected.to contain_yumrepo('ext-ceph-noarch').with(
         :enabled    => '1',
         :descr      => 'External Ceph noarch',
-        :name       => 'ext-ceph-hammer-noarch',
-        :baseurl    => 'http://download.ceph.com/rpm-hammer/el7/noarch',
+        :name       => 'ext-ceph-jewel-noarch',
+        :baseurl    => 'http://download.ceph.com/rpm-jewel/el7/noarch',
         :gpgcheck   => '1',
         :gpgkey     => 'https://download.ceph.com/keys/release.asc',
         :mirrorlist => 'absent',
@@ -455,9 +455,9 @@ describe 'ceph::repo' do
 
       it { is_expected.to contain_yumrepo('ext-ceph').with(
         :enabled    => '1',
-        :descr      => 'External Ceph hammer',
-        :name       => 'ext-ceph-hammer',
-        :baseurl    => 'http://download.ceph.com/rpm-hammer/el7/$basearch',
+        :descr      => 'External Ceph jewel',
+        :name       => 'ext-ceph-jewel',
+        :baseurl    => 'http://download.ceph.com/rpm-jewel/el7/$basearch',
         :gpgcheck   => '1',
         :gpgkey     => 'https://download.ceph.com/keys/release.asc',
         :mirrorlist => 'absent',
@@ -467,8 +467,8 @@ describe 'ceph::repo' do
       it { is_expected.to contain_yumrepo('ext-ceph-noarch').with(
         :enabled    => '1',
         :descr      => 'External Ceph noarch',
-        :name       => 'ext-ceph-hammer-noarch',
-        :baseurl    => 'http://download.ceph.com/rpm-hammer/el7/noarch',
+        :name       => 'ext-ceph-jewel-noarch',
+        :baseurl    => 'http://download.ceph.com/rpm-jewel/el7/noarch',
         :gpgcheck   => '1',
         :gpgkey     => 'https://download.ceph.com/keys/release.asc',
         :mirrorlist => 'absent',
@@ -569,9 +569,9 @@ describe 'ceph::repo' do
 
       it { is_expected.to contain_yumrepo('ext-ceph').with(
         :enabled    => '0',
-        :descr      => 'External Ceph hammer',
-        :name       => 'ext-ceph-hammer',
-        :baseurl    => 'http://download.ceph.com/rpm-hammer/el7/$basearch',
+        :descr      => 'External Ceph jewel',
+        :name       => 'ext-ceph-jewel',
+        :baseurl    => 'http://download.ceph.com/rpm-jewel/el7/$basearch',
         :gpgcheck   => '1',
         :gpgkey     => 'https://download.ceph.com/keys/release.asc',
         :mirrorlist => 'absent',
@@ -581,8 +581,8 @@ describe 'ceph::repo' do
       it { is_expected.to contain_yumrepo('ext-ceph-noarch').with(
         :enabled    => '0',
         :descr      => 'External Ceph noarch',
-        :name       => 'ext-ceph-hammer-noarch',
-        :baseurl    => 'http://download.ceph.com/rpm-hammer/el7/noarch',
+        :name       => 'ext-ceph-jewel-noarch',
+        :baseurl    => 'http://download.ceph.com/rpm-jewel/el7/noarch',
         :gpgcheck   => '1',
         :gpgkey     => 'https://download.ceph.com/keys/release.asc',
         :mirrorlist => 'absent',
@@ -625,9 +625,9 @@ describe 'ceph::repo' do
 
       it { is_expected.to contain_yumrepo('ext-ceph').with(
         :enabled    => '1',
-        :descr      => 'External Ceph hammer',
-        :name       => 'ext-ceph-hammer',
-        :baseurl    => 'http://download.ceph.com/rpm-hammer/el7/$basearch',
+        :descr      => 'External Ceph jewel',
+        :name       => 'ext-ceph-jewel',
+        :baseurl    => 'http://download.ceph.com/rpm-jewel/el7/$basearch',
         :gpgcheck   => '1',
         :gpgkey     => 'https://download.ceph.com/keys/release.asc',
         :mirrorlist => 'absent',
@@ -637,8 +637,8 @@ describe 'ceph::repo' do
       it { is_expected.to contain_yumrepo('ext-ceph-noarch').with(
         :enabled    => '1',
         :descr      => 'External Ceph noarch',
-        :name       => 'ext-ceph-hammer-noarch',
-        :baseurl    => 'http://download.ceph.com/rpm-hammer/el7/noarch',
+        :name       => 'ext-ceph-jewel-noarch',
+        :baseurl    => 'http://download.ceph.com/rpm-jewel/el7/noarch',
         :gpgcheck   => '1',
         :gpgkey     => 'https://download.ceph.com/keys/release.asc',
         :mirrorlist => 'absent',

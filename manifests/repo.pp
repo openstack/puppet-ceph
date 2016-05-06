@@ -34,7 +34,7 @@
 #  Optional. Defaults to 'present'.
 #
 # [*release*] The name of the Ceph release to install
-#   Optional. Default to 'hammer'.
+#   Optional. Default to 'jewel'.
 #
 # [*fastcgi*] Install Ceph fastcgi apache module for Ceph
 #   Optional. Defaults to 'false'
@@ -58,7 +58,7 @@
 #
 class ceph::repo (
   $ensure         = present,
-  $release        = 'hammer',
+  $release        = 'jewel',
   $fastcgi        = false,
   $proxy          = undef,
   $proxy_username = undef,
@@ -114,6 +114,8 @@ class ceph::repo (
         if $::operatingsystem != 'CentOS' {
           warning("CentOS SIG repository is only supported on CentOS operating system, not on ${::operatingsystem}, which can lead to packaging issues.")
         }
+        # Bump to Jewel once this bug is solved:
+        # https://bugs.centos.org/view.php?id=10803
         exec { 'installing_centos-release-ceph':
           command   => '/usr/bin/yum install -y centos-release-ceph-hammer',
           logoutput => 'on_failure',
