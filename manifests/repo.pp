@@ -115,11 +115,11 @@ class ceph::repo (
           warning("CentOS SIG repository is only supported on CentOS operating system, not on ${::operatingsystem}, which can lead to packaging issues.")
         }
         exec { 'installing_centos-release-ceph':
-          command   => '/usr/bin/yum install -y centos-release-ceph',
+          command   => '/usr/bin/yum install -y centos-release-ceph-hammer',
           logoutput => 'on_failure',
           tries     => 3,
           try_sleep => 1,
-          unless    => '/usr/bin/rpm -qa | /usr/bin/grep -q centos-release-ceph',
+          unless    => '/usr/bin/rpm -qa | /usr/bin/grep -q centos-release-ceph-hammer',
         }
         # Make sure we install the repo before any Package resource
         Exec['installing_centos-release-ceph'] -> Package<| tag == 'ceph' |>

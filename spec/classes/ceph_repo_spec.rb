@@ -537,11 +537,11 @@ describe 'ceph::repo' do
       it { is_expected.to_not contain_yumrepo('ext-ceph') }
       it { is_expected.to_not contain_yumrepo('ext-ceph-noarch') }
       it { is_expected.to contain_exec('installing_centos-release-ceph').with(
-        :command   => '/usr/bin/yum install -y centos-release-ceph',
+        :command   => '/usr/bin/yum install -y centos-release-ceph-hammer',
         :logoutput => 'on_failure',
         :tries     => 3,
         :try_sleep => 1,
-        :unless    => '/usr/bin/rpm -qa | /usr/bin/grep -q centos-release-ceph',
+        :unless    => '/usr/bin/rpm -qa | /usr/bin/grep -q centos-release-ceph-hammer',
       ) }
     end
 
