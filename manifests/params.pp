@@ -48,7 +48,7 @@ class ceph::params (
 
     'RedHat': {
       $pkg_radosgw      = 'ceph-radosgw'
-      $user_radosgw     = 'apache'
+      $user_radosgw     = 'ceph'
       $pkg_fastcgi      = 'mod_fastcgi'
       $pkg_nsstools     = 'nss-tools'
       $service_provider = 'redhat'

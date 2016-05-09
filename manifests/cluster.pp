@@ -13,6 +13,7 @@ define ceph::cluster (
   $osd_crush_chooseleaf_type  = undef,
   $mon_osd_full_ratio         = undef,
   $mon_osd_nearfull_ratio     = undef,
+  $rbd_default_features       = undef,
   $mon_initial_members        = undef,
   $mon_host                   = undef,
   $ms_bind_ipv6               = undef,
@@ -37,6 +38,7 @@ define ceph::cluster (
       "$cluster/global/osd_crush_chooseleaf_type":   value => $osd_crush_chooseleaf_type;
       "$cluster/global/mon_osd_full_ratio":          value => $mon_osd_full_ratio;
       "$cluster/global/mon_osd_nearfull_ratio":      value => $mon_osd_nearfull_ratio;
+      "$cluster/global/rbd_default_features":        value => $rbd_default_features;
       "$cluster/global/mon_initial_members":         value => $mon_initial_members;
       "$cluster/global/mon_host":                    value => $mon_host;
       "$cluster/global/ms_bind_ipv6":                value => $ms_bind_ipv6;

@@ -1,5 +1,6 @@
 #
 #  Copyright (C) 2016 Keith Schincke
+#  Copyright (C) 2016 OSiRIS Project, funded by the NSF
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -14,19 +15,50 @@
 #   limitations under the License.
 #
 # Author: Keith Schincke <keith.schincke@gmail.com.>
+# Author: Ben Meekhof <bmeekhof@umich.edu>
 #
 # Configures a ceph radosgw using civetweb.
 #
 # == Define: ceph::rgw::civetweb
+#
 # [*rgw_frontends*] Arguments to the rgw frontend
 #   Optional. Default is undef. Example: "civetweb port=7480"
+#   If defined over-rides all other individual params (for custom definition not supported by class params)
+
+# [*client_id*] Client id used in config file [client.radosgw.clientid]
+#   Optional. Default is resource name
+
+# [*ssl_cert*] Path to ssl key and cert (concat into one file)
+#   Optional. Default is undef. Port must be set to 443s to be relevant
+
+# [*ssl_ca_file*] Path to file containing trusted ca certs
+#   Optional. Default is undef.  
+
+# [*port*] Port to listen on
+#   Optional. Default is 80.  443s for SSL.
 #
+
 define ceph::rgw::civetweb (
   $rgw_frontends = undef,
+  $client_id = "${name}",
+  $ssl_cert = undef,
+  $ssl_ca_file = undef,
+  $cluster = 'ceph',
+  $port = '80'
 ) {
 
+	if ! $rgw_frontends {
+		if $ssl_cert { $certarg = "ssl_certificate=${ssl_cert}" }
+    # civetweb docs say this is valid but ceph won't have it in the frontend args
+		#if $ssl_ca_file { $carg = "ssl_ca_file=${ssl_ca_file}" }
+
+		$frontends = "civetweb port=${port} ${certarg} ${carg}"
+	} else {
+		$frontends = $rgw_frontends
+	}
+
     ceph_config {
-      "client.${name}/rgw_frontends": value => $rgw_frontends;
+      "${cluster}/client.${client_id}/rgw_frontends": value => $frontends;
     }
 
 }
