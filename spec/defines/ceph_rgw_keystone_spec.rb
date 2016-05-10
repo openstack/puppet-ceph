@@ -69,16 +69,16 @@ describe 'ceph::rgw::keystone' do
       it { is_expected.to contain_exec('radosgw.gateway-nssdb-ca').with(
          'command' => "/bin/true  # comment to satisfy puppet syntax requirements
 set -ex
-wget --no-check-certificate http://keystone.default:5000/v2.0/certificates/ca -O /tmp/ca
-openssl x509 -in /tmp/ca -pubkey | certutil -A -d /var/lib/ceph/nss -n ca -t \"TCu,Cu,Tuw\"
+wget --no-check-certificate http://keystone.default:5000/v2.0/certificates/ca -O - |
+  openssl x509 -pubkey | certutil -A -d /var/lib/ceph/nss -n ca -t \"TCu,Cu,Tuw\"
 ",
          'user'    => 'www-data',
       ) }
       it { is_expected.to contain_exec('radosgw.gateway-nssdb-signing').with(
          'command' => "/bin/true  # comment to satisfy puppet syntax requirements
 set -ex
-wget --no-check-certificate http://keystone.default:5000/v2.0/certificates/signing -O /tmp/signing
-openssl x509 -in /tmp/signing -pubkey | certutil -A -d /var/lib/ceph/nss -n signing_cert -t \"P,P,P\"
+wget --no-check-certificate http://keystone.default:5000/v2.0/certificates/signing -O - |
+  openssl x509 -pubkey | certutil -A -d /var/lib/ceph/nss -n signing_cert -t \"P,P,P\"
 ",
          'user'    => 'www-data',
       ) }
@@ -122,16 +122,16 @@ openssl x509 -in /tmp/signing -pubkey | certutil -A -d /var/lib/ceph/nss -n sign
       it { is_expected.to contain_exec('radosgw.custom-nssdb-ca').with(
          'command' => "/bin/true  # comment to satisfy puppet syntax requirements
 set -ex
-wget --no-check-certificate http://keystone.custom:5000/v2.0/certificates/ca -O /tmp/ca
-openssl x509 -in /tmp/ca -pubkey | certutil -A -d /some/path/to/nss -n ca -t \"TCu,Cu,Tuw\"
+wget --no-check-certificate http://keystone.custom:5000/v2.0/certificates/ca -O - |
+  openssl x509 -pubkey | certutil -A -d /some/path/to/nss -n ca -t \"TCu,Cu,Tuw\"
 ",
          'user'    => 'www-data',
       ) }
       it { is_expected.to contain_exec('radosgw.custom-nssdb-signing').with(
          'command' => "/bin/true  # comment to satisfy puppet syntax requirements
 set -ex
-wget --no-check-certificate http://keystone.custom:5000/v2.0/certificates/signing -O /tmp/signing
-openssl x509 -in /tmp/signing -pubkey | certutil -A -d /some/path/to/nss -n signing_cert -t \"P,P,P\"
+wget --no-check-certificate http://keystone.custom:5000/v2.0/certificates/signing -O - |
+  openssl x509 -pubkey | certutil -A -d /some/path/to/nss -n signing_cert -t \"P,P,P\"
 ",
          'user'    => 'www-data',
       ) }
@@ -187,16 +187,16 @@ openssl x509 -in /tmp/signing -pubkey | certutil -A -d /some/path/to/nss -n sign
       it { is_expected.to contain_exec('radosgw.gateway-nssdb-ca').with(
          'command' => "/bin/true  # comment to satisfy puppet syntax requirements
 set -ex
-wget --no-check-certificate http://keystone.default:5000/v2.0/certificates/ca -O /tmp/ca
-openssl x509 -in /tmp/ca -pubkey | certutil -A -d /var/lib/ceph/nss -n ca -t \"TCu,Cu,Tuw\"
+wget --no-check-certificate http://keystone.default:5000/v2.0/certificates/ca -O - |
+  openssl x509 -pubkey | certutil -A -d /var/lib/ceph/nss -n ca -t \"TCu,Cu,Tuw\"
 ",
          'user'    => 'apache',
       ) }
       it { is_expected.to contain_exec('radosgw.gateway-nssdb-signing').with(
          'command' => "/bin/true  # comment to satisfy puppet syntax requirements
 set -ex
-wget --no-check-certificate http://keystone.default:5000/v2.0/certificates/signing -O /tmp/signing
-openssl x509 -in /tmp/signing -pubkey | certutil -A -d /var/lib/ceph/nss -n signing_cert -t \"P,P,P\"
+wget --no-check-certificate http://keystone.default:5000/v2.0/certificates/signing -O - |
+  openssl x509 -pubkey | certutil -A -d /var/lib/ceph/nss -n signing_cert -t \"P,P,P\"
 ",
          'user'    => 'apache',
       ) }
@@ -240,16 +240,16 @@ openssl x509 -in /tmp/signing -pubkey | certutil -A -d /var/lib/ceph/nss -n sign
       it { is_expected.to contain_exec('radosgw.custom-nssdb-ca').with(
          'command' => "/bin/true  # comment to satisfy puppet syntax requirements
 set -ex
-wget --no-check-certificate http://keystone.custom:5000/v2.0/certificates/ca -O /tmp/ca
-openssl x509 -in /tmp/ca -pubkey | certutil -A -d /some/path/to/nss -n ca -t \"TCu,Cu,Tuw\"
+wget --no-check-certificate http://keystone.custom:5000/v2.0/certificates/ca -O - |
+  openssl x509 -pubkey | certutil -A -d /some/path/to/nss -n ca -t \"TCu,Cu,Tuw\"
 ",
          'user'    => 'apache',
       ) }
       it { is_expected.to contain_exec('radosgw.custom-nssdb-signing').with(
          'command' => "/bin/true  # comment to satisfy puppet syntax requirements
 set -ex
-wget --no-check-certificate http://keystone.custom:5000/v2.0/certificates/signing -O /tmp/signing
-openssl x509 -in /tmp/signing -pubkey | certutil -A -d /some/path/to/nss -n signing_cert -t \"P,P,P\"
+wget --no-check-certificate http://keystone.custom:5000/v2.0/certificates/signing -O - |
+  openssl x509 -pubkey | certutil -A -d /some/path/to/nss -n signing_cert -t \"P,P,P\"
 ",
          'user'    => 'apache',
       ) }

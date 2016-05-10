@@ -88,8 +88,8 @@ define ceph::rgw::keystone (
   exec { "${name}-nssdb-ca":
     command => "/bin/true  # comment to satisfy puppet syntax requirements
 set -ex
-wget --no-check-certificate ${rgw_keystone_url}/${rgw_keystone_version}/certificates/ca -O /tmp/ca
-openssl x509 -in /tmp/ca -pubkey | certutil -A -d ${nss_db_path} -n ca -t \"TCu,Cu,Tuw\"
+wget --no-check-certificate ${rgw_keystone_url}/${rgw_keystone_version}/certificates/ca -O - |
+  openssl x509 -pubkey | certutil -A -d ${nss_db_path} -n ca -t \"TCu,Cu,Tuw\"
 ",
     unless  => "/bin/true  # comment to satisfy puppet syntax requirements
 set -ex
@@ -101,8 +101,8 @@ certutil -d ${nss_db_path} -L | grep ^ca
   exec { "${name}-nssdb-signing":
     command => "/bin/true  # comment to satisfy puppet syntax requirements
 set -ex
-wget --no-check-certificate ${rgw_keystone_url}/${rgw_keystone_version}/certificates/signing -O /tmp/signing
-openssl x509 -in /tmp/signing -pubkey | certutil -A -d ${nss_db_path} -n signing_cert -t \"P,P,P\"
+wget --no-check-certificate ${rgw_keystone_url}/${rgw_keystone_version}/certificates/signing -O - |
+  openssl x509 -pubkey | certutil -A -d ${nss_db_path} -n signing_cert -t \"P,P,P\"
 ",
     unless  => "/bin/true  # comment to satisfy puppet syntax requirements
 set -ex
