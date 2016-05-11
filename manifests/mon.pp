@@ -87,6 +87,19 @@ define ceph::mon (
         status   => "status ceph-mon id=${id}",
       }
     # Everything else that is supported by puppet-ceph should run systemd.
+    } elsif $::service_provider == 'systemd' {
+      $init = 'systemd'
+      exec { "enable-ceph-mon-${id}":
+         command => "systemctl enable ceph-mon@${id}",
+         unless  => "systemctl is-enabled ceph-mon@${id}",
+      }
+      Service {
+         name     => "ceph-mon-${id}",
+         provider => $::ceph::params::service_provider,
+         start    => "systemctl start ceph-mon@${id}",
+         stop     => "systemctl stop ceph-mon@${id}",
+         status   => "systemctl status ceph-mon@${id}"
+      }
     } else {
       $init = 'sysvinit'
       Service {
@@ -99,7 +112,6 @@ define ceph::mon (
     }
 
     $mon_service = "ceph-mon-${id}"
-
     if $ensure == present {
 
       $ceph_mkfs = "ceph-mon-mkfs-${id}"

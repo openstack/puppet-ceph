@@ -51,7 +51,7 @@ class ceph::params (
       $user_radosgw     = 'apache'
       $pkg_fastcgi      = 'mod_fastcgi'
       $pkg_nsstools     = 'nss-tools'
-      $service_provider = 'redhat'
+      $service_provider = 'systemd'
     }
 
     default: {
