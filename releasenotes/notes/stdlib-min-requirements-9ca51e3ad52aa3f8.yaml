@@ -1,0 +1,5 @@
+---
+fixes:
+  - Update the minimum requirements for stdlib to 4.10.0 which
+    includes the service_provider fact which is required to ensure
+    the services are managed correctly.
