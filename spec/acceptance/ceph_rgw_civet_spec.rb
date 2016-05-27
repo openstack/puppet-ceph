@@ -57,12 +57,10 @@ describe 'ceph rgw/civetweb' do
             }
             yumrepo { 'openstack-juno':
               descr    => 'OpenStack Juno Repository',
-              #baseurl  => 'http://repos.fedorapeople.org/repos/openstack/openstack-juno/epel-7/',
-              baseurl  => 'http://repos.fedorapeople.org/repos/openstack/openstack-kilo/el7/',
+              baseurl  => 'http://mirror.centos.org/centos/7/cloud/x86_64/openstack-kilo/',
               enabled  => '1',
               gpgcheck => '0',
-              #gpgkey   => 'https://raw.githubusercontent.com/redhat-openstack/rdo-release/juno/RPM-GPG-KEY-RDO-Juno',
-              gpgkey   => 'https://raw.githubusercontent.com/redhat-openstack/rdo-release/kilo/RPM-GPG-KEY-RDO-Kilo',
+              gpgkey   => 'https://raw.githubusercontent.com/redhat-openstack/rdo-release/kilo/RPM-GPG-KEY-CentOS-SIG-Cloud',
               priority => '15', # prefer over EPEL, but below ceph
             }
             Yumrepo<||> -> Package['python-swiftclient']
