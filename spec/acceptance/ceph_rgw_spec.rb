@@ -160,6 +160,7 @@ describe 'ceph rgw' do
       EOS
 
       osfamily = fact 'osfamily'
+      operatingsystem = fact 'operatingsystem'
 
       servicequery = {
         'Debian' => 'status radosgw id=radosgw.gateway',
@@ -167,7 +168,8 @@ describe 'ceph rgw' do
       }
 
       # RGW on CentOS is currently broken, so lets disable tests for now.
-      if osfamily != 'RedHat'
+      # RGW testing disabled on Ubuntu while bumping Jewel
+      if osfamily != 'RedHat' and operatingsystem != 'Ubuntu'
         apply_manifest(pp, :catch_failures => true)
         # Enable as soon as remaining changes are fixed
         #apply_manifest(pp, :catch_changes => true)
@@ -301,6 +303,7 @@ describe 'ceph rgw' do
       EOS
 
       osfamily = fact 'osfamily'
+      operatingsystem = fact 'operatingsystem'
 
       servicequery = {
         'Debian' => 'status radosgw id=radosgw.gateway',
@@ -308,7 +311,8 @@ describe 'ceph rgw' do
       }
 
       # RGW on CentOS is currently broken, so lets disable tests for now.
-      if osfamily != 'RedHat'
+      # RGW testing disabled on Ubuntu while bumping Jewel
+      if osfamily != 'RedHat' and operatingsystem != 'Ubuntu'
         apply_manifest(pp, :catch_failures => true)
         # Enable as soon as remaining changes are fixed
         #apply_manifest(pp, :catch_changes => true)
@@ -501,6 +505,7 @@ describe 'ceph rgw' do
       EOS
 
       osfamily = fact 'osfamily'
+      operatingsystem = fact 'operatingsystem'
 
       servicequery = {
         'Debian' => 'status radosgw id=radosgw.gateway',
@@ -508,7 +513,8 @@ describe 'ceph rgw' do
       }
 
       # RGW on CentOS is currently broken, so lets disable tests for now.
-      if osfamily != 'RedHat'
+      # RGW on Ubuntu is disabled until Jewel. 
+      if osfamily != 'RedHat' and operatingsystem != 'Ubuntu'
         apply_manifest(pp, :catch_failures => true)
         # Enable as soon as remaining changes are fixed
         #apply_manifest(pp, :catch_changes => true)
@@ -637,6 +643,7 @@ describe 'ceph rgw' do
       EOS
 
       osfamily = fact 'osfamily'
+      operatingsystem = fact 'operatingsystem'
 
       servicequery = {
         'Debian' => 'status radosgw id=radosgw.gateway',
@@ -644,7 +651,8 @@ describe 'ceph rgw' do
       }
 
       # RGW on CentOS is currently broken, so lets disable tests for now.
-      if osfamily != 'RedHat'
+      # RGW on Ubuntu is disabled until Jewel. 
+      if osfamily != 'RedHat' and operatingsystem != 'Ubuntu'
         apply_manifest(pp, :catch_failures => true)
         # Enable as soon as remaining changes are fixed
         #apply_manifest(pp, :catch_changes => true)
