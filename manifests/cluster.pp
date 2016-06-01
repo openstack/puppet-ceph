@@ -10,6 +10,7 @@ define ceph::cluster (
   $osd_pool_default_size      = undef,
   $osd_pool_default_min_size  = undef,
   $osd_pool_default_crush_rule= undef,
+  $osd_crush_location         = undef,
   $osd_crush_chooseleaf_type  = undef,
   $mon_osd_full_ratio         = undef,
   $mon_osd_nearfull_ratio     = undef,
@@ -50,6 +51,7 @@ define ceph::cluster (
       "$cluster/global/public_network":              value => $public_network;
       "$cluster/global/public_addr":                 value => $public_addr;
       "$cluster/osd/osd_journal_size":               value => $osd_journal_size;
+      "$cluster/osd/osd_crush_location":             value => $osd_crush_location;
     }
 
     if $authentication_type == 'cephx' {
