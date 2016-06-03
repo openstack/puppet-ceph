@@ -61,7 +61,7 @@ bundle install
 
 The developer documentation of the puppet-openstack project is the reference:
 
-* https://wiki.openstack.org/wiki/Puppet#Developer_documentation
+* http://docs.openstack.org/developer/puppet-openstack-guide/
 
 Mailing lists:
 
