@@ -59,31 +59,13 @@ define ceph::osd (
 
     if $ensure == present {
 
-      $ceph_check_udev = "ceph-osd-check-udev-${name}"
       $ceph_prepare = "ceph-osd-prepare-${name}"
       $ceph_activate = "ceph-osd-activate-${name}"
 
-      Package<| tag == 'ceph' |> -> Exec[$ceph_check_udev]
       Ceph_config<||> -> Exec[$ceph_prepare]
       Ceph::Mon<||> -> Exec[$ceph_prepare]
       Ceph::Key<||> -> Exec[$ceph_prepare]
 
-      $udev_rules_file = '/usr/lib/udev/rules.d/95-ceph-osd.rules'
-      exec { $ceph_check_udev:
-        command   => "/bin/true # comment to satisfy puppet syntax requirements
-# Before Infernalis the udev rules race causing the activation to fail so we
-# disable them. More at: http://www.spinics.net/lists/ceph-devel/msg28436.html
-mv -f ${udev_rules_file} ${udev_rules_file}.disabled && udevadm control --reload || true
-",
-        onlyif    => "/bin/true # comment to satisfy puppet syntax requirements
-set -ex
-DISABLE_UDEV=\$(ceph --version | awk 'match(\$3, /[0-9]\\.[0-9]+/) {if (substr(\$3, RSTART, RLENGTH) <= 0.94) {print 1}}')
-test -f ${udev_rules_file} && test \$DISABLE_UDEV -eq 1
-",
-        logoutput => true,
-      }
-
-      Exec[$ceph_check_udev] -> Exec[$ceph_prepare]
       # ceph-disk: prepare should be idempotent http://tracker.ceph.com/issues/7475
       exec { $ceph_prepare:
         command   => "/bin/true # comment to satisfy puppet syntax requirements
@@ -114,7 +96,7 @@ fi
 if ! test -b ${data} || ! test -b ${data}1 ; then
   ceph-disk activate ${data} || true
 fi
-if test -f ${udev_rules_file}.disabled && test -b ${data}1 ; then
+if test -b ${data}1 ; then
   ceph-disk activate ${data}1 || true
 fi
 ",
