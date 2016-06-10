@@ -40,6 +40,12 @@
 #   Optional. Default is 500.
 #   Not useful when using PKI as every token is checked.
 #
+# [*rgw_s3_auth_use_keystone*] Whether to enable keystone auth for S3.
+#   Optional. Default to true.
+#
+# [*use_pki*] Whether to use PKI related configuration.
+#   Optional. Default to true.
+#
 # [*rgw_keystone_revocation_interval*] Interval to check for expired tokens.
 #   Optional. Default is 600 (seconds).
 #   Not useful if not using PKI tokens (if not, set to high value).
@@ -52,13 +58,15 @@
 #
 define ceph::rgw::keystone (
   $rgw_keystone_admin_token,
-  $rgw_keystone_url = 'http://127.0.0.1:5000',
-  $rgw_keystone_version = 'v2.0',
-  $rgw_keystone_accepted_roles = '_member_, Member',
-  $rgw_keystone_token_cache_size = 500,
+  $rgw_keystone_url                 = 'http://127.0.0.1:5000',
+  $rgw_keystone_version             = 'v2.0',
+  $rgw_keystone_accepted_roles      = '_member_, Member',
+  $rgw_keystone_token_cache_size    = 500,
+  $rgw_s3_auth_use_keystone         = true,
+  $use_pki                          = true,
   $rgw_keystone_revocation_interval = 600,
-  $nss_db_path = '/var/lib/ceph/nss',
-  $user = $::ceph::params::user_radosgw,
+  $nss_db_path                      = '/var/lib/ceph/nss',
+  $user                             = $::ceph::params::user_radosgw,
 ) {
 
   unless $name =~ /^radosgw\..+/ {
@@ -70,52 +78,61 @@ define ceph::rgw::keystone (
     "client.${name}/rgw_keystone_url":                 value => $rgw_keystone_url;
     "client.${name}/rgw_keystone_accepted_roles":      value => $rgw_keystone_accepted_roles;
     "client.${name}/rgw_keystone_token_cache_size":    value => $rgw_keystone_token_cache_size;
-    "client.${name}/rgw_keystone_revocation_interval": value => $rgw_keystone_revocation_interval;
-    "client.${name}/rgw_s3_auth_use_keystone":         value => true;
-    "client.${name}/nss_db_path":                      value => $nss_db_path;
+    "client.${name}/rgw_s3_auth_use_keystone":         value => $rgw_s3_auth_use_keystone;
   }
 
-  # fetch the keystone signing cert, add to nss db
-  $pkg_nsstools = $::ceph::params::pkg_nsstools
-  ensure_resource('package', $pkg_nsstools, {'ensure' => 'present'})
+  if $use_pki {
+    # fetch the keystone signing cert, add to nss db
+    $pkg_nsstools = $::ceph::params::pkg_nsstools
+    ensure_resource('package', $pkg_nsstools, {'ensure' => 'present'})
 
-  file { $nss_db_path:
-    ensure => directory,
-    owner  => $user,
-    group  => 'root',
-  }
+    file { $nss_db_path:
+      ensure => directory,
+      owner  => $user,
+      group  => 'root',
+    }
 
-  exec { "${name}-nssdb-ca":
-    command => "/bin/true  # comment to satisfy puppet syntax requirements
+    ceph_config {
+      "client.${name}/nss_db_path":                      value => $nss_db_path;
+      "client.${name}/rgw_keystone_revocation_interval": value => $rgw_keystone_revocation_interval;
+    }
+
+    exec { "${name}-nssdb-ca":
+      command => "/bin/true  # comment to satisfy puppet syntax requirements
 set -ex
 wget --no-check-certificate ${rgw_keystone_url}/${rgw_keystone_version}/certificates/ca -O - |
   openssl x509 -pubkey | certutil -A -d ${nss_db_path} -n ca -t \"TCu,Cu,Tuw\"
 ",
-    unless  => "/bin/true  # comment to satisfy puppet syntax requirements
+      unless  => "/bin/true  # comment to satisfy puppet syntax requirements
 set -ex
 certutil -d ${nss_db_path} -L | grep ^ca
 ",
-    user    => $user,
-  }
+      user    => $user,
+    }
 
-  exec { "${name}-nssdb-signing":
-    command => "/bin/true  # comment to satisfy puppet syntax requirements
+    exec { "${name}-nssdb-signing":
+      command => "/bin/true  # comment to satisfy puppet syntax requirements
 set -ex
 wget --no-check-certificate ${rgw_keystone_url}/${rgw_keystone_version}/certificates/signing -O - |
   openssl x509 -pubkey | certutil -A -d ${nss_db_path} -n signing_cert -t \"P,P,P\"
 ",
-    unless  => "/bin/true  # comment to satisfy puppet syntax requirements
+      unless  => "/bin/true  # comment to satisfy puppet syntax requirements
 set -ex
 certutil -d ${nss_db_path} -L | grep ^signing_cert
 ",
-    user    => $user,
+      user    => $user,
+    }
+
+    Package[$pkg_nsstools]
+    -> Package[$::ceph::params::packages]
+    -> File[$nss_db_path]
+    -> Exec["${name}-nssdb-ca"]
+    -> Exec["${name}-nssdb-signing"]
+    ~> Service["radosgw-${name}"]
+  } else {
+    ceph_config {
+      "client.${name}/nss_db_path":                      ensure => absent;
+      "client.${name}/rgw_keystone_revocation_interval": ensure => absent;
+    }
   }
-
-  Package[$pkg_nsstools]
-  -> Package[$::ceph::params::packages]
-  -> File[$nss_db_path]
-  -> Exec["${name}-nssdb-ca"]
-  -> Exec["${name}-nssdb-signing"]
-  ~> Service["radosgw-${name}"]
-
 }
