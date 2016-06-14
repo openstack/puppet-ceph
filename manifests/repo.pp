@@ -34,7 +34,7 @@
 #  Optional. Defaults to 'present'.
 #
 # [*release*] The name of the Ceph release to install
-#   Optional. Default to 'jewel'.
+#   Optional. Default to 'jewel' in ceph::params.
 #
 # [*fastcgi*] Install Ceph fastcgi apache module for Ceph
 #   Optional. Defaults to 'false'
@@ -54,18 +54,18 @@
 # [*enable_sig*] Whether or not enable SIG repository.
 #   CentOS SIG repository contains Ceph packages built by CentOS community.
 #   https://wiki.centos.org/SpecialInterestGroup/Storage/
-#   Optional. Defaults to False
+#   Optional. Defaults to False in ceph::params.
 #
 class ceph::repo (
   $ensure         = present,
-  $release        = 'jewel',
+  $release        = $::ceph::params::release,
   $fastcgi        = false,
   $proxy          = undef,
   $proxy_username = undef,
   $proxy_password = undef,
   $enable_epel    = true,
-  $enable_sig     = false,
-) {
+  $enable_sig     = $::ceph::params::enable_sig,
+) inherits ceph::params {
   case $::osfamily {
     'Debian': {
       include ::apt

@@ -31,10 +31,21 @@
 # [*rgw_socket_path*] The socket path of the rados gateway
 #   Optional. Defaults to '/tmp/radosgw.sock'
 #
+# [*enable_sig*] Whether or not enable SIG repository.
+#   CentOS SIG repository contains Ceph packages built by CentOS community.
+#   https://wiki.centos.org/SpecialInterestGroup/Storage/
+#   Optional. Defaults to False
+#
+# [*release*] The name of the Ceph release to install
+#   Optional. Default to 'jewel'.
+#
+
 class ceph::params (
-  $exec_timeout = 600,
-  $packages = 'ceph', # just provide the minimum per default
+  $exec_timeout    = 600,
+  $packages        = 'ceph', # just provide the minimum per default
   $rgw_socket_path = '/tmp/radosgw.sock',
+  $enable_sig      = false,
+  $release         = 'jewel',
 ) {
 
   case $::osfamily {
