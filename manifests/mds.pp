@@ -1,4 +1,5 @@
 #   Copyright (C) 2013, 2014 iWeb Technologies Inc.
+# Copyright (C) 2016 OSiRIS Project, funded by the NSF
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -13,15 +14,18 @@
 #   limitations under the License.
 #
 # Author: David Moreau Simard <dmsimard@iweb.com>
+# Author: Ben Meekhof <bmeekhof@umich.edu>
 #
 # == Class: ceph::mds
 #
-# Installs and configures MDSs (ceph metadata servers)
+# Installs and configures MDSs (ceph metadata servers).  No support for multiple MDS on one host.  
 #
 # === Parameters:
 #
-# [*mds_activate*] Switch to activate the '[mds]' section in the config.
-#   Optional. Defaults to 'true'.
+#
+# [*cluster*] If cluster name is not 'ceph' define this appropriately
+#
+# [*instance*] Instance ID.  Defaults to hostname fact if not specified.
 #
 # [*mds_data*] The path to the MDS data.
 #   Optional. Default provided by Ceph is '/var/lib/ceph/mds/$cluster-$id'.
@@ -29,23 +33,78 @@
 # [*keyring*] The location of the keyring used by MDSs
 #   Optional. Defaults to /var/lib/ceph/mds/$cluster-$id/keyring.
 #
-class ceph::mds (
-  $mds_activate = true,
-  $mds_data     = '/var/lib/ceph/mds/$cluster-$id',
-  $keyring      = '/var/lib/ceph/mds/$cluster-$id/keyring',
-  $cluster      = 'ceph'
+# [*ensure*] Defaults to 'present'.  'absent' will remove configs and disable service. 
+#
+
+define ceph::mds (
+  $ensure       = 'present',
+  $mds_data     = undef,
+  $keyring      = undef,
+  $cluster      = 'ceph',
+  $mds_standby_replay = true,
+  $instance     = "${name}"
 ) {
 
-  # [mds]
-  if $mds_activate {
+  file { "/var/lib/ceph/mds/${cluster}-${instance}": 
+    ensure => directory,
+    owner => 'ceph',
+    group => 'ceph',
+    mode => '755'
+  }
+
+  if $ensure == 'present' {
+    $service_state = 'running'
+    $service_enable = true
+
     ceph_config {
       "${cluster}/mds/mds_data": value => $mds_data;
       "${cluster}/mds/keyring":  value => $keyring;
+      "${cluster}/mds/mds_standby_replay":  value => $mds_standby_replay;
     }
-  } else {
+  }  else {
+    $service_state = 'stopped'
+    $service_enable = false
+
     ceph_config {
       "${cluster}/mds/mds_data": ensure => absent;
       "${cluster}/mds/keyring":  ensure => absent;
+      "${cluster}/mds/mds_standby_replay":  ensure => absent;
     }
   }
+
+  if $::operatingsystem == 'Ubuntu' {
+    $service = "ceph-mds-${instance}"
+    $init = 'upstart'
+    Service {
+      name     => "ceph-mds-${instance}",
+      # workaround for bug https://projects.puppetlabs.com/issues/23187
+      provider => $::ceph::params::service_provider,
+      start    => "start ceph-mon id=${instance}",
+      stop     => "stop ceph-mon id=${instance}",
+      status   => "status ceph-mon id=${instance}"
+    }
+  } elsif ($::osfamily in ['RedHat', 'Debian']) and ((versioncmp($::operatingsystemmajrelease, '7') >= 0) or (versioncmp($::operatingsystemmajrelease, '8') >= 0)) {
+    # use native systemd provider.  Not supporting older versions.
+    $service = "ceph-mds@${instance}"
+
+    if ! ($cluster == 'ceph') {
+      file_line { "syconfig-${cluster}":
+        path => "/etc/sysconfig/ceph",
+        line => "CLUSTER=${cluster}",
+        match => 'CLUSTER=.*',
+        before => Service["${service}"],
+        ensure => $ensure
+      }
+    }
+  } else {
+    fail("operatingsystem = ${::operatingsystem} is not supported")
+  }
+
+  service {"${service}":
+    ensure => $service_state,
+    enable => $service_enable
+  }
+
 }
+
+ # running multiple mds on one host is possible if we create separate init scripts.  Copy from the rgw resource define as an example. 
