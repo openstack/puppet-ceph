@@ -77,7 +77,7 @@ mv -f ${udev_rules_file} ${udev_rules_file}.disabled && udevadm control --reload
 ",
         onlyif    => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-DISABLE_UDEV=\$(ceph --version | awk 'match(\$3, /[0-9]\\.[0-9]+/) {if (substr(\$3, RSTART, RLENGTH) <= 0.94) {print 1}}')
+DISABLE_UDEV=\$(ceph --version | awk 'match(\$3, /[0-9]+\\.[0-9]+/) {if (substr(\$3, RSTART, RLENGTH) <= 0.94) {print 1}}')
 test -f ${udev_rules_file} && test \$DISABLE_UDEV -eq 1
 ",
         logoutput => true,
