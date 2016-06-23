@@ -1,0 +1,23 @@
+---
+features:
+  - Added options to configure some osd parameters directly
+    (instead of generic ceph::conf) this behavior is
+    disabled by default. `osd/osd_max_backfills`,
+    `osd_max_scrubs`, `osd/osd_recovery_max_active`,
+    `osd_recovery_max_single_start`, `osd/osd_recovery_op_priority`,
+    `osd/osd_op_threads`
+upgrade:
+  - when upgrading, move any usage of ceph::conf to ceph::init for the
+    following parameters `osd/osd_max_backfills`,
+    `osd_max_scrubs`, `osd/osd_recovery_max_active`,
+    `osd_recovery_max_single_start`, `osd/osd_recovery_op_priority`,
+    `osd/osd_op_threads`
+deprecations:
+  - ceph::init set_osd_params is added new as deprecated.
+    This is to support backwards compability in this release.
+    It will be removed in the next release. Please inspect your
+    usage of ceph::conf for `osd/osd_max_backfills`,
+    `osd_max_scrubs`, `osd/osd_recovery_max_active`,
+    `osd_recovery_max_single_start`, `osd/osd_recovery_op_priority`,
+    `osd/osd_op_threads` as these will become actively defined from
+    ceph::init
