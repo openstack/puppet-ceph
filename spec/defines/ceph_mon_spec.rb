@@ -484,8 +484,9 @@ test ! -d \$mon_data
 
     let :facts do
       {
-        :osfamily        => 'RedHat',
-        :operatingsystem => 'RHEL7',
+        :osfamily         => 'RedHat',
+        :operatingsystem  => 'RHEL7',
+        :service_provider => 'systemd',
       }
     end
 
@@ -552,8 +553,8 @@ if [ ! -d \$mon_data ] ; then
               --mkfs \
               --id A \
               --keyring /tmp/ceph-mon-keyring-A ; then
-            touch \$mon_data/done \$mon_data/sysvinit \$mon_data/keyring
-            chown -h ceph:ceph \$mon_data/done \$mon_data/sysvinit \$mon_data/keyring
+            touch \$mon_data/done \$mon_data/systemd \$mon_data/keyring
+            chown -h ceph:ceph \$mon_data/done \$mon_data/systemd \$mon_data/keyring
         else
             rm -fr \$mon_data
         fi
@@ -562,7 +563,7 @@ if [ ! -d \$mon_data ] ; then
               --mkfs \
               --id A \
               --keyring /tmp/ceph-mon-keyring-A ; then
-            touch \$mon_data/done \$mon_data/sysvinit \$mon_data/keyring
+            touch \$mon_data/done \$mon_data/systemd \$mon_data/keyring
         else
             rm -fr \$mon_data
         fi
@@ -609,8 +610,8 @@ if [ ! -d \$mon_data ] ; then
               --mkfs \
               --id A \
               --keyring /etc/ceph/ceph.mon.keyring ; then
-            touch \$mon_data/done \$mon_data/sysvinit \$mon_data/keyring
-            chown -h ceph:ceph \$mon_data/done \$mon_data/sysvinit \$mon_data/keyring
+            touch \$mon_data/done \$mon_data/systemd \$mon_data/keyring
+            chown -h ceph:ceph \$mon_data/done \$mon_data/systemd \$mon_data/keyring
         else
             rm -fr \$mon_data
         fi
@@ -619,7 +620,7 @@ if [ ! -d \$mon_data ] ; then
               --mkfs \
               --id A \
               --keyring /etc/ceph/ceph.mon.keyring ; then
-            touch \$mon_data/done \$mon_data/sysvinit \$mon_data/keyring
+            touch \$mon_data/done \$mon_data/systemd \$mon_data/keyring
         else
             rm -fr \$mon_data
         fi
@@ -663,8 +664,8 @@ if [ ! -d \$mon_data ] ; then
               --mkfs \
               --id A \
               --keyring /dev/null ; then
-            touch \$mon_data/done \$mon_data/sysvinit \$mon_data/keyring
-            chown -h ceph:ceph \$mon_data/done \$mon_data/sysvinit \$mon_data/keyring
+            touch \$mon_data/done \$mon_data/systemd \$mon_data/keyring
+            chown -h ceph:ceph \$mon_data/done \$mon_data/systemd \$mon_data/keyring
         else
             rm -fr \$mon_data
         fi
@@ -673,7 +674,7 @@ if [ ! -d \$mon_data ] ; then
               --mkfs \
               --id A \
               --keyring /dev/null ; then
-            touch \$mon_data/done \$mon_data/sysvinit \$mon_data/keyring
+            touch \$mon_data/done \$mon_data/systemd \$mon_data/keyring
         else
             rm -fr \$mon_data
         fi

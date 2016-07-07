@@ -44,9 +44,10 @@ describe 'ceph::key' do
           'command' => "/bin/true # comment to satisfy puppet syntax requirements\nset -ex\nceph-authtool /etc/ceph/ceph.client.admin.keyring --name 'client.admin' --add-key 'supersecret' --cap mon 'allow *' --cap osd 'allow rw' "
         )
         is_expected.to contain_file('/etc/ceph/ceph.client.admin.keyring').with(
-          'owner' => 'nobody',
-          'group' => 'nogroup',
-          'mode'  => '0600'
+          'owner'                   => 'nobody',
+          'group'                   => 'nogroup',
+          'mode'                    => '0600',
+          'selinux_ignore_defaults' => true,
         )
         is_expected.to contain_exec('ceph-injectkey-client.admin').with(
            'command' => "/bin/true # comment to satisfy puppet syntax requirements\nset -ex\nceph    auth add client.admin --in-file=/etc/ceph/ceph.client.admin.keyring"

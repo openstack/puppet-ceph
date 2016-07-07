@@ -1,11 +1,15 @@
-*.swp
-*~
-.project
-spec/fixtures/modules/*
-pkg
+pkg/
 Gemfile.lock
-.bundle
-vendor
-.vagrant/*
-log
-.bundled_gems/
+vendor/
+spec/fixtures/
+.vagrant/
+.bundle/
+coverage/
+.idea/
+*.swp
+*.iml
+openstack/
+
+# Files created by releasenotes build
+releasenotes/build
+.tox

@@ -104,11 +104,12 @@ define ceph::key (
   # which is supported by ceph-authtool
   if ! defined(File[$keyring_path]) {
     file { $keyring_path:
-      ensure  => file,
-      owner   => $user,
-      group   => $group,
-      mode    => $mode,
-      require => Package['ceph'],
+      ensure                  => file,
+      owner                   => $user,
+      group                   => $group,
+      mode                    => $mode,
+      selinux_ignore_defaults => true,
+      require                 => Package['ceph'],
     }
   }
 

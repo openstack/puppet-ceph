@@ -114,17 +114,15 @@ class ceph::repo (
         if $::operatingsystem != 'CentOS' {
           warning("CentOS SIG repository is only supported on CentOS operating system, not on ${::operatingsystem}, which can lead to packaging issues.")
         }
-        # Bump to Jewel once this bug is solved:
-        # https://bugs.centos.org/view.php?id=10803
-        exec { 'installing_centos-release-ceph':
-          command   => '/usr/bin/yum install -y centos-release-ceph-hammer',
-          logoutput => 'on_failure',
-          tries     => 3,
-          try_sleep => 1,
-          unless    => '/usr/bin/rpm -qa | /usr/bin/grep -q centos-release-ceph-hammer',
+        yumrepo { 'ceph-jewel-sig':
+          enabled    => '1',
+          baseurl    => 'http://buildlogs.centos.org/centos/7/storage/x86_64/ceph-jewel/',
+          descr      => 'Ceph Jewel SIG',
+          mirrorlist => 'absent',
+          gpgcheck   => '0',
         }
         # Make sure we install the repo before any Package resource
-        Exec['installing_centos-release-ceph'] -> Package<| tag == 'ceph' |>
+        Yumrepo['ceph-jewel-sig'] -> Package<| tag == 'ceph' |>
       } else {
         # If you want to deploy Ceph using packages provided by ceph.com repositories.
         if ((($::operatingsystem == 'RedHat' or $::operatingsystem == 'CentOS') and (versioncmp($::operatingsystemmajrelease, '7') < 0)) or ($::operatingsystem == 'Fedora' and (versioncmp($::operatingsystemmajrelease, '19') < 0))) {
