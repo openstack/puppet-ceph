@@ -230,7 +230,7 @@ test ! -e ${keyring_path}
         }
       }
 
-    } else {
+    } elsif $ensure == absent {
       service { $mon_service:
         ensure => stopped
       }
@@ -253,5 +253,7 @@ test ! -d \$mon_data
       ceph_config {
         "mon.${id}/public_addr": ensure => absent;
       } -> Package<| tag == 'ceph' |>
+    } else {
+      fail('Ensure on MON must be either present or absent')
     }
   }

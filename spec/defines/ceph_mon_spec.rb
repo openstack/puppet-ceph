@@ -714,6 +714,21 @@ test ! -d \$mon_data
 ",
         'logoutput' => true) }
     end
+
+    describe "with ensure set with bad value" do
+
+      let :title do
+        'A'
+      end
+
+      let :params do
+        {
+          :ensure => 'badvalue',
+        }
+      end
+
+      it { is_expected.to raise_error(Puppet::Error, /Ensure on MON must be either present or absent/) }
+    end
   end
 end
 

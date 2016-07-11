@@ -1,0 +1,6 @@
+---
+issues:
+  - OSD define ensure statement has been updated to require either an explicit absent for OSD to be removed.
+  - MON define ensure statement has been updated to require either an explicit absent for MON to be removed.
+  - If ensure is set to any value other than present or absent, it will generate an error message for both
+    OSD and MON resources.

@@ -206,6 +206,21 @@ fi
         'logoutput' => true
       ) }
     end
+
+    describe "with ensure set to bad value" do
+
+      let :title do
+        '/srv'
+      end
+
+      let :params do
+        {
+          :ensure => 'badvalue',
+        }
+      end
+
+      it { is_expected.to raise_error(Puppet::Error, /Ensure on OSD must be either present or absent/) }
+    end
   end
 
   context 'Debian Family' do

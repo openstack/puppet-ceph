@@ -131,7 +131,7 @@ ls -ld /var/lib/ceph/osd/${cluster_name}-* | grep ' ${data}\$'
         logoutput => true,
       }
 
-    } else {
+    } elsif $ensure == absent {
 
       # ceph-disk: support osd removal http://tracker.ceph.com/issues/7454
       exec { "remove-osd-${name}":
@@ -172,6 +172,7 @@ fi
         logoutput => true,
         timeout   => $exec_timeout,
       } -> Ceph::Mon<| ensure == absent |>
+    } else {
+      fail('Ensure on OSD must be either present or absent')
     }
-
 }
