@@ -63,27 +63,34 @@ describe 'ceph' do
     describe "with custom params and specified fsid" do
       let :params do
         {
-          :fsid                       => 'd5252e7d-75bc-4083-85ed-fe51fa83f62b',
-          :authentication_type        => 'none',
-          :keyring                    => '/usr/local/ceph/etc/keyring',
-          :osd_journal_size           => '1024',
-          :osd_pool_default_pg_num    => '256',
-          :osd_pool_default_pgp_num   => '256',
-          :osd_pool_default_size      => '2',
-          :osd_pool_default_min_size  => '1',
-          :osd_pool_default_crush_rule     => '10',
-          :mon_osd_full_ratio         => '95',
-          :mon_osd_nearfull_ratio     => '90',
-          :mon_initial_members        => 'mon.01',
-          :mon_host                   => 'mon01.ceph, mon02.ceph',
-          :ms_bind_ipv6               => 'true',
-          :require_signatures         => 'true',
-          :cluster_require_signatures => 'true',
-          :service_require_signatures => 'true',
-          :sign_messages              => 'false',
-          :cluster_network            => '10.0.0.0/24',
-          :public_network             => '192.168.0.0/24',
-          :public_addr                => '192.168.0.2',
+          :fsid                          => 'd5252e7d-75bc-4083-85ed-fe51fa83f62b',
+          :authentication_type           => 'none',
+          :keyring                       => '/usr/local/ceph/etc/keyring',
+          :osd_journal_size              => '1024',
+          :osd_pool_default_pg_num       => '256',
+          :osd_pool_default_pgp_num      => '256',
+          :osd_pool_default_size         => '2',
+          :osd_pool_default_min_size     => '1',
+          :osd_pool_default_crush_rule   => '10',
+          :mon_osd_full_ratio            => '95',
+          :mon_osd_nearfull_ratio        => '90',
+          :mon_initial_members           => 'mon.01',
+          :mon_host                      => 'mon01.ceph, mon02.ceph',
+          :ms_bind_ipv6                  => 'true',
+          :require_signatures            => 'true',
+          :cluster_require_signatures    => 'true',
+          :service_require_signatures    => 'true',
+          :sign_messages                 => 'false',
+          :cluster_network               => '10.0.0.0/24',
+          :public_network                => '192.168.0.0/24',
+          :public_addr                   => '192.168.0.2',
+          :set_osd_params                => 'true',
+          :osd_max_backfills             => '1',
+          :osd_recovery_max_active       => '1',
+          :osd_recovery_op_priority      => '1',
+          :osd_recovery_max_single_start => '1',
+          :osd_max_scrubs                => '1',
+          :osd_op_threads                => '2',
         }
       end
 
@@ -119,6 +126,12 @@ describe 'ceph' do
       it { is_expected.to contain_ceph_config('global/auth_service_required').with_value('none') }
       it { is_expected.to contain_ceph_config('global/auth_client_required').with_value('none') }
       it { is_expected.to contain_ceph_config('global/auth_supported').with_value('none') }
+      it { is_expected.to contain_ceph_config('osd/osd_max_backfills').with_value('1') }
+      it { is_expected.to contain_ceph_config('osd/osd_recovery_max_active').with_value('1') }
+      it { is_expected.to contain_ceph_config('osd/osd_recovery_op_priority').with_value('1') }
+      it { is_expected.to contain_ceph_config('osd/osd_recovery_max_single_start').with_value('1') }
+      it { is_expected.to contain_ceph_config('osd/osd_max_scrubs').with_value('1') }
+      it { is_expected.to contain_ceph_config('osd/osd_op_threads').with_value('2') }
     end
   end
 

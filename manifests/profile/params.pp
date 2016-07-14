@@ -115,6 +115,26 @@
 # [*rgw_frontends*] Arguments to the rgw frontend
 #   Optional. Example: "civetweb port=7480"
 #
+# [*osd_max_backfills*] The maximum number of backfills allowed to or from a single OSD.
+#   Optional. Default provided by Ceph
+#
+# [*osd_recovery_max_active*] The number of active recovery requests per OSD at one time.
+#   Optional.  Default provided by Ceph
+#
+# [*osd_recovery_op_priority*] The priority set for recovery operations.
+#   Optional.  Default provided by Ceph
+#
+# [*osd_recovery_max_single_start*] The maximum number of recovery operations that will be
+#   newly started per PG that the OSD is recovering.
+#   Optional.  Default provided by Ceph
+#
+# [*osd_max_scrubs*] The maximum number of simultaneous scrub operations for a Ceph OSD Daemon.
+#   Optional.  Default provided by Ceph
+#
+# [*osd_op_threads*] The number of threads to service Ceph OSD Daemon operations.
+#   Set to 0 to disable it.
+#   Optional. Default provided by Ceph
+#
 
 class ceph::profile::params (
   $fsid = undef,
@@ -141,6 +161,12 @@ class ceph::profile::params (
   $rgw_print_continue = undef,
   $frontend_type = undef,
   $rgw_frontends = undef,
+  $osd_max_backfills = undef,
+  $osd_recovery_max_active = undef,
+  $osd_recovery_op_priority = undef,
+  $osd_recovery_max_single_start = undef,
+  $osd_max_scrubs = undef,
+  $osd_op_threads = undef,
 ) {
   validate_hash($client_keys)
 

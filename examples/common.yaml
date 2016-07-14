@@ -14,6 +14,12 @@ ceph::profile::params::osd_pool_default_size: '2'
 ceph::profile::params::osd_pool_default_min_size: '1'
 ceph::profile::params::cluster_network: '10.12.13.0/24'
 ceph::profile::params::public_network: '10.11.12.0/24'
+ceph::profile::params::osd_max_backfills: '1'
+ceph::profile::params::osd_recovery_max_active: '1'
+ceph::profile::params::osd_recovery_op_priority: '1'
+ceph::profile::params::osd_recovery_max_single_start: '1'
+ceph::profile::params::osd_max_scrubs: '1'
+ceph::profile::params::osd_op_threads: '2'
 
 ######## Keys
 ceph::profile::params::mon_key: 'AQATGHJTUCBqIBAA7M2yafV1xctn1pgr3GcKPg=='

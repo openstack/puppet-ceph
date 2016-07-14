@@ -98,31 +98,70 @@
 # [*public_addr*] The address of the node (on public network.)
 #   Optional. {public-network-ip}
 #
+# [*osd_max_backfills*] The maximum number of backfills allowed to or from a single OSD.
+#   Optional. Default provided by Ceph
+#
+# [*osd_recovery_max_active*] The number of active recovery requests per OSD at one time.
+#   Optional.  Default provided by Ceph
+#
+# [*osd_recovery_op_priority*] The priority set for recovery operations.
+#   Optional.  Default provided by Ceph
+#
+# [*osd_recovery_max_single_start*] The maximum number of recovery operations that will be
+#   newly started per PG that the OSD is recovering.
+#   Optional.  Default provided by Ceph
+#
+# [*osd_max_scrubs*] The maximum number of simultaneous scrub operations for a Ceph OSD Daemon.
+#   Optional.  Default provided by Ceph
+#
+# [*osd_op_threads*] The number of threads to service Ceph OSD Daemon operations.
+#   Set to 0 to disable it.
+#   Optional. Default provided by Ceph
+#
+# DEPRECATED PARAMETERS
+#
+# [*set_osd_params*] disables setting osd params using this module by default as people
+#   calling ceph_config from in-house modules will get dup-declaration errors.
+#   Boolean.  Default false.
+#
+
 class ceph (
   $fsid,
-  $ensure                     = present,
-  $authentication_type        = 'cephx',
-  $keyring                    = undef,
-  $osd_journal_size           = undef,
-  $osd_pool_default_pg_num    = undef,
-  $osd_pool_default_pgp_num   = undef,
-  $osd_pool_default_size      = undef,
-  $osd_pool_default_min_size  = undef,
-  $osd_pool_default_crush_rule= undef,
-  $mon_osd_full_ratio         = undef,
-  $mon_osd_nearfull_ratio     = undef,
-  $mon_initial_members        = undef,
-  $mon_host                   = undef,
-  $ms_bind_ipv6               = undef,
-  $require_signatures         = undef,
-  $cluster_require_signatures = undef,
-  $service_require_signatures = undef,
-  $sign_messages              = undef,
-  $cluster_network            = undef,
-  $public_network             = undef,
-  $public_addr                = undef,
+  $ensure                        = present,
+  $authentication_type           = 'cephx',
+  $keyring                       = undef,
+  $osd_journal_size              = undef,
+  $osd_pool_default_pg_num       = undef,
+  $osd_pool_default_pgp_num      = undef,
+  $osd_pool_default_size         = undef,
+  $osd_pool_default_min_size     = undef,
+  $osd_pool_default_crush_rule   = undef,
+  $mon_osd_full_ratio            = undef,
+  $mon_osd_nearfull_ratio        = undef,
+  $mon_initial_members           = undef,
+  $mon_host                      = undef,
+  $ms_bind_ipv6                  = undef,
+  $require_signatures            = undef,
+  $cluster_require_signatures    = undef,
+  $service_require_signatures    = undef,
+  $sign_messages                 = undef,
+  $cluster_network               = undef,
+  $public_network                = undef,
+  $public_addr                   = undef,
+  $osd_max_backfills             = undef,
+  $osd_recovery_max_active       = undef,
+  $osd_recovery_op_priority      = undef,
+  $osd_recovery_max_single_start = undef,
+  $osd_max_scrubs                = undef,
+  $osd_op_threads                = undef,
+  # DEPRECATED PARAMETERS
+  $set_osd_params                = false,
 ) {
   include ::ceph::params
+
+  if $set_osd_params {
+    warning('set_osd_params is deprecated.  It is here to allow a transition to using this module to assign values and will be removed in a future release.')
+  }
 
   package { $::ceph::params::packages :
     ensure => $ensure,
@@ -169,6 +208,18 @@ class ceph (
         'global/auth_service_required': value => 'none';
         'global/auth_client_required':  value => 'none';
         'global/auth_supported':        value => 'none';
+      }
+    }
+
+# This section will be moved up with the rest of the non-auth settings in the next release and the set_osd_params flag will be removed
+    if $set_osd_params {
+      ceph_config {
+        'osd/osd_max_backfills':             value => $osd_max_backfills;
+        'osd/osd_recovery_max_active':       value => $osd_recovery_max_active;
+        'osd/osd_recovery_op_priority':      value => $osd_recovery_op_priority;
+        'osd/osd_recovery_max_single_start': value => $osd_recovery_max_single_start;
+        'osd/osd_max_scrubs':                value => $osd_max_scrubs;
+        'osd/osd_op_threads':                value => $osd_op_threads;
       }
     }
   }
