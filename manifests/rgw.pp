@@ -170,6 +170,13 @@ define ceph::rgw (
       provider => $::ceph::params::service_provider,
     }
   # Everything else that is supported by puppet-ceph should run systemd.
+  } elsif $::service_provider == 'systemd' {
+    Service {
+      name     => "radosgw-${name}",
+      start    => "systemctl start ceph-radosgw@${name}",
+      stop     => "systemctl stop ceph-radosgw@${name}",
+      status   => "systemctl status ceph-radosgw@${name}",
+    }
   } else {
     if $rgw_enable {
       file { "${rgw_data}/sysvinit":
