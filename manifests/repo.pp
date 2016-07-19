@@ -56,6 +56,9 @@
 #   https://wiki.centos.org/SpecialInterestGroup/Storage/
 #   Optional. Defaults to False in ceph::params.
 #
+# [*ceph_mirror*] Ceph mirror used to download packages.
+#   Optional. Defaults to undef.
+#
 class ceph::repo (
   $ensure         = present,
   $release        = $::ceph::params::release,
@@ -65,6 +68,7 @@ class ceph::repo (
   $proxy_password = undef,
   $enable_epel    = true,
   $enable_sig     = $::ceph::params::enable_sig,
+  $ceph_mirror    = undef,
 ) inherits ceph::params {
   case $::osfamily {
     'Debian': {
@@ -76,9 +80,15 @@ class ceph::repo (
         source => 'https://download.ceph.com/keys/release.asc',
       }
 
+      if $ceph_mirror {
+        $ceph_mirror_real = $ceph_mirror
+      } else {
+        $ceph_mirror_real = "http://download.ceph.com/debian-${release}/"
+      }
+
       apt::source { 'ceph':
         ensure   => $ensure,
-        location => "http://download.ceph.com/debian-${release}/",
+        location => $ceph_mirror_real,
         release  => $::lsbdistcodename,
         require  => Apt::Key['ceph'],
         tag      => 'ceph',
