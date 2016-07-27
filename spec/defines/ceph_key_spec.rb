@@ -50,7 +50,7 @@ describe 'ceph::key' do
           'selinux_ignore_defaults' => true,
         )
         is_expected.to contain_exec('ceph-injectkey-client.admin').with(
-           'command' => "/bin/true # comment to satisfy puppet syntax requirements\nset -ex\nceph    auth add client.admin --in-file=/etc/ceph/ceph.client.admin.keyring"
+           'command' => "/bin/true # comment to satisfy puppet syntax requirements\nset -ex\nceph    auth import -i /etc/ceph/ceph.client.admin.keyring"
         )
       }
 
