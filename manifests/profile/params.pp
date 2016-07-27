@@ -139,6 +139,25 @@
 #   Set to 0 to disable it.
 #   Optional. Default provided by Ceph
 #
+# [*rgw_keystone_version*] The api version for keystone.
+#   Possible values 'v2.0', 'v3'
+#   Optional. Default is 'v2.0'
+#
+# [*rgw_keystone_admin_domain*] The name of OpenStack domain with admin
+#   privilege when using OpenStack Identity API v3
+#   Optional. Default is undef
+#
+# [*rgw_keystone_admin_project*] The name of OpenStack project with admin
+#   privilege when using OpenStack Identity API v3
+#   Optional. Default is undef
+#
+# [*rgw_keystone_admin_user*] The user name of OpenStack tenant with admin
+#   privilege (Service Tenant)
+#   Required if is 'v3'.
+#
+# [*rgw_keystone_admin_password*] The password for OpenStack admin user
+#   Required if is 'v3'.
+
 
 class ceph::profile::params (
   $fsid = undef,
@@ -172,6 +191,12 @@ class ceph::profile::params (
   $osd_recovery_max_single_start = undef,
   $osd_max_scrubs = undef,
   $osd_op_threads = undef,
+  $rgw_keystone_version = 'v2.0',
+  $rgw_keystone_admin_domain = undef,
+  $rgw_keystone_admin_project = undef,
+  $rgw_keystone_admin_user = undef,
+  $rgw_keystone_admin_password = undef,
+
 ) {
   validate_hash($client_keys)
 

@@ -1,0 +1,11 @@
+---
+features:
+  - Updates 'ceph::rgw::keystone' to integrate with keystone V3.
+    Adds new parameters rgw_keystone_admin_domain,
+    rgw_keyston_admin_project, rgw_keystone_admin_user
+    and rgw_keystone_admin_password.
+    Extends rgw_keystone_version to add 'v3' as a valid option
+issues:
+  - At this time radosgw uses pki to verify Keystone revocation
+    lists. 'keystone::enable_pki_setup' must be set to true
+    to provide the needed keystone support
