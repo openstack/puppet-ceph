@@ -1,0 +1,15 @@
+[Unit]
+Description=Ceph Rest API
+After=network.target
+Documentation=man:ceph-rest-api(8)
+
+[Service]
+EnvironmentFile=-/etc/sysconfig/ceph
+ExecStart=/bin/ceph-rest-api --cluster ${CLUSTER} --id %i --conf /etc/ceph/${CLUSTER}.conf
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=always
+PIDFile=/var/run/ceph-rest-api.pid
+RestartSec=500ms
+
+[Install]
+WantedBy=multi-user.target
