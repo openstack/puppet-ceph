@@ -1,25 +1,16 @@
-source 'https://rubygems.org'
+source ENV['GEM_SOURCE'] || "https://rubygems.org"
 
-group :development, :test do
-  gem 'puppetlabs_spec_helper', :require => false
-  gem 'rspec-puppet', '~> 2.1.0', :require => false
-  gem 'beaker-rspec', :require => false
-  gem 'puppet-lint-param-docs'
-  gem 'metadata-json-lint'
-  gem 'puppet-lint-absolute_classname-check'
-  gem 'puppet-lint-absolute_template_path'
-  gem 'puppet-lint-trailing_newline-check'
+group :development, :test, :system_tests do
+  gem 'puppet-openstack_spec_helper',
+      :git     => 'https://git.openstack.org/openstack/puppet-openstack_spec_helper',
+      :branch  => 'stable/mitaka',
+      :require => false
+end
 
-  # Puppet 4.x related lint checks
-  gem 'puppet-lint-unquoted_string-check'
-  gem 'puppet-lint-leading_zero-check'
-  gem 'puppet-lint-variable_contains_upcase'
-  gem 'puppet-lint-numericvariable'
-
-  gem 'json'
-  gem 'minitest', :require => false
-  gem 'test', :require => false
-  gem 'test-unit', :require => false
+if facterversion = ENV['FACTER_GEM_VERSION']
+  gem 'facter', facterversion, :require => false
+else
+  gem 'facter', :require => false
 end
 
 if puppetversion = ENV['PUPPET_GEM_VERSION']
