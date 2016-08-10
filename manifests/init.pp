@@ -79,6 +79,14 @@ class ceph (
     tag    => 'ceph'
   }
 
+  file { '/var/log/ceph':
+    ensure => directory,
+    owner => 'ceph',
+    group => 'ceph',
+    recurse => true,
+    require => Package[$::ceph::params::packages]
+  }
+
   if $ensure !~ /(absent|purged)/ {
     # Make sure ceph is installed before managing the configuration
     Package<| tag == 'ceph' |> -> Ceph_config<| |>
