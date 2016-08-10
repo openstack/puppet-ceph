@@ -41,11 +41,16 @@
 # [*exec_timeout*] The default exec resource timeout, in seconds
 #   Optional. Defaults to $::ceph::params::exec_timeout
 #
+# [*selinux_file_context*] The SELinux file context to apply
+#   on the directory backing the OSD service.
+#   Optional. Defaults to 'ceph_var_lib_t'
+#
 define ceph::osd (
   $ensure = present,
   $journal = undef,
   $cluster = undef,
   $exec_timeout = $::ceph::params::exec_timeout,
+  $selinux_file_context = 'ceph_var_lib_t',
   ) {
 
     $data = $name
@@ -104,6 +109,17 @@ ceph-disk list | grep -E ' *${data}1? .*ceph data, (prepared|active)' ||
 ",
         logoutput => true,
         timeout   => $exec_timeout,
+      }
+
+      if (str2bool($::selinux) == true) {
+        ensure_packages($::ceph::params::pkg_policycoreutils, {'ensure' => 'present'})
+        exec { "fcontext_${name}":
+          command => "semanage fcontext -a -t ${selinux_file_context} '${data}(/.*)?' && restorecon -R ${data}",
+          path    => ['/usr/sbin', '/sbin', '/usr/bin', '/bin'],
+          require => [Package[$::ceph::params::pkg_policycoreutils],Exec[$ceph_prepare]],
+          before  => Exec[$ceph_activate],
+          unless  => "test ! -b ${data} && (semanage fcontext -l | grep ${data})",
+        }
       }
 
       Exec[$ceph_prepare] -> Exec[$ceph_activate]
