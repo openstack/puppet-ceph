@@ -37,6 +37,7 @@ describe 'ceph' do
       it { is_expected.to_not contain_ceph_config('global/osd_pool_default_size').with_value('3') }
       it { is_expected.to_not contain_ceph_config('global/osd_pool_default_min_size').with_value('2') }
       it { is_expected.to_not contain_ceph_config('global/osd_pool_default_crush_rule').with_value('0') }
+      it { is_expected.to_not contain_ceph_config('global/osd_crush_update_on_start').with_value(false) }
       it { is_expected.to_not contain_ceph_config('global/mon_osd_full_ratio').with_value('90') }
       it { is_expected.to_not contain_ceph_config('global/mon_osd_nearfull_ratio').with_value('85') }
       it { is_expected.to_not contain_ceph_config('global/mon_initial_members').with_value('mon.01') }
@@ -72,6 +73,7 @@ describe 'ceph' do
           :osd_pool_default_size         => '2',
           :osd_pool_default_min_size     => '1',
           :osd_pool_default_crush_rule   => '10',
+          :osd_crush_update_on_start     => false,
           :mon_osd_full_ratio            => '95',
           :mon_osd_nearfull_ratio        => '90',
           :mon_initial_members           => 'mon.01',
@@ -105,6 +107,7 @@ describe 'ceph' do
       it { is_expected.to contain_ceph_config('global/osd_pool_default_size').with_value('2') }
       it { is_expected.to contain_ceph_config('global/osd_pool_default_min_size').with_value('1') }
       it { is_expected.to contain_ceph_config('global/osd_pool_default_crush_rule').with_value('10') }
+      it { is_expected.to contain_ceph_config('global/osd_crush_update_on_start').with_value(false) }
       it { is_expected.to contain_ceph_config('global/mon_osd_full_ratio').with_value('95') }
       it { is_expected.to contain_ceph_config('global/mon_osd_nearfull_ratio').with_value('90') }
       it { is_expected.to contain_ceph_config('global/mon_initial_members').with_value('mon.01') }

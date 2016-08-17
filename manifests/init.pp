@@ -54,6 +54,10 @@
 #   when creating a pool.
 #   Optional. Integer. Default provided by Ceph.
 #
+# [*osd_crush_update_on_start*] The default OSDs behaviour on start when
+#   it comes to registering their location in the CRUSH map.
+#   Optional. Boolean. Defaults to undef.
+#
 # [*mon_osd_full_ratio*] Percentage of disk space used before
 #   an OSD considered full
 #   Optional. Integer e.g. 95, NOTE: ends in config as .95
@@ -136,6 +140,7 @@ class ceph (
   $osd_pool_default_size         = undef,
   $osd_pool_default_min_size     = undef,
   $osd_pool_default_crush_rule   = undef,
+  $osd_crush_update_on_start     = undef,
   $mon_osd_full_ratio            = undef,
   $mon_osd_nearfull_ratio        = undef,
   $mon_initial_members           = undef,
@@ -180,6 +185,7 @@ class ceph (
       'global/osd_pool_default_size':       value => $osd_pool_default_size;
       'global/osd_pool_default_min_size':   value => $osd_pool_default_min_size;
       'global/osd_pool_default_crush_rule': value => $osd_pool_default_crush_rule;
+      'global/osd_crush_update_on_start':   value => $osd_crush_update_on_start;
       'global/mon_osd_full_ratio':          value => $mon_osd_full_ratio;
       'global/mon_osd_nearfull_ratio':      value => $mon_osd_nearfull_ratio;
       'global/mon_initial_members':         value => $mon_initial_members;

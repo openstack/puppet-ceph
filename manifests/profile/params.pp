@@ -60,6 +60,10 @@
 #   when creating a pool.
 #   Optional. Integer. Default provided by Ceph.
 #
+# [*osd_crush_update_on_start*] The default OSDs behaviour on start when
+#   it comes to registering their location in the CRUSH map.
+#   Optional. Boolean. Defaults to undef.
+#
 # [*mon_osd_full_ratio*] Percentage of disk space used before
 #   an OSD considered full
 #   Optional. Integer e.g. 95, NOTE: ends in config as .95
@@ -148,6 +152,7 @@ class ceph::profile::params (
   $osd_pool_default_pgp_num = undef,
   $osd_pool_default_size = undef,
   $osd_pool_default_min_size = undef,
+  $osd_crush_update_on_start = undef,
   $cluster_network = undef,
   $public_network = undef,
   $public_addr = undef,
