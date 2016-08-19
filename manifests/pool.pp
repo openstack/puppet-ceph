@@ -59,6 +59,7 @@ define ceph::pool (
     Ceph_config<||> -> Exec["create-${name}"]
     Ceph::Mon<||> -> Exec["create-${name}"]
     Ceph::Key<||> -> Exec["create-${name}"]
+    Ceph::Osd<||> -> Exec["create-${name}"]
     exec { "create-${name}":
       command => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
