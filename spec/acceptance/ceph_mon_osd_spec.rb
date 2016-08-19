@@ -29,16 +29,16 @@ describe 'ceph mon osd' do
           enable_epel => false,
         }
         class { 'ceph':
-          fsid                       => '82274746-9a2c-426b-8c51-107fb0d890c6',
-          mon_host                   => $::ipaddress,
-          authentication_type        => 'none',
-          osd_pool_default_size      => '1',
-          osd_pool_default_min_size  => '1',
+          fsid                         => '82274746-9a2c-426b-8c51-107fb0d890c6',
+          mon_host                     => $::ipaddress,
+          authentication_type          => 'none',
+          osd_pool_default_size        => '1',
+          osd_pool_default_min_size    => '1',
+          osd_max_object_namespace_len => '64',
+          osd_max_object_name_len      => '256',
         }
         ceph_config {
          'global/osd_journal_size':             value => '100';
-         'global/osd_max_object_namespace_len': value => '64';
-         'global/osd_max_object_name_len':      value => '256';
         }
         ceph::mon { 'a':
           public_addr         => $::ipaddress,

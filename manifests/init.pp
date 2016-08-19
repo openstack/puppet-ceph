@@ -38,6 +38,12 @@
 # [*osd_journal_size*] The size of the journal file/device.
 #   Optional. Integer. Default provided by Ceph.
 #
+# [*osd_max_object_name_len*] The length of the objects name
+#   Optional. Integer. Default to undef
+#
+# [*osd_max_object_namespace_len*] The length of the objects namespace name
+#   Optional. Integer. Default to undef
+#
 # [*osd_pool_default_pg_num*] The default number of PGs per pool.
 #   Optional. Integer. Default provided by Ceph.
 #
@@ -135,6 +141,8 @@ class ceph (
   $authentication_type           = 'cephx',
   $keyring                       = undef,
   $osd_journal_size              = undef,
+  $osd_max_object_name_len       = undef,
+  $osd_max_object_namespace_len  = undef,
   $osd_pool_default_pg_num       = undef,
   $osd_pool_default_pgp_num      = undef,
   $osd_pool_default_size         = undef,
@@ -178,27 +186,42 @@ class ceph (
     Package<| tag == 'ceph' |> -> Ceph_config<| |>
     # [global]
     ceph_config {
-      'global/fsid':                        value => $fsid;
-      'global/keyring':                     value => $keyring;
-      'global/osd_pool_default_pg_num':     value => $osd_pool_default_pg_num;
-      'global/osd_pool_default_pgp_num':    value => $osd_pool_default_pgp_num;
-      'global/osd_pool_default_size':       value => $osd_pool_default_size;
-      'global/osd_pool_default_min_size':   value => $osd_pool_default_min_size;
-      'global/osd_pool_default_crush_rule': value => $osd_pool_default_crush_rule;
-      'global/osd_crush_update_on_start':   value => $osd_crush_update_on_start;
-      'global/mon_osd_full_ratio':          value => $mon_osd_full_ratio;
-      'global/mon_osd_nearfull_ratio':      value => $mon_osd_nearfull_ratio;
-      'global/mon_initial_members':         value => $mon_initial_members;
-      'global/mon_host':                    value => $mon_host;
-      'global/ms_bind_ipv6':                value => $ms_bind_ipv6;
-      'global/require_signatures':          value => $require_signatures;
-      'global/cluster_require_signatures':  value => $cluster_require_signatures;
-      'global/service_require_signatures':  value => $service_require_signatures;
-      'global/sign_messages':               value => $sign_messages;
-      'global/cluster_network':             value => $cluster_network;
-      'global/public_network':              value => $public_network;
-      'global/public_addr':                 value => $public_addr;
-      'osd/osd_journal_size':               value => $osd_journal_size;
+      'global/fsid':                         value => $fsid;
+      'global/keyring':                      value => $keyring;
+      'global/osd_pool_default_pg_num':      value => $osd_pool_default_pg_num;
+      'global/osd_pool_default_pgp_num':     value => $osd_pool_default_pgp_num;
+      'global/osd_pool_default_size':        value => $osd_pool_default_size;
+      'global/osd_pool_default_min_size':    value => $osd_pool_default_min_size;
+      'global/osd_pool_default_crush_rule':  value => $osd_pool_default_crush_rule;
+      'global/osd_crush_update_on_start':    value => $osd_crush_update_on_start;
+      'global/mon_osd_full_ratio':           value => $mon_osd_full_ratio;
+      'global/mon_osd_nearfull_ratio':       value => $mon_osd_nearfull_ratio;
+      'global/mon_initial_members':          value => $mon_initial_members;
+      'global/mon_host':                     value => $mon_host;
+      'global/ms_bind_ipv6':                 value => $ms_bind_ipv6;
+      'global/require_signatures':           value => $require_signatures;
+      'global/cluster_require_signatures':   value => $cluster_require_signatures;
+      'global/service_require_signatures':   value => $service_require_signatures;
+      'global/sign_messages':                value => $sign_messages;
+      'global/cluster_network':              value => $cluster_network;
+      'global/public_network':               value => $public_network;
+      'global/public_addr':                  value => $public_addr;
+      'osd/osd_journal_size':                value => $osd_journal_size;
+    }
+
+
+    # NOTE(aschultz): for backwards compatibility in p-o-i & elsewhere we only
+    # define these here if they are set. Once this patch lands, we can update
+    # p-o-i to leverage these parameters and ditch these if clauses.
+    if $osd_max_object_name_len {
+      ceph_config {
+        'global/osd_max_object_name_len':      value => $osd_max_object_name_len;
+      }
+    }
+    if $osd_max_object_namespace_len {
+      ceph_config {
+        'global/osd_max_object_namespace_len': value => $osd_max_object_namespace_len;
+      }
     }
 
     if $authentication_type == 'cephx' {

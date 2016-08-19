@@ -34,6 +34,8 @@ class ceph::profile::base {
     fsid                          => $ceph::profile::params::fsid,
     authentication_type           => $ceph::profile::params::authentication_type,
     osd_journal_size              => $ceph::profile::params::osd_journal_size,
+    osd_max_object_name_len       => $ceph::profile::params::osd_max_object_name_len,
+    osd_max_object_namespace_len  => $ceph::profile::params::osd_max_object_namespace_len,
     osd_pool_default_pg_num       => $ceph::profile::params::osd_pool_default_pg_num,
     osd_pool_default_pgp_num      => $ceph::profile::params::osd_pool_default_pgp_num,
     osd_pool_default_size         => $ceph::profile::params::osd_pool_default_size,
