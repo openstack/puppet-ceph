@@ -76,7 +76,7 @@ define ceph::rgw::keystone (
   ceph_config {
     "client.${name}/rgw_keystone_admin_token":         value => $rgw_keystone_admin_token;
     "client.${name}/rgw_keystone_url":                 value => $rgw_keystone_url;
-    "client.${name}/rgw_keystone_accepted_roles":      value => $rgw_keystone_accepted_roles;
+    "client.${name}/rgw_keystone_accepted_roles":      value => join(any2array($rgw_keystone_accepted_roles), ',');
     "client.${name}/rgw_keystone_token_cache_size":    value => $rgw_keystone_token_cache_size;
     "client.${name}/rgw_s3_auth_use_keystone":         value => $rgw_s3_auth_use_keystone;
   }
