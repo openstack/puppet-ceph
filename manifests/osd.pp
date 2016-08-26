@@ -118,7 +118,7 @@ ceph-disk list | grep -E ' *${data}1? .*ceph data, (prepared|active)' ||
           path    => ['/usr/sbin', '/sbin', '/usr/bin', '/bin'],
           require => [Package[$::ceph::params::pkg_policycoreutils],Exec[$ceph_prepare]],
           before  => Exec[$ceph_activate],
-          unless  => "test ! -b ${data} && (semanage fcontext -l | grep ${data})",
+          unless  => "test -b ${data} || (semanage fcontext -l | grep ${data})",
         }
       }
 
