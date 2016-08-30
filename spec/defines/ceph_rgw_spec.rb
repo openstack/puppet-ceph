@@ -53,15 +53,17 @@ describe 'ceph::rgw' do
       it { is_expected.to contain_ceph_config('client.radosgw.gateway/rgw_socket_path').with_value('/tmp/radosgw.sock') }
 
       it { is_expected.to contain_file('/var/lib/ceph/radosgw').with({
-        'ensure' => 'directory',
-        'mode'   => '0755',
+        'ensure'                  => 'directory',
+        'mode'                    => '0755',
+        'selinux_ignore_defaults' => true,
       })}
 
       it { is_expected.to contain_file('/var/lib/ceph/radosgw/ceph-radosgw.gateway').with({
-        'ensure' => 'directory',
-        'owner'  => 'root',
-        'group'  => 'root',
-        'mode'   => '0750',
+        'ensure'                  => 'directory',
+        'owner'                   => 'root',
+        'group'                   => 'root',
+        'mode'                    => '0750',
+        'selinux_ignore_defaults' => true,
       })}
 
       it { is_expected.to contain_file('/var/lib/ceph/radosgw/ceph-radosgw.gateway/done') }
@@ -105,10 +107,11 @@ describe 'ceph::rgw' do
       it { is_expected.to contain_ceph_config('client.radosgw.custom/user').with_value('wwwuser') }
 
       it { is_expected.to contain_file('/var/lib/ceph/radosgw/ceph-radosgw.custom').with( {
-        'ensure' => 'directory',
-        'owner'  => 'root',
-        'group'  => 'root',
-        'mode'   => '0750',
+        'ensure'                  => 'directory',
+        'owner'                   => 'root',
+        'group'                   => 'root',
+        'mode'                    => '0750',
+        'selinux_ignore_defaults' => true,
       } ) }
 
       it { is_expected.to_not contain_file('/var/lib/ceph/radosgw/ceph-radosgw.gateway/done') }
@@ -148,15 +151,17 @@ describe 'ceph::rgw' do
       it { is_expected.to contain_ceph_config('client.radosgw.gateway/rgw_socket_path').with_value('/tmp/radosgw.sock') }
 
       it { is_expected.to contain_file('/var/lib/ceph/radosgw').with({
-        'ensure' => 'directory',
-        'mode'   => '0755',
+        'ensure'                  => 'directory',
+        'mode'                    => '0755',
+        'selinux_ignore_defaults' => true,
       })}
 
       it { is_expected.to contain_file('/var/lib/ceph/radosgw/ceph-radosgw.gateway').with({
-        'ensure' => 'directory',
-        'owner'  => 'root',
-        'group'  => 'root',
-        'mode'   => '0750',
+        'ensure'                  => 'directory',
+        'owner'                   => 'root',
+        'group'                   => 'root',
+        'mode'                    => '0750',
+        'selinux_ignore_defaults' => true,
       })}
 
       it { is_expected.to contain_service('radosgw-radosgw.gateway') }
@@ -198,10 +203,11 @@ describe 'ceph::rgw' do
       it { is_expected.to contain_ceph_config('client.radosgw.custom/user').with_value('wwwuser') }
 
       it { is_expected.to contain_file('/var/lib/ceph/radosgw/ceph-radosgw.custom').with( {
-        'ensure' => 'directory',
-        'owner'  => 'root',
-        'group'  => 'root',
-        'mode'   => '0750',
+        'ensure'                  => 'directory',
+        'owner'                   => 'root',
+        'group'                   => 'root',
+        'mode'                    => '0750',
+        'selinux_ignore_defaults' => true,
       } ) }
 
       it { is_expected.to_not contain_file('/var/lib/ceph/radosgw/ceph-radosgw.gateway/done') }
@@ -241,15 +247,17 @@ describe 'ceph::rgw' do
       it { is_expected.to contain_ceph_config('client.radosgw.gateway/rgw_socket_path').with_value('/tmp/radosgw.sock') }
 
       it { is_expected.to contain_file('/var/lib/ceph/radosgw').with({
-        'ensure' => 'directory',
-        'mode'   => '0755',
+        'ensure'                  => 'directory',
+        'mode'                    => '0755',
+        'selinux_ignore_defaults' => true,
       })}
 
       it { is_expected.to contain_file('/var/lib/ceph/radosgw/ceph-radosgw.gateway').with({
-        'ensure' => 'directory',
-        'owner'  => 'root',
-        'group'  => 'root',
-        'mode'   => '0750',
+        'ensure'                  => 'directory',
+        'owner'                   => 'root',
+        'group'                   => 'root',
+        'mode'                    => '0750',
+        'selinux_ignore_defaults' => true,
       })}
 
       it { is_expected.to contain_file('/var/lib/ceph/radosgw/ceph-radosgw.gateway/sysvinit') }
@@ -293,10 +301,11 @@ describe 'ceph::rgw' do
       it { is_expected.to contain_ceph_config('client.radosgw.custom/user').with_value('wwwuser') }
 
       it { is_expected.to contain_file('/var/lib/ceph/radosgw/ceph-radosgw.custom').with( {
-        'ensure' => 'directory',
-        'owner'  => 'root',
-        'group'  => 'root',
-        'mode'   => '0750',
+        'ensure'                  => 'directory',
+        'owner'                   => 'root',
+        'group'                   => 'root',
+        'mode'                    => '0750',
+        'selinux_ignore_defaults' => true,
       } ) }
 
       it { is_expected.to_not contain_file('/var/lib/ceph/radosgw/ceph-radosgw.gateway/sysvinit') }

@@ -135,21 +135,24 @@ define ceph::rgw (
 
   # Data directory for radosgw
   file { '/var/lib/ceph/radosgw': # missing in redhat pkg
-    ensure => directory,
-    mode   => '0755',
+    ensure                  => directory,
+    mode                    => '0755',
+    selinux_ignore_defaults => true,
   }
   file { $rgw_data:
-    ensure => directory,
-    owner  => 'root',
-    group  => 'root',
-    mode   => '0750',
+    ensure                  => directory,
+    owner                   => 'root',
+    group                   => 'root',
+    mode                    => '0750',
+    selinux_ignore_defaults => true,
   }
 
   # Log file for radosgw (ownership)
   file { $log_file:
-    ensure => present,
-    owner  => $user,
-    mode   => '0640',
+    ensure                  => present,
+    owner                   => $user,
+    mode                    => '0640',
+    selinux_ignore_defaults => true,
   }
 
   # service definition
@@ -176,6 +179,7 @@ define ceph::rgw (
       start    => "systemctl start ceph-radosgw@${name}",
       stop     => "systemctl stop ceph-radosgw@${name}",
       status   => "systemctl status ceph-radosgw@${name}",
+      provider => $::ceph::params::service_provider,
     }
   } else {
     if $rgw_enable {
@@ -194,13 +198,6 @@ define ceph::rgw (
     }
   }
 
-  #for RHEL/CentOS7, systemctl needs to reload to pickup the ceph-radosgw init file
-  if (($::operatingsystem == 'RedHat' or $::operatingsystem == 'CentOS') and (versioncmp($::operatingsystemmajrelease, '7') >= 0))
-  {
-    exec { 'systemctl-reload-from-rgw': #needed for the new init file
-      command => '/usr/bin/systemctl daemon-reload',
-    }
-  }
   service { "radosgw-${name}":
     ensure => $rgw_ensure,
   }
