@@ -68,6 +68,8 @@ describe 'ceph' do
           :authentication_type           => 'none',
           :keyring                       => '/usr/local/ceph/etc/keyring',
           :osd_journal_size              => '1024',
+          :osd_max_object_name_len       => '1024',
+          :osd_max_object_namespace_len  => '256',
           :osd_pool_default_pg_num       => '256',
           :osd_pool_default_pgp_num      => '256',
           :osd_pool_default_size         => '2',
@@ -102,6 +104,8 @@ describe 'ceph' do
 
       it { is_expected.to contain_ceph_config('global/fsid').with_value('d5252e7d-75bc-4083-85ed-fe51fa83f62b') }
       it { is_expected.to contain_ceph_config('global/keyring').with_value('/usr/local/ceph/etc/keyring') }
+      it { is_expected.to contain_ceph_config('global/osd_max_object_name_len').with_value('1024') }
+      it { is_expected.to contain_ceph_config('global/osd_max_object_namespace_len').with_value('256') }
       it { is_expected.to contain_ceph_config('global/osd_pool_default_pg_num').with_value('256') }
       it { is_expected.to contain_ceph_config('global/osd_pool_default_pgp_num').with_value('256') }
       it { is_expected.to contain_ceph_config('global/osd_pool_default_size').with_value('2') }

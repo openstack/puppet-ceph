@@ -44,6 +44,12 @@
 # [*osd_journal_size*] The size of the journal file/device.
 #   Optional. Integer. Default provided by Ceph.
 #
+# [*osd_max_object_name_len*] The maximum length of a rados object name
+#   Optional. Integer. Default to undef.
+#
+# [*osd_max_object_namespace_len*] The maximum length of a rados object name
+#   Optional. Integer. Default to undef.
+#
 # [*osd_pool_default_pg_num*] The default number of PGs per pool.
 #   Optional. Integer. Default provided by Ceph.
 #
@@ -167,6 +173,8 @@ class ceph::profile::params (
   $mon_host = undef,
   $ms_bind_ipv6 = undef,
   $osd_journal_size = undef,
+  $osd_max_object_name_len = undef,
+  $osd_max_object_namespace_len = undef,
   $osd_pool_default_pg_num = undef,
   $osd_pool_default_pgp_num = undef,
   $osd_pool_default_size = undef,
