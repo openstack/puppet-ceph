@@ -33,6 +33,9 @@
 #   If set to absent, it will stop the MON service and remove
 #   the associated data directory.
 #
+# [*mon_enable*] Whether to enable ceph-mon instance on boot.
+#   Optional. Default is true.
+#
 # [*public_addr*] The bind IP address.
 #   Optional. The IPv(4|6) address on which MON binds itself.
 #
@@ -56,6 +59,7 @@
 #
 define ceph::mon (
   $ensure = present,
+  $mon_enable = true,
   $public_addr = undef,
   $cluster = undef,
   $authentication_type = 'cephx',
@@ -76,37 +80,27 @@ define ceph::mon (
       $cluster_name = 'ceph'
     }
 
+    # NOTE(aschultz): this is the service title for the mon service. It may be
+    # different than the actual service name.
     $mon_service = "ceph-mon-${id}"
 
     # For Ubuntu Trusty system
     if $::service_provider == 'upstart' {
       $init = 'upstart'
       Service {
-        name     => $mon_service,
+        name     => "ceph-mon-${id}",
         provider => $::ceph::params::service_provider,
         start    => "start ceph-mon id=${id}",
         stop     => "stop ceph-mon id=${id}",
         status   => "status ceph-mon id=${id}",
+        enable   => $mon_enable,
       }
-    }
-    elsif $::service_provider == 'systemd' {
+    # Everything else that is supported by puppet-ceph should run systemd.
+    } else {
       $init = 'systemd'
       Service {
-        name     => $mon_service,
-        provider => $::ceph::params::service_provider,
-        start    => "systemctl start ceph-mon@${id}",
-        stop     => "systemctl stop ceph-mon@${id}",
-        status   => "systemctl status ceph-mon@${id}",
-      }
-    # For Red Hat systems (not supporting Jewel now, only Hammer)
-    } else {
-      $init = 'sysvinit'
-      Service {
-        name     => $mon_service,
-        provider => $::ceph::params::service_provider,
-        start    => "service ceph start mon.${id}",
-        stop     => "service ceph stop mon.${id}",
-        status   => "service ceph status mon.${id}",
+        name   => "ceph-mon@${id}",
+        enable => $mon_enable,
       }
     }
 

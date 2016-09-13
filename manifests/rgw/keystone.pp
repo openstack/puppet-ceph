@@ -176,7 +176,7 @@ certutil -d ${nss_db_path} -L | grep ^signing_cert
     -> File[$nss_db_path]
     -> Exec["${name}-nssdb-ca"]
     -> Exec["${name}-nssdb-signing"]
-    ~> Service["radosgw-${name}"]
+    ~> Service<| tag == 'ceph-radosgw' |>
   } else {
     ceph_config {
       "client.${name}/nss_db_path":                      ensure => absent;

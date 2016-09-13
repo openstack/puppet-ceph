@@ -1,0 +1,10 @@
+---
+features:
+  - use mon_enable and rgw_enable to manage services on
+    boot.
+other:
+  - removal of support for sysv service management for
+    ceph-mon and ceph-radosgw since master currently only supports
+    jewel and the current recommended ceph platforms are either systemd
+    or upstart based.
+    http://docs.ceph.com/docs/jewel/start/os-recommendations/#platforms

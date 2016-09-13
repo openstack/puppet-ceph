@@ -260,8 +260,6 @@ describe 'ceph::rgw' do
         'selinux_ignore_defaults' => true,
       })}
 
-      it { is_expected.to contain_file('/var/lib/ceph/radosgw/ceph-radosgw.gateway/sysvinit') }
-
       it { is_expected.to contain_service('radosgw-radosgw.gateway') }
 
     end
@@ -307,8 +305,6 @@ describe 'ceph::rgw' do
         'mode'                    => '0750',
         'selinux_ignore_defaults' => true,
       } ) }
-
-      it { is_expected.to_not contain_file('/var/lib/ceph/radosgw/ceph-radosgw.gateway/sysvinit') }
 
       it { is_expected.to contain_service('radosgw-radosgw.custom').with('ensure' => 'stopped' ) }
 

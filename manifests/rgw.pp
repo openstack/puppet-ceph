@@ -155,13 +155,17 @@ define ceph::rgw (
     selinux_ignore_defaults => true,
   }
 
+  # NOTE(aschultz): this is the radowsgw service title, it may be different
+  # than the actual service name
+  $rgw_service = "radosgw-${name}"
+
   # service definition
   # if Ubuntu does not use systemd
   if $::service_provider == 'upstart' {
     if $rgw_enable {
       file { "${rgw_data}/done":
         ensure => present,
-        before => Service["radosgw-${name}"],
+        before => Service[$rgw_service],
       }
     }
 
@@ -173,41 +177,24 @@ define ceph::rgw (
       provider => $::ceph::params::service_provider,
     }
   # Everything else that is supported by puppet-ceph should run systemd.
-  } elsif $::service_provider == 'systemd' {
-    Service {
-      name     => "radosgw-${name}",
-      start    => "systemctl start ceph-radosgw@${name}",
-      stop     => "systemctl stop ceph-radosgw@${name}",
-      status   => "systemctl status ceph-radosgw@${name}",
-      provider => $::ceph::params::service_provider,
-    }
   } else {
-    if $rgw_enable {
-      file { "${rgw_data}/sysvinit":
-        ensure => present,
-        before => Service["radosgw-${name}"],
-      }
-    }
-
     Service {
-      name     => "radosgw-${name}",
-      start    => 'service radosgw start',
-      stop     => 'service radosgw stop',
-      status   => 'service radosgw status',
-      provider => $::ceph::params::service_provider,
+      name   => "ceph-radosgw@${name}",
+      enable => $rgw_enable,
     }
   }
 
-  service { "radosgw-${name}":
+  service { $rgw_service:
     ensure => $rgw_ensure,
+    tag    => ['ceph-radowsgw']
   }
 
-  Ceph_config<||> -> Service["radosgw-${name}"]
+  Ceph_config<||> -> Service<| tag == 'ceph-radosgw' |>
   Package<| tag == 'ceph' |> -> File['/var/lib/ceph/radosgw']
   Package<| tag == 'ceph' |> -> File[$log_file]
   File['/var/lib/ceph/radosgw']
   -> File[$rgw_data]
-  -> Service["radosgw-${name}"]
-  File[$log_file] -> Service["radosgw-${name}"]
-  Ceph::Pool<||> -> Service["radosgw-${name}"]
+  -> Service<| tag == 'ceph-radosgw' |>
+  File[$log_file] -> Service<| tag == 'ceph-radosgw' |>
+  Ceph::Pool<||> -> Service<| tag == 'ceph-radosgw' |>
 }
