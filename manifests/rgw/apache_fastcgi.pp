@@ -101,12 +101,17 @@ define ceph::rgw::apache_fastcgi (
   include ::apache::mod::mime
   include ::apache::mod::rewrite
 
+  #Rewrite rule
+  #Variable name shrinked in favor of not having
+  #more than 140 chars per line
+  $rr = '^/([a-zA-Z0-9-_.]*)([/]?.*) /s3gw.fcgi?page=$1&params=$2&%{QUERY_STRING} [E=HTTP_AUTHORIZATION:%{HTTP:Authorization},L]'
+
   apache::vhost { "${rgw_dns_name}-radosgw":
     servername     => $rgw_dns_name,
     serveradmin    => $admin_email,
     port           => $rgw_port,
     docroot        => $docroot,
-    rewrite_rule   => '^/([a-zA-Z0-9-_.]*)([/]?.*) /s3gw.fcgi?page=$1&params=$2&%{QUERY_STRING} [E=HTTP_AUTHORIZATION:%{HTTP:Authorization},L]',
+    rewrite_rule   => $rr,
     access_log     => $syslog,
     error_log      => $syslog,
     fastcgi_server => $fcgi_file,
@@ -140,7 +145,8 @@ exec /usr/bin/radosgw -c /etc/ceph/ceph.conf -n ${name}",
         -> Package[$pkg_fastcgi]
       }
       default: {
-        fail("Unsupported osfamily: ${::osfamily} operatingsystem: ${::operatingsystem}, module ${module_name} only supports osfamily Debian and RedHat")
+        fail("Unsupported osfamily: ${::osfamily} operatingsystem: ${::operatingsystem}, \
+module ${module_name} only supports osfamily Debian and RedHat")
       }
     }
   }

@@ -132,7 +132,8 @@ chmod 0444 ${keyring_path}
 ",
             unless  => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-mon_data=\$(ceph-mon ${cluster_option} --id ${id} --show-config-value mon_data) || exit 1 # if ceph-mon fails then the mon is probably not configured yet
+mon_data=\$(ceph-mon ${cluster_option} --id ${id} --show-config-value mon_data) || exit 1
+# if ceph-mon fails then the mon is probably not configured yet
 test -e \$mon_data/done
 ",
           }

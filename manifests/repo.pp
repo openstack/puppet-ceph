@@ -122,7 +122,8 @@ class ceph::repo (
       # https://wiki.centos.org/SpecialInterestGroup/Storage/
       if $enable_sig {
         if $::operatingsystem != 'CentOS' {
-          warning("CentOS SIG repository is only supported on CentOS operating system, not on ${::operatingsystem}, which can lead to packaging issues.")
+          warning("CentOS SIG repository is only supported on CentOS operating system, \
+not on ${::operatingsystem}, which can lead to packaging issues.")
         }
         yumrepo { 'ceph-jewel-sig':
           enabled    => '1',
@@ -135,7 +136,8 @@ class ceph::repo (
         Yumrepo['ceph-jewel-sig'] -> Package<| tag == 'ceph' |>
       } else {
         # If you want to deploy Ceph using packages provided by ceph.com repositories.
-        if ((($::operatingsystem == 'RedHat' or $::operatingsystem == 'CentOS') and (versioncmp($::operatingsystemmajrelease, '7') < 0)) or ($::operatingsystem == 'Fedora' and (versioncmp($::operatingsystemmajrelease, '19') < 0))) {
+        if ((($::operatingsystem == 'RedHat' or $::operatingsystem == 'CentOS') and (versioncmp($::operatingsystemmajrelease, '7') < 0))
+              or ($::operatingsystem == 'Fedora' and (versioncmp($::operatingsystemmajrelease, '19') < 0))) {
           $el = '6'
         } else {
           $el = '7'
@@ -227,7 +229,8 @@ class ceph::repo (
     }
 
     default: {
-      fail("Unsupported osfamily: ${::osfamily} operatingsystem: ${::operatingsystem}, module ${module_name} only supports osfamily Debian and RedHat")
+      fail("Unsupported osfamily: ${::osfamily} operatingsystem: ${::operatingsystem}, \
+module ${module_name} only supports osfamily Debian and RedHat")
     }
   }
 }

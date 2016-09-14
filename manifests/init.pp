@@ -173,7 +173,8 @@ class ceph (
   include ::ceph::params
 
   if $set_osd_params {
-    warning('set_osd_params is deprecated.  It is here to allow a transition to using this module to assign values and will be removed in a future release.')
+    warning('set_osd_params is deprecated. It is here to allow a transition to using \
+this module to assign values and will be removed in a future release.')
   }
 
   package { $::ceph::params::packages :
