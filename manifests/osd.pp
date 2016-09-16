@@ -45,12 +45,16 @@
 #   on the directory backing the OSD service.
 #   Optional. Defaults to 'ceph_var_lib_t'
 #
+# [*fsid*] The ceph cluster FSID
+#   Optional. Defaults to $::ceph::profile::params::fsid
+#
 define ceph::osd (
   $ensure = present,
   $journal = undef,
   $cluster = undef,
   $exec_timeout = $::ceph::params::exec_timeout,
   $selinux_file_context = 'ceph_var_lib_t',
+  $fsid = $::ceph::profile::params::fsid,
   ) {
 
     $data = $name
@@ -88,6 +92,26 @@ test -f ${udev_rules_file} && test \$DISABLE_UDEV -eq 1
         logoutput => true,
       }
 
+      if $fsid {
+        $fsid_option = "--cluster-uuid ${fsid}"
+        $ceph_check_fsid_mismatch = "ceph-osd-check-fsid-mismatch-${name}"
+        Exec[$ceph_check_udev] -> Exec[$ceph_check_fsid_mismatch]
+        Exec[$ceph_check_fsid_mismatch] -> Exec[$ceph_prepare]
+        # return error if ${data} has fsid differing from ${fsid}, unless there is no fsid
+        exec { $ceph_check_fsid_mismatch:
+          command   => "/bin/true # comment to satisfy puppet syntax requirements
+set -ex
+test ${fsid} = \$(ceph-disk list ${data} | egrep -o '[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}')
+",
+          unless    => "/bin/true # comment to satisfy puppet syntax requirements
+set -ex
+test -z \$(ceph-disk list ${data} | egrep -o '[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}')
+",
+          logoutput => true,
+          timeout   => $exec_timeout,
+        }
+      }
+
       Exec[$ceph_check_udev] -> Exec[$ceph_prepare]
       # ceph-disk: prepare should be idempotent http://tracker.ceph.com/issues/7475
       exec { $ceph_prepare:
@@ -99,7 +123,7 @@ if ! test -b ${data} ; then
         chown -h ceph:ceph ${data}
     fi
 fi
-ceph-disk prepare ${cluster_option} ${data} ${journal}
+ceph-disk prepare ${cluster_option} ${fsid_option} ${data} ${journal}
 udevadm settle
 ",
         unless    => "/bin/true # comment to satisfy puppet syntax requirements
@@ -110,7 +134,6 @@ ceph-disk list | grep -E ' *${data}1? .*ceph data, (prepared|active)' ||
         logoutput => true,
         timeout   => $exec_timeout,
       }
-
       if (str2bool($::selinux) == true) {
         ensure_packages($::ceph::params::pkg_policycoreutils, {'ensure' => 'present'})
         exec { "fcontext_${name}":

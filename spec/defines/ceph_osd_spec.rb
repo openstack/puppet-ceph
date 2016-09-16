@@ -51,7 +51,7 @@ if ! test -b /srv ; then
         chown -h ceph:ceph /srv
     fi
 fi
-ceph-disk prepare  /srv 
+ceph-disk prepare   /srv 
 udevadm settle
 ",
         'unless'    => "/bin/true # comment to satisfy puppet syntax requirements
@@ -96,6 +96,7 @@ ls -ld /var/lib/ceph/osd/ceph-* | grep ' /srv\$'
         {
           :cluster => 'testcluster',
           :journal => '/srv/journal',
+          :fsid    => 'f39ace04-f967-4c3d-9fd2-32af2d2d2cd5',
         }
       end
 
@@ -112,6 +113,17 @@ test -f /usr/lib/udev/rules.d/95-ceph-osd.rules && test \$DISABLE_UDEV -eq 1
 ",
        'logoutput' => true,
       ) }
+      it { is_expected.to contain_exec('ceph-osd-check-fsid-mismatch-/srv/data').with(
+        'command'   => "/bin/true # comment to satisfy puppet syntax requirements
+set -ex
+test f39ace04-f967-4c3d-9fd2-32af2d2d2cd5 = \$(ceph-disk list /srv/data | egrep -o '[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}')
+",
+        'unless'    => "/bin/true # comment to satisfy puppet syntax requirements
+set -ex
+test -z \$(ceph-disk list /srv/data | egrep -o '[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}')
+",
+        'logoutput' => true
+      ) }
       it { is_expected.to contain_exec('ceph-osd-prepare-/srv/data').with(
         'command'   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
@@ -121,7 +133,7 @@ if ! test -b /srv/data ; then
         chown -h ceph:ceph /srv/data
     fi
 fi
-ceph-disk prepare --cluster testcluster /srv/data /srv/journal
+ceph-disk prepare --cluster testcluster --cluster-uuid f39ace04-f967-4c3d-9fd2-32af2d2d2cd5 /srv/data /srv/journal
 udevadm settle
 ",
         'unless'    => "/bin/true # comment to satisfy puppet syntax requirements

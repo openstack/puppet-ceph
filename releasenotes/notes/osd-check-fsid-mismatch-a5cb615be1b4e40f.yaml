@@ -1,0 +1,7 @@
+---
+features:
+  - The ceph cluster FSID is explictly added as a cluster option (--cluster-uuid) to ceph-disk prepare per OSD
+  - An additional check is done prior to preparing an OSD to verify the OSD is not already prepared with a different FSID, which is a symptom of trying to add an OSD from a different ceph cluster
+  - Prior to this change, a deploy might report it is successful even if all of the OSDs fail to activate. The logs will now indicate that the OSD activation failed because a different FSID was found so that the user may then choose zap away the old deploy
+fixes:
+  - Bug 1604728 Puppet should exit with error if disk activate fails
