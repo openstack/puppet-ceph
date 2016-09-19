@@ -186,7 +186,7 @@ define ceph::rgw (
 
   service { $rgw_service:
     ensure => $rgw_ensure,
-    tag    => ['ceph-radowsgw']
+    tag    => ['ceph-radosgw']
   }
 
   Ceph_config<||> -> Service<| tag == 'ceph-radosgw' |>
