@@ -38,6 +38,7 @@ describe 'ceph::rgw::apache' do
         :operatingsystemrelease => '14.04',
         :lsbdistid              => 'Ubuntu',
         :lsbdistcodename        => 'trusty',
+        :lsbdistrelease         => '14.04',
         :pkg_fastcgi            => 'libapache2-mod-fastcgi',
       }
     end

@@ -28,6 +28,7 @@ describe 'ceph::repo' do
       :osfamily        => 'Debian',
       :lsbdistid       => 'Debian',
       :lsbdistcodename => 'jessie',
+      :lsbdistrelease  => '8',
     }
     end
 
@@ -83,6 +84,7 @@ describe 'ceph::repo' do
       :osfamily        => 'Debian',
       :lsbdistid       => 'Ubuntu',
       :lsbdistcodename => 'trusty',
+      :lsbdistrelease  => '14.04',
       :hardwaremodel   => 'x86_64',
     }
     end

@@ -32,6 +32,7 @@ describe 'ceph::rgw::keystone' do
         :osfamily               => 'Debian',
         :operatingsystem        => 'Ubuntu',
         :operatingsystemrelease => '14.04',
+        :lsbdistrelease         => '14.04',
       }
     end
 
@@ -301,7 +302,7 @@ wget --no-check-certificate http://keystone.custom:5000/v2.0/certificates/signin
          'user'    => 'apache',
       ) }
 
-    end  
+    end
 
     describe "create with keystone v3 and no pki params" do
 
@@ -343,10 +344,3 @@ wget --no-check-certificate http://keystone.custom:5000/v2.0/certificates/signin
 
   end
 end
-
-# Local Variables:
-# compile-command: "cd ../.. ;
-#    bundle install ;
-#    bundle exec rake spec
-# "
-# End:

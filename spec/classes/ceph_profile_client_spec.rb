@@ -89,48 +89,13 @@ describe 'ceph::profile::client' do
     end
   end
 
-  context 'on Debian' do
+  on_supported_os.each do |os, facts|
+    context "on #{os}" do
+      let(:facts) do
+        facts.merge({})
+      end
 
-    let :facts do
-      {
-        :osfamily         => 'Debian',
-        :lsbdistid        => 'Debian',
-        :lsbdistcodename  => 'jessie',
-        :operatingsystem  => 'Debian',
-      }
+      it_behaves_like 'ceph profile client'
     end
-
-    it_configures 'ceph profile client'
-  end
-
-  context 'on Ubuntu' do
-
-    let :facts do
-      {
-        :osfamily         => 'Debian',
-        :lsbdistid        => 'Ubuntu',
-        :lsbdistcodename  => 'trusty',
-        :operatingsystem  => 'Ubuntu',
-      }
-    end
-
-    it_configures 'ceph profile client'
-  end
-
-  context 'on RHEL7' do
-
-    let :facts do
-      { :osfamily                  => 'RedHat',
-        :operatingsystemmajrelease => '7' }
-    end
-
-
-    it_configures 'ceph profile client'
   end
 end
-# Local Variables:
-# compile-command: "cd ../.. ;
-#    BUNDLE_PATH=/tmp/vendor bundle install ;
-#    BUNDLE_PATH=/tmp/vendor bundle exec rake spec
-# "
-# End:

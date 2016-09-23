@@ -62,51 +62,13 @@ describe 'ceph::profile::mon' do
     )}
   end
 
-  context 'on Debian' do
+  on_supported_os.each do |os, facts|
+    context "on #{os}" do
+      let(:facts) do
+        facts.merge({:hostname => 'first'})
+      end
 
-    let :facts do
-      {
-        :osfamily         => 'Debian',
-        :lsbdistid        => 'Debian',
-        :lsbdistcodename  => 'jessie',
-        :operatingsystem  => 'Debian',
-        :hostname         => 'first',
-      }
+      it_behaves_like 'ceph profile mon'
     end
-
-    it_configures 'ceph profile mon'
   end
-
-  context 'on Ubuntu' do
-
-    let :facts do
-      {
-        :osfamily         => 'Debian',
-        :lsbdistid        => 'Ubuntu',
-        :lsbdistcodename  => 'trusty',
-        :operatingsystem  => 'Ubuntu',
-        :hostname         => 'first',
-      }
-    end
-
-    it_configures 'ceph profile mon'
-  end
-
-  context 'on RHEL7' do
-
-    let :facts do
-      { :osfamily                  => 'RedHat',
-        :hostname                  => 'first',
-        :operatingsystemmajrelease => '7' }
-    end
-
-    it_configures 'ceph profile mon'
-  end
-
 end
-# Local Variables:
-# compile-command: "cd ../.. ;
-#    BUNDLE_PATH=/tmp/vendor bundle install ;
-#    BUNDLE_PATH=/tmp/vendor bundle exec rake spec
-# "
-# End:
