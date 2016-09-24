@@ -27,6 +27,24 @@
 # [*defaults*] A config hash
 #   Optional. Defaults to a empty hash
 #
-class ceph::osds($args = {}, $defaults = {}) {
+# [*pid_max*] Value for pid_max. Defaults to undef. Optional.
+#   For OSD nodes it is recommended that you raise pid_max above the
+#   default value because you may hit the system max during
+#   recovery. The recommended value is the absolute max for pid_max: 4194303
+#   http://docs.ceph.com/docs/jewel/rados/troubleshooting/troubleshooting-osd/
+#
+class ceph::osds(
+  $args = {},
+  $defaults = {},
+  $pid_max = $::ceph::profile::params::pid_max,
+)
+{
   create_resources(ceph::osd, $args, $defaults)
+
+  if $pid_max {
+    $sysctl_settings = {
+      'kernel.pid_max' => { value => $pid_max },
+    }
+    ensure_resources(sysctl::value,$sysctl_settings)
+  }
 }
