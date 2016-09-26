@@ -72,7 +72,8 @@ chmod 0444 /tmp/ceph-mon-keyring-A
 ',
         'unless' => '/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-mon_data=$(ceph-mon  --id A --show-config-value mon_data) || exit 1 # if ceph-mon fails then the mon is probably not configured yet
+mon_data=$(ceph-mon  --id A --show-config-value mon_data) || exit 1
+# if ceph-mon fails then the mon is probably not configured yet
 test -e $mon_data/done
 ') }
       it { is_expected.to contain_exec('ceph-mon-ceph.client.admin.keyring-A').with(
@@ -301,7 +302,8 @@ chmod 0444 /tmp/ceph-mon-keyring-A
 ',
         'unless' => '/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-mon_data=$(ceph-mon  --id A --show-config-value mon_data) || exit 1 # if ceph-mon fails then the mon is probably not configured yet
+mon_data=$(ceph-mon  --id A --show-config-value mon_data) || exit 1
+# if ceph-mon fails then the mon is probably not configured yet
 test -e $mon_data/done
 ') }
       it { is_expected.to contain_exec('ceph-mon-ceph.client.admin.keyring-A').with(
@@ -529,7 +531,8 @@ chmod 0444 /tmp/ceph-mon-keyring-A
 ',
         'unless' => '/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-mon_data=$(ceph-mon  --id A --show-config-value mon_data) || exit 1 # if ceph-mon fails then the mon is probably not configured yet
+mon_data=$(ceph-mon  --id A --show-config-value mon_data) || exit 1
+# if ceph-mon fails then the mon is probably not configured yet
 test -e $mon_data/done
 ') }
       it { is_expected.to contain_exec('ceph-mon-ceph.client.admin.keyring-A').with(

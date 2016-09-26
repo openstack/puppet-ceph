@@ -68,7 +68,8 @@ class ceph::params (
     }
 
     default: {
-      fail("Unsupported osfamily: ${::osfamily} operatingsystem: ${::operatingsystem}, module ${module_name} only supports osfamily Debian or RedHat")
+      fail("Unsupported osfamily: ${::osfamily} operatingsystem: ${::operatingsystem}, \
+module ${module_name} only supports osfamily Debian or RedHat")
     }
   }
 }
