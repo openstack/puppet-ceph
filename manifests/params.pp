@@ -25,8 +25,8 @@
 # [*exec_timeout*] The default exec resource timeout, in seconds
 #   Optional. Defaults to 600
 #
-# [*packages*] The ceph package name
-#   Optional. Defaults to 'ceph'
+# [*packages*] The ceph package names
+#   Optional. Defaults to ['ceph']
 #
 # [*rgw_socket_path*] The socket path of the rados gateway
 #   Optional. Defaults to '/tmp/radosgw.sock'
@@ -42,7 +42,7 @@
 
 class ceph::params (
   $exec_timeout    = 600,
-  $packages        = 'ceph', # just provide the minimum per default
+  $packages        = ['ceph'], # just provide the minimum per default
   $rgw_socket_path = '/tmp/radosgw.sock',
   $enable_sig      = false,
   $release         = 'jewel',

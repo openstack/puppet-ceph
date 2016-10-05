@@ -109,7 +109,7 @@ define ceph::key (
       group                   => $group,
       mode                    => $mode,
       selinux_ignore_defaults => true,
-      require                 => Package['ceph'],
+      require                 => Package[$::ceph::params::packages],
     }
   }
 
@@ -124,7 +124,7 @@ NEW_KEYRING=\$(mktemp)
 ceph-authtool \$NEW_KEYRING --name '${name}' --add-key '${secret}' ${caps}
 diff -N \$NEW_KEYRING ${keyring_path} | grep '<'
 rm \$NEW_KEYRING",
-    require   => [ Package['ceph'], File[$keyring_path], ],
+    require   => [ File[$keyring_path], ],
     logoutput => true,
   }
 
@@ -151,7 +151,7 @@ OLD_KEYRING=\$(mktemp)
 ceph ${cluster_option} ${inject_id_option} ${inject_keyring_option} auth get ${name} -o \$OLD_KEYRING || true
 diff -N \$OLD_KEYRING ${keyring_path} | grep '>'
 rm \$OLD_KEYRING",
-      require   => [ Package['ceph'], Exec["ceph-key-${name}"], ],
+      require   => [ Class['ceph'], Exec["ceph-key-${name}"], ],
       logoutput => true,
     }
 
