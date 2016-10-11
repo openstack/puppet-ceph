@@ -36,13 +36,13 @@ describe 'ceph::repo' do
 
       it { is_expected.to contain_apt__key('ceph').with(
         :id     => '08B73419AC32B4E966C1A330E84AC2C0460F3994',
-        :source => 'https://download.ceph.com/keys/release.asc'
+        :source => 'https://download.ceph.com/keys/release.asc',
+        :before => 'Apt::Source[ceph]',
       ) }
 
       it { is_expected.to contain_apt__source('ceph').with(
         :location => 'http://download.ceph.com/debian-jewel/',
         :release  => 'jessie',
-        :require  => 'Apt::Key[ceph]'
       ) }
 
     end
@@ -57,7 +57,6 @@ describe 'ceph::repo' do
       it { is_expected.to contain_apt__source('ceph').with(
         :location => 'http://myserver.com/debian-jewel/',
         :release  => 'jessie',
-        :require  => 'Apt::Key[ceph]'
       ) }
     end
 
@@ -71,7 +70,6 @@ describe 'ceph::repo' do
       it { is_expected.to contain_apt__source('ceph').with(
         :location => 'http://download.ceph.com/debian-firefly/',
         :release  => 'jessie',
-        :require  => 'Apt::Key[ceph]'
       ) }
     end
 
@@ -93,13 +91,13 @@ describe 'ceph::repo' do
 
       it { is_expected.to contain_apt__key('ceph').with(
         :id     => '08B73419AC32B4E966C1A330E84AC2C0460F3994',
-        :source => 'https://download.ceph.com/keys/release.asc'
+        :source => 'https://download.ceph.com/keys/release.asc',
+        :before => 'Apt::Source[ceph]',
       ) }
 
       it { is_expected.to contain_apt__source('ceph').with(
         :location => 'http://download.ceph.com/debian-jewel/',
         :release  => 'trusty',
-        :require  => 'Apt::Key[ceph]'
       ) }
 
     end
@@ -114,7 +112,6 @@ describe 'ceph::repo' do
       it { is_expected.to contain_apt__source('ceph').with(
         :location => 'http://download.ceph.com/debian-firefly/',
         :release  => 'trusty',
-        :require  => 'Apt::Key[ceph]'
       ) }
     end
 
@@ -127,13 +124,12 @@ describe 'ceph::repo' do
 
       it { is_expected.to contain_apt__key('ceph-gitbuilder').with(
         :id     => 'FCC5CB2ED8E6F6FB79D5B3316EAEAE2203C3951A',
-        :server => 'keyserver.ubuntu.com'
+        :server => 'keyserver.ubuntu.com',
       ) }
 
       it { is_expected.to contain_apt__source('ceph').with(
         :location => 'http://download.ceph.com/debian-jewel/',
         :release  => 'trusty',
-        :require  => 'Apt::Key[ceph]'
       ) }
 
       it { is_expected.to contain_apt__source('ceph-fastcgi').with(
@@ -157,7 +153,6 @@ describe 'ceph::repo' do
         :ensure   => 'absent',
         :location => 'http://download.ceph.com/debian-jewel/',
         :release  => 'trusty',
-        :require  => 'Apt::Key[ceph]'
       ) }
 
       it { is_expected.to contain_apt__source('ceph-fastcgi').with(

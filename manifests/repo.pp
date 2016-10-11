@@ -74,23 +74,22 @@ class ceph::repo (
     'Debian': {
       include ::apt
 
-      apt::key { 'ceph':
-        ensure => $ensure,
-        id     => '08B73419AC32B4E966C1A330E84AC2C0460F3994',
-        source => 'https://download.ceph.com/keys/release.asc',
-      }
-
       if $ceph_mirror {
         $ceph_mirror_real = $ceph_mirror
       } else {
         $ceph_mirror_real = "http://download.ceph.com/debian-${release}/"
+        apt::key { 'ceph':
+          ensure => $ensure,
+          id     => '08B73419AC32B4E966C1A330E84AC2C0460F3994',
+          source => 'https://download.ceph.com/keys/release.asc',
+          before => Apt::Source['ceph'],
+        }
       }
 
       apt::source { 'ceph':
         ensure   => $ensure,
         location => $ceph_mirror_real,
         release  => $::lsbdistcodename,
-        require  => Apt::Key['ceph'],
         tag      => 'ceph',
       }
 
