@@ -128,6 +128,9 @@
 #   Set to 0 to disable it.
 #   Optional. Default provided by Ceph
 #
+# [*rbd_default_features*] Set RBD features configuration.
+#   Optional. String. Defaults to undef.
+#
 # DEPRECATED PARAMETERS
 #
 # [*set_osd_params*] disables setting osd params using this module by default as people
@@ -167,6 +170,7 @@ class ceph (
   $osd_recovery_max_single_start = undef,
   $osd_max_scrubs                = undef,
   $osd_op_threads                = undef,
+  $rbd_default_features          = undef,
   # DEPRECATED PARAMETERS
   $set_osd_params                = false,
 ) {
@@ -208,6 +212,7 @@ this module to assign values and will be removed in a future release.')
       'global/public_network':               value => $public_network;
       'global/public_addr':                  value => $public_addr;
       'osd/osd_journal_size':                value => $osd_journal_size;
+      'client/rbd_default_features':         value => $rbd_default_features;
     }
 
 

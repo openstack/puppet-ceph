@@ -51,6 +51,7 @@ describe 'ceph' do
       it { is_expected.to_not contain_ceph_config('global/public_network').with_value('192.168.0.0/24') }
       it { is_expected.to_not contain_ceph_config('global/public_addr').with_value('192.168.0.2') }
       it { is_expected.to_not contain_ceph_config('osd/osd_journal_size').with_value('4096') }
+      it { is_expected.to_not contain_ceph_config('client/rbd_default_features').with_value('15') }
       it { is_expected.to contain_ceph_config('global/auth_cluster_required').with_value('cephx') }
       it { is_expected.to contain_ceph_config('global/auth_service_required').with_value('cephx') }
       it { is_expected.to contain_ceph_config('global/auth_client_required').with_value('cephx') }
@@ -95,6 +96,7 @@ describe 'ceph' do
           :osd_recovery_max_single_start => '1',
           :osd_max_scrubs                => '1',
           :osd_op_threads                => '2',
+          :rbd_default_features          => '12',
         }
       end
 
@@ -125,6 +127,7 @@ describe 'ceph' do
       it { is_expected.to contain_ceph_config('global/public_network').with_value('192.168.0.0/24') }
       it { is_expected.to contain_ceph_config('global/public_addr').with_value('192.168.0.2') }
       it { is_expected.to contain_ceph_config('osd/osd_journal_size').with_value('1024') }
+      it { is_expected.to contain_ceph_config('client/rbd_default_features').with_value('12') }
       it { is_expected.to_not contain_ceph_config('global/auth_cluster_required').with_value('cephx') }
       it { is_expected.to_not contain_ceph_config('global/auth_service_required').with_value('cephx') }
       it { is_expected.to_not contain_ceph_config('global/auth_client_required').with_value('cephx') }

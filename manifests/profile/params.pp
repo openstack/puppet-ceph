@@ -172,7 +172,7 @@
 #
 # [*rgw_keystone_admin_password*] The password for OpenStack admin user
 #   Required if is 'v3'.
-#
+# 
 # [*rbd_mirror_client_name*] Name of the cephx client key used for rbd mirroring
 #   Optional. Default is undef
 #
@@ -185,7 +185,9 @@
 # [*fs_data_pool*] The FS data pool name.
 #   Optional but required when using fs.
 #
-
+# [*rbd_default_features*] Set RBD features configuration.
+#   Optional. String. Defaults to undef.
+# 
 
 class ceph::profile::params (
   $fsid = undef,
@@ -232,7 +234,7 @@ class ceph::profile::params (
   $fs_metadata_pool = undef,
   $fs_data_pool = undef,
   $fs_name = undef,
-
+  $rbd_default_features = undef,
 ) {
   validate_hash($client_keys)
 
