@@ -28,5 +28,5 @@
 #   Optional. Defaults to a empty hash
 #
 class ceph::conf($args = {}, $defaults = {}) {
-  create_resources(ceph_config, $args, $defaults)
+  ensure_resources(ceph_config, $args, $defaults)
 }
