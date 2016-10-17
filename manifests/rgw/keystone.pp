@@ -132,7 +132,7 @@ define ceph::rgw::keystone (
   if $use_pki {
     # fetch the keystone signing cert, add to nss db
     $pkg_nsstools = $::ceph::params::pkg_nsstools
-    ensure_resource('package', $pkg_nsstools, {'ensure' => 'present'})
+    ensure_packages($pkg_nsstools, {'ensure' => 'present'})
 
     file { $nss_db_path:
       ensure => directory,

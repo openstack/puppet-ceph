@@ -53,7 +53,7 @@ class ceph::params (
       $pkg_radosgw         = 'radosgw'
       $user_radosgw        = 'www-data'
       $pkg_fastcgi         = 'libapache2-mod-fastcgi'
-      $pkg_nsstools        = 'libnss3-tools'
+      $pkg_nsstools        = ['libnss3-tools', 'wget']
       $service_provider    = 'debian'
       $pkg_policycoreutils = 'policycoreutils'
     }
@@ -62,7 +62,7 @@ class ceph::params (
       $pkg_radosgw         = 'ceph-radosgw'
       $user_radosgw        = 'apache'
       $pkg_fastcgi         = 'mod_fastcgi'
-      $pkg_nsstools        = 'nss-tools'
+      $pkg_nsstools        = ['nss-tools', 'wget']
       $service_provider    = 'systemd'
       $pkg_policycoreutils = 'policycoreutils-python'
     }
