@@ -39,12 +39,23 @@ describe 'ceph::osds' do
       is_expected.to contain_ceph__osd('/dev/sdb').with(
         :ensure  => 'present',
         :journal => '/srv/journal',
-        :cluster => 'CLUSTER'
-    )
+        :cluster => 'CLUSTER')
       is_expected.to contain_ceph__osd('/srv/data').with(
         :ensure  => 'present',
         :cluster => 'CLUSTER')
+      is_expected.not_to contain_sysctl__value('kernel.pid_max')
     }
+  end
+
+  context 'sets pid_max when enabled' do
+    let :params do
+    {
+      :pid_max => 123456,
+    }
+    end
+    it do
+      is_expected.to contain_sysctl__value('kernel.pid_max').with_value(123456)
+    end
   end
 
   describe 'Ubuntu' do

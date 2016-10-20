@@ -145,6 +145,12 @@
 #   Set to 0 to disable it.
 #   Optional. Default provided by Ceph
 #
+# [*pid_max*] Value for pid_max. Defaults to undef. Optional.
+#   For OSD nodes it is recommended that you raise pid_max above the
+#   default value because you may hit the system max during
+#   recovery. The recommended value is the absolute max for pid_max: 4194303
+#   http://docs.ceph.com/docs/jewel/rados/troubleshooting/troubleshooting-osd/
+#
 # [*rgw_keystone_version*] The api version for keystone.
 #   Possible values 'v2.0', 'v3'
 #   Optional. Default is 'v2.0'
@@ -199,6 +205,7 @@ class ceph::profile::params (
   $osd_recovery_max_single_start = undef,
   $osd_max_scrubs = undef,
   $osd_op_threads = undef,
+  $pid_max = undef,
   $rgw_keystone_version = 'v2.0',
   $rgw_keystone_admin_domain = undef,
   $rgw_keystone_admin_project = undef,

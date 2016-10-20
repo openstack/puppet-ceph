@@ -1,0 +1,6 @@
+---
+features:
+  - On OSD nodes you can run out of PIDs during a recovery.
+    Therefore it is recommended that you raise pid_max. This
+    change makes that possible with an enablement flag and
+    the ability to set the value.
