@@ -2,7 +2,7 @@
 #   Copyright (C) 2013 Cloudwatt <libre.licensing@cloudwatt.com>
 #   Copyright (C) 2013, 2014 iWeb Technologies Inc.
 #   Copyright (C) 2014 Nine Internet Solutions AG
-#   Copyright (C) 2016 OSiRIS Project, funded by the NSF
+#   Copyright (C) 2016 University of Michigan, funded by the NSF OSiRIS Project
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.

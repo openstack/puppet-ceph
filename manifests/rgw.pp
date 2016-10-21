@@ -1,6 +1,6 @@
 #
 # Copyright (C) 2014 Catalyst IT Limited.
-# Copyright (C) 2016 OSiRIS Project, funded by the NSF
+# Copyright (C) 2016 University of Michigan, funded by the NSF OSiRIS Project
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
