@@ -46,6 +46,7 @@ define ceph::cluster (
   $cluster_require_signatures = undef,
   $service_require_signatures = undef,
   $sign_messages              = undef,
+  $fuse_disable_pagecache     = true,
   $cluster_network            = undef,
   $public_network             = undef,
   $public_addr                = undef,
@@ -71,6 +72,7 @@ define ceph::cluster (
       "$cluster/global/cluster_require_signatures":  value => $cluster_require_signatures;
       "$cluster/global/service_require_signatures":  value => $service_require_signatures;
       "$cluster/global/sign_messages":               value => $sign_messages;
+      "$cluster/global/fuse_disable_pagecache":      value => $fuse_disable_pagecache;
       "$cluster/global/cluster_network":             value => $cluster_network;
       "$cluster/global/public_network":              value => $public_network;
       "$cluster/global/public_addr":                 value => $public_addr;
