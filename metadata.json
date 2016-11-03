@@ -10,11 +10,11 @@
   "requirements": [
     {
       "name": "pe",
-      "version_requirement": "3.x"
+      "version_requirement": "4.x"
     },
     {
       "name": "puppet",
-      "version_requirement": "3.x"
+      "version_requirement": "4.x"
     }
   ],
   "operatingsystem_support": [
