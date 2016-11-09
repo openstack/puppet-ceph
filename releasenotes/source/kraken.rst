@@ -3,4 +3,4 @@
 ============================
 
 .. release-notes::
-   :branch: origin/stable/kraken
+   :branch: origin/kraken
