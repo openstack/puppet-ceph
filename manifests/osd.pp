@@ -57,6 +57,12 @@ define ceph::osd (
       $cluster_name = 'ceph'
     }
 
+    if $journal {
+      $journal_string = $journal
+    } else {
+      $journal_string = ''
+    }
+
     if $ensure == present {
 
       $ceph_prepare = "ceph-osd-prepare-${name}"
