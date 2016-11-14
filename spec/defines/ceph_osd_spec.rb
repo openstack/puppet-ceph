@@ -235,25 +235,16 @@ fi
     end
   end
 
-  context 'Debian Family' do
-    let :facts do
-      {
-        :osfamily => 'Debian',
-      }
+  on_supported_os({
+    :supported_os => OSDefaults.get_supported_os
+  }).each do |os,facts|
+    context "on #{os}" do
+      let (:facts) do
+        facts.merge!(OSDefaults.get_facts())
+      end
+
+      it_behaves_like 'ceph osd'
     end
-
-    it_configures 'ceph osd'
-  end
-
-  context 'RedHat Family' do
-
-    let :facts do
-      {
-        :osfamily => 'RedHat',
-      }
-    end
-
-    it_configures 'ceph osd'
   end
 end
 

@@ -46,37 +46,16 @@ describe 'ceph::mons' do
     }
   end
 
-  describe 'Ubuntu' do
-    let :facts do
-      {
-        :osfamily => 'Debian',
-        :operatingsystem => 'Ubuntu',
-      }
+  on_supported_os({
+    :supported_os => OSDefaults.get_supported_os
+  }).each do |os,facts|
+    context "on #{os}" do
+      let (:facts) do
+        facts.merge!(OSDefaults.get_facts())
+      end
+
+      it_behaves_like 'ceph mons'
     end
-
-    it_configures 'ceph mons'
-  end
-
-  describe 'Debian' do
-    let :facts do
-      {
-        :osfamily => 'Debian',
-        :operatingsystem => 'Debian',
-      }
-    end
-
-    it_configures 'ceph mons'
-  end
-
-  describe 'RHEL7' do
-    let :facts do
-      {
-        :osfamily                  => 'RedHat',
-        :operatingsystemmajrelease => '7',
-      }
-    end
-
-    it_configures 'ceph mons'
   end
 
 end
