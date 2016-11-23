@@ -13,7 +13,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-# Author: Keith Schincke <keith.schincke@gmail.com.>
+# Author: Keith Schincke <keith.schincke@gmail.com>
 #
 # Configures a ceph radosgw using civetweb.
 #

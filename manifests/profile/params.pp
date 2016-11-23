@@ -169,6 +169,9 @@
 #
 # [*rgw_keystone_admin_password*] The password for OpenStack admin user
 #   Required if is 'v3'.
+#
+# [*rbd_mirror_client_name*] Name of the cephx client key used for rbd mirroring
+#   Optional. Default is undef
 
 
 class ceph::profile::params (
@@ -211,6 +214,7 @@ class ceph::profile::params (
   $rgw_keystone_admin_project = undef,
   $rgw_keystone_admin_user = undef,
   $rgw_keystone_admin_password = undef,
+  $rbd_mirror_client_name = undef,
 
 ) {
   validate_hash($client_keys)
