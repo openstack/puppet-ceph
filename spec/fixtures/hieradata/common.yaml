@@ -25,6 +25,7 @@ ceph::profile::params::osd_max_scrubs: '1'
 ceph::profile::params::osd_op_threads: '2'
 
 ######## Keys
+ceph::profile::params::mds_key: 'AQDLOh1VgEp6FRAAFzT7Zw+Y9V6JJExQAsRnRQ=='
 ceph::profile::params::mon_key: 'AQATGHJTUCBqIBAA7M2yafV1xctn1pgr3GcKPg=='
 ceph::profile::params::client_keys:
   'client.admin':

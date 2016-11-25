@@ -1,0 +1,19 @@
+---
+prelude: >
+    Improves support for the MDS service and adds a profile class for it.
+features:
+  - |
+    The MDS class is extended to allow for binding address and instance ID
+    configuration. It now also ensures that the needed packages for the MDS
+    daemon are installed and that the service is manageable by Puppet.
+  - |
+    A new MDS profile class is added which, in addition to deploying the MDS
+    service will create a new keyring for it, allowing MDS profilation and
+    access to the OSD pools.
+other:
+  - |
+    The package installed by default for the MDS service can be configured
+    via ceph::params::pkg_mds
+  - |
+    The keyring for the MDS service is only created if a key is given, the
+    key to use can be configured via ceph::profile::params::mds_key

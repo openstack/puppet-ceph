@@ -47,6 +47,7 @@ class ceph::params (
   $enable_sig      = false,
   $release         = 'jewel',
 ) {
+  $pkg_mds = 'ceph-mds'
 
   case $::osfamily {
     'Debian': {

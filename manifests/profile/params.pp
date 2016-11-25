@@ -91,6 +91,9 @@
 #   This is useful when not specifying public_network or when there is more than one IP address on
 #   the same network and you want to be specific about the IP to bind the MON on.
 #
+# [*mds_key*] The mds secret key.
+#   Optional but required when using cephx.
+#
 # [*mon_key*] The mon secret key.
 #   Optional. Either mon_key or mon_keyring need to be set when using cephx.
 #
@@ -189,6 +192,7 @@ class ceph::profile::params (
   $cluster_network = undef,
   $public_network = undef,
   $public_addr = undef,
+  $mds_key = undef,
   $mon_key = undef,
   $mon_keyring = undef,
   $client_keys = {},

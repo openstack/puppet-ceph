@@ -21,22 +21,35 @@ describe 'ceph::mds' do
   shared_examples_for 'ceph mds' do
     describe "activated with default params" do
 
-      it { is_expected.to contain_ceph_config('mds/mds_data').with_value('/var/lib/ceph/mds/$cluster-$id') }
-      it { is_expected.to contain_ceph_config('mds/keyring').with_value('/var/lib/ceph/mds/$cluster-$id/keyring') }
-
+      it { is_expected.to contain_ceph_config('mds/mds_data').with_value('/var/lib/ceph/mds/ceph-myhostname') }
+      it { is_expected.to contain_ceph_config('mds/keyring').with_value('/var/lib/ceph/mds/ceph-myhostname/keyring') }
+      it { is_expected.to contain_package('ceph-mds').with('ensure' => 'present') }
     end
 
     describe "activated with custom params" do
       let :params do
         {
-          :mds_data => '/usr/local/ceph/var/lib/mds/_cluster-_id',
-          :keyring  => '/usr/local/ceph/var/lib/mds/_cluster-_id/keyring'
+          :public_addr => '1.2.3.4',
+          :mds_id      => 'mymds',
+          :mds_data    => '/usr/local/ceph/var/lib/mds/_cluster-_id',
+          :keyring     => '/usr/local/ceph/var/lib/mds/_cluster-_id/keyring'
         }
       end
 
       it { is_expected.to contain_ceph_config('mds/mds_data').with_value('/usr/local/ceph/var/lib/mds/_cluster-_id') }
       it { is_expected.to contain_ceph_config('mds/keyring').with_value('/usr/local/ceph/var/lib/mds/_cluster-_id/keyring') }
-
+      it { is_expected.to contain_package('ceph-mds').with('ensure' => 'present') }
+      it {
+        is_expected.to contain_service('ceph-mds@mymds').with('ensure' => 'running')
+      }
+      it { is_expected.to contain_ceph_config('mds.mymds/public_addr').with_value('1.2.3.4') }
+      it { is_expected.to contain_file('/usr/local/ceph/var/lib/mds/_cluster-_id').with( {
+        'ensure'                  => 'directory',
+        'owner'                   => 'ceph',
+        'group'                   => 'ceph',
+        'mode'                    => '0750',
+        'selinux_ignore_defaults' => true,
+      } ) }
     end
 
     describe "not activated" do
@@ -46,8 +59,6 @@ describe 'ceph::mds' do
         }
       end
 
-      it { is_expected.to_not contain_ceph_config('mds/mds_data').with_value('/var/lib/ceph/mds/_cluster-_id') }
-      it { is_expected.to_not contain_ceph_config('mds/keyring').with_value('/var/lib/ceph/mds/_cluster-_id/keyring') }
       it { is_expected.to contain_ceph_config('mds/mds_data').with_ensure('absent') }
       it { is_expected.to contain_ceph_config('mds/keyring').with_ensure('absent') }
 
@@ -59,7 +70,7 @@ describe 'ceph::mds' do
   }).each do |os,facts|
     context "on #{os}" do
       let (:facts) do
-        facts.merge!(OSDefaults.get_facts())
+        facts.merge!(OSDefaults.get_facts({:hostname => 'myhostname'}))
       end
 
       it_behaves_like 'ceph mds'
