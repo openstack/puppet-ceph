@@ -58,38 +58,18 @@ describe 'ceph::osds' do
     end
   end
 
-  describe 'Ubuntu' do
-    let :facts do
-      {
-        :osfamily => 'Debian',
-        :operatingsystem => 'Ubuntu',
-      }
-    end
+  on_supported_os({
+    :supported_os => OSDefaults.get_supported_os
+  }).each do |os,facts|
+    context "on #{os}" do
+      let (:facts) do
+        facts.merge!(OSDefaults.get_facts())
+      end
 
-    it_configures 'ceph osds'
+      it_behaves_like 'ceph osds'
+    end
   end
 
-  describe 'Debian' do
-    let :facts do
-      {
-        :osfamily => 'Debian',
-        :operatingsystem => 'Debian',
-      }
-    end
-
-    it_configures 'ceph osds'
-  end
-
-  describe 'RedHat' do
-    let :facts do
-      {
-        :osfamily => 'RedHat',
-        :operatingsystem => 'RedHat',
-      }
-    end
-
-    it_configures 'ceph osds'
-  end
 end
 
 # Local Variables:

@@ -34,7 +34,7 @@ describe 'ceph::rgw' do
         :frontend_type => 'civetweb',
       }
       end
-      it { is_expected.to contain_ceph_config('client.radosgw.civetweb/user').with_value("#{default_params[:user]}") }
+      it { is_expected.to contain_ceph_config('client.radosgw.civetweb/user').with_value("#{platform_params[:user]}") }
       it { is_expected.to contain_ceph_config('client.radosgw.civetweb/host').with_value('myhost') }
       it { is_expected.to contain_ceph_config('client.radosgw.civetweb/keyring').with_value('/etc/ceph/ceph.client.radosgw.civetweb.keyring') }
       it { is_expected.to contain_ceph_config('client.radosgw.civetweb/log_file').with_value('/var/log/ceph/radosgw.log') }
@@ -61,51 +61,35 @@ describe 'ceph::rgw' do
 
   end
 
-  describe 'Debian Family' do
+  on_supported_os({
+    :supported_os => OSDefaults.get_supported_os
+  }).each do |os,facts|
+    context "on #{os}" do
+      let (:facts) do
+        facts.merge!(OSDefaults.get_facts({
+          :concat_basedir         => '/var/lib/puppet/concat',
+          :fqdn                   => 'myhost.domain',
+          :hostname               => 'myhost',
+        }))
+      end
 
-    let :facts do
-      {
-        :concat_basedir         => '/var/lib/puppet/concat',
-        :fqdn                   => 'myhost.domain',
-        :hostname               => 'myhost',
-        :osfamily               => 'Debian',
-        :operatingsystem        => 'Ubuntu',
-        :operatingsystemrelease => '14.04',
-      }
+      let :platform_params do
+        case facts[:osfamily]
+        when 'Debian'
+          {
+            :pkg_radosgw => 'radosgw',
+            :user        => 'www-data',
+          }
+        when 'RedHat'
+          {
+            :pkg_radosgw => 'ceph-radosgw',
+            :user        => 'apache',
+          }
+        end
+      end
+
+      it_behaves_like 'ceph rgw civetweb'
     end
-
-    let :default_params do
-      {
-        :pkg_radosgw => 'radosgw',
-        :user        => 'www-data',
-      }
-    end
-
-    it_configures 'ceph rgw civetweb'
-  end
-
-  describe 'RedHat Family' do
-
-    let :facts do
-      {
-        :concat_basedir            => '/var/lib/puppet/concat',
-        :fqdn                      => 'myhost.domain',
-        :hostname                  => 'myhost',
-        :osfamily                  => 'RedHat',
-        :operatingsystem           => 'RedHat',
-        :operatingsystemrelease    => '7.2',
-        :operatingsystemmajrelease => '7',
-      }
-    end
-
-    let :default_params do
-      {
-        :pkg_radosgw => 'ceph-radosgw',
-        :user        => 'apache',
-      }
-    end
-
-    it_configures 'ceph rgw civetweb'
   end
 
 end

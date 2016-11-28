@@ -57,26 +57,16 @@ describe 'ceph::key' do
     end
   end
 
-  describe 'Debian Family' do
+  on_supported_os({
+    :supported_os => OSDefaults.get_supported_os
+  }).each do |os,facts|
+    context "on #{os}" do
+      let (:facts) do
+        facts.merge!(OSDefaults.get_facts())
+      end
 
-    let :facts do
-      {
-        :osfamily => 'Debian',
-      }
+      it_behaves_like 'ceph key'
     end
-
-    it_configures 'ceph key'
-  end
-
-  describe 'RedHat Family' do
-
-    let :facts do
-      {
-        :osfamily => 'RedHat',
-      }
-    end
-
-    it_configures 'ceph key'
   end
 end
 

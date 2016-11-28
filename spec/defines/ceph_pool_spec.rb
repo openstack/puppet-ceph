@@ -76,26 +76,16 @@ describe 'ceph::pool' do
     end
   end
 
-  describe 'Debian Family' do
+  on_supported_os({
+    :supported_os => OSDefaults.get_supported_os
+  }).each do |os,facts|
+    context "on #{os}" do
+      let (:facts) do
+        facts.merge!(OSDefaults.get_facts())
+      end
 
-    let :facts do
-      {
-        :osfamily => 'Debian',
-      }
+      it_behaves_like 'ceph pool'
     end
-
-    it_configures 'ceph pool'
-  end
-
-  describe 'RedHat Family' do
-
-    let :facts do
-      {
-        :osfamily => 'RedHat',
-      }
-    end
-
-    it_configures 'ceph pool'
   end
 end
 

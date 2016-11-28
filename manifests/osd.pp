@@ -57,6 +57,8 @@ define ceph::osd (
   $fsid = $::ceph::profile::params::fsid,
   ) {
 
+    include ::ceph::params
+
     $data = $name
 
     if $cluster {
