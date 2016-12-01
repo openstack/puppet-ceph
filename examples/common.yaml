@@ -20,6 +20,9 @@ ceph::profile::params::osd_recovery_op_priority: '1'
 ceph::profile::params::osd_recovery_max_single_start: '1'
 ceph::profile::params::osd_max_scrubs: '1'
 ceph::profile::params::osd_op_threads: '2'
+ceph::profile::params::fs_name: 'fs_name'
+ceph::profile::params::fs_metadata_pool: 'metadata_pool'
+ceph::profile::params::fs_data_pool: 'data_pool'
 
 ######## Keys
 ceph::profile::params::mon_key: 'AQATGHJTUCBqIBAA7M2yafV1xctn1pgr3GcKPg=='

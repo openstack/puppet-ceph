@@ -175,6 +175,16 @@
 #
 # [*rbd_mirror_client_name*] Name of the cephx client key used for rbd mirroring
 #   Optional. Default is undef
+#
+# [*fs_name*] The FS name.
+#   Optional but required when using fs.
+#
+# [*fs_metadata_pool*] The FS metadata pool name.
+#   Optional but required when using fs.
+#
+# [*fs_data_pool*] The FS data pool name.
+#   Optional but required when using fs.
+#
 
 
 class ceph::profile::params (
@@ -219,6 +229,9 @@ class ceph::profile::params (
   $rgw_keystone_admin_user = undef,
   $rgw_keystone_admin_password = undef,
   $rbd_mirror_client_name = undef,
+  $fs_metadata_pool = undef,
+  $fs_data_pool = undef,
+  $fs_name = undef,
 
 ) {
   validate_hash($client_keys)
