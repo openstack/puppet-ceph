@@ -118,12 +118,14 @@ define ceph::key (
     command   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 ceph-authtool ${keyring_path} --name '${name}' --add-key '${secret}' ${caps}",
-    onlyif    => "/bin/true # comment to satisfy puppet syntax requirements
-set -ex
+    unless    => "/bin/true # comment to satisfy puppet syntax requirements
+set -x
 NEW_KEYRING=\$(mktemp)
 ceph-authtool \$NEW_KEYRING --name '${name}' --add-key '${secret}' ${caps}
-diff -N \$NEW_KEYRING ${keyring_path} | grep '<'
-rm \$NEW_KEYRING",
+diff -N \$NEW_KEYRING ${keyring_path}
+rv=\$?
+rm \$NEW_KEYRING
+exit \$rv",
     require   => [ File[$keyring_path], ],
     logoutput => true,
   }
@@ -145,12 +147,14 @@ rm \$NEW_KEYRING",
       command   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 ceph ${cluster_option} ${inject_id_option} ${inject_keyring_option} auth import -i ${keyring_path}",
-      onlyif    => "/bin/true # comment to satisfy puppet syntax requirements
-set -ex
+      unless    => "/bin/true # comment to satisfy puppet syntax requirements
+set -x
 OLD_KEYRING=\$(mktemp)
 ceph ${cluster_option} ${inject_id_option} ${inject_keyring_option} auth get ${name} -o \$OLD_KEYRING || true
-diff -N \$OLD_KEYRING ${keyring_path} | grep '>'
-rm \$OLD_KEYRING",
+diff -N \$OLD_KEYRING ${keyring_path}
+rv=$?
+rm \$OLD_KEYRING
+exit \$rv",
       require   => [ Class['ceph'], Exec["ceph-key-${name}"], ],
       logoutput => true,
     }
