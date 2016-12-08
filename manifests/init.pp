@@ -134,6 +134,9 @@ class ceph (
     'RedHat': {
       $enabled = $ensure ? { 'present' => '1', 'absent' => '0', default => absent, }
 
+      # needed by rgw civetweb for libssl.sl and libcrypt.so
+      package { 'openssl-devel': ensure => present }
+
       # If you want to deploy Ceph using packages provided by CentOS SIG
       # https://wiki.centos.org/SpecialInterestGroup/Storage/
       if $enable_sig {
