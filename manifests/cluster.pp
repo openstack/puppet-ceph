@@ -26,6 +26,7 @@ define ceph::cluster (
   $ensure                     = present,
   $authentication_type        = 'cephx',
   $keyring                    = undef,
+  $debug_level                = 0,
   $osd_journal_size           = undef,
   $osd_pool_default_pg_num    = undef,
   $osd_pool_default_pgp_num   = undef,
@@ -51,11 +52,14 @@ define ceph::cluster (
   $public_network             = undef,
   $public_addr                = undef,
 ) {
- 
+
     # [global]
     ceph_config {
       "$cluster/global/fsid":                        value => $fsid;
       "$cluster/global/keyring":                     value => $keyring;
+      "$cluster/global/debug_filestore":             value => $debug_level;
+      "$cluster/global/debug_osd":                   value => $debug_level;
+      "$cluster/global/debug_mon":                   value => $debug_level;
       "$cluster/global/osd_pool_default_pg_num":     value => $osd_pool_default_pg_num;
       "$cluster/global/osd_pool_default_pgp_num":    value => $osd_pool_default_pgp_num;
       "$cluster/global/osd_pool_default_size":       value => $osd_pool_default_size;
