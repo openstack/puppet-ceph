@@ -1,0 +1,16 @@
+# cluster related settings are not really overrides if the cluster name is 'ceph'
+
+[Unit]
+PartOf=<%= @cluster %>-radosgw.target
+
+[Service]
+Environment=CLUSTER=<%= @cluster %>
+<% if @cpu_shares -%>
+CPUShares=<%= @cpu_shares -%>
+<% end -%>
+<% if @cpu_quota -%>
+CPUQuota=<%= @cpu_quota -%>
+<% end -%>
+
+[Install]
+WantedBy=<%= @cluster %>-radosgw.target

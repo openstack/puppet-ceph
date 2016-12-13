@@ -37,6 +37,24 @@ class ceph::radosgw (
     mode   => '0755',
   }
 
+  file { "radosgw-target-dir":
+    ensure => directory
+  }
+
+  file { "radosgw-target":
+    ensure => 'link',
+  }
+
+  file { "radosgw-systemd-target":
+    ensure => present,
+    require => Package["$::ceph::radosgw::pkg_radosgw"]
+  }
+     
+  file { "radosgw-systemd-unit":
+    ensure => present,
+    require => Package["$::ceph::radosgw::pkg_radosgw"]
+  }
+
   exec { 'systemctl-reload-from-rgw': #needed for the new init file
       command => '/usr/bin/systemctl daemon-reload',
       refreshonly => true

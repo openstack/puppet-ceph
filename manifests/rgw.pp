@@ -44,7 +44,7 @@
 #   Optional. Default is '/etc/ceph/${name}.keyring'.
 #
 # [*log_file*] Log file to write to.
-#   Optional. Default is '/var/log/ceph/radosgw.log'.
+#   Optional. Default is '/var/log/ceph/${cluster}-radosgw.${client_id}.log'.
 #
 # [*rgw_dns_name*] Hostname to use for the service.
 #   Optional. Default is $fqdn.
@@ -67,6 +67,15 @@
 # [*syslog*] Whether or not to log to syslog.
 #   Optional. Default is true.
 #
+# [*cpu_shares*] Set the CPUShares value in systemd unit.  If left undefined no setting is made.  
+# The normal default priority is 1024.  Set lower/higher to decrease/increase priority of this 
+# rgw instance relative to other services.  Reference systemd.resource-control(5) for more information.
+#
+# [*cpu_quota*] Set the CPUQuota value in systemd unit.  If left undefined no setting is made.  Value is a percentage of time 
+# allowed on a single CPU.  Use a value > 100% to allow time on more than one CPU.  Do not include % character in setting.  
+#
+#
+
 define ceph::rgw (
   $rgw_ensure         = 'running',
   $cluster            = 'ceph',
@@ -86,6 +95,8 @@ define ceph::rgw (
   $ssl_ca_file        = undef,
   $port               = '80',
   $syslog             = false,
+  $cpu_shares         = undef,
+  $cpu_quota          = undef
 ) {
 
   ceph_config {
@@ -165,43 +176,69 @@ define ceph::rgw (
 
     $service_name = "${cluster}-radosgw@${client_id}"
 
-    file { "/etc/systemd/system/${cluster}-radosgw.target.wants":
-      ensure => directory
+    File <| title == 'radosgw-target-dir' |> {
+      path => "/etc/systemd/system/${cluster}-radosgw.target.wants",
     }
 
-    file { "/etc/systemd/system/${cluster}-radosgw.target.wants/${cluster}-radosgw@${client_id}.service":
-      ensure => 'link',
+    File <| title == 'radosgw-target' |> { 
+      path => "/etc/systemd/system/${cluster}-radosgw.target.wants/${cluster}-radosgw@${client_id}.service",
       target => "/usr/lib/systemd/system/${cluster}-radosgw@.service"
     }
 
     if ! ($cluster == 'ceph') {
-      file { "/usr/lib/systemd/system/${cluster}-radosgw.target": 
-        source => 'file:////usr/lib/systemd/system/ceph-radosgw.target',
-        require => Package["$::ceph::radosgw::pkg_radosgw"]
+      File <| title == 'radosgw-systemd-target' |> {
+        path => "/usr/lib/systemd/system/${cluster}-radosgw.target",
+        source => 'file:////usr/lib/systemd/system/ceph-radosgw.target'
       }
 
-      file { "/usr/lib/systemd/system/${cluster}-radosgw@.service": 
+      File <| title == 'radosgw-systemd-unit' |> {
+        path => "/usr/lib/systemd/system/${cluster}-radosgw@.service", 
         source => 'file:////usr/lib/systemd/system/ceph-radosgw@.service',
-        replace => false,
-        require => Package["$::ceph::radosgw::pkg_radosgw"]
-      }
-
-      file_line { "unit-cluster-${cluster}":
-        path => "/usr/lib/systemd/system/${cluster}-radosgw@.service",
-        line => "Environment=CLUSTER=${cluster}",
-        match => 'Environment=CLUSTER=.*',
-        notify => Exec['systemctl-reload-from-rgw']
-      }
-
-      file_line { "unit-wanted-${cluster}":
-        path => "/usr/lib/systemd/system/${cluster}-radosgw@.service",
-        line => "WantedBy=${cluster}-radosgw.target",
-        match => 'WantedBy=.*',
-        notify => Exec['systemctl-reload-from-rgw']
-        # implied?  
-        #require => File["/usr/lib/systemd/system/${cluster}-radosgw@.service"]
       }
     }
+
+    file { "/usr/lib/systemd/system/${cluster}-radosgw@${client_id}.service.d":
+      ensure => directory,
+      before => File["${name}-rgw-systemd-unit-override"]
+    }
+
+    # override or append unit settings for Environment, WantedBy, PartOf, CPUShares, CPUQuota
+    file { "${name}-rgw-systemd-unit-override":
+      path => "/usr/lib/systemd/system/${cluster}-radosgw@${client_id}.service.d/puppet-ceph.conf",
+      ensure => present,
+      content => template('ceph/radosgw.service.d.conf.erb'),
+      notify => [ Exec['systemctl-reload-from-rgw'], Service["$service_name"] ]
+    }
+
+#     file_line { "unit-cluster-${cluster}":
+#       path => "/usr/lib/systemd/system/${cluster}-radosgw@.service",
+#       line => "Environment=CLUSTER=${cluster}",
+#       match => 'Environment=CLUSTER=.*',
+#       notify => Exec['systemctl-reload-from-rgw']
+#     }
+# 
+#     file_line { "unit-wanted-${cluster}":
+#       path => "/usr/lib/systemd/system/${cluster}-radosgw@.service",
+#       line => "WantedBy=${cluster}-radosgw.target",
+#       match => 'WantedBy=.*',
+#       notify => Exec['systemctl-reload-from-rgw']
+#     }
+# 
+#     file_line { "unit-shares-${cluster}":
+#       path => "/usr/lib/systemd/system/${cluster}-radosgw@.service",
+#       line => "CPUShares=$cpu_shares",
+#       match => 'CPUShares=.*',
+#       after => "[Service]",
+#       notify => Exec['systemctl-reload-from-rgw']
+# 
+#     file_line { "unit-quota-${cluster}":
+#       path => "/usr/lib/systemd/system/${cluster}-radosgw@.service",
+#       line => "CPUQuota=${cpu_quota}%",
+#       match => 'CPUQuota=.*',
+#       after => "[Service]",
+#       notify => Exec['systemctl-reload-from-rgw']
+#     }
+
   } else {
       $service_name = "radosgw-${name}"
       Service {
@@ -237,4 +274,5 @@ define ceph::rgw (
   -> Service["${service_name}"]
   File[$log_file] -> Service["${service_name}"]
   Ceph::Pool<||> -> Service["${service_name}"]
+  Exec['systemctl-reload-from-rgw'] -> Service["${service_name}"]
 }
