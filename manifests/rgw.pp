@@ -80,11 +80,11 @@ define ceph::rgw (
   $rgw_ensure         = 'running',
   $cluster            = 'ceph',
   $rgw_enable         = true,
-  $client_id           = "${name}",
-  $rgw_data           = "/var/lib/ceph/radosgw/${cluster}-${client_id}",
+  $client_id          = "${name}",
+  $rgw_data           = undef,
   $user               = $::ceph::params::user_radosgw,
-  $keyring_path       = "/etc/ceph/${cluster}.client.${client_id}.keyring",
-  $log_file           = "/var/log/ceph/${cluster}-radosgw.${client_id}.log",
+  $keyring_path       = undef,
+  $log_file           = undef,
   $rgw_dns_name       = $::fqdn,
   $rgw_socket_path    = $::ceph::params::rgw_socket_path,
   $rgw_print_continue = false,
@@ -99,10 +99,14 @@ define ceph::rgw (
   $cpu_quota          = undef
 ) {
 
+  unless $rgw_data { $rgw_data_r = "/var/lib/ceph/radosgw/${cluster}-${client_id}" }
+  unless $keyring_path { $keyring_path_r  = "/etc/ceph/${cluster}.client.${client_id}.keyring" }
+  unless $log_file { $log_file_r = "/var/log/ceph/${cluster}-radosgw.${client_id}.log" }
+
   ceph_config {
     "${cluster}/client.${client_id}/host":               value => $::hostname;
-    "${cluster}/client.${client_id}/keyring":            value => $keyring_path;
-    "${cluster}/client.${client_id}/log_file":           value => $log_file;
+    "${cluster}/client.${client_id}/keyring":            value => $keyring_path_r;
+    "${cluster}/client.${client_id}/log_file":           value => $log_file_r;
     "${cluster}/client.${client_id}/user":               value => $user;
   }
 
@@ -139,7 +143,7 @@ define ceph::rgw (
     fail("Unsupported frontend_type: ${frontend_type}")
   }
 
-  file { $rgw_data:
+  file { $rgw_data_r:
     ensure => directory,
     owner  => 'root',
     group  => 'root',
@@ -147,7 +151,7 @@ define ceph::rgw (
   }
 
   # Log file for radosgw (ownership)
-  file { $log_file:
+  file { $log_file_r:
     ensure => present,
     owner  => $user,
     mode   => '0640',
@@ -156,7 +160,7 @@ define ceph::rgw (
   # service definition
   if $::operatingsystem == 'Ubuntu' {
     if $rgw_enable {
-      file { "${rgw_data}/done":
+      file { "${rgw_data_r}/done":
         ensure => present,
         before => Service["radosgw-${name}"],
       }
@@ -250,7 +254,7 @@ define ceph::rgw (
     }
 
     if $rgw_enable {
-      file { "${rgw_data}/sysvinit":
+      file { "${rgw_data_r}/sysvinit":
         ensure => present,
         before => Service["${service_name}"],
       }
@@ -268,11 +272,11 @@ define ceph::rgw (
 
   Ceph_config<||> -> Service["${service_name}"]
   Package<| tag == 'ceph' |> -> File['/var/lib/ceph/radosgw']
-  Package<| tag == 'ceph' |> -> File[$log_file]
+  Package<| tag == 'ceph' |> -> File[$log_file_r]
   File['/var/lib/ceph/radosgw']
-  -> File[$rgw_data]
+  -> File[$rgw_data_r]
   -> Service["${service_name}"]
-  File[$log_file] -> Service["${service_name}"]
+  File[$log_file_r] -> Service["${service_name}"]
   Ceph::Pool<||> -> Service["${service_name}"]
   Exec['systemctl-reload-from-rgw'] -> Service["${service_name}"]
 }
