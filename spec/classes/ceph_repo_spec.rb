@@ -543,6 +543,7 @@ describe 'ceph::repo' do
         :try_sleep => 1,
         :unless    => '/usr/bin/rpm -qa | /usr/bin/grep -q centos-release-ceph-hammer',
       ) }
+      it { is_expected.to contain_file_line('priority ceph repo') }
     end
 
     describe "with ensure => absent to disable" do

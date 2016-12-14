@@ -120,9 +120,22 @@ class ceph::repo (
           tries     => 3,
           try_sleep => 1,
           unless    => '/usr/bin/rpm -qa | /usr/bin/grep -q centos-release-ceph-hammer',
+        } ->
+        exec { 'installing_yum-plugin-priorities':
+          command   => '/usr/bin/yum install -y yum-plugin-priorities',
+          logoutput => 'on_failure',
+          tries     => 3,
+          try_sleep => 1,
+          unless    => '/usr/bin/rpm -qa | /usr/bin/grep -q yum-plugin-priorities',
+        } ->
+        file_line { 'priority ceph repo':
+          ensure => $ensure,
+          path   => '/etc/yum.repos.d/CentOS-Ceph-Hammer.repo',
+          after  => '^\[centos-ceph-hammer\]$',
+          line   => 'priority=1',
         }
-        # Make sure we install the repo before any Package resource
-        Exec['installing_centos-release-ceph'] -> Package<| tag == 'ceph' |>
+        # Make sure we install the repo and configure priorities before install ceph
+        File_line['priority ceph repo'] -> Package<| tag == 'ceph' |>
       } else {
         # If you want to deploy Ceph using packages provided by ceph.com repositories.
         if ((($::operatingsystem == 'RedHat' or $::operatingsystem == 'CentOS') and (versioncmp($::operatingsystemmajrelease, '7') < 0)) or ($::operatingsystem == 'Fedora' and (versioncmp($::operatingsystemmajrelease, '19') < 0))) {
