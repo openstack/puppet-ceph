@@ -167,6 +167,7 @@ define ceph::rgw (
     }
 
     Service {
+      tag      => 'radosgw',
       name     => "radosgw-${name}",
       start    => "start radosgw id=${name}",
       stop     => "stop radosgw id=${name}",
@@ -246,6 +247,7 @@ define ceph::rgw (
   } else {
       $service_name = "radosgw-${name}"
       Service {
+        tag      => 'radosgw',
         name     => "${service_name}",
         start    => 'service radosgw start',
         stop     => 'service radosgw stop',
@@ -266,6 +268,7 @@ define ceph::rgw (
   }
 
   service { "${service_name}":
+    tag    => 'radosgw',
     ensure => $rgw_ensure,
     enable => true
   }
