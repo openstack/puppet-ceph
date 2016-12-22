@@ -1,4 +1,5 @@
 # this is required for the docs build jobs
 sphinx!=1.2.0,!=1.3b1,<1.3,>=1.1.2
 oslosphinx>=2.5.0 # Apache-2.0
-reno>=0.1.1 # Apache-2.0
+# FIXME: reno is manually pinned to !=2.0.0 because of bug #1651995
+reno>=0.1.1,!=2.0.0 # Apache-2.0
