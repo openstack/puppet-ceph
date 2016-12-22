@@ -62,6 +62,7 @@ describe 'ceph::rgw::apache_proxy_fcgi' do
       )}
       it { is_expected.to contain_class('apache::mod::alias') }
       it { is_expected.to contain_class('apache::mod::auth_basic') }
+      it { is_expected.to contain_class('apache::mod::env') }
       it { is_expected.to contain_class('apache::mod::proxy') }
       it { is_expected.to contain_class('apache::mod::mime') }
       it { is_expected.to contain_class('apache::mod::rewrite') }
@@ -156,6 +157,7 @@ describe 'ceph::rgw::apache_proxy_fcgi' do
       )}
       it { is_expected.to contain_class('apache::mod::alias') }
       it { is_expected.to contain_class('apache::mod::auth_basic') }
+      it { is_expected.to contain_class('apache::mod::env') }
       it { is_expected.to contain_class('apache::mod::proxy') }
       it { is_expected.to contain_class('apache::mod::mime') }
       it { is_expected.to contain_class('apache::mod::rewrite') }

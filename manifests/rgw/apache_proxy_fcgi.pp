@@ -93,7 +93,7 @@ define ceph::rgw::apache_proxy_fcgi (
 
   if !$apache_mods {
     include ::apache::mod::auth_basic
-    ::apache::mod { 'env': }
+    include ::apache::mod::env
   }
   include ::apache::mod::alias
   include ::apache::mod::mime
