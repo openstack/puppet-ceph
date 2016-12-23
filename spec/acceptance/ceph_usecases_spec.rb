@@ -80,33 +80,6 @@ describe 'ceph usecases' do
       shell 'ceph osd tree | grep osd.0', { :acceptable_exit_codes => [1] }
     end
 
-    it 'should uninstall one monitor' do
-      pp = <<-EOS
-        ceph::mon { 'a':
-          ensure => absent,
-        }
-      EOS
-
-      apply_manifest(pp, :catch_failures => true)
-      apply_manifest(pp, :catch_changes => true)
-
-      osfamily = fact 'osfamily'
-      operatingsystem = fact 'operatingsystem'
-
-      if osfamily == 'Debian' && operatingsystem == 'Ubuntu'
-        shell 'status ceph-mon id=a', { :acceptable_exit_codes => [1] } do |r|
-          expect(r.stdout).to be_empty
-          expect(r.stderr).to match(/Unknown instance: ceph.a/)
-        end
-      end
-      if osfamily == 'RedHat'
-        shell 'service ceph status mon.a', { :acceptable_exit_codes => [1] } do |r|
-          expect(r.stdout).to match(/mon.a not found/)
-          expect(r.stderr).to be_empty
-        end
-      end
-    end
-
     it 'should purge all packages' do
       pp = <<-EOS
         package { #{packages}:
