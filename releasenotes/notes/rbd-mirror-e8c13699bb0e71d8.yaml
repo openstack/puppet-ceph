@@ -1,0 +1,7 @@
+---
+features:
+  - Adds support for the rbd-mirror service including
+    package inistallation, service enable and service
+    start. Does not include support for generating the
+    client see as ceph::key or other processes creates
+    this key

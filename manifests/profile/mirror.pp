@@ -15,20 +15,16 @@
 #
 # Author: Keith Schincke <keith.schincke@gmail.com>
 #
-# == Class: ceph::profile::rgw
+# == Class: ceph::profile::mirror
 #
-# Profile for Ceph rgw
+# Profile for Ceph rbd mirror
 #
-class ceph::profile::rgw {
+class ceph::profile::mirror {
   require ::ceph::profile::base
-  $rgw_name = $::ceph::profile::params::rgw_name ? {
-    undef   => 'radosgw.gateway',
-    default => $::ceph::profile::params::rgw_name,
+  $rbd_name = $::ceph::profile::params::rbd_mirror_client_name ? {
+    undef   => 'openstack',
+    default => $::ceph::profile::params::rbd_mirror_client_name,
   }
-  ceph::rgw { $rgw_name:
-    user               => $::ceph::profile::params::rgw_user,
-    rgw_print_continue => $::ceph::profile::params::rgw_print_continue,
-    frontend_type      => $::ceph::profile::params::frontend_type,
-    rgw_frontends      => $::ceph::profile::params::rgw_frontends,
+  ceph::mirror { $rbd_name:
   }
 }
