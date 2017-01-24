@@ -72,7 +72,7 @@ chmod 0444 /tmp/ceph-mon-keyring-A
 ',
         'unless' => '/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-mon_data=$(ceph-mon  --id A --show-config-value mon_data) || exit 1
+mon_data=$(ceph-mon --cluster ceph --id A --show-config-value mon_data) || exit 1
 # if ceph-mon fails then the mon is probably not configured yet
 test -e $mon_data/done
 ') }
@@ -84,12 +84,12 @@ touch /etc/ceph/ceph.client.admin.keyring'
       it { is_expected.to contain_exec('ceph-mon-mkfs-A').with(
         'command' => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-mon_data=\$(ceph-mon  --id A --show-config-value mon_data)
+mon_data=\$(ceph-mon --cluster ceph --id A --show-config-value mon_data)
 if [ ! -d \$mon_data ] ; then
     mkdir -p \$mon_data
     if getent passwd ceph >/dev/null 2>&1; then
         chown -h ceph:ceph \$mon_data
-        if ceph-mon  \
+        if ceph-mon --cluster ceph \
               --setuser ceph --setgroup ceph \
               --mkfs \
               --id A \
@@ -100,7 +100,7 @@ if [ ! -d \$mon_data ] ; then
             rm -fr \$mon_data
         fi
     else
-        if ceph-mon  \
+        if ceph-mon --cluster ceph \
               --mkfs \
               --id A \
               --keyring /tmp/ceph-mon-keyring-A ; then
@@ -136,12 +136,12 @@ touch /etc/ceph/ceph.client.admin.keyring'
       it { is_expected.to contain_exec('ceph-mon-mkfs-A').with(
         'command' => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-mon_data=\$(ceph-mon  --id A --show-config-value mon_data)
+mon_data=\$(ceph-mon --cluster ceph --id A --show-config-value mon_data)
 if [ ! -d \$mon_data ] ; then
     mkdir -p \$mon_data
     if getent passwd ceph >/dev/null 2>&1; then
         chown -h ceph:ceph \$mon_data
-        if ceph-mon  \
+        if ceph-mon --cluster ceph \
               --setuser ceph --setgroup ceph \
               --mkfs \
               --id A \
@@ -152,7 +152,7 @@ if [ ! -d \$mon_data ] ; then
             rm -fr \$mon_data
         fi
     else
-        if ceph-mon  \
+        if ceph-mon --cluster ceph \
               --mkfs \
               --id A \
               --keyring /etc/ceph/ceph.mon.keyring ; then
@@ -302,7 +302,7 @@ chmod 0444 /tmp/ceph-mon-keyring-A
 ',
         'unless' => '/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-mon_data=$(ceph-mon  --id A --show-config-value mon_data) || exit 1
+mon_data=$(ceph-mon --cluster ceph --id A --show-config-value mon_data) || exit 1
 # if ceph-mon fails then the mon is probably not configured yet
 test -e $mon_data/done
 ') }
@@ -314,12 +314,12 @@ touch /etc/ceph/ceph.client.admin.keyring'
       it { is_expected.to contain_exec('ceph-mon-mkfs-A').with(
         'command' => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-mon_data=\$(ceph-mon  --id A --show-config-value mon_data)
+mon_data=\$(ceph-mon --cluster ceph --id A --show-config-value mon_data)
 if [ ! -d \$mon_data ] ; then
     mkdir -p \$mon_data
     if getent passwd ceph >/dev/null 2>&1; then
         chown -h ceph:ceph \$mon_data
-        if ceph-mon  \
+        if ceph-mon --cluster ceph \
               --setuser ceph --setgroup ceph \
               --mkfs \
               --id A \
@@ -330,7 +330,7 @@ if [ ! -d \$mon_data ] ; then
             rm -fr \$mon_data
         fi
     else
-        if ceph-mon  \
+        if ceph-mon --cluster ceph \
               --mkfs \
               --id A \
               --keyring /tmp/ceph-mon-keyring-A ; then
@@ -366,12 +366,12 @@ touch /etc/ceph/ceph.client.admin.keyring'
       it { is_expected.to contain_exec('ceph-mon-mkfs-A').with(
         'command' => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-mon_data=\$(ceph-mon  --id A --show-config-value mon_data)
+mon_data=\$(ceph-mon --cluster ceph --id A --show-config-value mon_data)
 if [ ! -d \$mon_data ] ; then
     mkdir -p \$mon_data
     if getent passwd ceph >/dev/null 2>&1; then
         chown -h ceph:ceph \$mon_data
-        if ceph-mon  \
+        if ceph-mon --cluster ceph \
               --setuser ceph --setgroup ceph \
               --mkfs \
               --id A \
@@ -382,7 +382,7 @@ if [ ! -d \$mon_data ] ; then
             rm -fr \$mon_data
         fi
     else
-        if ceph-mon  \
+        if ceph-mon --cluster ceph \
               --mkfs \
               --id A \
               --keyring /etc/ceph/ceph.mon.keyring ; then
@@ -531,7 +531,7 @@ chmod 0444 /tmp/ceph-mon-keyring-A
 ',
         'unless' => '/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-mon_data=$(ceph-mon  --id A --show-config-value mon_data) || exit 1
+mon_data=$(ceph-mon --cluster ceph --id A --show-config-value mon_data) || exit 1
 # if ceph-mon fails then the mon is probably not configured yet
 test -e $mon_data/done
 ') }
@@ -546,12 +546,12 @@ test -e /etc/ceph/ceph.client.admin.keyring'
       it { is_expected.to contain_exec('ceph-mon-mkfs-A').with(
         'command' => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-mon_data=\$(ceph-mon  --id A --show-config-value mon_data)
+mon_data=\$(ceph-mon --cluster ceph --id A --show-config-value mon_data)
 if [ ! -d \$mon_data ] ; then
     mkdir -p \$mon_data
     if getent passwd ceph >/dev/null 2>&1; then
         chown -h ceph:ceph \$mon_data
-        if ceph-mon  \
+        if ceph-mon --cluster ceph \
               --setuser ceph --setgroup ceph \
               --mkfs \
               --id A \
@@ -562,7 +562,7 @@ if [ ! -d \$mon_data ] ; then
             rm -fr \$mon_data
         fi
     else
-        if ceph-mon  \
+        if ceph-mon --cluster ceph \
               --mkfs \
               --id A \
               --keyring /tmp/ceph-mon-keyring-A ; then
@@ -603,12 +603,12 @@ touch /etc/ceph/ceph.client.admin.keyring'
       it { is_expected.to contain_exec('ceph-mon-mkfs-A').with(
         'command' => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-mon_data=\$(ceph-mon  --id A --show-config-value mon_data)
+mon_data=\$(ceph-mon --cluster ceph --id A --show-config-value mon_data)
 if [ ! -d \$mon_data ] ; then
     mkdir -p \$mon_data
     if getent passwd ceph >/dev/null 2>&1; then
         chown -h ceph:ceph \$mon_data
-        if ceph-mon  \
+        if ceph-mon --cluster ceph \
               --setuser ceph --setgroup ceph \
               --mkfs \
               --id A \
@@ -619,7 +619,7 @@ if [ ! -d \$mon_data ] ; then
             rm -fr \$mon_data
         fi
     else
-        if ceph-mon  \
+        if ceph-mon --cluster ceph \
               --mkfs \
               --id A \
               --keyring /etc/ceph/ceph.mon.keyring ; then

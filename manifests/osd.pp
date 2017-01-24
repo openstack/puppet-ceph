@@ -62,11 +62,11 @@ define ceph::osd (
     $data = $name
 
     if $cluster {
-      $cluster_option = "--cluster ${cluster}"
       $cluster_name = $cluster
     } else {
       $cluster_name = 'ceph'
     }
+    $cluster_option = "--cluster ${cluster_name}"
 
     if $ensure == present {
 

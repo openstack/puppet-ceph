@@ -75,10 +75,10 @@ define ceph::mon (
 
     if $cluster {
       $cluster_name = $cluster
-      $cluster_option = "--cluster ${cluster_name}"
     } else {
       $cluster_name = 'ceph'
     }
+    $cluster_option = "--cluster ${cluster_name}"
 
     # NOTE(aschultz): this is the service title for the mon service. It may be
     # different than the actual service name.

@@ -87,17 +87,27 @@ define ceph::key (
 
   if $cluster {
     $cluster_option = "--cluster ${cluster}"
+  } else
+  {
+    $cluster_option = ''
   }
 
   if $cap_mon {
     $mon_caps = "--cap mon '${cap_mon}' "
+  } else {
+    $mon_caps = ''
   }
   if $cap_osd {
     $osd_caps = "--cap osd '${cap_osd}' "
+  } else {
+    $osd_caps = ''
   }
   if $cap_mds {
     $mds_caps = "--cap mds '${cap_mds}' "
+  } else {
+    $mds_caps = ''
   }
+
   $caps = "${mon_caps}${osd_caps}${mds_caps}"
 
   # this allows multiple defines for the same 'keyring file',

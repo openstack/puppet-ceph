@@ -51,7 +51,7 @@ if ! test -b /srv ; then
         chown -h ceph:ceph /srv
     fi
 fi
-ceph-disk prepare   /srv 
+ceph-disk prepare --cluster ceph  /srv 
 udevadm settle
 ",
         'unless'    => "/bin/true # comment to satisfy puppet syntax requirements
@@ -193,9 +193,9 @@ if [ \"\$id\" ] ; then
   stop ceph-osd cluster=ceph id=\$id || true
   service ceph stop osd.\$id || true
   systemctl stop ceph-osd@$id || true
-  ceph  osd crush remove osd.\$id
-  ceph  auth del osd.\$id
-  ceph  osd rm \$id
+  ceph --cluster ceph osd crush remove osd.\$id
+  ceph --cluster ceph auth del osd.\$id
+  ceph --cluster ceph osd rm \$id
   rm -fr /var/lib/ceph/osd/ceph-\$id/*
   umount /var/lib/ceph/osd/ceph-\$id || true
   rm -fr /var/lib/ceph/osd/ceph-\$id
