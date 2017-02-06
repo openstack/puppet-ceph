@@ -145,9 +145,15 @@ exit \$rv",
     if $inject_as_id {
       $inject_id_option = " --name '${inject_as_id}' "
     }
+    else {
+      $inject_id_option = ''
+    }
 
     if $inject_keyring {
       $inject_keyring_option = " --keyring '${inject_keyring}' "
+    }
+    else {
+      $inject_keyring_option = ''
     }
 
     Ceph_config<||> -> Exec["ceph-injectkey-${name}"]
