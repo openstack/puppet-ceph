@@ -91,7 +91,6 @@ describe 'ceph::rgw' do
           :rgw_socket_path    => '/some/location/radosgw.sock',
           :rgw_print_continue => true,
           :rgw_port           => 1111,
-          :syslog             => false,
         }
       end
 
@@ -187,7 +186,6 @@ describe 'ceph::rgw' do
           :rgw_socket_path    => '/some/location/radosgw.sock',
           :rgw_print_continue => true,
           :rgw_port           => 1111,
-          :syslog             => false,
         }
       end
 
@@ -283,7 +281,6 @@ describe 'ceph::rgw' do
           :rgw_socket_path    => '/some/location/radosgw.sock',
           :rgw_print_continue => true,
           :rgw_port           => 1111,
-          :syslog             => false,
         }
       end
 
