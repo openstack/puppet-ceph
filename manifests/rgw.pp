@@ -64,9 +64,12 @@
 # [*rgw_frontends*] Arguments to the rgw frontend
 #   Optional. Default is 'fastcgi socket_port=9000 socket_host=127.0.0.1'. Example: "civetweb port=7480"
 #
+# Deprecated Parameters:
+#
 # [*syslog*] Whether or not to log to syslog.
 #   Optional. Default is true.
 #
+
 define ceph::rgw (
   $pkg_radosgw        = $::ceph::params::pkg_radosgw,
   $rgw_ensure         = 'running',
@@ -81,10 +84,15 @@ define ceph::rgw (
   $rgw_port           = undef,
   $frontend_type      = 'apache-fastcgi',
   $rgw_frontends      = 'fastcgi socket_port=9000 socket_host=127.0.0.1',
-  $syslog             = true,
+  $syslog             = undef,
 ) {
 
   include ::stdlib
+
+  if $syslog
+  {
+    warning( 'The syslog parameter is unused and deprecated. It will be removed in a future release.' )
+  }
 
   unless $name =~ /^radosgw\..+/ {
     fail("Define name must be started with 'radosgw.'")
