@@ -44,6 +44,7 @@ define ceph::rgw::civetweb (
   $ssl_cert = undef,
   $ssl_ca_file = undef,
   $cluster = 'ceph',
+  $num_threads = undef,
   $port = '80'
 ) {
 
@@ -51,8 +52,9 @@ define ceph::rgw::civetweb (
 		if $ssl_cert { $certarg = "ssl_certificate=${ssl_cert}" }
     # civetweb docs say this is valid but ceph won't have it in the frontend args
 		#if $ssl_ca_file { $carg = "ssl_ca_file=${ssl_ca_file}" }
+    if $num_threads { $threadarg = "num_threads=${num_threads}" }
 
-		$frontends = "civetweb port=${port} ${certarg} ${carg}"
+		$frontends = "civetweb port=${port} ${threadarg} ${certarg} ${carg}"
 	} else {
 		$frontends = $rgw_frontends
 	}

@@ -96,7 +96,10 @@ define ceph::rgw (
   $port               = '80',
   $syslog             = false,
   $cpu_shares         = undef,
-  $cpu_quota          = undef
+  $cpu_quota          = undef,
+  $num_rados_handles  = undef,
+  $thread_pool_size   = undef,
+  $civetweb_num_threads = undef
 ) {
 
   unless $rgw_data { $rgw_data_r = "/var/lib/ceph/radosgw/${cluster}-${client_id}" }
@@ -104,10 +107,12 @@ define ceph::rgw (
   unless $log_file { $log_file_r = "/var/log/ceph/${cluster}-radosgw.${client_id}.log" }
 
   ceph_config {
-    "${cluster}/client.${client_id}/host":               value => $::hostname;
-    "${cluster}/client.${client_id}/keyring":            value => $keyring_path_r;
-    "${cluster}/client.${client_id}/log_file":           value => $log_file_r;
-    "${cluster}/client.${client_id}/user":               value => $user;
+    "${cluster}/client.${client_id}/host":                    value => $::hostname;
+    "${cluster}/client.${client_id}/keyring":                 value => $keyring_path_r;
+    "${cluster}/client.${client_id}/log_file":                value => $log_file_r;
+    "${cluster}/client.${client_id}/user":                    value => $user;
+    "${cluster}/client.${client_id}/rgw_num_rados_handles":   value => $num_rados_handles;
+    "${cluster}/client.${client_id}/rgw_thread_pool_size":    value => $thread_pool_size;
   }
 
   if ($frontend_type == 'civetweb')
@@ -118,6 +123,7 @@ define ceph::rgw (
       ssl_cert => $ssl_cert,
       ssl_ca_file => $ssl_ca_file,
       cluster => $cluster,
+      num_threads => $civetweb_num_threads,
       port => $port
     }
   }
