@@ -29,6 +29,20 @@ describe 'ceph::osd' do
         '/srv'
       end
 
+      it { is_expected.to contain_exec('ceph-osd-zap-/srv').with(
+       'command'   => "/bin/true # comment to satisfy puppet syntax requirements
+set -ex
+if [ -b /srv ]; then
+  ceph-disk zap /srv
+fi
+",
+        'unless'    => "/bin/true # comment to satisfy puppet syntax requirements
+set -ex
+! test -b /srv ||
+test $(parted -ms /srv p 2>&1 | egrep -c 'Error.*unrecognised disk label') -eq 0
+",
+        'logoutput' => true,
+      ) }
       it { is_expected.to contain_exec('ceph-osd-check-udev-/srv').with(
         'command'   => "/bin/true # comment to satisfy puppet syntax requirements
 # Before Infernalis the udev rules race causing the activation to fail so we
@@ -100,6 +114,34 @@ ls -ld /var/lib/ceph/osd/ceph-* | grep ' /srv\$'
         }
       end
 
+      it { is_expected.to contain_exec('ceph-osd-zap-/srv/data').with(
+       'command'   => "/bin/true # comment to satisfy puppet syntax requirements
+set -ex
+if [ -b /srv/data ]; then
+  ceph-disk zap /srv/data
+fi
+",
+        'unless'    => "/bin/true # comment to satisfy puppet syntax requirements
+set -ex
+! test -b /srv/data ||
+test $(parted -ms /srv/data p 2>&1 | egrep -c 'Error.*unrecognised disk label') -eq 0
+",
+        'logoutput' => true,
+      ) }
+      it { is_expected.to contain_exec('ceph-osd-zap-/srv/data-/srv/journal').with(
+       'command'   => "/bin/true # comment to satisfy puppet syntax requirements
+set -ex
+if [ -b /srv/journal ]; then
+  ceph-disk zap /srv/journal
+fi
+",
+        'unless'    => "/bin/true # comment to satisfy puppet syntax requirements
+set -ex
+! test -b /srv/journal ||
+test $(parted -ms /srv/journal p 2>&1 | egrep -c 'Error.*unrecognised disk label') -eq 0
+",
+        'logoutput' => true,
+      ) }
       it { is_expected.to contain_exec('ceph-osd-check-udev-/srv/data').with(
         'command'   => "/bin/true # comment to satisfy puppet syntax requirements
 # Before Infernalis the udev rules race causing the activation to fail so we
