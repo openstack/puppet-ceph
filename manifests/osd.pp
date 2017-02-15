@@ -81,6 +81,9 @@ define ceph::osd (
       Ceph::Mon<||> -> Exec[$ceph_prepare]
       Ceph::Key<||> -> Exec[$ceph_prepare]
 
+      # Ensure none is activated before prepare is finished for all
+      Exec<| tag == 'prepare' |> -> Exec<| tag == 'activate' |>
+
       if $journal {
         $ceph_zap_journal = "ceph-osd-zap-${name}-${journal}"
         Exec[$ceph_zap_osd] -> Exec[$ceph_zap_journal]
@@ -175,6 +178,7 @@ ceph-disk list | grep -E ' *${data}1? .*ceph data, (prepared|active)' ||
 ",
         logoutput => true,
         timeout   => $exec_timeout,
+        tag       => 'prepare',
       }
       if (str2bool($::selinux) == true) {
         ensure_packages($::ceph::params::pkg_policycoreutils, {'ensure' => 'present'})
@@ -210,6 +214,7 @@ set -ex
 ls -ld /var/lib/ceph/osd/${cluster_name}-* | grep ' ${data}\$'
 ",
         logoutput => true,
+        tag       => 'activate',
       }
 
     } elsif $ensure == absent {
