@@ -34,7 +34,7 @@
 #  Optional. Defaults to 'present'.
 #
 # [*release*] The name of the Ceph release to install
-#   Optional. Default to 'jewel' in ceph::params.
+#   Optional. Default to 'kraken' in ceph::params.
 #
 # [*fastcgi*] Install Ceph fastcgi apache module for Ceph
 #   Optional. Defaults to 'false'
@@ -61,13 +61,13 @@
 #
 class ceph::repo (
   $ensure         = present,
-  $release        = $::ceph::params::release,
+  $release        = 'kraken',
   $fastcgi        = false,
   $proxy          = undef,
   $proxy_username = undef,
   $proxy_password = undef,
   $enable_epel    = true,
-  $enable_sig     = $::ceph::params::enable_sig,
+  $enable_sig     = false,
   $ceph_mirror    = undef,
 ) inherits ceph::params {
   case $::osfamily {
@@ -124,15 +124,15 @@ class ceph::repo (
           warning("CentOS SIG repository is only supported on CentOS operating system, \
 not on ${::operatingsystem}, which can lead to packaging issues.")
         }
-        yumrepo { 'ceph-jewel-sig':
+        yumrepo { 'ceph-kraken-sig':
           enabled    => '1',
-          baseurl    => 'http://buildlogs.centos.org/centos/7/storage/x86_64/ceph-jewel/',
-          descr      => 'Ceph Jewel SIG',
+          baseurl    => 'http://buildlogs.centos.org/centos/7/storage/x86_64/ceph-kraken/',
+          descr      => 'Ceph kraken SIG',
           mirrorlist => 'absent',
           gpgcheck   => '0',
         }
         # Make sure we install the repo before any Package resource
-        Yumrepo['ceph-jewel-sig'] -> Package<| tag == 'ceph' |>
+        Yumrepo['ceph-kraken-sig'] -> Package<| tag == 'ceph' |>
       } else {
         # If you want to deploy Ceph using packages provided by ceph.com repositories.
         if ((($::operatingsystem == 'RedHat' or $::operatingsystem == 'CentOS') and (versioncmp($::operatingsystemmajrelease, '7') < 0))
