@@ -73,54 +73,14 @@ define ceph::osd (
       $ceph_check_udev = "ceph-osd-check-udev-${name}"
       $ceph_prepare = "ceph-osd-prepare-${name}"
       $ceph_activate = "ceph-osd-activate-${name}"
-      $ceph_zap_osd = "ceph-osd-zap-${name}"
 
       Package<| tag == 'ceph' |> -> Exec[$ceph_check_udev]
-      Exec[$ceph_zap_osd] -> Exec[$ceph_check_udev]
       Ceph_config<||> -> Exec[$ceph_prepare]
       Ceph::Mon<||> -> Exec[$ceph_prepare]
       Ceph::Key<||> -> Exec[$ceph_prepare]
 
       # Ensure none is activated before prepare is finished for all
       Exec<| tag == 'prepare' |> -> Exec<| tag == 'activate' |>
-
-      if $journal {
-        $ceph_zap_journal = "ceph-osd-zap-${name}-${journal}"
-        Exec[$ceph_zap_osd] -> Exec[$ceph_zap_journal]
-        Exec[$ceph_zap_journal] -> Exec[$ceph_check_udev]
-        exec { $ceph_zap_journal:
-          command   => "/bin/true # comment to satisfy puppet syntax requirements
-set -ex
-if [ -b ${journal} ]; then
-  ceph-disk zap ${journal}
-fi
-",
-          unless    => "/bin/true # comment to satisfy puppet syntax requirements
-set -ex
-! test -b ${journal} ||
-test $(parted -ms ${journal} p 2>&1 | egrep -c 'Error.*unrecognised disk label') -eq 0
-",
-          logoutput => true,
-          timeout   => $exec_timeout,
-        }
-      }
-
-      exec { $ceph_zap_osd:
-        command   => "/bin/true # comment to satisfy puppet syntax requirements
-set -ex
-if [ -b ${data} ]; then
-  ceph-disk zap ${data}
-fi
-",
-        unless    => "/bin/true # comment to satisfy puppet syntax requirements
-set -ex
-! test -b ${data} ||
-test $(parted -ms ${data} p 2>&1 | egrep -c 'Error.*unrecognised disk label') -eq 0
-",
-        logoutput => true,
-        timeout   => $exec_timeout,
-      }
-
 
       $udev_rules_file = '/usr/lib/udev/rules.d/95-ceph-osd.rules'
       exec { $ceph_check_udev:
