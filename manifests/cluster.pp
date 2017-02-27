@@ -81,7 +81,7 @@ define ceph::cluster (
       "$cluster/global/public_network":              value => $public_network;
       "$cluster/global/public_addr":                 value => $public_addr;
       "$cluster/osd/osd_journal_size":               value => $osd_journal_size;
-      "$cluster/osd/osd_crush_location":             value => $osd_crush_location;
+      "$cluster/osd/crush_location":                 value => $osd_crush_location;
       "$cluster/osd/osd_op_thread_timeout":          value => $osd_op_thread_timeout;
       "$cluster/osd/osd_recovery_thread_timeout":    value => $osd_recovery_thread_timeout;
 
