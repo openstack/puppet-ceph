@@ -10,19 +10,21 @@ ceph
 5. [Limitations - OS compatibility, etc.](#limitations)
 6. [Use Cases - Examples of how to use this module](#limitations)
 7. [Development - Guide for contributing to the module](#development)
-8. [Beaker Integration Tests - Apply the module and test restults](#integration-tests)
+8. [Beaker Integration Tests - Apply the module and test results](#beaker-integration-tests)
 9. [Contributors - Those with commits](#contributors)
 10. [Release Notes - Notes on the most recent updates to the module](#release-notes)
 
 Overview
 --------
 
-The ceph module is intended to leverage all [Ceph](http://ceph.com/) has to offer and allow for a wide range of use case. Although hosted on the OpenStack infrastructure, it does not require to sign a CLA nor is it restricted to OpenStack users. It benefits from a structured development process that helps federate the development effort. Each feature is tested with integration tests involving virtual machines to show that it performs as expected when used with a realistic scenario.
+The ceph module is intended to leverage all [Ceph](http://ceph.com/) has to offer and allow for a wide range of use case. This module was originally forked from the openstack/puppet-ceph module and since changed to support uses cases required by our project.  Additional functionality was also added to support more Ceph services.  It has diverged sufficiently that a clean merge from the origin repository is likely to be difficiult.  At some point an evaluation of this module compared to the current state of the openstack origin may be in order to identify commits worth merging or pull-requests that could be fed back.  
+
+Some links to documentation are left as-is from the original as they may still be relevant.  Parts relevant to using the module are updated with current usage.  
 
 Module Description
 ------------------
 
-The ceph module deploys a [Ceph](http://ceph.com/) cluster ( MON, OSD ), the [Cephfs](http://ceph.com/docs/next/cephfs/) file system and the [RadosGW](http://ceph.com/docs/next/radosgw/) object store. It provides integration with various environments ( OpenStack ... ) and components to be used by third party puppet modules that depend on a Ceph cluster.
+The ceph module deploys a [Ceph](http://ceph.com/) cluster ( MON, OSD , MGR), the [Cephfs](http://ceph.com/docs/master/cephfs/) file system and the [RadosGW](http://ceph.com/docs/master/radosgw/) object store. It provides integration with various environments and components to be used by third party puppet modules that depend on a Ceph cluster.
 
 Setup
 -----
@@ -53,7 +55,7 @@ Development
 -----------
 
 ```
-git clone https://github.com/openstack/puppet-ceph.git
+git clone https://github.com/MI-OSiRIS/puppet-ceph
 cd puppet-ceph
 sudo gem install bundler
 bundle install
@@ -107,6 +109,7 @@ Contributors
 ------------
 
 * https://github.com/openstack/puppet-ceph/graphs/contributors
+* https://github.com/MI-OSiRIS/puppet-ceph/graphs/contributors
 
 Release Notes
 -------------

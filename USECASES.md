@@ -12,17 +12,17 @@ I want to run it on a virtual machine, all in one. The **ceph::repo** class will
 * `ceph -s`: it will connect to the monitor and report that the cluster is ready to be used
 
 ```
-    class { 'ceph::repo': }
-    class { 'ceph':
+    class { 'ceph': }
+    
+    ceph::cluster { 'ceph': 
       fsid                       => generate('/usr/bin/uuidgen'),
       mon_host                   => $::ipaddress,
       authentication_type        => 'none',
       osd_pool_default_size      => '1',
       osd_pool_default_min_size  => '1',
+      osd_journal_size          => '100'
     }
-    ceph_config {
-     'global/osd_journal_size': value => '100';
-    }
+    
     ceph::mon { 'a':
       public_addr         => $::ipaddress,
       authentication_type => 'none',
@@ -54,39 +54,81 @@ Enjoy your ceph cluster!
     $fsid = '066F558C-6789-4A93-AAF1-5AF1BA01A3AD'
 
     node /mon[123]/ {
-      class { 'ceph::repo': }
-      class { 'ceph':
+    
+      class { 'ceph': }
+      
+      ceph::cluster { 'ceph':
         fsid                => $fsid,
         mon_initial_members => 'mon1,mon2,mon3',
         mon_host            => '<ip of mon1>,<ip of mon2>,<ip of mon3>',
       }
+      
       ceph::mon { $::hostname:
         key => $mon_key,
       }
+      
       Ceph::Key {
         inject         => true,
         inject_as_id   => 'mon.',
         inject_keyring => "/var/lib/ceph/mon/ceph-${::hostname}/keyring",
       }
+      
       ceph::key { 'client.admin':
         secret  => $admin_key,
         cap_mon => 'allow *',
         cap_osd => 'allow *',
         cap_mds => 'allow',
       }
-      ceph::key { 'client.bootstrap-osd':
+      
+       ceph::key { 'mds.mdskey':
+        secret  => $mds_key,
+    	cap_mon => 'allow profile mds'
+        cap_osd => 'allow rwx'
+        cap_mds => 'allow'
+      }
+      
+      ceph::key { 'client.radosgw.rgw01':
+        secret  => $rgw_key,
+    	cap_mon => 'allow r',
+	cap_osd => 'allow rwx'
+      }
+      
+       ceph::key { 'client.bootstrap-osd':
         secret  => $bootstrap_osd_key,
         cap_mon => 'allow profile bootstrap-osd',
       }
     }
+    
 
-    node /osd*/ {
-      class { 'ceph::repo': }
-      class { 'ceph':
+  }
+  
+  node /mds[123]/
+      class { 'ceph': }
+      
+      ceph::cluster { 'ceph':
         fsid                => $fsid,
         mon_initial_members => 'mon1,mon2,mon3',
         mon_host            => '<ip of mon1>,<ip of mon2>,<ip of mon3>',
       }
+      
+      ceph::key { 'mds.mdskey':
+        secret  => $mds_key,
+	keyring_path => "/var/lib/ceph/mds/${cephx::cluster}-${::hostname}/keyring"
+      }
+     
+      ceph::mds { "$::hostname": }
+      
+  }
+
+    node /osd*/ {
+      class { 'ceph': }
+      
+      ceph::cluster { 'ceph':
+        fsid                => $fsid,
+        mon_initial_members => 'mon1,mon2,mon3',
+        mon_host            => '<ip of mon1>,<ip of mon2>,<ip of mon3>',
+      }
+      
       ceph::osd {
       '<disk1>':
         journal => '<journal for disk1>';
@@ -100,15 +142,41 @@ Enjoy your ceph cluster!
     }
 
     node /client/ {
-      class { 'ceph::repo': }
-      class { 'ceph':
+   
+      class { 'ceph': }
+      
+      ceph::cluster { 'ceph':
         fsid                => $fsid,
         mon_initial_members => 'mon1,mon2,mon3',
         mon_host            => '<ip of mon1>,<ip of mon2>,<ip of mon3>',
       }
+      
       ceph::key { 'client.admin':
         secret => $admin_key
       }
+    }
+    
+    node /rgw*/ {
+    	class { 'ceph': 
+	
+	# there is a separate radosgw class to define some basic requires needed before defining systemd units in the resource
+        class { 'ceph::radosgw' }
+	
+	ceph::cluster { 'ceph':
+        	fsid                => $fsid,
+        	mon_initial_members => 'mon1,mon2,mon3',
+        	mon_host            => '<ip of mon1>,<ip of mon2>,<ip of mon3>',
+        }
+        
+        ceph::rgw { "radosgw-${::hostname}": 
+		ssl_cert => '/path/to/combined-key-cert.pem',
+		ssl_ca_file => '/etc/pki/tls/certs/ca-bundle.crt',
+		port => '443s',
+		cpu_shares => '524'
+		cpu_quota => '1000'
+	}
+
+    
     }
 ```
 
@@ -132,8 +200,8 @@ On the client:
     $fsid = '066F558C-6789-4A93-AAF1-5AF1BA01A3AD'
 
     node /node1/ {
-      class { 'ceph::repo': }
-      class { 'ceph':
+      class { 'ceph': }
+      ceph::cluster { 'ceph':
         fsid                => $fsid,
         mon_host            => '<ip of node1>',
         mon_initial_members => 'node1',
@@ -151,8 +219,8 @@ On the client:
     }
 
     node /node[23]/ {
-      class { 'ceph::repo': }
-      class { 'ceph':
+      class { 'ceph': }
+      ceph::cluster { 'ceph':
         fsid                => $fsid,
         mon_host            => '<ip of node1>',
         mon_initial_members => 'node1',
@@ -167,8 +235,8 @@ On the client:
     }
 
     node /client/ {
-      class { 'ceph::repo': }
-      class { 'ceph':
+      class { 'ceph': }
+      ceph::cluster { 'ceph':
         fsid                => $fsid,
         mon_host            => '<ip of node1>',
         mon_initial_members => 'node1',
