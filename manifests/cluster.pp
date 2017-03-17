@@ -58,6 +58,7 @@ define ceph::cluster (
       "$cluster/global/debug_filestore":             value => $debug_level;
       "$cluster/global/debug_osd":                   value => $debug_level;
       "$cluster/global/debug_mon":                   value => $debug_level;
+      "$cluster/global/err_to_stderr":               value => false;   # if this is not set you end up with errors in syslog
       "$cluster/global/osd_pool_default_pg_num":     value => $osd_pool_default_pg_num;
       "$cluster/global/osd_pool_default_pgp_num":    value => $osd_pool_default_pgp_num;
       "$cluster/global/osd_pool_default_size":       value => $osd_pool_default_size;
