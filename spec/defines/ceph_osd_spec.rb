@@ -46,6 +46,7 @@ test -f /usr/lib/udev/rules.d/95-ceph-osd.rules && test \$DISABLE_UDEV -eq 1
         'command'   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 if ! test -b /srv ; then
+    echo /srv | egrep -e '^/dev' -q -v
     mkdir -p /srv
     if getent passwd ceph >/dev/null 2>&1; then
         chown -h ceph:ceph /srv
@@ -65,6 +66,7 @@ ceph-disk list | grep -E ' */srv1? .*ceph data, (prepared|active)' ||
         'command'   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 if ! test -b /srv ; then
+    echo /srv | egrep -e '^/dev' -q -v
     mkdir -p /srv
     if getent passwd ceph >/dev/null 2>&1; then
         chown -h ceph:ceph /srv
@@ -128,6 +130,7 @@ test -z \$(ceph-disk list /srv/data | egrep -o '[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-
         'command'   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 if ! test -b /srv/data ; then
+    echo /srv/data | egrep -e '^/dev' -q -v
     mkdir -p /srv/data
     if getent passwd ceph >/dev/null 2>&1; then
         chown -h ceph:ceph /srv/data
@@ -147,6 +150,7 @@ ceph-disk list | grep -E ' */srv/data1? .*ceph data, (prepared|active)' ||
         'command'   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 if ! test -b /srv/data ; then
+    echo /srv/data | egrep -e '^/dev' -q -v
     mkdir -p /srv/data
     if getent passwd ceph >/dev/null 2>&1; then
         chown -h ceph:ceph /srv/data

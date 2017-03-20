@@ -1,0 +1,3 @@
+---
+fixes:
+  - Bug 1665697 non-existent block device should make deploy fail, not create directory whose name starts with /dev

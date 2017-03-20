@@ -123,6 +123,7 @@ test -z \$(ceph-disk list ${data} | egrep -o '[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a
         command   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 if ! test -b ${data} ; then
+    echo ${data} | egrep -e '^/dev' -q -v
     mkdir -p ${data}
     if getent passwd ceph >/dev/null 2>&1; then
         chown -h ceph:ceph ${data}
@@ -156,6 +157,7 @@ ceph-disk list | grep -E ' *${data}1? .*ceph data, (prepared|active)' ||
         command   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 if ! test -b ${data} ; then
+    echo ${data} | egrep -e '^/dev' -q -v
     mkdir -p ${data}
     if getent passwd ceph >/dev/null 2>&1; then
         chown -h ceph:ceph ${data}
