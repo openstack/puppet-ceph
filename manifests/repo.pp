@@ -126,7 +126,7 @@ not on ${::operatingsystem}, which can lead to packaging issues.")
         }
         yumrepo { 'ceph-jewel-sig':
           enabled    => '1',
-          baseurl    => 'http://buildlogs.centos.org/centos/7/storage/x86_64/ceph-jewel/',
+          baseurl    => 'https://buildlogs.centos.org/centos/7/storage/x86_64/ceph-jewel/',
           descr      => 'Ceph Jewel SIG',
           mirrorlist => 'absent',
           gpgcheck   => '0',
