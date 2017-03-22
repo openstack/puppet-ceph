@@ -80,7 +80,8 @@ define ceph::cluster (
       "$cluster/global/public_network":              value => $public_network;
       "$cluster/global/public_addr":                 value => $public_addr;
       "$cluster/osd/osd_journal_size":               value => $osd_journal_size;
-      "$cluster/osd/crush_location":                 value => $osd_crush_location;
+      "$cluster/osd/crush_location":                 value => $osd_crush_location;  # kraken
+      "$cluster/osd/osd_crush_location":             value => $osd_crush_location;  # jewel
     }
 
     if $authentication_type == 'cephx' {
