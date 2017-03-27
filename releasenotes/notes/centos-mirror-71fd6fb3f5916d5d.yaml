@@ -1,0 +1,4 @@
+---
+features:
+  - We can now deploy CentOS SIG repos from an external mirror
+    by re-using the $ceph_mirror parameter in ceph::repo.

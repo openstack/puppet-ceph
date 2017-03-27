@@ -124,9 +124,14 @@ class ceph::repo (
           warning("CentOS SIG repository is only supported on CentOS operating system, \
 not on ${::operatingsystem}, which can lead to packaging issues.")
         }
+        if $ceph_mirror {
+          $ceph_mirror_real = $ceph_mirror
+        } else {
+          $ceph_mirror_real = "https://buildlogs.centos.org/centos/7/storage/x86_64/ceph-${release}/"
+        }
         yumrepo { 'ceph-jewel-sig':
           enabled    => '1',
-          baseurl    => 'https://buildlogs.centos.org/centos/7/storage/x86_64/ceph-jewel/',
+          baseurl    => $ceph_mirror_real,
           descr      => 'Ceph Jewel SIG',
           mirrorlist => 'absent',
           gpgcheck   => '0',

@@ -547,7 +547,26 @@ describe 'ceph::repo' do
       it { is_expected.to_not contain_yumrepo('ext-epel-7') }
       it { is_expected.to_not contain_yumrepo('ext-ceph') }
       it { is_expected.to_not contain_yumrepo('ext-ceph-noarch') }
-      it { is_expected.to contain_yumrepo('ceph-jewel-sig') }
+      it { is_expected.to contain_yumrepo('ceph-jewel-sig').with(
+        :baseurl => 'https://buildlogs.centos.org/centos/7/storage/x86_64/ceph-jewel/',
+      ) }
+    end
+
+    describe "when using CentOS SIG repository from a mirror" do
+      let :params do
+        {
+         :enable_sig  => true,
+         :ceph_mirror => 'https://mymirror/jewel/',
+        }
+      end
+
+      it { is_expected.to_not contain_file_line('exclude base') }
+      it { is_expected.to_not contain_yumrepo('ext-epel-7') }
+      it { is_expected.to_not contain_yumrepo('ext-ceph') }
+      it { is_expected.to_not contain_yumrepo('ext-ceph-noarch') }
+      it { is_expected.to contain_yumrepo('ceph-jewel-sig').with(
+        :baseurl => 'https://mymirror/jewel/',
+      ) }
     end
 
     describe "with ensure => absent to disable" do
