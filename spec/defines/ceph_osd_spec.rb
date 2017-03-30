@@ -37,7 +37,7 @@ mv -f /usr/lib/udev/rules.d/95-ceph-osd.rules /usr/lib/udev/rules.d/95-ceph-osd.
 ",
        'onlyif'    => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-DISABLE_UDEV=\$(ceph --version | awk 'match(\$3, /[0-9]+\\.[0-9]+/) {if (substr(\$3, RSTART, RLENGTH) <= 0.94) {print 1}}')
+DISABLE_UDEV=$(ceph --version | awk 'match(\$3, /[0-9]+\\.[0-9]+/) {if (substr(\$3, RSTART, RLENGTH) <= 0.94) {print 1}}')
 test -f /usr/lib/udev/rules.d/95-ceph-osd.rules && test \$DISABLE_UDEV -eq 1
 ",
        'logoutput' => true,
@@ -45,44 +45,47 @@ test -f /usr/lib/udev/rules.d/95-ceph-osd.rules && test \$DISABLE_UDEV -eq 1
       it { is_expected.to contain_exec('ceph-osd-prepare-/srv').with(
         'command'   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-if ! test -b /srv ; then
-    echo /srv | egrep -e '^/dev' -q -v
-    mkdir -p /srv
+disk=$(readlink -f /srv)
+if ! test -b $disk ; then
+    echo $disk | egrep -e '^/dev' -q -v
+    mkdir -p $disk
     if getent passwd ceph >/dev/null 2>&1; then
-        chown -h ceph:ceph /srv
+        chown -h ceph:ceph $disk
     fi
 fi
-ceph-disk prepare --cluster ceph  /srv 
+ceph-disk prepare --cluster ceph  $(readlink -f /srv) $(readlink -f '')
 udevadm settle
 ",
         'unless'    => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-ceph-disk list | grep -E ' */srv1? .*ceph data, (prepared|active)' ||
-{ test -f /srv/fsid && test -f /srv/ceph_fsid && test -f /srv/magic ;}
+disk=$(readlink -f /srv)
+ceph-disk list | egrep \" *${disk}1? .*ceph data, (prepared|active)\" ||
+{ test -f $disk/fsid && test -f $disk/ceph_fsid && test -f $disk/magic ;}
 ",
         'logoutput' => true
       ) }
       it { is_expected.to contain_exec('ceph-osd-activate-/srv').with(
         'command'   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-if ! test -b /srv ; then
-    echo /srv | egrep -e '^/dev' -q -v
-    mkdir -p /srv
+disk=$(readlink -f /srv)
+if ! test -b $disk ; then
+    echo $disk | egrep -e '^/dev' -q -v
+    mkdir -p $disk
     if getent passwd ceph >/dev/null 2>&1; then
-        chown -h ceph:ceph /srv
+        chown -h ceph:ceph $disk
     fi
 fi
 # activate happens via udev when using the entire device
-if ! test -b /srv || ! test -b /srv1 ; then
-  ceph-disk activate /srv || true
+if ! test -b $disk || ! test -b ${disk}1 ; then
+  ceph-disk activate $disk || true
 fi
-if test -f /usr/lib/udev/rules.d/95-ceph-osd.rules.disabled && test -b /srv1 ; then
-  ceph-disk activate /srv1 || true
+if test -f /usr/lib/udev/rules.d/95-ceph-osd.rules.disabled && test -b ${disk}1 ; then
+  ceph-disk activate ${disk}1 || true
 fi
 ",
         'unless'    => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-ls -ld /var/lib/ceph/osd/ceph-* | grep ' /srv\$'
+ls -ld /var/lib/ceph/osd/ceph-* | grep \" $(readlink -f /srv)\$\"
 ",
         'logoutput' => true
       ) }
@@ -110,7 +113,7 @@ mv -f /usr/lib/udev/rules.d/95-ceph-osd.rules /usr/lib/udev/rules.d/95-ceph-osd.
 ",
        'onlyif'    => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-DISABLE_UDEV=\$(ceph --version | awk 'match(\$3, /[0-9]+\\.[0-9]+/) {if (substr(\$3, RSTART, RLENGTH) <= 0.94) {print 1}}')
+DISABLE_UDEV=$(ceph --version | awk 'match(\$3, /[0-9]+\\.[0-9]+/) {if (substr(\$3, RSTART, RLENGTH) <= 0.94) {print 1}}')
 test -f /usr/lib/udev/rules.d/95-ceph-osd.rules && test \$DISABLE_UDEV -eq 1
 ",
        'logoutput' => true,
@@ -118,55 +121,58 @@ test -f /usr/lib/udev/rules.d/95-ceph-osd.rules && test \$DISABLE_UDEV -eq 1
       it { is_expected.to contain_exec('ceph-osd-check-fsid-mismatch-/srv/data').with(
         'command'   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-test f39ace04-f967-4c3d-9fd2-32af2d2d2cd5 = \$(ceph-disk list /srv/data | egrep -o '[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}')
+test f39ace04-f967-4c3d-9fd2-32af2d2d2cd5 = $(ceph-disk list $(readlink -f /srv/data) | egrep -o '[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}')
 ",
         'unless'    => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-test -z \$(ceph-disk list /srv/data | egrep -o '[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}')
+test -z $(ceph-disk list $(readlink -f /srv/data) | egrep -o '[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}')
 ",
         'logoutput' => true
       ) }
       it { is_expected.to contain_exec('ceph-osd-prepare-/srv/data').with(
         'command'   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-if ! test -b /srv/data ; then
-    echo /srv/data | egrep -e '^/dev' -q -v
-    mkdir -p /srv/data
+disk=$(readlink -f /srv/data)
+if ! test -b $disk ; then
+    echo $disk | egrep -e '^/dev' -q -v
+    mkdir -p $disk
     if getent passwd ceph >/dev/null 2>&1; then
-        chown -h ceph:ceph /srv/data
+        chown -h ceph:ceph $disk
     fi
 fi
-ceph-disk prepare --cluster testcluster --cluster-uuid f39ace04-f967-4c3d-9fd2-32af2d2d2cd5 /srv/data /srv/journal
+ceph-disk prepare --cluster testcluster --cluster-uuid f39ace04-f967-4c3d-9fd2-32af2d2d2cd5 $(readlink -f /srv/data) $(readlink -f /srv/journal)
 udevadm settle
 ",
         'unless'    => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-ceph-disk list | grep -E ' */srv/data1? .*ceph data, (prepared|active)' ||
-{ test -f /srv/data/fsid && test -f /srv/data/ceph_fsid && test -f /srv/data/magic ;}
+disk=$(readlink -f /srv/data)
+ceph-disk list | egrep \" *${disk}1? .*ceph data, (prepared|active)\" ||
+{ test -f $disk/fsid && test -f $disk/ceph_fsid && test -f $disk/magic ;}
 ",
         'logoutput' => true
       ) }
       it { is_expected.to contain_exec('ceph-osd-activate-/srv/data').with(
         'command'   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-if ! test -b /srv/data ; then
-    echo /srv/data | egrep -e '^/dev' -q -v
-    mkdir -p /srv/data
+disk=$(readlink -f /srv/data)
+if ! test -b $disk ; then
+    echo $disk | egrep -e '^/dev' -q -v
+    mkdir -p $disk
     if getent passwd ceph >/dev/null 2>&1; then
-        chown -h ceph:ceph /srv/data
+        chown -h ceph:ceph $disk
     fi
 fi
 # activate happens via udev when using the entire device
-if ! test -b /srv/data || ! test -b /srv/data1 ; then
-  ceph-disk activate /srv/data || true
+if ! test -b $disk || ! test -b ${disk}1 ; then
+  ceph-disk activate $disk || true
 fi
-if test -f /usr/lib/udev/rules.d/95-ceph-osd.rules.disabled && test -b /srv/data1 ; then
-  ceph-disk activate /srv/data1 || true
+if test -f /usr/lib/udev/rules.d/95-ceph-osd.rules.disabled && test -b ${disk}1 ; then
+  ceph-disk activate ${disk}1 || true
 fi
 ",
         'unless'    => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-ls -ld /var/lib/ceph/osd/testcluster-* | grep ' /srv/data\$'
+ls -ld /var/lib/ceph/osd/testcluster-* | grep \" $(readlink -f /srv/data)\$\"
 ",
         'logoutput' => true
       ) }
@@ -187,11 +193,12 @@ ls -ld /var/lib/ceph/osd/testcluster-* | grep ' /srv/data\$'
       it { is_expected.to contain_exec('remove-osd-/srv').with(
         'command'   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
+disk=$(readlink -f /srv)
 if [ -z \"\$id\" ] ; then
-  id=\$(ceph-disk list | sed -nEe 's:^ */srv1? .*(ceph data|mounted on).*osd\\.([0-9]+).*:\\2:p')
+  id=$(ceph-disk list | sed -nEe \"s:^ *${disk}1? .*(ceph data|mounted on).*osd\\.([0-9]+).*:\\2:p\")
 fi
 if [ -z \"\$id\" ] ; then
-  id=\$(ls -ld /var/lib/ceph/osd/ceph-* | sed -nEe 's:.*/ceph-([0-9]+) *-> */srv\$:\\1:p' || true)
+  id=$(ls -ld /var/lib/ceph/osd/ceph-* | sed -nEe \"s:.*/ceph-([0-9]+) *-> *${disk}\$:\\1:p\" || true)
 fi
 if [ \"\$id\" ] ; then
   stop ceph-osd cluster=ceph id=\$id || true
@@ -207,11 +214,12 @@ fi
 ",
         'unless'    => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
+disk=$(readlink -f /srv)
 if [ -z \"\$id\" ] ; then
-  id=\$(ceph-disk list | sed -nEe 's:^ */srv1? .*(ceph data|mounted on).*osd\\.([0-9]+).*:\\2:p')
+  id=$(ceph-disk list | sed -nEe \"s:^ *${disk}1? .*(ceph data|mounted on).*osd\\.([0-9]+).*:\\2:p\")
 fi
 if [ -z \"\$id\" ] ; then
-  id=\$(ls -ld /var/lib/ceph/osd/ceph-* | sed -nEe 's:.*/ceph-([0-9]+) *-> */srv\$:\\1:p' || true)
+  id=$(ls -ld /var/lib/ceph/osd/ceph-* | sed -nEe \"s:.*/ceph-([0-9]+) *-> *${disk}\$:\\1:p\" || true)
 fi
 if [ \"\$id\" ] ; then
   test ! -d /var/lib/ceph/osd/ceph-\$id

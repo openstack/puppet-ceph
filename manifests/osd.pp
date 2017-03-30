@@ -50,7 +50,7 @@
 #
 define ceph::osd (
   $ensure = present,
-  $journal = undef,
+  $journal = "''",
   $cluster = undef,
   $exec_timeout = $::ceph::params::exec_timeout,
   $selinux_file_context = 'ceph_var_lib_t',
@@ -91,7 +91,7 @@ mv -f ${udev_rules_file} ${udev_rules_file}.disabled && udevadm control --reload
 ",
         onlyif    => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-DISABLE_UDEV=\$(ceph --version | awk 'match(\$3, /[0-9]+\\.[0-9]+/) {if (substr(\$3, RSTART, RLENGTH) <= 0.94) {print 1}}')
+DISABLE_UDEV=$(ceph --version | awk 'match(\$3, /[0-9]+\\.[0-9]+/) {if (substr(\$3, RSTART, RLENGTH) <= 0.94) {print 1}}')
 test -f ${udev_rules_file} && test \$DISABLE_UDEV -eq 1
 ",
         logoutput => true,
@@ -102,15 +102,15 @@ test -f ${udev_rules_file} && test \$DISABLE_UDEV -eq 1
         $ceph_check_fsid_mismatch = "ceph-osd-check-fsid-mismatch-${name}"
         Exec[$ceph_check_udev] -> Exec[$ceph_check_fsid_mismatch]
         Exec[$ceph_check_fsid_mismatch] -> Exec[$ceph_prepare]
-        # return error if ${data} has fsid differing from ${fsid}, unless there is no fsid
+        # return error if $(readlink -f ${data}) has fsid differing from ${fsid}, unless there is no fsid
         exec { $ceph_check_fsid_mismatch:
           command   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-test ${fsid} = \$(ceph-disk list ${data} | egrep -o '[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}')
+test ${fsid} = $(ceph-disk list $(readlink -f ${data}) | egrep -o '[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}')
 ",
           unless    => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-test -z \$(ceph-disk list ${data} | egrep -o '[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}')
+test -z $(ceph-disk list $(readlink -f ${data}) | egrep -o '[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}')
 ",
           logoutput => true,
           timeout   => $exec_timeout,
@@ -122,20 +122,22 @@ test -z \$(ceph-disk list ${data} | egrep -o '[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a
       exec { $ceph_prepare:
         command   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-if ! test -b ${data} ; then
-    echo ${data} | egrep -e '^/dev' -q -v
-    mkdir -p ${data}
+disk=$(readlink -f ${data})
+if ! test -b \$disk ; then
+    echo \$disk | egrep -e '^/dev' -q -v
+    mkdir -p \$disk
     if getent passwd ceph >/dev/null 2>&1; then
-        chown -h ceph:ceph ${data}
+        chown -h ceph:ceph \$disk
     fi
 fi
-ceph-disk prepare ${cluster_option} ${fsid_option} ${data} ${journal}
+ceph-disk prepare ${cluster_option} ${fsid_option} $(readlink -f ${data}) $(readlink -f ${journal})
 udevadm settle
 ",
         unless    => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-ceph-disk list | grep -E ' *${data}1? .*ceph data, (prepared|active)' ||
-{ test -f ${data}/fsid && test -f ${data}/ceph_fsid && test -f ${data}/magic ;}
+disk=$(readlink -f ${data})
+ceph-disk list | egrep \" *\${disk}1? .*ceph data, (prepared|active)\" ||
+{ test -f \$disk/fsid && test -f \$disk/ceph_fsid && test -f \$disk/magic ;}
 ",
         logoutput => true,
         timeout   => $exec_timeout,
@@ -144,11 +146,14 @@ ceph-disk list | grep -E ' *${data}1? .*ceph data, (prepared|active)' ||
       if (str2bool($::selinux) == true) {
         ensure_packages($::ceph::params::pkg_policycoreutils, {'ensure' => 'present'})
         exec { "fcontext_${name}":
-          command => "semanage fcontext -a -t ${selinux_file_context} '${data}(/.*)?' && restorecon -R ${data}",
-          path    => ['/usr/sbin', '/sbin', '/usr/bin', '/bin'],
+          command => "/bin/true # comment to satisfy puppet syntax requirements
+set -ex
+semanage fcontext -a -t ${selinux_file_context} \"$(readlink -f ${data})(/.*)?\"
+restorecon -R $(readlink -f ${data})
+",
           require => [Package[$::ceph::params::pkg_policycoreutils],Exec[$ceph_prepare]],
           before  => Exec[$ceph_activate],
-          unless  => "test -b ${data} || (semanage fcontext -l | grep ${data})",
+          unless  => "/usr/bin/test -b $(readlink -f ${data}) || (semanage fcontext -l | grep $(readlink -f ${data}))",
         }
       }
 
@@ -156,24 +161,25 @@ ceph-disk list | grep -E ' *${data}1? .*ceph data, (prepared|active)' ||
       exec { $ceph_activate:
         command   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-if ! test -b ${data} ; then
-    echo ${data} | egrep -e '^/dev' -q -v
-    mkdir -p ${data}
+disk=$(readlink -f ${data})
+if ! test -b \$disk ; then
+    echo \$disk | egrep -e '^/dev' -q -v
+    mkdir -p \$disk
     if getent passwd ceph >/dev/null 2>&1; then
-        chown -h ceph:ceph ${data}
+        chown -h ceph:ceph \$disk
     fi
 fi
 # activate happens via udev when using the entire device
-if ! test -b ${data} || ! test -b ${data}1 ; then
-  ceph-disk activate ${data} || true
+if ! test -b \$disk || ! test -b \${disk}1 ; then
+  ceph-disk activate \$disk || true
 fi
-if test -f ${udev_rules_file}.disabled && test -b ${data}1 ; then
-  ceph-disk activate ${data}1 || true
+if test -f ${udev_rules_file}.disabled && test -b \${disk}1 ; then
+  ceph-disk activate \${disk}1 || true
 fi
 ",
         unless    => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-ls -ld /var/lib/ceph/osd/${cluster_name}-* | grep ' ${data}\$'
+ls -ld /var/lib/ceph/osd/${cluster_name}-* | grep \" $(readlink -f ${data})\$\"
 ",
         logoutput => true,
         tag       => 'activate',
@@ -185,11 +191,12 @@ ls -ld /var/lib/ceph/osd/${cluster_name}-* | grep ' ${data}\$'
       exec { "remove-osd-${name}":
         command   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
+disk=$(readlink -f ${data})
 if [ -z \"\$id\" ] ; then
-  id=\$(ceph-disk list | sed -nEe 's:^ *${data}1? .*(ceph data|mounted on).*osd\\.([0-9]+).*:\\2:p')
+  id=$(ceph-disk list | sed -nEe \"s:^ *\${disk}1? .*(ceph data|mounted on).*osd\\.([0-9]+).*:\\2:p\")
 fi
 if [ -z \"\$id\" ] ; then
-  id=\$(ls -ld /var/lib/ceph/osd/${cluster_name}-* | sed -nEe 's:.*/${cluster_name}-([0-9]+) *-> *${data}\$:\\1:p' || true)
+  id=$(ls -ld /var/lib/ceph/osd/${cluster_name}-* | sed -nEe \"s:.*/${cluster_name}-([0-9]+) *-> *\${disk}\$:\\1:p\" || true)
 fi
 if [ \"\$id\" ] ; then
   stop ceph-osd cluster=${cluster_name} id=\$id || true
@@ -205,11 +212,12 @@ fi
 ",
         unless    => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
+disk=$(readlink -f ${data})
 if [ -z \"\$id\" ] ; then
-  id=\$(ceph-disk list | sed -nEe 's:^ *${data}1? .*(ceph data|mounted on).*osd\\.([0-9]+).*:\\2:p')
+  id=$(ceph-disk list | sed -nEe \"s:^ *\${disk}1? .*(ceph data|mounted on).*osd\\.([0-9]+).*:\\2:p\")
 fi
 if [ -z \"\$id\" ] ; then
-  id=\$(ls -ld /var/lib/ceph/osd/${cluster_name}-* | sed -nEe 's:.*/${cluster_name}-([0-9]+) *-> *${data}\$:\\1:p' || true)
+  id=$(ls -ld /var/lib/ceph/osd/${cluster_name}-* | sed -nEe \"s:.*/${cluster_name}-([0-9]+) *-> *\${disk}\$:\\1:p\" || true)
 fi
 if [ \"\$id\" ] ; then
   test ! -d /var/lib/ceph/osd/${cluster_name}-\$id
