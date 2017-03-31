@@ -55,9 +55,6 @@ define ceph::cluster (
     ceph_config {
       "$cluster/global/fsid":                        value => $fsid;
       "$cluster/global/keyring":                     value => $keyring;
-      "$cluster/global/debug_filestore":             value => $debug_level;
-      "$cluster/global/debug_osd":                   value => $debug_level;
-      "$cluster/global/debug_mon":                   value => $debug_level;
       "$cluster/global/err_to_stderr":               value => false;   # if this is not set you end up with errors in syslog
       "$cluster/global/osd_pool_default_pg_num":     value => $osd_pool_default_pg_num;
       "$cluster/global/osd_pool_default_pgp_num":    value => $osd_pool_default_pgp_num;
@@ -80,6 +77,10 @@ define ceph::cluster (
       "$cluster/global/public_network":              value => $public_network;
       "$cluster/global/public_addr":                 value => $public_addr;
       "$cluster/osd/osd_journal_size":               value => $osd_journal_size;
+      "$cluster/osd/debug_filestore":                value => $debug_level;
+      "$cluster/osd/debug_osd":                      value => $debug_level;
+      "$cluster/osd/debug_journal":                  value => $debug_level;
+      "$cluster/osd/debug_ms":                       value => $debug_level;
       "$cluster/osd/crush_location":                 value => $osd_crush_location;  # kraken
       "$cluster/osd/osd_crush_location":             value => $osd_crush_location;  # jewel
     }
