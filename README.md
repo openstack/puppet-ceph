@@ -21,6 +21,16 @@ The ceph module is intended to leverage all [Ceph](http://ceph.com/) has to offe
 
 Some links to documentation are left as-is from the original as they may still be relevant.  Parts relevant to using the module are updated with current usage.  
 
+Summary of added features or changes:
+
+- Supports multiple cluster configs on same host changing ceph::cluster class to resource.  
+- Change ceph::rgw class to resource allowing management of multiple instances on same host
+- Modify other classes as needed to specify cluster name
+- Added additional params to ceph_cluster such as osd_crush_location, debugging control, etc (see manifest)
+- Turn ceph::mds class into resource, add service/directory management.
+- Add REST API resource ceph::restapi
+- Add ceph-mgr resource ceph::mgr
+
 Module Description
 ------------------
 
