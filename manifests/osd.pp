@@ -136,7 +136,7 @@ udevadm settle
         unless    => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 disk=$(readlink -f ${data})
-ceph-disk list | egrep \" *\${disk}1? .*ceph data, (prepared|active)\" ||
+ceph-disk list | egrep \" *(\${disk}1?|\${disk}p1?) .*ceph data, (prepared|active)\" ||
 { test -f \$disk/fsid && test -f \$disk/ceph_fsid && test -f \$disk/magic ;}
 ",
         logoutput => true,
@@ -170,10 +170,10 @@ if ! test -b \$disk ; then
     fi
 fi
 # activate happens via udev when using the entire device
-if ! test -b \$disk || ! test -b \${disk}1 ; then
+if ! test -b \$disk || ! test -b \${disk}1 || ! test -b \${disk}p1 ; then
   ceph-disk activate \$disk || true
 fi
-if test -f ${udev_rules_file}.disabled && test -b \${disk}1 ; then
+if test -f ${udev_rules_file}.disabled && ( test -b \${disk}1 || test -b \${disk}p1 ); then
   ceph-disk activate \${disk}1 || true
 fi
 ",
