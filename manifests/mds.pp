@@ -49,7 +49,8 @@ define ceph::mds (
     ensure => directory,
     owner => 'ceph',
     group => 'ceph',
-    mode => '755'
+    mode => '755',
+    tag => 'ceph'
   }
 
   if $ensure == 'present' {
@@ -102,7 +103,8 @@ define ceph::mds (
 
   service {"${service}":
     ensure => $service_state,
-    enable => $service_enable
+    enable => $service_enable,
+    tag => 'ceph'
   }
 
 }

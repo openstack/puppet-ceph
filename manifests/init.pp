@@ -90,6 +90,9 @@ class ceph (
   if $ensure !~ /(absent|purged)/ {
     # Make sure ceph is installed before managing the configuration
     Package<| tag == 'ceph' |> -> Ceph_config<| |>
+    # make sure packages create their associated subdirs before creating instance dirs (ie, /var/lib/ceph/mgr/instance)
+    Package<| tag == 'ceph' |> -> File<| tag == 'ceph' |> 
+    Package<| tag == 'ceph' |> -> Service<| tag == 'ceph' |>
   }
 
   case $::osfamily {
@@ -133,9 +136,6 @@ class ceph (
 
     'RedHat': {
       $enabled = $ensure ? { 'present' => '1', 'absent' => '0', default => absent, }
-
-      # needed by rgw civetweb for libssl.sl and libcrypt.so
-      package { 'openssl-devel': ensure => present }
 
       # If you want to deploy Ceph using packages provided by CentOS SIG
       # https://wiki.centos.org/SpecialInterestGroup/Storage/

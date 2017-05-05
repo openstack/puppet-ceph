@@ -31,6 +31,10 @@ class ceph::radosgw (
       tag    => 'ceph',
     }
 
+  # needed by rgw civetweb for libssl.sl and libcrypt.so
+  # this may or may not be the package on other dists?
+  package { 'openssl-devel': ensure => present }
+
   # Data directory for radosgw
   file { '/var/lib/ceph/radosgw': # missing in redhat pkg
     ensure => directory,
