@@ -1,0 +1,3 @@
+---
+fixes:
+  - Bug 1687114 puppet-ceph does not configure devices like /dev/nvme0n1 or HP Smart Array controllers (/dev/cciss/c0d0) as OSDs (only as journals)
