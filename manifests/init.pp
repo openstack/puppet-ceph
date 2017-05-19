@@ -93,6 +93,7 @@ class ceph (
     # make sure packages create their associated subdirs before creating instance dirs (ie, /var/lib/ceph/mgr/instance)
     Package<| tag == 'ceph' |> -> File<| tag == 'ceph' |> 
     Package<| tag == 'ceph' |> -> Service<| tag == 'ceph' |>
+    # File<| tag == 'ceph' |> -> Service<| tag == 'ceph' |>
   }
 
   case $::osfamily {
