@@ -102,14 +102,32 @@ define ceph::rgw::instance (
   $civetweb_num_threads = undef
 ) {
 
-  unless $rgw_data { $rgw_data_r = "/var/lib/ceph/radosgw/${cluster}-${client_id}" }
-  unless $keyring_path { $keyring_path_r  = "/etc/ceph/${cluster}.client.${client_id}.keyring" }
-  unless $log_file { $log_file_r = "/var/log/ceph/${cluster}-radosgw.${client_id}.log" }
+  unless $rgw_data { 
+    $rgw_data_r = "/var/lib/ceph/radosgw/${cluster}-${client_id}" 
+  } else {
+      $rgw_data_r = $rgw_data
+  }
+
+#   unless $keyring_path { 
+#     $keyring_path_r  = "/var/lib/ceph/radosgw/ceph-radosgw.test-nossl/keyring
+#     /etc/ceph/${cluster}.client.${client_id}.keyring" 
+#   } else {
+#     $keyring_path_r = $keyring_path
+#   }
+
+  #  /var/lib/ceph/radosgw/ceph-radosgw.test-nossl/keyring
+
+  unless $log_file {
+    $log_file_r = "/var/log/ceph/ceph-radosgw.${client_id}.log" 
+  } else {
+    $log_file_r = $log_file
+  }
 
   ceph_config {
     "${cluster}/client.${client_id}/host":                    value => $::hostname;
-    "${cluster}/client.${client_id}/keyring":                 value => $keyring_path_r;
-    "${cluster}/client.${client_id}/log_file":                value => $log_file_r;
+    "${cluster}/client.${client_id}/keyring":                 value => $keyring_path;
+    "${cluster}/client.${client_id}/log_file":                value => $log_file;
+    "${cluster}/client.${client_id}/rgw_data":                value => $rgw_data_r;
     "${cluster}/client.${client_id}/user":                    value => $user;
     "${cluster}/client.${client_id}/rgw_num_rados_handles":   value => $num_rados_handles;
     "${cluster}/client.${client_id}/rgw_thread_pool_size":    value => $thread_pool_size;
@@ -232,13 +250,11 @@ define ceph::rgw::instance (
     enable => true
   }
 
-  Ceph_config<||> -> Service["${service_name}"]
   Package<| tag == 'ceph' |> -> File['/var/lib/ceph/radosgw']
   Package<| tag == 'ceph' |> -> File[$log_file_r]
   File['/var/lib/ceph/radosgw']
   -> File[$rgw_data_r]
   -> Service["${service_name}"]
   File[$log_file_r] -> Service["${service_name}"]
-  Ceph::Pool<||> -> Service["${service_name}"]
-  # Exec['systemctl-reload-from-rgw'] -> Service["${service_name}"]
+
 }
