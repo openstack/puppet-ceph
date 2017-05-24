@@ -37,8 +37,11 @@
 # [*rgw_data*] The path where the radosgw data should be stored.
 #   Optional. Default is '/var/lib/ceph/radosgw/${cluster}-${name}.
 #
-# [*user*] User running the web frontend.
-#   Optional. Default is 'www-data'.
+# [*user*] User running the web frontend and owning daemon data directory
+#   Optional. Default is 'ceph'.
+#
+# [*group*] Group running the web frontend and owning daemon data directory
+#   Optional. Default is 'ceph'.
 #
 # [*keyring_path*] Location of keyring.
 #   Optional. Default is '/etc/ceph/${name}.keyring'.
@@ -83,6 +86,7 @@ define ceph::rgw::instance (
   $client_id          = "${name}",
   $rgw_data           = undef,
   $user               = $::ceph::params::user_radosgw,
+  $group              = $::ceph::params::group_radosgw,
   $keyring_path       = undef,
   $log_file           = undef,
   $rgw_dns_name       = $::fqdn,
@@ -107,15 +111,6 @@ define ceph::rgw::instance (
   } else {
       $rgw_data_r = $rgw_data
   }
-
-#   unless $keyring_path { 
-#     $keyring_path_r  = "/var/lib/ceph/radosgw/ceph-radosgw.test-nossl/keyring
-#     /etc/ceph/${cluster}.client.${client_id}.keyring" 
-#   } else {
-#     $keyring_path_r = $keyring_path
-#   }
-
-  #  /var/lib/ceph/radosgw/ceph-radosgw.test-nossl/keyring
 
   unless $log_file {
     $log_file_r = "/var/log/ceph/ceph-radosgw.${client_id}.log" 
@@ -169,8 +164,8 @@ define ceph::rgw::instance (
 
   file { $rgw_data_r:
     ensure => directory,
-    owner  => 'root',
-    group  => 'root',
+    owner  => $user,
+    group  => $group,
     mode   => '0750',
   }
 
@@ -178,6 +173,7 @@ define ceph::rgw::instance (
   file { $log_file_r:
     ensure => present,
     owner  => $user,
+    group => $group,
     mode   => '0640',
   }
 

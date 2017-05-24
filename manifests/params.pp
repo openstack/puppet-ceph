@@ -40,7 +40,8 @@ class ceph::params (
   case $::osfamily {
     'Debian': {
       $pkg_radosgw      = 'radosgw'
-      $user_radosgw     = 'www-data'
+      $user_radosgw     = 'ceph'
+      $group_radosgw    = 'ceph'
       $pkg_fastcgi      = 'libapache2-mod-fastcgi'
       $pkg_nsstools     = 'libnss3-tools'
       $service_provider = 'debian'
@@ -49,6 +50,7 @@ class ceph::params (
     'RedHat': {
       $pkg_radosgw      = 'ceph-radosgw'
       $user_radosgw     = 'ceph'
+      $group_radosgw    = 'ceph'
       $pkg_fastcgi      = 'mod_fastcgi'
       $pkg_nsstools     = 'nss-tools'
       $service_provider = 'redhat'
