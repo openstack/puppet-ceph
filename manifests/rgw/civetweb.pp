@@ -40,12 +40,13 @@
 
 define ceph::rgw::civetweb (
   $rgw_frontends = undef,
-  $client_id = "${name}",
-  $ssl_cert = undef,
-  $ssl_ca_file = undef,
-  $cluster = 'ceph',
-  $num_threads = undef,
-  $port = '80'
+  $ensure        = present,
+  $client_id     = "${name}",
+  $ssl_cert      = undef,
+  $ssl_ca_file   = undef,
+  $cluster       = 'ceph',
+  $num_threads   = undef,
+  $port          = '80'
 ) {
 
 	if ! $rgw_frontends {
@@ -60,7 +61,7 @@ define ceph::rgw::civetweb (
 	}
 
     ceph_config {
-      "${cluster}/client.${client_id}/rgw_frontends": value => $frontends;
+      "${cluster}/client.${client_id}/rgw_frontends": value => $frontends, ensure => $ensure;
     }
 
 }

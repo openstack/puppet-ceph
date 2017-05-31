@@ -80,9 +80,9 @@
 #
 
 define ceph::rgw::instance (
-  $rgw_ensure         = 'running',
+  $ensure             = present,
   $cluster            = 'ceph',
-  $rgw_enable         = true,
+  $enable             = true,
   $client_id          = "${name}",
   $rgw_data           = undef,
   $user               = $::ceph::params::user_radosgw,
@@ -118,19 +118,35 @@ define ceph::rgw::instance (
     $log_file_r = $log_file
   }
 
+  # ensure presence/absence of file touched in data dir indicating setup finished
+  if ($enable == true) and ($ensure == 'present') {
+      $ensure_init = 'present'
+  } else {
+      $ensure_init = 'absent'
+  }
+
+  if $ensure == 'present' {
+    $ensure_service = 'running'
+    $ensure_data_dir = 'directory'
+  } else {
+    $ensure_service = 'stopped'
+    $ensure_data_dir = 'absent'
+  }
+
   ceph_config {
-    "${cluster}/client.${client_id}/host":                    value => $::hostname;
-    "${cluster}/client.${client_id}/keyring":                 value => $keyring_path;
-    "${cluster}/client.${client_id}/log_file":                value => $log_file;
-    "${cluster}/client.${client_id}/rgw_data":                value => $rgw_data_r;
-    "${cluster}/client.${client_id}/user":                    value => $user;
-    "${cluster}/client.${client_id}/rgw_num_rados_handles":   value => $num_rados_handles;
-    "${cluster}/client.${client_id}/rgw_thread_pool_size":    value => $thread_pool_size;
+    "${cluster}/client.${client_id}/host":                    value => $::hostname, ensure => $ensure;
+    "${cluster}/client.${client_id}/keyring":                 value => $keyring_path, ensure => $ensure;
+    "${cluster}/client.${client_id}/log_file":                value => $log_file, ensure => $ensure;
+    "${cluster}/client.${client_id}/rgw_data":                value => $rgw_data_r, ensure => $ensure;
+    "${cluster}/client.${client_id}/user":                    value => $user, ensure => $ensure;
+    "${cluster}/client.${client_id}/rgw_num_rados_handles":   value => $num_rados_handles, ensure => $ensure;
+    "${cluster}/client.${client_id}/rgw_thread_pool_size":    value => $thread_pool_size, ensure => $ensure;
   }
 
   if ($frontend_type == 'civetweb')
   {
     ceph::rgw::civetweb { "${name}":
+      ensure => $ensure,
       rgw_frontends => $rgw_frontends,
       client_id =>  $client_id,
       ssl_cert => $ssl_cert,
@@ -143,17 +159,17 @@ define ceph::rgw::instance (
   elsif ( ( $frontend_type == 'apache-fastcgi' ) or ( $frontend_type == 'apache-proxy-fcgi' ) )
   {
     ceph_config {
-      "${cluster}/client.${client_id}/rgw_dns_client_id":       value => $rgw_dns_name;
-      "${cluster}/client.${client_id}/rgw_print_continue": value => $rgw_print_continue;
-      "${cluster}/client.${client_id}/rgw_socket_path":    value => $rgw_socket_path;
+      "${cluster}/client.${client_id}/rgw_dns_client_id":       value => $rgw_dns_name, ensure => $ensure;
+      "${cluster}/client.${client_id}/rgw_print_continue":      value => $rgw_print_continue, ensure => $ensure;
+      "${cluster}/client.${client_id}/rgw_socket_path":         value => $rgw_socket_path, ensure => $ensure;
     }
     if $frontend_type == 'apache-fastcgi' {
       ceph_config {
-        "${cluster}/client.${client_id}/rgw_port": value => $rgw_port;
+        "${cluster}/client.${client_id}/rgw_port": value => $rgw_port, ensure => $ensure;
       }
     } elsif $frontend_type == 'apache-proxy-fcgi' {
       ceph_config {
-        "${cluster}/client.${client_id}/rgw_frontends": value => $rgw_frontends;
+        "${cluster}/client.${client_id}/rgw_frontends": value => $rgw_frontends, ensure => $ensure;
       }
     }
   }
@@ -163,13 +179,14 @@ define ceph::rgw::instance (
   }
 
   file { $rgw_data_r:
-    ensure => directory,
+    ensure => $ensure_data_dir,
     owner  => $user,
     group  => $group,
     mode   => '0750',
   }
 
   # Log file for radosgw (ownership)
+  # don't delete even if instance is set to absent
   file { $log_file_r:
     ensure => present,
     owner  => $user,
@@ -179,12 +196,7 @@ define ceph::rgw::instance (
 
   # service definition
   if $::operatingsystem == 'Ubuntu' {
-    if $rgw_enable {
-      file { "${rgw_data_r}/done":
-        ensure => present,
-        before => Service["radosgw-${name}"],
-      }
-    }
+    $init_ready_file = 'done'
 
     Service {
       tag      => 'radosgw',
@@ -199,7 +211,7 @@ define ceph::rgw::instance (
   # RHEL/CentOS7 systemd additions and over-rides for each instance.  No provision made for releases before Infernalis  
   
   if (($::osfamily == 'RedHat') and (versioncmp($::operatingsystemmajrelease, '7') >= 0)) {
-
+    $init_ready_file = 'systemd'
     $service_name = "ceph-radosgw@${client_id}"
     $unit_path = $::ceph::rgw::unit_path
     $target_path = $::ceph::rgw::target_path
@@ -218,6 +230,7 @@ define ceph::rgw::instance (
       notify => [ Exec['ceph-rgw-reload-systemd'], Service["$service_name"] ]
     } 
   } else {
+      $init_ready_file = 'sysvinit'
       $service_name = "radosgw-${name}"
       Service {
         tag      => [ 'ceph', 'rgw' ],
@@ -227,23 +240,21 @@ define ceph::rgw::instance (
         status   => 'service radosgw status',
       }
     }
-
-    if $rgw_enable {
-      file { "${rgw_data_r}/sysvinit":
-        ensure => present,
-        before => Service["${service_name}"],
-      }
-    }
-
   }
   else {
     fail("operatingsystem = ${::operatingsystem} is not supported")
   }
 
+  # for systemd this doesn't seem to matter but we'll follow the convention
+  file { "${rgw_data_r}/${init_ready_file}":
+        ensure => $ensure_init,
+        before => Service["${service_name}"],
+  }
+
   service { "${service_name}":
     tag    => [ 'ceph', 'rgw' ],
-    ensure => $rgw_ensure,
-    enable => true
+    ensure => $ensure_service,
+    enable => $enable
   }
 
   Package<| tag == 'ceph' |> -> File['/var/lib/ceph/radosgw']
