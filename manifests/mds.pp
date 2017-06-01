@@ -79,12 +79,24 @@ class ceph::mds (
   -> File[$mds_data_real]
   -> Service<| tag == 'ceph-mds' |>
 
-  $mds_service_name = "ceph-mds@${mds_id}"
-
-  service { $mds_service_name:
-    ensure => $mds_ensure,
-    enable => $mds_enable,
-    tag    => ['ceph-mds']
+  # For Ubuntu Trusty system
+  if $::service_provider == 'upstart' {
+    service { 'ceph-mds':
+      ensure   => $mds_ensure,
+      provider => $::service_provider,
+      start    => "start ceph-mon id=${mds_id}",
+      stop     => "stop ceph-mon id=${mds_id}",
+      status   => "status ceph-mon id=${mds_id}",
+      enable   => $mds_enable,
+      tag      => ['ceph-mds']
+    }
+  # Everything else that is supported by puppet-ceph should run systemd.
+  } else {
+    service { "ceph-mds@${mds_id}":
+      ensure => $mds_ensure,
+      enable => $mds_enable,
+      tag    => ['ceph-mds']
+    }
   }
 
   package { $pkg_mds:
