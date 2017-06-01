@@ -22,6 +22,7 @@
 #
 class ceph::profile::osd {
   require ::ceph::profile::client
+  require ::ceph::profile::base
 
   class { '::ceph::osds':
     args => $ceph::profile::params::osds,
