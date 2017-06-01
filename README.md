@@ -72,7 +72,7 @@ The developer documentation of the puppet-openstack project is the reference:
 
 Mailing lists:
 
-* [puppet-openstack](https://groups.google.com/a/puppetlabs.com/forum/#!forum/puppet-openstack)
+* [puppet-openstack](https://groups.google.com/a/puppet.com/forum/#!forum/puppet-openstack)
 * [ceph-devel](http://ceph.com/resources/mailing-list-irc/)
 
 IRC channels:
