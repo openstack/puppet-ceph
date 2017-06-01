@@ -113,9 +113,15 @@ define ceph::rgw::instance (
   }
 
   unless $log_file {
-    $log_file_r = "/var/log/ceph/ceph-radosgw.${client_id}.log" 
-  } else {
+    $log_file_r = "/var/log/ceph/${cluster}-radosgw.${client_id}.log"
+  } else{
     $log_file_r = $log_file
+  }
+
+  unless $keyring_path {
+    $keyring_path_r = "${rgw_data_r}/keyring"
+  } else{
+    $keyring_path_r = $keyring_path
   }
 
   # ensure presence/absence of file touched in data dir indicating setup finished
@@ -135,8 +141,8 @@ define ceph::rgw::instance (
 
   ceph_config {
     "${cluster}/client.${client_id}/host":                    value => $::hostname, ensure => $ensure;
-    "${cluster}/client.${client_id}/keyring":                 value => $keyring_path, ensure => $ensure;
-    "${cluster}/client.${client_id}/log_file":                value => $log_file, ensure => $ensure;
+    "${cluster}/client.${client_id}/keyring":                 value => $keyring_path_r, ensure => $ensure;
+    "${cluster}/client.${client_id}/log_file":                value => $log_file_r, ensure => $ensure;
     "${cluster}/client.${client_id}/rgw_data":                value => $rgw_data_r, ensure => $ensure;
     "${cluster}/client.${client_id}/user":                    value => $user, ensure => $ensure;
     "${cluster}/client.${client_id}/rgw_num_rados_handles":   value => $num_rados_handles, ensure => $ensure;
@@ -187,12 +193,12 @@ define ceph::rgw::instance (
 
   # Log file for radosgw (ownership)
   # don't delete even if instance is set to absent
-  file { $log_file_r:
-    ensure => present,
-    owner  => $user,
-    group => $group,
-    mode   => '0640',
-  }
+  # file { $log_file_r:
+  #   ensure => present,
+  #   owner  => $user,
+  #   group => $group,
+  #   mode   => '0640',
+  # }
 
   # service definition
   if $::operatingsystem == 'Ubuntu' {
@@ -258,10 +264,7 @@ define ceph::rgw::instance (
   }
 
   Package<| tag == 'ceph' |> -> File['/var/lib/ceph/radosgw']
-  Package<| tag == 'ceph' |> -> File[$log_file_r]
   File['/var/lib/ceph/radosgw']
   -> File[$rgw_data_r]
   -> Service["${service_name}"]
-  File[$log_file_r] -> Service["${service_name}"]
-
 }

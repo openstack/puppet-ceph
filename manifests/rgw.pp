@@ -59,7 +59,7 @@ class ceph::rgw (
     refreshonly => true
   }
 
-  Ceph_config<||> -> Service<| tag == 'rgw' |>
+  Ceph_config<||> ~> Service<| tag == 'rgw' |>
   Ceph::Key <||> -> Service<| tag == 'rgw' |>
   # in case rgw pools are being defined with ceph::pool resources
   Ceph::Pool <||> -> Service<| tag == 'rgw' |>
