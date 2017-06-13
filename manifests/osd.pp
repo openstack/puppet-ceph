@@ -115,6 +115,8 @@ test -z $(ceph-disk list $(readlink -f ${data}) | egrep -o '[0-9a-f]{8}-([0-9a-f
           logoutput => true,
           timeout   => $exec_timeout,
         }
+      } else {
+        $fsid_option = ""
       }
 
       Exec[$ceph_check_udev] -> Exec[$ceph_prepare]
