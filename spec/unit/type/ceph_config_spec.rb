@@ -29,13 +29,13 @@ describe 'Puppet::Type.type(:ceph_config)' do
     expect(@ceph_config[:value]).to eq('max')
   end
 
-  it 'should convert true to True' do
+  it 'should convert true to true' do
     @ceph_config[:value] = 'tRuE'
-    expect(@ceph_config[:value]).to eq('True')
+    expect(@ceph_config[:value]).to eq('true')
   end
 
-  it 'should convert false to False' do
+  it 'should convert false to false' do
     @ceph_config[:value] = 'fAlSe'
-    expect(@ceph_config[:value]).to eq('False')
+    expect(@ceph_config[:value]).to eq('false')
   end
 end
