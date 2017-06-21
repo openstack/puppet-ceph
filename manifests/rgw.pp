@@ -35,8 +35,9 @@ class ceph::rgw (
   # this may or may not be the package on other dists?
   package { 'openssl-devel': ensure => present }
 
-  $unit_path = "/etc/systemd/system"
-  $target_path = "${unit_path}/ceph-radosgw.target.wants"
+  $unit_path = "/usr/lib/systemd/system/ceph-radosgw@.service"
+  $unit_config_path = "/etc/systemd/system"
+  $target_path = "${unit_config_path}/ceph-radosgw.target.wants"
 
   # Data directory for radosgw
   file { '/var/lib/ceph/radosgw': # missing in redhat pkg

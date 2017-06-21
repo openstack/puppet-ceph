@@ -226,21 +226,24 @@ define ceph::rgw::instance (
   # RHEL/CentOS7 systemd additions and over-rides for each instance.  No provision made for releases before Infernalis  
   
   if (($::osfamily == 'RedHat') and (versioncmp($::operatingsystemmajrelease, '7') >= 0)) {
+
     $init_ready_file = 'systemd'
     $service_name = "ceph-radosgw@${client_id}"
-    $unit_path = $::ceph::rgw::unit_path
-    $target_path = $::ceph::rgw::target_path
+
+    $unit_path = $ceph::rgw::unit_path
+    $unit_config_path = $ceph::rgw::unit_config_path
+    $target_path = $ceph::rgw::target_path
 
     File <| title == 'radosgw-target' |> { 
       path => "${target_path}/${service_name}.service",
-      target => "${unit_path}/ceph-radosgw@.service"
+      target => "${unit_path}"
     }
 
-    file { "${unit_path}/${service_name}.service.d":
+    file { "${unit_config_path}/${service_name}.service.d":
       ensure => directory
     } ->
 
-    file { "${unit_path}/${service_name}.service.d/puppet-ceph.conf":
+    file { "${unit_config_path}/${service_name}.service.d/puppet-ceph.conf":
       content => template('ceph/ceph-radosgw.service.erb'),
       notify => [ Exec['ceph-rgw-reload-systemd'], Service["$service_name"] ]
     } 
