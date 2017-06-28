@@ -50,6 +50,10 @@
 # [*key*] Authentication key for [mon.]
 #   Optional. $key and $keyring are mutually exclusive.
 #
+# [*config*]  Hash of config values to insert into [mon] section of ceph.conf 
+#    Example:  config => { 'mon_lease' => 10 }
+#    Optional.  To remove setting set 'absent' as the value.
+#
 # [*keyring*] Path of the [mon.] keyring file
 #   Optional. $key and $keyring are mutually exclusive.
 #
@@ -61,6 +65,7 @@ define ceph::mon (
   $ensure = present,
   $public_addr = undef,
   $cluster = undef,
+  $config = undef,
   $authentication_type = 'cephx',
   $key = undef,
   $keyring  = undef,
@@ -83,6 +88,20 @@ define ceph::mon (
       $cluster_option = "--cluster ${cluster_name}"
     } else {
       $cluster_name = 'ceph'
+    }
+
+    if $config {
+      validate_hash($config)
+      $config.each | $key, $value | {
+        if $value == 'absent' {
+          $config_ensure = 'absent'
+        } else {
+          $config_ensure = 'present'
+        }
+        ceph_config {
+          "${cluster}/mon/$key": value => $value, ensure => $config_ensure
+        }
+      }
     }
 
     if $::operatingsystem == 'Ubuntu' {
