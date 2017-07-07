@@ -20,6 +20,9 @@ require 'spec_helper'
 
 describe 'ceph::key' do
 
+  let (:pre_condition) do
+    "class { '::ceph': fsid => 'foo' }"
+  end
   shared_examples_for 'ceph key' do
 
     describe "with custom params" do
