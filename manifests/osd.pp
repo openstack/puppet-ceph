@@ -19,7 +19,8 @@
 #
 # == Define: ceph::osd
 #
-# Install and configure a ceph OSD
+# Install and configure a ceph OSD.  This module does not support multiple clusters on the same host.
+# As part of configuration it sets the system-wide cluster in /etc/sysconfig/ceph
 #
 # === Parameters:
 #
@@ -53,6 +54,15 @@ define ceph::osd (
     if $cluster {
       $cluster_option = "--cluster ${cluster}"
       $cluster_name = $cluster
+
+      # some adjustments may be needed for non-RHEL setup
+      file_line { "sysconfig-${cluster}-${name}":
+        path => "/etc/sysconfig/ceph",
+        line => "CLUSTER=${cluster}",
+        match => 'CLUSTER=.*',
+        ensure => $ensure
+      }
+
     } else {
       $cluster_name = 'ceph'
     }
@@ -71,6 +81,7 @@ define ceph::osd (
       Ceph_config<||> -> Exec[$ceph_prepare]
       Ceph::Mon<||> -> Exec[$ceph_prepare]
       Ceph::Key<||> -> Exec[$ceph_prepare]
+      File_line["sysconfig-${cluster}-${name}"] -> Exec[$ceph_prepare]
 
       # ceph-disk: prepare should be idempotent http://tracker.ceph.com/issues/7475
       exec { $ceph_prepare:
