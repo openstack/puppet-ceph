@@ -94,7 +94,10 @@ define ceph::mgr (
   service {"${service}":
     ensure => $service_state,
     enable => $service_enable,
-    tag => 'ceph'
+    tag => [ 'ceph', 'mgr' ]
   }
+
+  Ceph::Key <||> -> Service["$service"]
+
 
 }
