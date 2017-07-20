@@ -118,8 +118,8 @@ define ceph::mon (
         if $key {
           $keyring_path = "/tmp/ceph-mon-keyring-${id}"
 
-          Ceph_config<||> ->
-          exec { "create-keyring-${id}":
+          Ceph_config<||>
+          -> exec { "create-keyring-${id}":
             command => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 cat > ${keyring_path} << EOF
@@ -154,9 +154,9 @@ test -e \$mon_data/done
         }
       }
 
-      Ceph_config<||> ->
+      Ceph_config<||>
       # prevent automatic creation of the client.admin key by ceph-create-keys
-      exec { "ceph-mon-${cluster_name}.client.admin.keyring-${id}":
+      -> exec { "ceph-mon-${cluster_name}.client.admin.keyring-${id}":
         command => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 touch /etc/ceph/${cluster_name}.client.admin.keyring",
@@ -164,8 +164,7 @@ touch /etc/ceph/${cluster_name}.client.admin.keyring",
 set -ex
 test -e /etc/ceph/${cluster_name}.client.admin.keyring",
       }
-      ->
-      exec { $ceph_mkfs:
+      -> exec { $ceph_mkfs:
         command   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 mon_data=\$(ceph-mon ${cluster_option} --id ${id} --show-config-value mon_data)
@@ -202,14 +201,14 @@ test -d  \$mon_data
 ",
         logoutput => true,
         timeout   => $exec_timeout,
-      }->
-      service { $mon_service:
+      }
+      -> service { $mon_service:
         ensure => running,
       }
 
       # if the service is running before we setup the configs, notify service
-      Ceph_config<||> ~>
-        Service[$mon_service]
+      Ceph_config<||>
+        ~> Service[$mon_service]
 
       if $authentication_type == 'cephx' {
         if $key {
@@ -229,8 +228,7 @@ test ! -e ${keyring_path}
       service { $mon_service:
         ensure => stopped
       }
-      ->
-      exec { "remove-mon-${id}":
+      -> exec { "remove-mon-${id}":
         command   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 mon_data=\$(ceph-mon ${cluster_option} --id ${id} --show-config-value mon_data)
@@ -244,8 +242,8 @@ test ! -d \$mon_data
 ",
         logoutput => true,
         timeout   => $exec_timeout,
-      } ->
-      ceph_config {
+      }
+      -> ceph_config {
         "mon.${id}/public_addr": ensure => absent;
       } -> Package<| tag == 'ceph' |>
     } else {
