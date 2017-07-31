@@ -1,6 +1,6 @@
 # This is required for the docs build jobs
 sphinx>=1.6.2 # BSD
-openstackdocstheme>=1.11.0 # Apache-2.0
+openstackdocstheme>=1.16.0 # Apache-2.0
 
 # This is required for the releasenotes build jobs
 # FIXME: reno is manually pinned to !=2.0.0 because of bug #1651995
