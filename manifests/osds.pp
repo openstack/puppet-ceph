@@ -42,9 +42,9 @@ class ceph::osds(
   create_resources(ceph::osd, $args, $defaults)
 
   if $pid_max {
-    $sysctl_settings = {
-      'kernel.pid_max' => { value => $pid_max },
+    sysctl { 'kernel.pid_max':
+      ensure  => present,
+      value   => $pid_max,
     }
-    ensure_resources(sysctl::value,$sysctl_settings)
   }
 }

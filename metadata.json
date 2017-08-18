@@ -68,8 +68,8 @@
             "version_requirement": ">=4.10.0 <5.0.0"
         },
         {
-            "name": "duritong/sysctl",
-            "version_requirement": ">=0.0.1 <1.0.0"
+            "name": "herculesteam/augeasproviders_sysctl",
+            "version_requirement": ">=2.2.0 <3.0.0"
         }
     ]
 }
