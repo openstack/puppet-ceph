@@ -88,8 +88,8 @@ define ceph::mon (
     if $::service_provider == 'upstart' {
       $init = 'upstart'
       Service {
-        name     => "ceph-mon-${id}",
-        provider => $::ceph::params::service_provider,
+        name     => 'ceph-mon',
+        provider => $::service_provider,
         start    => "start ceph-mon id=${id}",
         stop     => "stop ceph-mon id=${id}",
         status   => "status ceph-mon id=${id}",
@@ -226,7 +226,7 @@ test ! -e ${keyring_path}
 
     } elsif $ensure == absent {
       service { $mon_service:
-        ensure => stopped
+        ensure => stopped,
       }
       -> exec { "remove-mon-${id}":
         command   => "/bin/true # comment to satisfy puppet syntax requirements
