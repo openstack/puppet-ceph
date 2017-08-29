@@ -87,9 +87,10 @@ define ceph::mon (
     # For Ubuntu Trusty system
     if $::service_provider == 'upstart' {
       $init = 'upstart'
+      $service_name = 'ceph-mon'
       Service {
         name     => "ceph-mon-${id}",
-        provider => $::ceph::params::service_provider,
+        provider => $::service_provider,
         start    => "start ceph-mon id=${id}",
         stop     => "stop ceph-mon id=${id}",
         status   => "status ceph-mon id=${id}",
@@ -98,8 +99,8 @@ define ceph::mon (
     # Everything else that is supported by puppet-ceph should run systemd.
     } else {
       $init = 'systemd'
+      $service_name = "ceph-mon@${id}"
       Service {
-        name   => "ceph-mon@${id}",
         enable => $mon_enable,
       }
     }
@@ -204,6 +205,7 @@ test -d  \$mon_data
       }
       -> service { $mon_service:
         ensure => running,
+        name   => $service_name,
       }
 
       # if the service is running before we setup the configs, notify service
@@ -226,7 +228,8 @@ test ! -e ${keyring_path}
 
     } elsif $ensure == absent {
       service { $mon_service:
-        ensure => stopped
+        ensure => stopped,
+        name   => $service_name,
       }
       -> exec { "remove-mon-${id}":
         command   => "/bin/true # comment to satisfy puppet syntax requirements
