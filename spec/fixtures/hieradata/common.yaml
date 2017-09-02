@@ -30,6 +30,7 @@ ceph::profile::params::fs_data_pool: 'data_pool'
 ######## Keys
 ceph::profile::params::mds_key: 'AQDLOh1VgEp6FRAAFzT7Zw+Y9V6JJExQAsRnRQ=='
 ceph::profile::params::mon_key: 'AQATGHJTUCBqIBAA7M2yafV1xctn1pgr3GcKPg=='
+ceph::profile::params::mgr_key: 'AQASGFDFUHBHDG9SDdsyffV1xgsn1pgr3GcKPg=='
 ceph::profile::params::client_keys:
   'client.admin':
     secret: 'AQBMGHJTkC8HKhAAJ7NH255wYypgm1oVuV41MA=='

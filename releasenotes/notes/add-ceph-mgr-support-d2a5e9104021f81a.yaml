@@ -1,0 +1,5 @@
+---
+features:
+  - Introduced the ability to setup ceph-mgr instances which are requried in
+    the latest stable release of Ceph.  This can be done using the ceph::mgr
+    define or the ceph::profile::mgr profile.

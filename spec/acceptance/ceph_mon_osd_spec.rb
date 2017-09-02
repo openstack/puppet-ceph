@@ -42,6 +42,16 @@ describe 'ceph mon osd' do
           ceph_config {
            'global/osd_journal_size':             value => '100';
           }
+
+          # NOTE(mnaser): At the moment, the storage SIG packages do not ship 12.X
+          #               however UCA is shipping it at the moment.  This conditional
+          #               should be dropped once we switch CentOS to 12.X
+          if $::osfamily != 'RedHat' {
+            ceph::mgr { 'a':
+              authentication_type => 'none',
+            }
+          }
+
           ceph::mon { 'a':
             public_addr         => $::ipaddress,
             authentication_type => 'none',
