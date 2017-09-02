@@ -97,6 +97,9 @@
 # [*mon_key*] The mon secret key.
 #   Optional. Either mon_key or mon_keyring need to be set when using cephx.
 #
+# [*mgr_key*] The mgr secret key.
+#   Optional. Either mgr_key or mgr_keyring need to be set when using cephx.
+#
 # [*mon_keyring*] The location of the keyring retrieved by default
 #   Optional. Either mon_key or mon_keyring need to be set when using cephx
 #
@@ -209,6 +212,7 @@ class ceph::profile::params (
   $public_addr = undef,
   $mds_key = undef,
   $mon_key = undef,
+  $mgr_key = undef,
   $mon_keyring = undef,
   $client_keys = {},
   $osds = undef,
