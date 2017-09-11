@@ -70,12 +70,22 @@
 # [*syslog*] Whether or not to log to syslog.
 #   Optional. Default is true.
 #
-# [*cpu_shares*] Set the CPUShares value in systemd unit.  If left undefined no setting is made.  
-# The normal default priority is 1024.  Set lower/higher to decrease/increase priority of this 
+# [*cpu_shares*] Set the CPUShares value in systemd unit.  If left undefined no setting is made.
+# The normal default priority is 1024.  Set lower/higher to decrease/increase priority of this
 # rgw instance relative to other services.  Reference systemd.resource-control(5) for more information.
 #
-# [*cpu_quota*] Set the CPUQuota value in systemd unit.  If left undefined no setting is made.  Value is a percentage of time 
-# allowed on a single CPU.  Use a value > 100% to allow time on more than one CPU.  Do not include % character in setting.  
+# [*cpu_quota*] Set the CPUQuota value in systemd unit.  If left undefined no setting is made.  Value is a percentage of time
+# allowed on a single CPU.  Use a value > 100% to allow time on more than one CPU.  Do not include % character in setting.
+#
+# [*num_rados_handles*]
+#
+# [*thread_pool_size*]
+#
+# [*civetweb_num_threads*]
+#
+# [*rgw_dynamic_resharding*]
+#
+# [*config*]  Hash of config key => value to be inserted into Ceph config file for this instance
 #
 #
 
@@ -104,11 +114,12 @@ define ceph::rgw::instance (
   $num_rados_handles  = undef,
   $thread_pool_size   = undef,
   $civetweb_num_threads = undef,
-  $bucket_index_max_shards = undef
+  $rgw_dynamic_resharding = true,
+  $config              = undef
 ) {
 
-  unless $rgw_data { 
-    $rgw_data_r = "/var/lib/ceph/radosgw/${cluster}-${client_id}" 
+  unless $rgw_data {
+    $rgw_data_r = "/var/lib/ceph/radosgw/${cluster}-${client_id}"
   } else {
       $rgw_data_r = $rgw_data
   }
@@ -125,11 +136,26 @@ define ceph::rgw::instance (
     $keyring_path_r = $keyring_path
   }
 
+  # allow for any config param to be set
+  if $config {
+    validate_hash($config)
+    $config.each | $key, $value | {
+      if $value == 'absent' {
+        $config_ensure = 'absent'
+      } else {
+        $config_ensure = 'present'
+      }
+      ceph_config {
+        "${cluster}/client.${client_id}/$key": value => $value, ensure => $config_ensure
+      }
+    }
+  }
+
   # this setting can over-ride zone settings so don't set explicitely if not given the param
   unless $bucket_index_max_shards {
     $bucket_index_max_shards_ensure = 'absent'
   } else {
-    $bucket_index_max_shards_ensure = $ensure   
+    $bucket_index_max_shards_ensure = $ensure
   }
 
   # ensure presence/absence of file touched in data dir indicating setup finished
@@ -148,14 +174,15 @@ define ceph::rgw::instance (
   }
 
   ceph_config {
-    "${cluster}/client.${client_id}/host":                    value => $::hostname, ensure => $ensure;
-    "${cluster}/client.${client_id}/keyring":                 value => $keyring_path_r, ensure => $ensure;
-    "${cluster}/client.${client_id}/log_file":                value => $log_file_r, ensure => $ensure;
-    "${cluster}/client.${client_id}/rgw_data":                value => $rgw_data_r, ensure => $ensure;
-    "${cluster}/client.${client_id}/user":                    value => $user, ensure => $ensure;
-    "${cluster}/client.${client_id}/rgw_num_rados_handles":   value => $num_rados_handles, ensure => $ensure;
-    "${cluster}/client.${client_id}/rgw_thread_pool_size":    value => $thread_pool_size, ensure => $ensure;
-    "${cluster}/client.${client_id}/rgw_bucket_index_max_shards": value => $bucket_index_max_shards, ensure => $bucket_index_max_shards_ensure;
+    "${cluster}/client.${client_id}/host":                        value => $::hostname, ensure => $ensure;
+    "${cluster}/client.${client_id}/keyring":                     value => $keyring_path_r, ensure => $ensure;
+    "${cluster}/client.${client_id}/log_file":                    value => $log_file_r, ensure => $ensure;
+    "${cluster}/client.${client_id}/rgw_data":                    value => $rgw_data_r, ensure => $ensure;
+    "${cluster}/client.${client_id}/user":                        value => $user, ensure => $ensure;
+    "${cluster}/client.${client_id}/rgw_num_rados_handles":       value => $num_rados_handles, ensure => $ensure;
+    "${cluster}/client.${client_id}/rgw_thread_pool_size":        value => $thread_pool_size, ensure => $ensure;
+    "${cluster}/client.${client_id}/rgw_override_bucket_index_max_shards": value => $bucket_index_max_shards, ensure => $bucket_index_max_shards_ensure;
+    "${cluster}/client.${client_id}/rgw_dynamic_resharding":       value => $rgw_dynamic_resharding, ensure => $ensure;
   }
 
   if ($frontend_type == 'civetweb')
@@ -222,9 +249,9 @@ define ceph::rgw::instance (
       provider => $::ceph::params::service_provider,
     }
   } elsif ($::operatingsystem == 'Debian') or ($::osfamily == 'RedHat') {
-   
-  # RHEL/CentOS7 systemd additions and over-rides for each instance.  No provision made for releases before Infernalis  
-  
+
+  # RHEL/CentOS7 systemd additions and over-rides for each instance.  No provision made for releases before Infernalis
+
   if (($::osfamily == 'RedHat') and (versioncmp($::operatingsystemmajrelease, '7') >= 0)) {
 
     $init_ready_file = 'systemd'
@@ -234,7 +261,7 @@ define ceph::rgw::instance (
     $unit_config_path = $ceph::rgw::unit_config_path
     $target_path = $ceph::rgw::target_path
 
-    File <| title == 'radosgw-target' |> { 
+    File <| title == 'radosgw-target' |> {
       path => "${target_path}/${service_name}.service",
       target => "${unit_path}"
     }
@@ -246,7 +273,7 @@ define ceph::rgw::instance (
     file { "${unit_config_path}/${service_name}.service.d/puppet-ceph.conf":
       content => template('ceph/ceph-radosgw.service.erb'),
       notify => [ Exec['ceph-rgw-reload-systemd'], Service["$service_name"] ]
-    } 
+    }
   } else {
       $init_ready_file = 'sysvinit'
       $service_name = "radosgw-${name}"
