@@ -14,7 +14,7 @@ upgrade:
     `osd/osd_op_threads`
 deprecations:
   - ceph::init set_osd_params is added new as deprecated.
-    This is to support backwards compability in this release.
+    This is to support backwards compatibility in this release.
     It will be removed in the next release. Please inspect your
     usage of ceph::conf for `osd/osd_max_backfills`,
     `osd_max_scrubs`, `osd/osd_recovery_max_active`,
