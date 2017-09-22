@@ -178,11 +178,11 @@ define ceph::rgw (
     }
 
     Service {
-      name     => "radosgw-${name}",
+      name     => 'radosgw',
       start    => "start radosgw id=${name}",
       stop     => "stop radosgw id=${name}",
       status   => "status radosgw id=${name}",
-      provider => $::ceph::params::service_provider,
+      provider => $::service_provider,
     }
   # Everything else that is supported by puppet-ceph should run systemd.
   } else {
