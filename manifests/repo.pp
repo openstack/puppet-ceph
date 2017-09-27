@@ -34,7 +34,7 @@
 #  Optional. Defaults to 'present'.
 #
 # [*release*] The name of the Ceph release to install
-#   Optional. Default to 'jewel' in ceph::params.
+#   Optional. Default to 'luminous' in ceph::params.
 #
 # [*fastcgi*] Install Ceph fastcgi apache module for Ceph
 #   Optional. Defaults to 'false'
@@ -129,15 +129,15 @@ not on ${::operatingsystem}, which can lead to packaging issues.")
         } else {
           $ceph_mirror_real = "https://buildlogs.centos.org/centos/7/storage/x86_64/ceph-${release}/"
         }
-        yumrepo { 'ceph-jewel-sig':
+        yumrepo { 'ceph-luminous-sig':
           enabled    => '1',
           baseurl    => $ceph_mirror_real,
-          descr      => 'Ceph Jewel SIG',
+          descr      => 'Ceph Luminous SIG',
           mirrorlist => 'absent',
           gpgcheck   => '0',
         }
         # Make sure we install the repo before any Package resource
-        Yumrepo['ceph-jewel-sig'] -> Package<| tag == 'ceph' |>
+        Yumrepo['ceph-luminous-sig'] -> Package<| tag == 'ceph' |>
       } else {
         # If you want to deploy Ceph using packages provided by ceph.com repositories.
         if ((($::operatingsystem == 'RedHat' or $::operatingsystem == 'CentOS') and (versioncmp($::operatingsystemmajrelease, '7') < 0))
