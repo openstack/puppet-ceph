@@ -56,10 +56,12 @@ define ceph::mgr (
     ensure => directory,
     owner  => 'ceph',
     group  => 'ceph',
+    tag    => 'ceph-mgr',
   } -> file { "/var/lib/ceph/mgr/${cluster}-${name}":
     ensure => directory,
     owner  => 'ceph',
     group  => 'ceph',
+    tag    => 'ceph-mgr',
   }
 
   if $authentication_type == 'cephx' {
@@ -82,11 +84,13 @@ define ceph::mgr (
     }
   }
 
-  # NOTE(mnaser): The ceph-mgr service was introduced in Jewel which ships with
-  #               Xenial and newer, so we don't need an upstart compatibility
-  #               layer in this case.
   service { "ceph-mgr@${name}":
     ensure => $ensure,
     enable => $enable,
+    tag    => 'ceph-mgr',
   }
+
+  Package<| tag == 'ceph' |>
+  -> File<| tag == 'ceph-mgr' |>
+  -> Service<| tag == 'ceph-mgr' |>
 }
