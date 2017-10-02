@@ -45,10 +45,11 @@
 #
 # [*cap_mds*] cephx capabilities for MDS access.
 #   Optional. e.g. 'allow *'
+#   Defaults to 'undef'.
 #
 # [*cap_mgr*] cephx capabilities for MGR access.
 #   Optional. e.g. 'allow *'
-#   Defaults to 'undef'.#   Defaults to 'undef'.
+#   Defaults to 'undef'.#   
 #
 # [*user*] Owner of the *keyring_path* file.
 #   Optional. Defaults to 'root'.
