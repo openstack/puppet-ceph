@@ -114,7 +114,7 @@ define ceph::key (
   if $cap_mgr {
     $mgr_caps = "--cap mgr '${cap_mgr}' "
   } else {
-    $mds_caps = ''
+    $mgr_caps = ''
   }
 
   $caps = "${mon_caps}${osd_caps}${mds_caps}${mgr_cap}"
