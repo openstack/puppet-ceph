@@ -1,0 +1,3 @@
+---
+fixes:
+  - Bug 1720864 Allow setting optional manager capabilities on keys.

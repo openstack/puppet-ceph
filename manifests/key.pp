@@ -47,6 +47,10 @@
 #   Optional. e.g. 'allow *'
 #   Defaults to 'undef'.
 #
+# [*cap_mgr*] cephx capabilities for MGR access.
+#   Optional. e.g. 'allow *'
+#   Defaults to 'undef'.
+#
 # [*user*] Owner of the *keyring_path* file.
 #   Optional. Defaults to 'root'.
 #
@@ -77,6 +81,7 @@ define ceph::key (
   $cap_mon = undef,
   $cap_osd = undef,
   $cap_mds = undef,
+  $cap_mgr = undef,
   $user = 'root',
   $group = 'root',
   $mode = '0600',
@@ -107,8 +112,13 @@ define ceph::key (
   } else {
     $mds_caps = ''
   }
+  if $cap_mgr {
+    $mgr_caps = "--cap mgr '${cap_mgr}' "
+  } else {
+    $mgr_caps = ''
+  }
 
-  $caps = "${mon_caps}${osd_caps}${mds_caps}"
+  $caps = "${mon_caps}${osd_caps}${mds_caps}${mgr_caps}"
 
   # this allows multiple defines for the same 'keyring file',
   # which is supported by ceph-authtool

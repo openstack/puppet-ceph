@@ -38,13 +38,14 @@ describe 'ceph::key' do
           :group   => 'nogroup',
           :cap_mon => 'allow *',
           :cap_osd => 'allow rw',
+          :cap_mgr => 'allow *',
           :inject  => true,
         }
       end
 
       it {
         is_expected.to contain_exec('ceph-key-client.admin').with(
-          'command' => "/bin/true # comment to satisfy puppet syntax requirements\nset -ex\nceph-authtool /etc/ceph/ceph.client.admin.keyring --name 'client.admin' --add-key 'supersecret' --cap mon 'allow *' --cap osd 'allow rw' "
+          'command' => "/bin/true # comment to satisfy puppet syntax requirements\nset -ex\nceph-authtool /etc/ceph/ceph.client.admin.keyring --name 'client.admin' --add-key 'supersecret' --cap mon 'allow *' --cap osd 'allow rw' --cap mgr 'allow *' "
         )
         is_expected.to contain_file('/etc/ceph/ceph.client.admin.keyring').with(
           'owner'                   => 'nobody',
