@@ -47,7 +47,7 @@
 #
 # [*ceph_apache_repo*] Whether to require the CEPH apache repo (ceph::repo::fastcgi).
 #   Optional. Default is true. Check:
-#   http://ceph.com/docs/master/install/install-ceph-gateway/
+#   http://docs.ceph.com/docs/master/install/install-ceph-gateway/
 #   for more info on repository recommendations.
 #
 # [*apache_mods*] Whether to configure and enable a set of default Apache modules.
@@ -102,7 +102,7 @@ define ceph::rgw::apache_fastcgi (
   include ::apache::mod::rewrite
 
   #Rewrite rule
-  #Variable name shrinked in favor of not having
+  #Variable name shrunk in favor of not having
   #more than 140 chars per line
   $rr = '^/([a-zA-Z0-9-_.]*)([/]?.*) /s3gw.fcgi?page=$1&params=$2&%{QUERY_STRING} [E=HTTP_AUTHORIZATION:%{HTTP:Authorization},L]'
 
