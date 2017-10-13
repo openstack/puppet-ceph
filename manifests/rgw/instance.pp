@@ -67,9 +67,6 @@
 # [*rgw_frontends*] Arguments to the rgw frontend
 #   Optional. Default is 'fastcgi socket_port=9000 socket_host=127.0.0.1'. Example: "civetweb port=7480"
 #
-# [*syslog*] Whether or not to log to syslog.
-#   Optional. Default is true.
-#
 # [*cpu_shares*] Set the CPUShares value in systemd unit.  If left undefined no setting is made.
 # The normal default priority is 1024.  Set lower/higher to decrease/increase priority of this
 # rgw instance relative to other services.  Reference systemd.resource-control(5) for more information.
@@ -84,6 +81,11 @@
 # [*civetweb_num_threads*]
 #
 # [*rgw_dynamic_resharding*]
+#
+# [*rgw_swift_url*]
+#  Protocol://hostname:port component of X-Storage-Url returned in swift auth header.  Example:  https://swift.example.org
+#  If not set the request hostname + configured radosgw port is used.  Most likely need to set this 
+#  for swift usage if there is a proxy listening on different port from the backend rgw instance
 #
 # [*config*]  Hash of config key => value to be inserted into Ceph config file for this instance
 #
@@ -108,13 +110,13 @@ define ceph::rgw::instance (
   $ssl_cert           = undef,
   $ssl_ca_file        = undef,
   $port               = '80',
-  $syslog             = false,
   $cpu_shares         = undef,
   $cpu_quota          = undef,
   $num_rados_handles  = undef,
   $thread_pool_size   = undef,
   $civetweb_num_threads = undef,
   $rgw_dynamic_resharding = true,
+  $rgw_swift_url       = undef,
   $config              = undef
 ) {
 
@@ -151,13 +153,6 @@ define ceph::rgw::instance (
     }
   }
 
-  # this setting can over-ride zone settings so don't set explicitely if not given the param
-  unless $bucket_index_max_shards {
-    $bucket_index_max_shards_ensure = 'absent'
-  } else {
-    $bucket_index_max_shards_ensure = $ensure
-  }
-
   # ensure presence/absence of file touched in data dir indicating setup finished
   if ($enable == true) and ($ensure == 'present') {
       $ensure_init = 'present'
@@ -181,8 +176,8 @@ define ceph::rgw::instance (
     "${cluster}/client.${client_id}/user":                        value => $user, ensure => $ensure;
     "${cluster}/client.${client_id}/rgw_num_rados_handles":       value => $num_rados_handles, ensure => $ensure;
     "${cluster}/client.${client_id}/rgw_thread_pool_size":        value => $thread_pool_size, ensure => $ensure;
-    "${cluster}/client.${client_id}/rgw_override_bucket_index_max_shards": value => $bucket_index_max_shards, ensure => $bucket_index_max_shards_ensure;
-    "${cluster}/client.${client_id}/rgw_dynamic_resharding":       value => $rgw_dynamic_resharding, ensure => $ensure;
+    "${cluster}/client.${client_id}/rgw_dynamic_resharding":      value => $rgw_dynamic_resharding, ensure => $ensure;
+    "${cluster}/client.${client_id}/rgw_swift_url":               value => $rgw_swift_url, ensure => $ensure;
   }
 
   if ($frontend_type == 'civetweb')
