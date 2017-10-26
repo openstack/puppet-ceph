@@ -82,6 +82,7 @@ define ceph::rgw::apache_fastcgi (
   $custom_apache_ports  = undef,
 ) {
 
+  warning ('apache_fastcgi is depricated and will be removed in two releases (P+2)')
   class { '::apache':
     default_mods    => $apache_mods,
     default_vhost   => $apache_vhost,
@@ -141,8 +142,17 @@ exec /usr/bin/radosgw -c /etc/ceph/ceph.conf -n ${name}",
         -> Package[$pkg_fastcgi]
       }
       'RedHat': {
+        if ($::osfamily == 'Redhat' and versioncmp($::operatingsystemrelease, '7.0') >= 0)
+        {
+          warning('puppetlabs puppet-apache dropped support for fastcgi on EL7')
+          $pkg_fastcgi_real = 'mod_fastcgi'
+        }
+        else
+        {
+          $pkg_fastcgi_real = $pkg_fastcgi
+        }
         Yumrepo['ext-ceph-fastcgi']
-        -> Package[$pkg_fastcgi]
+        -> Package[$pkg_fastcgi_real]
       }
       default: {
         fail("Unsupported osfamily: ${::osfamily} operatingsystem: ${::operatingsystem}, \

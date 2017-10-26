@@ -59,10 +59,10 @@
 #   Optional. Default is undef.
 #
 # [*frontend_type*] What type of frontend to use
-#   Optional. Default is apache-fastcgi. Other options are apache-proxy-fcgi or civetweb
+#   Optional. Default is civetweb, Other options are apache-proxy-fcgi or apache-fastcgi.
 #
 # [*rgw_frontends*] Arguments to the rgw frontend
-#   Optional. Default is 'fastcgi socket_port=9000 socket_host=127.0.0.1'. Example: "civetweb port=7480"
+#   Optional. Default is 'civetweb port=7480'.
 #
 # Deprecated Parameters:
 #
@@ -82,8 +82,8 @@ define ceph::rgw (
   $rgw_socket_path    = $::ceph::params::rgw_socket_path,
   $rgw_print_continue = false,
   $rgw_port           = undef,
-  $frontend_type      = 'apache-fastcgi',
-  $rgw_frontends      = 'fastcgi socket_port=9000 socket_host=127.0.0.1',
+  $frontend_type      = 'civetweb',
+  $rgw_frontends      = 'civetweb port=7480',
   $syslog             = undef,
 ) {
 
@@ -107,11 +107,8 @@ define ceph::rgw (
 
   if($frontend_type == 'civetweb')
   {
-    if( $rgw_frontends =~ /civetweb/ )
-    {
-      ceph::rgw::civetweb { $name:
-        rgw_frontends => $rgw_frontends,
-      }
+    ceph::rgw::civetweb { $name:
+      rgw_frontends => $rgw_frontends,
     }
   }
   elsif ( ( $frontend_type == 'apache-fastcgi' ) or ( $frontend_type == 'apache-proxy-fcgi' ) )
