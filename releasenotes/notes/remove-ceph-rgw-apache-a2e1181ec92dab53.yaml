@@ -1,0 +1,5 @@
+---
+upgrade:
+  - |
+    Removed ceph::rgw::apache because the fastcgi support has been completely
+    broken for el7 and this class was deprecated in Hammer.
