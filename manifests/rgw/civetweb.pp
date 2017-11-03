@@ -19,10 +19,10 @@
 #
 # == Define: ceph::rgw::civetweb
 # [*rgw_frontends*] Arguments to the rgw frontend
-#   Optional. Default is undef. Example: "civetweb port=7480"
+#   Optional. Default is 'civetweb port=7480'
 #
 define ceph::rgw::civetweb (
-  $rgw_frontends = undef,
+  $rgw_frontends = 'civetweb port=7480',
 ) {
 
   unless $name =~ /^radosgw\..+/ {

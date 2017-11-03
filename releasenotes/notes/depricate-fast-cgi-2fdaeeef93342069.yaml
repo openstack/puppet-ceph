@@ -1,0 +1,10 @@
+---
+features:
+  - |
+    Changed default frontend of rgw from fastcgi to civetweb.
+deprecations:
+  - |
+    fastcgi frontend for RGW has been deprecated.  Puppetlabs
+    puppetlabs-apache has dropped support for fastcgi on RHEL/CentOS
+    7 hosts. puppetlabs-apache <= 2.2.0 is required for fastcgi.
+    Fastcgi will be removed in P+2 release.

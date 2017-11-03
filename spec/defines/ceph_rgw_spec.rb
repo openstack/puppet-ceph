@@ -48,9 +48,6 @@ describe 'ceph::rgw' do
       it { is_expected.to contain_ceph_config('client.radosgw.gateway/host').with_value('myhost') }
       it { is_expected.to contain_ceph_config('client.radosgw.gateway/keyring').with_value('/etc/ceph/ceph.client.radosgw.gateway.keyring') }
       it { is_expected.to contain_ceph_config('client.radosgw.gateway/log_file').with_value('/var/log/ceph/radosgw.log') }
-      it { is_expected.to contain_ceph_config('client.radosgw.gateway/rgw_dns_name').with_value('myhost.domain') }
-      it { is_expected.to contain_ceph_config('client.radosgw.gateway/rgw_print_continue').with_value(false) }
-      it { is_expected.to contain_ceph_config('client.radosgw.gateway/rgw_socket_path').with_value('/tmp/radosgw.sock') }
 
       it { is_expected.to contain_file('/var/lib/ceph/radosgw').with({
         'ensure'                  => 'directory',
@@ -87,10 +84,6 @@ describe 'ceph::rgw' do
           :user               => 'wwwuser',
           :keyring_path       => "/etc/ceph/ceph.radosgw.custom.keyring",
           :log_file           => '/var/log/ceph/mylogfile.log',
-          :rgw_dns_name       => 'mydns.hostname',
-          :rgw_socket_path    => '/some/location/radosgw.sock',
-          :rgw_print_continue => true,
-          :rgw_port           => 1111,
         }
       end
 
@@ -99,10 +92,6 @@ describe 'ceph::rgw' do
       it { is_expected.to contain_ceph_config('client.radosgw.custom/host').with_value('myhost') }
       it { is_expected.to contain_ceph_config('client.radosgw.custom/keyring').with_value('/etc/ceph/ceph.radosgw.custom.keyring') }
       it { is_expected.to contain_ceph_config('client.radosgw.custom/log_file').with_value('/var/log/ceph/mylogfile.log') }
-      it { is_expected.to contain_ceph_config('client.radosgw.custom/rgw_dns_name').with_value('mydns.hostname') }
-      it { is_expected.to contain_ceph_config('client.radosgw.custom/rgw_print_continue').with_value(true) }
-      it { is_expected.to contain_ceph_config('client.radosgw.custom/rgw_socket_path').with_value('/some/location/radosgw.sock') }
-      it { is_expected.to contain_ceph_config('client.radosgw.custom/rgw_port').with_value(1111) }
       it { is_expected.to contain_ceph_config('client.radosgw.custom/user').with_value('wwwuser') }
 
       it { is_expected.to contain_file('/var/lib/ceph/radosgw/ceph-radosgw.custom').with( {
@@ -145,9 +134,6 @@ describe 'ceph::rgw' do
       it { is_expected.to contain_ceph_config('client.radosgw.gateway/host').with_value('myhost') }
       it { is_expected.to contain_ceph_config('client.radosgw.gateway/keyring').with_value('/etc/ceph/ceph.client.radosgw.gateway.keyring') }
       it { is_expected.to contain_ceph_config('client.radosgw.gateway/log_file').with_value('/var/log/ceph/radosgw.log') }
-      it { is_expected.to contain_ceph_config('client.radosgw.gateway/rgw_dns_name').with_value('myhost.domain') }
-      it { is_expected.to contain_ceph_config('client.radosgw.gateway/rgw_print_continue').with_value(false) }
-      it { is_expected.to contain_ceph_config('client.radosgw.gateway/rgw_socket_path').with_value('/tmp/radosgw.sock') }
 
       it { is_expected.to contain_file('/var/lib/ceph/radosgw').with({
         'ensure'                  => 'directory',
@@ -182,10 +168,6 @@ describe 'ceph::rgw' do
           :user               => 'wwwuser',
           :keyring_path       => "/etc/ceph/ceph.radosgw.custom.keyring",
           :log_file           => '/var/log/ceph/mylogfile.log',
-          :rgw_dns_name       => 'mydns.hostname',
-          :rgw_socket_path    => '/some/location/radosgw.sock',
-          :rgw_print_continue => true,
-          :rgw_port           => 1111,
         }
       end
 
@@ -194,10 +176,6 @@ describe 'ceph::rgw' do
       it { is_expected.to contain_ceph_config('client.radosgw.custom/host').with_value('myhost') }
       it { is_expected.to contain_ceph_config('client.radosgw.custom/keyring').with_value('/etc/ceph/ceph.radosgw.custom.keyring') }
       it { is_expected.to contain_ceph_config('client.radosgw.custom/log_file').with_value('/var/log/ceph/mylogfile.log') }
-      it { is_expected.to contain_ceph_config('client.radosgw.custom/rgw_dns_name').with_value('mydns.hostname') }
-      it { is_expected.to contain_ceph_config('client.radosgw.custom/rgw_print_continue').with_value(true) }
-      it { is_expected.to contain_ceph_config('client.radosgw.custom/rgw_socket_path').with_value('/some/location/radosgw.sock') }
-      it { is_expected.to contain_ceph_config('client.radosgw.custom/rgw_port').with_value(1111) }
       it { is_expected.to contain_ceph_config('client.radosgw.custom/user').with_value('wwwuser') }
 
       it { is_expected.to contain_file('/var/lib/ceph/radosgw/ceph-radosgw.custom').with( {
@@ -240,9 +218,6 @@ describe 'ceph::rgw' do
       it { is_expected.to contain_ceph_config('client.radosgw.gateway/host').with_value('myhost') }
       it { is_expected.to contain_ceph_config('client.radosgw.gateway/keyring').with_value('/etc/ceph/ceph.client.radosgw.gateway.keyring') }
       it { is_expected.to contain_ceph_config('client.radosgw.gateway/log_file').with_value('/var/log/ceph/radosgw.log') }
-      it { is_expected.to contain_ceph_config('client.radosgw.gateway/rgw_dns_name').with_value('myhost.domain') }
-      it { is_expected.to contain_ceph_config('client.radosgw.gateway/rgw_print_continue').with_value(false) }
-      it { is_expected.to contain_ceph_config('client.radosgw.gateway/rgw_socket_path').with_value('/tmp/radosgw.sock') }
 
       it { is_expected.to contain_file('/var/lib/ceph/radosgw').with({
         'ensure'                  => 'directory',
@@ -277,10 +252,6 @@ describe 'ceph::rgw' do
           :user               => 'wwwuser',
           :keyring_path       => "/etc/ceph/ceph.radosgw.custom.keyring",
           :log_file           => '/var/log/ceph/mylogfile.log',
-          :rgw_dns_name       => 'mydns.hostname',
-          :rgw_socket_path    => '/some/location/radosgw.sock',
-          :rgw_print_continue => true,
-          :rgw_port           => 1111,
         }
       end
 
@@ -289,10 +260,6 @@ describe 'ceph::rgw' do
       it { is_expected.to contain_ceph_config('client.radosgw.custom/host').with_value('myhost') }
       it { is_expected.to contain_ceph_config('client.radosgw.custom/keyring').with_value('/etc/ceph/ceph.radosgw.custom.keyring') }
       it { is_expected.to contain_ceph_config('client.radosgw.custom/log_file').with_value('/var/log/ceph/mylogfile.log') }
-      it { is_expected.to contain_ceph_config('client.radosgw.custom/rgw_dns_name').with_value('mydns.hostname') }
-      it { is_expected.to contain_ceph_config('client.radosgw.custom/rgw_print_continue').with_value(true) }
-      it { is_expected.to contain_ceph_config('client.radosgw.custom/rgw_socket_path').with_value('/some/location/radosgw.sock') }
-      it { is_expected.to contain_ceph_config('client.radosgw.custom/rgw_port').with_value(1111) }
       it { is_expected.to contain_ceph_config('client.radosgw.custom/user').with_value('wwwuser') }
 
       it { is_expected.to contain_file('/var/lib/ceph/radosgw/ceph-radosgw.custom').with( {

@@ -38,7 +38,7 @@ describe 'ceph::rgw' do
       it { is_expected.to contain_ceph_config('client.radosgw.civetweb/host').with_value('myhost') }
       it { is_expected.to contain_ceph_config('client.radosgw.civetweb/keyring').with_value('/etc/ceph/ceph.client.radosgw.civetweb.keyring') }
       it { is_expected.to contain_ceph_config('client.radosgw.civetweb/log_file').with_value('/var/log/ceph/radosgw.log') }
-      it { is_expected.to_not contain_ceph_config('client.radosgw.civetweb/rgw_frontends') }
+      it { is_expected.to contain_ceph_config('client.radosgw.civetweb/rgw_frontends').with_value('civetweb port=7480') }
     end
 
     describe "activated with custom civetweb params" do
