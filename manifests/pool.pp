@@ -89,7 +89,7 @@ ceph osd pool set ${name} pgp_num ${pgp_num}",
         unless  => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 test $(ceph osd pool get ${name} pgp_num | sed 's/.*:\s*//g') -ge ${pgp_num}",
-        require => Exec["create-${name}"],
+        require => [Exec["create-${name}"], Exec["set-${name}-pg_num"]],
         timeout => $exec_timeout,
       }
     }
