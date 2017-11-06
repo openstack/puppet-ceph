@@ -45,7 +45,7 @@ describe 'ceph::pool' do
         )
         is_expected.to contain_exec('set-volumes-pgp_num').with(
           'command' => "/bin/true # comment to satisfy puppet syntax requirements\nset -ex\nceph osd pool set volumes pgp_num 4"
-        )
+        ).that_requires('Exec[set-volumes-pg_num]')
         is_expected.to contain_exec('set-volumes-size').with(
           'command' => "/bin/true # comment to satisfy puppet syntax requirements\nset -ex\nceph osd pool set volumes size 2"
         )
