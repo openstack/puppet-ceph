@@ -1,7 +1,7 @@
 source ENV['GEM_SOURCE'] || "https://rubygems.org"
 
 group :development, :test, :system_tests do
-  gem 'puppet-openstack_spec_helper', :require => 'false', :git => 'https://git.openstack.org/openstack/puppet-openstack_spec_helper'
+  gem 'puppet-openstack_spec_helper', :require => 'false', :git => 'https://git.openstack.org/openstack/puppet-openstack_spec_helper', :branch => 'stable/pike'
 end
 
 if facterversion = ENV['FACTER_GEM_VERSION']
