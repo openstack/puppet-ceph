@@ -176,10 +176,13 @@ ceph ${cluster_option} ${inject_id_option} ${inject_keyring_option} auth import 
       unless    => "/bin/true # comment to satisfy puppet syntax requirements
 set -x
 OLD_KEYRING=\$(mktemp)
+TMP_KEYRING=\$(mktemp)
+cat ${keyring_path} | sed -e 's/\\\\//g' > \$TMP_KEYRING
 ceph ${cluster_option} ${inject_id_option} ${inject_keyring_option} auth get ${name} -o \$OLD_KEYRING || true
-diff -N \$OLD_KEYRING ${keyring_path}
+diff -N \$OLD_KEYRING \$TMP_KEYRING
 rv=$?
 rm \$OLD_KEYRING
+rm \$TMP_KEYRING
 exit \$rv",
       require   => [ Class['ceph'], Exec["ceph-key-${name}"], ],
       logoutput => true,

@@ -1,0 +1,6 @@
+---
+fixes:
+  - |
+    Update ceph::key unless statement to work out ceph auth get not escaping
+    embedded quotes in the capabilities lists. Ceph tracker number 22227 has
+    been opened to resolve this issue
