@@ -36,7 +36,8 @@ class ceph::profile::mon {
     inject_keyring => "/var/lib/ceph/mon/ceph-${::hostname}/keyring",
   }
 
-  if !empty($ceph::profile::params::client_keys) {
+  if !empty($ceph::profile::params::client_keys) and
+     !defined(Class['::ceph::keys']) {
     class { '::ceph::keys':
       args     => $ceph::profile::params::client_keys,
       defaults => $defaults
