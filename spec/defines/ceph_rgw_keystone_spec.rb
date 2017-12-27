@@ -62,7 +62,7 @@ describe 'ceph::rgw::keystone' do
 
       it { is_expected.to contain_ceph_config('client.radosgw.gateway/rgw_keystone_url').with_value('http://keystone.default:5000') }
       it { is_expected.to contain_ceph_config('client.radosgw.gateway/rgw_keystone_admin_token').with_value('defaulttoken') }
-      it { is_expected.to contain_ceph_config('client.radosgw.gateway/rgw_keystone_accepted_roles').with_value('_member_, Member') }
+      it { is_expected.to contain_ceph_config('client.radosgw.gateway/rgw_keystone_accepted_roles').with_value('Member') }
       it { is_expected.to contain_ceph_config('client.radosgw.gateway/rgw_keystone_token_cache_size').with_value(500) }
       it { is_expected.to contain_ceph_config('client.radosgw.gateway/rgw_s3_auth_use_keystone').with_value(true) }
       it { is_expected.to contain_ceph_config('client.radosgw.gateway/rgw_keystone_revocation_interval').with_value(600) }
@@ -222,7 +222,7 @@ wget --no-check-certificate http://keystone.custom:5000/v2.0/certificates/signin
 
       it { is_expected.to contain_ceph_config('client.radosgw.gateway/rgw_keystone_url').with_value('http://keystone.default:5000') }
       it { is_expected.to contain_ceph_config('client.radosgw.gateway/rgw_keystone_admin_token').with_value('defaulttoken') }
-      it { is_expected.to contain_ceph_config('client.radosgw.gateway/rgw_keystone_accepted_roles').with_value('_member_, Member') }
+      it { is_expected.to contain_ceph_config('client.radosgw.gateway/rgw_keystone_accepted_roles').with_value('Member') }
       it { is_expected.to contain_ceph_config('client.radosgw.gateway/rgw_keystone_token_cache_size').with_value(500) }
       it { is_expected.to contain_ceph_config('client.radosgw.gateway/rgw_s3_auth_use_keystone').with_value(true) }
       it { is_expected.to contain_ceph_config('client.radosgw.gateway/rgw_keystone_revocation_interval').with_value(600) }

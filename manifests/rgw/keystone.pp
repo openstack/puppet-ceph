@@ -34,7 +34,7 @@
 #   Optional. Default is 'v2.0'
 #
 # [*rgw_keystone_accepted_roles*] Roles to accept from keystone.
-#   Optional. Default is '_member_, Member'.
+#   Optional. Default is 'Member'.
 #   Comma separated list of roles.
 #
 # [*rgw_keystone_token_cache_size*] How many tokens to keep cached.
@@ -76,7 +76,7 @@ define ceph::rgw::keystone (
   $rgw_keystone_admin_token         = undef,
   $rgw_keystone_url                 = 'http://127.0.0.1:5000',
   $rgw_keystone_version             = 'v2.0',
-  $rgw_keystone_accepted_roles      = '_member_, Member',
+  $rgw_keystone_accepted_roles      = 'Member',
   $rgw_keystone_token_cache_size    = 500,
   $rgw_s3_auth_use_keystone         = true,
   $use_pki                          = true,
