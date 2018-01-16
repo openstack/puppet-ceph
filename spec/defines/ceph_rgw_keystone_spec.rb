@@ -67,6 +67,7 @@ describe 'ceph::rgw::keystone' do
       it { is_expected.to contain_ceph_config('client.radosgw.gateway/rgw_s3_auth_use_keystone').with_value(true) }
       it { is_expected.to contain_ceph_config('client.radosgw.gateway/rgw_keystone_revocation_interval').with_value(600) }
       it { is_expected.to contain_ceph_config('client.radosgw.gateway/nss_db_path').with_value('/var/lib/ceph/nss') }
+      it { is_expected.to contain_ceph_config('client.radosgw.gateway/rgw_keystone_implicit_tenants').with_value(true) }
 
       it { is_expected.to contain_exec('radosgw.gateway-nssdb-ca').with(
          'command' => "/bin/true  # comment to satisfy puppet syntax requirements
@@ -113,6 +114,7 @@ wget --no-check-certificate http://keystone.default:5000/v2.0/certificates/signi
           :use_pki                          => false,
           :rgw_keystone_revocation_interval => 200,
           :nss_db_path                      => '/some/path/to/nss',
+          :rgw_keystone_implicit_tenants    => false,
         }
       end
 
@@ -123,6 +125,7 @@ wget --no-check-certificate http://keystone.default:5000/v2.0/certificates/signi
       it { is_expected.to contain_ceph_config('client.radosgw.custom/rgw_s3_auth_use_keystone').with_value(false) }
       it { is_expected.to contain_ceph_config('client.radosgw.custom/rgw_keystone_revocation_interval').with_ensure('absent') }
       it { is_expected.to contain_ceph_config('client.radosgw.custom/nss_db_path').with_ensure('absent') }
+      it { is_expected.to contain_ceph_config('client.radosgw.custom/rgw_keystone_implicit_tenants').with_value(false) }
 
       it { is_expected.to_not contain_exec('radosgw.custom-nssdb-ca').with(
          'command' => "/bin/true  # comment to satisfy puppet syntax requirements
@@ -228,6 +231,7 @@ wget --no-check-certificate http://keystone.custom:5000/v2.0/certificates/signin
       it { is_expected.to contain_ceph_config('client.radosgw.gateway/rgw_s3_auth_use_keystone').with_value(true) }
       it { is_expected.to contain_ceph_config('client.radosgw.gateway/rgw_keystone_revocation_interval').with_value(600) }
       it { is_expected.to contain_ceph_config('client.radosgw.gateway/nss_db_path').with_value('/var/lib/ceph/nss') }
+      it { is_expected.to contain_ceph_config('client.radosgw.gateway/rgw_keystone_implicit_tenants').with_value(true) }
 
       it { is_expected.to contain_exec('radosgw.gateway-nssdb-ca').with(
          'command' => "/bin/true  # comment to satisfy puppet syntax requirements
@@ -274,6 +278,7 @@ wget --no-check-certificate http://keystone.default:5000/v2.0/certificates/signi
           :use_pki                          => false,
           :rgw_keystone_revocation_interval => 200,
           :nss_db_path                      => '/some/path/to/nss',
+          :rgw_keystone_implicit_tenants    => false,
         }
       end
 
@@ -284,6 +289,7 @@ wget --no-check-certificate http://keystone.default:5000/v2.0/certificates/signi
       it { is_expected.to contain_ceph_config('client.radosgw.custom/rgw_s3_auth_use_keystone').with_value(false) }
       it { is_expected.to contain_ceph_config('client.radosgw.custom/rgw_keystone_revocation_interval').with_ensure('absent') }
       it { is_expected.to contain_ceph_config('client.radosgw.custom/nss_db_path').with_ensure('absent') }
+      it { is_expected.to contain_ceph_config('client.radosgw.custom/rgw_keystone_implicit_tenants').with_value(false) }
 
       it { is_expected.to_not contain_exec('radosgw.custom-nssdb-ca').with(
          'command' => "/bin/true  # comment to satisfy puppet syntax requirements

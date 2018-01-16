@@ -1,0 +1,5 @@
+---
+fixes:
+  - |
+    Added rgw_keystone_implicit_tenants to ceph::rgw::keystone. Setting
+    to true creates a new tenant per user.
