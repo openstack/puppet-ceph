@@ -73,6 +73,7 @@ Enjoy your ceph cluster!
         cap_mon => 'allow *',
         cap_osd => 'allow *',
         cap_mds => 'allow',
+        cap_mgr => 'allow *',
       }
       ceph::key { 'client.bootstrap-osd':
         secret  => $bootstrap_osd_key,
