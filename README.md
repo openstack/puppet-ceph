@@ -30,6 +30,8 @@ Summary of added features or changes:
 - Turn ceph::mds class into resource, add service/directory management.
 - Add REST API resource ceph::restapi
 - Add ceph-mgr resource ceph::mgr
+- Modify ceph::osd to support bluestore and create logical volumes for data and block.db devices
+- Removed filestore support
 
 Module Description
 ------------------

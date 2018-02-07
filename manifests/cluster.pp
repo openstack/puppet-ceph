@@ -19,7 +19,6 @@
 # Author: David Gurtner <aldavud@crimson.ch>
 # Author: Ben Meekhof <bmeekhof@umich.edu>
 
-
 define ceph::cluster (
   $cluster                    = "$name",
   $fsid,
@@ -27,7 +26,6 @@ define ceph::cluster (
   $authentication_type        = 'cephx',
   $keyring                    = undef,
   $debug_level                = 0,
-  $osd_journal_size           = undef,
   $osd_pool_default_pg_num    = undef,
   $osd_pool_default_pgp_num   = undef,
   $osd_pool_default_size      = undef,
@@ -76,14 +74,14 @@ define ceph::cluster (
       "$cluster/global/cluster_network":             value => $cluster_network;
       "$cluster/global/public_network":              value => $public_network;
       "$cluster/global/public_addr":                 value => $public_addr;
-      "$cluster/osd/osd_journal_size":               value => $osd_journal_size;
       "$cluster/osd/debug_filestore":                value => $debug_level;
       "$cluster/osd/debug_osd":                      value => $debug_level;
       "$cluster/osd/debug_journal":                  value => $debug_level;
       "$cluster/osd/debug_ms":                       value => $debug_level;
-      "$cluster/osd/crush_location":                 value => $osd_crush_location;  # kraken
-      "$cluster/osd/osd_crush_location":             value => $osd_crush_location;  # jewel
+      "$cluster/osd/crush_location":                 value => $osd_crush_location; 
     }
+
+    # bluestore_block_db_size - not setting because is per-osd setting determined by created LV size
 
     if $authentication_type == 'cephx' {
       ceph_config {
