@@ -1,7 +1,5 @@
----
 
 - project:
-    name: openstack/puppet-ceph
     templates:
       - puppet-openstack-check-jobs
       - puppet-openstack-module-unit-jobs
