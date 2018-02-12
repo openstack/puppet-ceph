@@ -82,6 +82,7 @@ define ceph::key (
   $cap_mon = undef,
   $cap_osd = undef,
   $cap_mds = undef,
+  $cap_mgr = undef,
   $user = 'root',
   $group = 'root',
   $mode = '0600',
@@ -112,7 +113,10 @@ define ceph::key (
   if $cap_mds {
     $mds_caps = "--cap mds '${cap_mds}' "
   }
-  $caps = "${mon_caps}${osd_caps}${mds_caps}"
+  if $cap_mgr {
+    $mgr_caps = "--cap mgr '${cap_mgr}' "
+  }
+  $caps = "${mon_caps}${osd_caps}${mds_caps}${mgr_caps}"
 
   # this allows multiple defines for the same 'keyring file',
   # which is supported by ceph-authtool
