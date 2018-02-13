@@ -105,6 +105,7 @@ define ceph::mds (
         path => "/etc/sysconfig/ceph",
         line => "CLUSTER=${cluster}",
         match => 'CLUSTER=.*',
+        require => Package["$::ceph::params::packages"],
         before => Service["${service}"],
         ensure => $ensure
       }
