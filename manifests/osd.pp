@@ -150,6 +150,16 @@ test ${fsid} = $(ceph-volume lvm list ${data} |grep 'cluster fsid' | awk -F'fsid
         }
       }
 
+      #name of the bootstrap osd keyring
+      $bootstrap_osd_keyring = "/var/lib/ceph/bootstrap-osd/${cluster_name}.keyring"
+      exec { "extract-bootstrap-osd-keyring-${name}":
+        command => "/bin/true # comment to satisfy puppet syntax requirements
+ceph auth get client.bootstrap-osd > ${bootstrap_osd_keyring}
+",
+        creates => "${bootstrap_osd_keyring}",
+      }
+      Exec["extract-bootstrap-osd-keyring-${name}"] -> Exec[$ceph_prepare]
+
       exec { $ceph_prepare:
         command   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
