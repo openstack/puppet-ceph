@@ -163,7 +163,17 @@ test -z $(ceph-disk list $(readlink -f ${data}) | egrep -o '[0-9a-f]{8}-([0-9a-f
         }
       }
 
-      Exec[$ceph_check_udev] -> Exec[$ceph_prepare]
+      #name of the bootstrap osd keyring
+      $bootstrap_osd_keyring = "/var/lib/ceph/bootstrap-osd/${cluster_name}.keyring"
+      exec { "extract-bootstrap-osd-keyring-${name}":
+        command => "/bin/true # comment to satisfy puppet syntax requirements
+ceph auth get client.bootstrap-osd > ${bootstrap_osd_keyring}
+",
+        creates => "${bootstrap_osd_keyring}",
+      }
+      Exec[$ceph_check_udev] -> Exec["extract-bootstrap-osd-keyring-${name}"]
+      Exec["extract-bootstrap-osd-keyring-${name}"] -> Exec[$ceph_prepare]
+
       # ceph-disk: prepare should be idempotent http://tracker.ceph.com/issues/7475
       exec { $ceph_prepare:
         command   => "/bin/true # comment to satisfy puppet syntax requirements
