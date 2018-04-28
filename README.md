@@ -29,7 +29,7 @@ The ceph module is intended to leverage all [Ceph](http://ceph.com/) has to offe
 Module Description
 ------------------
 
-The ceph module deploys a [Ceph](http://ceph.com/) cluster ( MON, OSD ), the [Cephfs](http://ceph.com/docs/next/cephfs/) file system and the [RadosGW](http://ceph.com/docs/next/radosgw/) object store. It provides integration with various environments ( OpenStack ... ) and components to be used by third party puppet modules that depend on a Ceph cluster.
+The ceph module deploys a [Ceph](http://ceph.com/) cluster ( MON, OSD ), the [Cephfs](http://docs.ceph.com/docs/master/cephfs/) file system and the [RadosGW](http://docs.ceph.com/docs/firefly/radosgw/) object store. It provides integration with various environments ( OpenStack ... ) and components to be used by third party puppet modules that depend on a Ceph cluster.
 
 Setup
 -----
@@ -37,7 +37,7 @@ Setup
 Implementation
 --------------
 
-A [blueprint](https://wiki.openstack.org/wiki/Puppet-openstack/ceph-blueprint) contains an inventory of what is desirable. It was decided to start from scratch and implement one module at a time.
+A [blueprint](https://wiki.openstack.org/wiki/Puppet/ceph-blueprint) contains an inventory of what is desirable. It was decided to start from scratch and implement one module at a time.
 
 Limitations
 -----------
