@@ -112,7 +112,7 @@ wget --no-check-certificate http://keystone.default:5000/v2.0/certificates/signi
           :rgw_keystone_token_cache_size    => 100,
           :rgw_s3_auth_use_keystone         => false,
           :use_pki                          => false,
-          :rgw_keystone_revocation_interval => 200,
+          :rgw_keystone_revocation_interval => 0,
           :nss_db_path                      => '/some/path/to/nss',
           :rgw_keystone_implicit_tenants    => false,
         }
@@ -123,7 +123,7 @@ wget --no-check-certificate http://keystone.default:5000/v2.0/certificates/signi
       it { is_expected.to contain_ceph_config('client.radosgw.custom/rgw_keystone_accepted_roles').with_value('_role1_,role2') }
       it { is_expected.to contain_ceph_config('client.radosgw.custom/rgw_keystone_token_cache_size').with_value(100) }
       it { is_expected.to contain_ceph_config('client.radosgw.custom/rgw_s3_auth_use_keystone').with_value(false) }
-      it { is_expected.to contain_ceph_config('client.radosgw.custom/rgw_keystone_revocation_interval').with_ensure('absent') }
+      it { is_expected.to contain_ceph_config('client.radosgw.custom/rgw_keystone_revocation_interval').with_value(0) }
       it { is_expected.to contain_ceph_config('client.radosgw.custom/nss_db_path').with_ensure('absent') }
       it { is_expected.to contain_ceph_config('client.radosgw.custom/rgw_keystone_implicit_tenants').with_value(false) }
 
@@ -276,7 +276,7 @@ wget --no-check-certificate http://keystone.default:5000/v2.0/certificates/signi
           :rgw_keystone_token_cache_size    => 100,
           :rgw_s3_auth_use_keystone         => false,
           :use_pki                          => false,
-          :rgw_keystone_revocation_interval => 200,
+          :rgw_keystone_revocation_interval => 0,
           :nss_db_path                      => '/some/path/to/nss',
           :rgw_keystone_implicit_tenants    => false,
         }
@@ -287,7 +287,7 @@ wget --no-check-certificate http://keystone.default:5000/v2.0/certificates/signi
       it { is_expected.to contain_ceph_config('client.radosgw.custom/rgw_keystone_accepted_roles').with_value('_role1_,role2') }
       it { is_expected.to contain_ceph_config('client.radosgw.custom/rgw_keystone_token_cache_size').with_value(100) }
       it { is_expected.to contain_ceph_config('client.radosgw.custom/rgw_s3_auth_use_keystone').with_value(false) }
-      it { is_expected.to contain_ceph_config('client.radosgw.custom/rgw_keystone_revocation_interval').with_ensure('absent') }
+      it { is_expected.to contain_ceph_config('client.radosgw.custom/rgw_keystone_revocation_interval').with_value(0) }
       it { is_expected.to contain_ceph_config('client.radosgw.custom/nss_db_path').with_ensure('absent') }
       it { is_expected.to contain_ceph_config('client.radosgw.custom/rgw_keystone_implicit_tenants').with_value(false) }
 
