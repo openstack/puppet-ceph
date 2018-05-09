@@ -186,7 +186,7 @@ certutil -d ${nss_db_path} -L | grep ^signing_cert
   } else {
     ceph_config {
       "client.${name}/nss_db_path":                      ensure => absent;
-      "client.${name}/rgw_keystone_revocation_interval": ensure => absent;
+      "client.${name}/rgw_keystone_revocation_interval": value => $rgw_keystone_revocation_interval;
     }
   }
 }
