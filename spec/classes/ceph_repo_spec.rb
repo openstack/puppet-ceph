@@ -41,7 +41,7 @@ describe 'ceph::repo' do
       ) }
 
       it { is_expected.to contain_apt__source('ceph').with(
-        :location => 'http://download.ceph.com/debian-luminous/',
+        :location => 'http://download.ceph.com/debian-mimic/',
         :release  => 'jessie',
       ) }
 
@@ -50,12 +50,12 @@ describe 'ceph::repo' do
     describe "when overriding ceph mirror" do
       let :params do
         {
-         :ceph_mirror => 'http://myserver.com/debian-luminous/'
+         :ceph_mirror => 'http://myserver.com/debian-mimic/'
         }
       end
 
       it { is_expected.to contain_apt__source('ceph').with(
-        :location => 'http://myserver.com/debian-luminous/',
+        :location => 'http://myserver.com/debian-mimic/',
         :release  => 'jessie',
       ) }
     end
@@ -96,7 +96,7 @@ describe 'ceph::repo' do
       ) }
 
       it { is_expected.to contain_apt__source('ceph').with(
-        :location => 'http://download.ceph.com/debian-luminous/',
+        :location => 'http://download.ceph.com/debian-mimic/',
         :release  => 'trusty',
       ) }
 
@@ -128,7 +128,7 @@ describe 'ceph::repo' do
       ) }
 
       it { is_expected.to contain_apt__source('ceph').with(
-        :location => 'http://download.ceph.com/debian-luminous/',
+        :location => 'http://download.ceph.com/debian-mimic/',
         :release  => 'trusty',
       ) }
 
@@ -151,7 +151,7 @@ describe 'ceph::repo' do
 
       it { is_expected.to contain_apt__source('ceph').with(
         :ensure   => 'absent',
-        :location => 'http://download.ceph.com/debian-luminous/',
+        :location => 'http://download.ceph.com/debian-mimic/',
         :release  => 'trusty',
       ) }
 
@@ -194,9 +194,9 @@ describe 'ceph::repo' do
 
       it { is_expected.to contain_yumrepo('ext-ceph').with(
         :enabled    => '1',
-        :descr      => 'External Ceph luminous',
-        :name       => 'ext-ceph-luminous',
-        :baseurl    => 'http://download.ceph.com/rpm-luminous/el7/$basearch',
+        :descr      => 'External Ceph mimic',
+        :name       => 'ext-ceph-mimic',
+        :baseurl    => 'http://download.ceph.com/rpm-mimic/el7/$basearch',
         :gpgcheck   => '1',
         :gpgkey     => 'https://download.ceph.com/keys/release.asc',
         :mirrorlist => 'absent',
@@ -206,8 +206,8 @@ describe 'ceph::repo' do
       it { is_expected.to contain_yumrepo('ext-ceph-noarch').with(
         :enabled    => '1',
         :descr      => 'External Ceph noarch',
-        :name       => 'ext-ceph-luminous-noarch',
-        :baseurl    => 'http://download.ceph.com/rpm-luminous/el7/noarch',
+        :name       => 'ext-ceph-mimic-noarch',
+        :baseurl    => 'http://download.ceph.com/rpm-mimic/el7/noarch',
         :gpgcheck   => '1',
         :gpgkey     => 'https://download.ceph.com/keys/release.asc',
         :mirrorlist => 'absent',
@@ -297,9 +297,9 @@ describe 'ceph::repo' do
 
       it { is_expected.to contain_yumrepo('ext-ceph').with(
         :enabled        => '1',
-        :descr          => 'External Ceph luminous',
-        :name           => 'ext-ceph-luminous',
-        :baseurl        => 'http://download.ceph.com/rpm-luminous/el7/$basearch',
+        :descr          => 'External Ceph mimic',
+        :name           => 'ext-ceph-mimic',
+        :baseurl        => 'http://download.ceph.com/rpm-mimic/el7/$basearch',
         :gpgcheck       => '1',
         :gpgkey         => 'https://download.ceph.com/keys/release.asc',
         :mirrorlist     => 'absent',
@@ -312,8 +312,8 @@ describe 'ceph::repo' do
       it { is_expected.to contain_yumrepo('ext-ceph-noarch').with(
         :enabled        => '1',
         :descr          => 'External Ceph noarch',
-        :name           => 'ext-ceph-luminous-noarch',
-        :baseurl        => 'http://download.ceph.com/rpm-luminous/el7/noarch',
+        :name           => 'ext-ceph-mimic-noarch',
+        :baseurl        => 'http://download.ceph.com/rpm-mimic/el7/noarch',
         :gpgcheck       => '1',
         :gpgkey         => 'https://download.ceph.com/keys/release.asc',
         :mirrorlist     => 'absent',
@@ -348,9 +348,9 @@ describe 'ceph::repo' do
 
       it { is_expected.to contain_yumrepo('ext-ceph').with(
         :enabled    => '0',
-        :descr      => 'External Ceph luminous',
-        :name       => 'ext-ceph-luminous',
-        :baseurl    => 'http://download.ceph.com/rpm-luminous/el7/$basearch',
+        :descr      => 'External Ceph mimic',
+        :name       => 'ext-ceph-mimic',
+        :baseurl    => 'http://download.ceph.com/rpm-mimic/el7/$basearch',
         :gpgcheck   => '1',
         :gpgkey     => 'https://download.ceph.com/keys/release.asc',
         :mirrorlist => 'absent',
@@ -360,8 +360,8 @@ describe 'ceph::repo' do
       it { is_expected.to contain_yumrepo('ext-ceph-noarch').with(
         :enabled    => '0',
         :descr      => 'External Ceph noarch',
-        :name       => 'ext-ceph-luminous-noarch',
-        :baseurl    => 'http://download.ceph.com/rpm-luminous/el7/noarch',
+        :name       => 'ext-ceph-mimic-noarch',
+        :baseurl    => 'http://download.ceph.com/rpm-mimic/el7/noarch',
         :gpgcheck   => '1',
         :gpgkey     => 'https://download.ceph.com/keys/release.asc',
         :mirrorlist => 'absent',
@@ -404,9 +404,9 @@ describe 'ceph::repo' do
 
       it { is_expected.to contain_yumrepo('ext-ceph').with(
         :enabled    => '1',
-        :descr      => 'External Ceph luminous',
-        :name       => 'ext-ceph-luminous',
-        :baseurl    => 'http://download.ceph.com/rpm-luminous/el7/$basearch',
+        :descr      => 'External Ceph mimic',
+        :name       => 'ext-ceph-mimic',
+        :baseurl    => 'http://download.ceph.com/rpm-mimic/el7/$basearch',
         :gpgcheck   => '1',
         :gpgkey     => 'https://download.ceph.com/keys/release.asc',
         :mirrorlist => 'absent',
@@ -416,8 +416,8 @@ describe 'ceph::repo' do
       it { is_expected.to contain_yumrepo('ext-ceph-noarch').with(
         :enabled    => '1',
         :descr      => 'External Ceph noarch',
-        :name       => 'ext-ceph-luminous-noarch',
-        :baseurl    => 'http://download.ceph.com/rpm-luminous/el7/noarch',
+        :name       => 'ext-ceph-mimic-noarch',
+        :baseurl    => 'http://download.ceph.com/rpm-mimic/el7/noarch',
         :gpgcheck   => '1',
         :gpgkey     => 'https://download.ceph.com/keys/release.asc',
         :mirrorlist => 'absent',
@@ -466,9 +466,9 @@ describe 'ceph::repo' do
 
       it { is_expected.to contain_yumrepo('ext-ceph').with(
         :enabled    => '1',
-        :descr      => 'External Ceph luminous',
-        :name       => 'ext-ceph-luminous',
-        :baseurl    => 'http://download.ceph.com/rpm-luminous/el7/$basearch',
+        :descr      => 'External Ceph mimic',
+        :name       => 'ext-ceph-mimic',
+        :baseurl    => 'http://download.ceph.com/rpm-mimic/el7/$basearch',
         :gpgcheck   => '1',
         :gpgkey     => 'https://download.ceph.com/keys/release.asc',
         :mirrorlist => 'absent',
@@ -478,8 +478,8 @@ describe 'ceph::repo' do
       it { is_expected.to contain_yumrepo('ext-ceph-noarch').with(
         :enabled    => '1',
         :descr      => 'External Ceph noarch',
-        :name       => 'ext-ceph-luminous-noarch',
-        :baseurl    => 'http://download.ceph.com/rpm-luminous/el7/noarch',
+        :name       => 'ext-ceph-mimic-noarch',
+        :baseurl    => 'http://download.ceph.com/rpm-mimic/el7/noarch',
         :gpgcheck   => '1',
         :gpgkey     => 'https://download.ceph.com/keys/release.asc',
         :mirrorlist => 'absent',
@@ -547,8 +547,9 @@ describe 'ceph::repo' do
       it { is_expected.to_not contain_yumrepo('ext-epel-7') }
       it { is_expected.to_not contain_yumrepo('ext-ceph') }
       it { is_expected.to_not contain_yumrepo('ext-ceph-noarch') }
-      it { is_expected.to contain_yumrepo('ceph-luminous-sig').with(
-        :baseurl => 'https://buildlogs.centos.org/centos/7/storage/x86_64/ceph-luminous/',
+      it { is_expected.to contain_yumrepo('ceph-luminous-sig').with_ensure('absent') }
+      it { is_expected.to contain_yumrepo('ceph-storage-sig').with(
+        :baseurl => 'https://buildlogs.centos.org/centos/7/storage/x86_64/ceph-mimic/',
       ) }
     end
 
@@ -564,7 +565,8 @@ describe 'ceph::repo' do
       it { is_expected.to_not contain_yumrepo('ext-epel-7') }
       it { is_expected.to_not contain_yumrepo('ext-ceph') }
       it { is_expected.to_not contain_yumrepo('ext-ceph-noarch') }
-      it { is_expected.to contain_yumrepo('ceph-luminous-sig').with(
+      it { is_expected.to contain_yumrepo('ceph-luminous-sig').with_ensure('absent') }
+      it { is_expected.to contain_yumrepo('ceph-storage-sig').with(
         :baseurl => 'https://mymirror/luminous/',
       ) }
     end
@@ -593,9 +595,9 @@ describe 'ceph::repo' do
 
       it { is_expected.to contain_yumrepo('ext-ceph').with(
         :enabled    => '0',
-        :descr      => 'External Ceph luminous',
-        :name       => 'ext-ceph-luminous',
-        :baseurl    => 'http://download.ceph.com/rpm-luminous/el7/$basearch',
+        :descr      => 'External Ceph mimic',
+        :name       => 'ext-ceph-mimic',
+        :baseurl    => 'http://download.ceph.com/rpm-mimic/el7/$basearch',
         :gpgcheck   => '1',
         :gpgkey     => 'https://download.ceph.com/keys/release.asc',
         :mirrorlist => 'absent',
@@ -605,8 +607,8 @@ describe 'ceph::repo' do
       it { is_expected.to contain_yumrepo('ext-ceph-noarch').with(
         :enabled    => '0',
         :descr      => 'External Ceph noarch',
-        :name       => 'ext-ceph-luminous-noarch',
-        :baseurl    => 'http://download.ceph.com/rpm-luminous/el7/noarch',
+        :name       => 'ext-ceph-mimic-noarch',
+        :baseurl    => 'http://download.ceph.com/rpm-mimic/el7/noarch',
         :gpgcheck   => '1',
         :gpgkey     => 'https://download.ceph.com/keys/release.asc',
         :mirrorlist => 'absent',
@@ -649,9 +651,9 @@ describe 'ceph::repo' do
 
       it { is_expected.to contain_yumrepo('ext-ceph').with(
         :enabled    => '1',
-        :descr      => 'External Ceph luminous',
-        :name       => 'ext-ceph-luminous',
-        :baseurl    => 'http://download.ceph.com/rpm-luminous/el7/$basearch',
+        :descr      => 'External Ceph mimic',
+        :name       => 'ext-ceph-mimic',
+        :baseurl    => 'http://download.ceph.com/rpm-mimic/el7/$basearch',
         :gpgcheck   => '1',
         :gpgkey     => 'https://download.ceph.com/keys/release.asc',
         :mirrorlist => 'absent',
@@ -661,8 +663,8 @@ describe 'ceph::repo' do
       it { is_expected.to contain_yumrepo('ext-ceph-noarch').with(
         :enabled    => '1',
         :descr      => 'External Ceph noarch',
-        :name       => 'ext-ceph-luminous-noarch',
-        :baseurl    => 'http://download.ceph.com/rpm-luminous/el7/noarch',
+        :name       => 'ext-ceph-mimic-noarch',
+        :baseurl    => 'http://download.ceph.com/rpm-mimic/el7/noarch',
         :gpgcheck   => '1',
         :gpgkey     => 'https://download.ceph.com/keys/release.asc',
         :mirrorlist => 'absent',

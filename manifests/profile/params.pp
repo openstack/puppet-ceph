@@ -155,7 +155,7 @@
 #   For OSD nodes it is recommended that you raise pid_max above the
 #   default value because you may hit the system max during
 #   recovery. The recommended value is the absolute max for pid_max: 4194303
-#   http://docs.ceph.com/docs/luminous/rados/troubleshooting/troubleshooting-osd/
+#   http://docs.ceph.com/docs/mimic/rados/troubleshooting/troubleshooting-osd/
 #
 # [*rgw_keystone_version*] The api version for keystone.
 #   Possible values 'v2.0', 'v3'
