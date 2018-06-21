@@ -117,3 +117,5 @@ Contributors
 
 Release Notes
 -------------
+
+* https://docs.openstack.org/releasenotes/puppet-ceph
