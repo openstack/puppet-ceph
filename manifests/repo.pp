@@ -213,7 +213,7 @@ not on ${::operatingsystem}, which can lead to packaging issues.")
         }
       }
 
-      if $enable_epel {
+      if $enable_epel and ($::operatingsystem != 'Fedora') {
         yumrepo { "ext-epel-${el}":
           # puppet versions prior to 3.5 do not support ensure, use enabled instead
           enabled    => $enabled,
