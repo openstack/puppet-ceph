@@ -103,7 +103,7 @@ to be run. Available values are
 * two-ubuntu-server-1404-x64
 * ubuntu-server-1404-x64
 
-The default is
+The default is:
 
 ```
 BEAKER_set=two-ubuntu-server-1404-x64 \

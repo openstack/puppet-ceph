@@ -1,7 +1,7 @@
 {
     "name": "openstack-ceph",
     "version": "2.5.1",
-    "author": "Puppet Ceph community and OpenStack (StackForge) Contributors",
+    "author": "Puppet Ceph community and OpenStack Contributors",
     "summary": "Community Developed Ceph Module",
     "license": "Apache-2.0",
     "source": "git://github.com/openstack/puppet-ceph.git",
