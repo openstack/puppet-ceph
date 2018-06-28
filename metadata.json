@@ -64,21 +64,20 @@
             "version_requirement": ">=1.0.0 <2.0.0"
         },
         {
-            "name": "puppetlabs/stdlib",
-            "version_requirement": ">=4.12.0 <5.0.0"
-        },
-        {
-            "name": "duritong/sysctl",
-            "version_requirement": ">=0.0.1 <1.0.0"
+            "name": "openstack/keystone",
+            "version_requirement": ">=9.0.0"
         },
         {
             "name": "openstack/openstacklib",
             "version_requirement": ">=9.0.0"
         },
         {
-            "name": "openstack/keystone",
-            "version_requirement": ">=9.0.0"
+            "name": "puppetlabs/stdlib",
+            "version_requirement": ">=4.12.0 <5.0.0"
+        },
+        {
+            "name": "duritong/sysctl",
+            "version_requirement": ">=0.0.1 <1.0.0"
         }
-
     ]
 }
