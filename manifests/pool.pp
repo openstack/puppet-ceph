@@ -66,7 +66,7 @@ set -ex
 ceph osd pool create ${name} ${pg_num}",
       unless  => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-ceph osd lspools | grep ' ${name},'",
+ceph osd pool ls | grep -w '${name}'",
       timeout => $exec_timeout,
     }
 
@@ -115,7 +115,7 @@ set -ex
 ceph osd pool delete ${name} ${name} --yes-i-really-really-mean-it",
       onlyif  => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-ceph osd lspools | grep ${name}",
+ceph osd pool ls | grep -w '${name}'",
       timeout => $exec_timeout,
     } -> Ceph::Mon<| ensure == absent |>
 
