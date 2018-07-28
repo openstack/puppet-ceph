@@ -110,6 +110,13 @@ BEAKER_set=two-ubuntu-server-1404-x64 \
 bundle exec rspec spec/acceptance
 ```
 
+Development
+-----------
+
+Developer documentation for the entire puppet-openstack project.
+
+* https://docs.openstack.org/puppet-openstack-guide/latest/
+
 Contributors
 ------------
 
