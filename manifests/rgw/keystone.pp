@@ -94,8 +94,8 @@ define ceph::rgw::keystone (
   $rgw_keystone_implicit_tenants    = true,
 ) {
 
-  unless $name =~ /^radosgw\..+/ {
-    fail("Define name must be started with 'radosgw.'")
+  unless $name =~ /^r(ados)?gw\..+/ {
+    fail("Define name must be started with 'r(ados)?gw.' or 'rgw.'")
   }
 
   ceph_config {

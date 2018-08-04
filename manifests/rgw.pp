@@ -94,8 +94,8 @@ define ceph::rgw (
     warning( 'The syslog parameter is unused and deprecated. It will be removed in a future release.' )
   }
 
-  unless $name =~ /^radosgw\..+/ {
-    fail("Define name must be started with 'radosgw.'")
+  unless $name =~ /^r(ados)?gw\..+/ {
+    fail("Define name must be started with 'radosgw.' or 'rgw.'")
   }
 
   ceph_config {
