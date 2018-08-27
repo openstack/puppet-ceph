@@ -17,7 +17,7 @@ ceph
 5. [Limitations - OS compatibility, etc.](#limitations)
 6. [Use Cases - Examples of how to use this module](#limitations)
 7. [Development - Guide for contributing to the module](#development)
-8. [Beaker Integration Tests - Apply the module and test restults](#integration-tests)
+8. [Beaker Integration Tests - Apply the module and test results](#beaker-integration-tests)
 9. [Contributors - Those with commits](#contributors)
 10. [Release Notes - Notes on the most recent updates to the module](#release-notes)
 
