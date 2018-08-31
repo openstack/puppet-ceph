@@ -4,3 +4,4 @@
       - puppet-openstack-module-unit-jobs
       - puppet-openstack-integration-jobs-scenario001
       - puppet-openstack-integration-jobs-scenario004
+      - release-notes-jobs
