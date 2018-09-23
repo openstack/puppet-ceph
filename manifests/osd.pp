@@ -144,7 +144,7 @@ udevadm settle
         unless    => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 disk=$(readlink -f ${data})
-ceph-disk list | egrep \" *(\${disk}1?|\${disk}p1?) .*ceph data, (prepared|active)\" ||
+ceph-disk list | egrep \" *((\${disk}1?|\${disk}p1?) .*ceph data, (prepared|active)|(\${disk}5?|\${disk}p5?) .*ceph lockbox, (prepared|active), for (\${disk}1?|\${disk}p1?))\" ||
 { test -f \$disk/fsid && test -f \$disk/ceph_fsid && test -f \$disk/magic ;}
 ",
         logoutput => true,
@@ -187,7 +187,7 @@ fi
 ",
         unless    => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-ceph-disk list | egrep \" *(\${disk}1?|\${disk}p1?) .*ceph data, active\" ||
+ceph-disk list | egrep \" *((\${disk}1?|\${disk}p1?) .*ceph data, active|(\${disk}5?|\${disk}p5?) .*ceph lockbox, active, for (\${disk}1?|\${disk}p1?))\" ||
 ls -ld /var/lib/ceph/osd/${cluster_name}-* | grep \" $(readlink -f ${data})\$\"
 ",
         logoutput => true,
