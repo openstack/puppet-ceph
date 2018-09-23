@@ -55,6 +55,8 @@ define ceph::osd (
   $exec_timeout = $::ceph::params::exec_timeout,
   $selinux_file_context = 'ceph_var_lib_t',
   $fsid = $::ceph::profile::params::fsid,
+  $dmcrypt = false,
+  $dmcrypt_key_dir = '/etc/ceph/dmcrypt-keys',
   ) {
 
     include ::ceph::params
@@ -117,6 +119,12 @@ test -z $(ceph-disk list $(readlink -f ${data}) | egrep -o '[0-9a-f]{8}-([0-9a-f
         }
       }
 
+      if $dmcrypt {
+        $dmcrypt_options = "--dmcrypt --dmcrypt-key-dir '${dmcrypt_key_dir}'"
+      } else {
+        $dmcrypt_options = ''
+      }
+
       Exec[$ceph_check_udev] -> Exec[$ceph_prepare]
       # ceph-disk: prepare should be idempotent http://tracker.ceph.com/issues/7475
       exec { $ceph_prepare:
@@ -130,7 +138,7 @@ if ! test -b \$disk ; then
         chown -h ceph:ceph \$disk
     fi
 fi
-ceph-disk prepare ${cluster_option} ${fsid_option} $(readlink -f ${data}) $(readlink -f ${journal})
+ceph-disk prepare ${cluster_option} ${dmcrypt_options} ${fsid_option} $(readlink -f ${data}) $(readlink -f ${journal})
 udevadm settle
 ",
         unless    => "/bin/true # comment to satisfy puppet syntax requirements
