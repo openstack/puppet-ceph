@@ -55,6 +55,8 @@ define ceph::osd (
   $exec_timeout = $::ceph::params::exec_timeout,
   $selinux_file_context = 'ceph_var_lib_t',
   $fsid = $::ceph::profile::params::fsid,
+  $dmcrypt = false,
+  $dmcrypt_key_dir = '/etc/ceph/dmcrypt-keys',
   ) {
 
     include ::ceph::params
@@ -117,6 +119,12 @@ test -z $(ceph-disk list $(readlink -f ${data}) | egrep -o '[0-9a-f]{8}-([0-9a-f
         }
       }
 
+      if $dmcrypt {
+        $dmcrypt_options = "--dmcrypt --dmcrypt-key-dir '${dmcrypt_key_dir}'"
+      } else {
+        $dmcrypt_options = ''
+      }
+
       Exec[$ceph_check_udev] -> Exec[$ceph_prepare]
       # ceph-disk: prepare should be idempotent http://tracker.ceph.com/issues/7475
       exec { $ceph_prepare:
@@ -130,13 +138,13 @@ if ! test -b \$disk ; then
         chown -h ceph:ceph \$disk
     fi
 fi
-ceph-disk prepare ${cluster_option} ${fsid_option} $(readlink -f ${data}) $(readlink -f ${journal})
+ceph-disk prepare ${cluster_option} ${dmcrypt_options} ${fsid_option} $(readlink -f ${data}) $(readlink -f ${journal})
 udevadm settle
 ",
         unless    => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 disk=$(readlink -f ${data})
-ceph-disk list | egrep \" *(\${disk}1?|\${disk}p1?) .*ceph data, (prepared|active)\" ||
+ceph-disk list | egrep \" *((\${disk}1?|\${disk}p1?) .*ceph data, (prepared|active)|(\${disk}5?|\${disk}p5?) .*ceph lockbox, (prepared|active), for (\${disk}1?|\${disk}p1?))\" ||
 { test -f \$disk/fsid && test -f \$disk/ceph_fsid && test -f \$disk/magic ;}
 ",
         logoutput => true,
@@ -179,7 +187,7 @@ fi
 ",
         unless    => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-ceph-disk list | egrep \" *(\${disk}1?|\${disk}p1?) .*ceph data, active\" ||
+ceph-disk list | egrep \" *((\${disk}1?|\${disk}p1?) .*ceph data, active|(\${disk}5?|\${disk}p5?) .*ceph lockbox, active, for (\${disk}1?|\${disk}p1?))\" ||
 ls -ld /var/lib/ceph/osd/${cluster_name}-* | grep \" $(readlink -f ${data})\$\"
 ",
         logoutput => true,
