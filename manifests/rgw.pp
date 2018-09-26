@@ -65,7 +65,7 @@
 #   Optional. Default is 'civetweb port=7480'.
 #
 # [*rgw_swift_url*] The URL for the Ceph Object Gateway Swift API.
-#   Optional. Default is http://$fqdn.
+#   Optional. Default is http://$fqdn:7480.
 #
 # Deprecated Parameters:
 #
@@ -87,7 +87,7 @@ define ceph::rgw (
   $rgw_port           = undef,
   $frontend_type      = 'civetweb',
   $rgw_frontends      = 'civetweb port=7480',
-  $rgw_swift_url      = "http://${::fqdn}",
+  $rgw_swift_url      = "http://${::fqdn}:7480",
   $syslog             = undef,
 ) {
 
