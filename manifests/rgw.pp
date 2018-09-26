@@ -107,6 +107,7 @@ define ceph::rgw (
     "client.${name}/keyring":            value => $keyring_path;
     "client.${name}/log_file":           value => $log_file;
     "client.${name}/user":               value => $user;
+    "client.${name}/rgw_dns_name":       value => $rgw_dns_name;
     "client.${name}/rgw_swift_url":      value => $rgw_swift_url;
   }
 
@@ -119,7 +120,6 @@ define ceph::rgw (
   elsif ( ( $frontend_type == 'apache-fastcgi' ) or ( $frontend_type == 'apache-proxy-fcgi' ) )
   {
     ceph_config {
-      "client.${name}/rgw_dns_name":       value => $rgw_dns_name;
       "client.${name}/rgw_print_continue": value => $rgw_print_continue;
       "client.${name}/rgw_socket_path":    value => $rgw_socket_path;
     }
