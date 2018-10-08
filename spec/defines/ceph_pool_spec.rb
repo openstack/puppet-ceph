@@ -33,6 +33,7 @@ describe 'ceph::pool' do
           :pg_num  => 3,
           :pgp_num => 4,
           :size    => 2,
+          :tag     => 'rbd',
         }
       end
 
@@ -48,6 +49,9 @@ describe 'ceph::pool' do
         ).that_requires('Exec[set-volumes-pg_num]')
         is_expected.to contain_exec('set-volumes-size').with(
           'command' => "/bin/true # comment to satisfy puppet syntax requirements\nset -ex\nceph osd pool set volumes size 2"
+        )
+        is_expected.to contain_exec('set-volumes-tag').with(
+          'command' => "/bin/true # comment to satisfy puppet syntax requirements\nset -ex\nceph osd pool application enable volumes rbd"
         )
         is_expected.not_to contain_exec('delete-volumes')
       }

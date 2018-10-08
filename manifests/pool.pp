@@ -43,6 +43,10 @@
 #   Optional. Default is undef.
 #   Increase or decrease the replica level of a pool.
 #
+# [*tag*] Pool tag.
+#   Optional. Default is undef.
+#   cephfs,rbd,rgw or freeform for custom application.
+#
 # [*exec_timeout*] The default exec resource timeout, in seconds
 #   Optional. Defaults to $::ceph::params::exec_timeout
 #
@@ -51,6 +55,7 @@ define ceph::pool (
   $pg_num = 64,
   $pgp_num = undef,
   $size = undef,
+  $tag = undef,
   $exec_timeout = $::ceph::params::exec_timeout,
 ) {
 
@@ -102,6 +107,19 @@ ceph osd pool set ${name} size ${size}",
         unless  => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 test $(ceph osd pool get ${name} size | sed 's/.*:\s*//g') -eq ${size}",
+        require => Exec["create-${name}"],
+        timeout => $exec_timeout,
+      }
+    }
+
+    if $tag {
+      exec { "set-${name}-tag":
+        command => "/bin/true # comment to satisfy puppet syntax requirements
+set -ex
+ceph osd pool application enable ${name} ${tag}",
+        unless  => "/bin/true # comment to satisfy puppet syntax requirements
+set -ex
+ceph osd pool application get ${name} ${tag}",
         require => Exec["create-${name}"],
         timeout => $exec_timeout,
       }
