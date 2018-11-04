@@ -20,128 +20,115 @@
 require 'spec_helper'
 
 describe 'ceph::repo' do
-
-  describe 'Debian' do
-
-    let :facts do
-    {
-      :osfamily        => 'Debian',
-      :lsbdistid       => 'Debian',
-      :lsbdistcodename => 'jessie',
-      :lsbdistrelease  => '8',
-    }
+  shared_examples 'ceph::repo on Debian' do
+    before do
+      facts.merge!( :osfamily        => 'Debian',
+                    :lsbdistid       => 'Debian',
+                    :lsbdistcodename => 'jessie',
+                    :lsbdistrelease  => '8' )
     end
 
-    describe "with default params" do
-
-      it { is_expected.to contain_apt__key('ceph').with(
+    context 'with default params' do
+      it { should contain_apt__key('ceph').with(
         :id     => '08B73419AC32B4E966C1A330E84AC2C0460F3994',
         :source => 'https://download.ceph.com/keys/release.asc',
         :before => 'Apt::Source[ceph]',
-      ) }
+      )}
 
-      it { is_expected.to contain_apt__source('ceph').with(
+      it { should contain_apt__source('ceph').with(
         :location => 'http://download.ceph.com/debian-mimic/',
         :release  => 'jessie',
-      ) }
-
+      )}
     end
 
-    describe "when overriding ceph mirror" do
+    context 'when overriding ceph mirror' do
       let :params do
         {
-         :ceph_mirror => 'http://myserver.com/debian-mimic/'
+          :ceph_mirror => 'http://myserver.com/debian-mimic/'
         }
       end
 
-      it { is_expected.to contain_apt__source('ceph').with(
+      it { should contain_apt__source('ceph').with(
         :location => 'http://myserver.com/debian-mimic/',
         :release  => 'jessie',
-      ) }
+      )}
     end
 
-    describe "when overriding ceph release" do
+    context 'when overriding ceph release' do
       let :params do
         {
-         :release => 'firefly'
+          :release => 'firefly'
         }
       end
 
-      it { is_expected.to contain_apt__source('ceph').with(
+      it { should contain_apt__source('ceph').with(
         :location => 'http://download.ceph.com/debian-firefly/',
         :release  => 'jessie',
-      ) }
+      )}
     end
-
   end
 
-  describe 'Ubuntu' do
-
-    let :facts do
-    {
-      :osfamily        => 'Debian',
-      :lsbdistid       => 'Ubuntu',
-      :lsbdistcodename => 'trusty',
-      :lsbdistrelease  => '14.04',
-      :hardwaremodel   => 'x86_64',
-    }
+  shared_examples 'ceph::repo on Ubuntu' do
+    before do
+      facts.merge!( :osfamily        => 'Debian',
+                    :lsbdistid       => 'Ubuntu',
+                    :lsbdistcodename => 'trusty',
+                    :lsbdistrelease  => '14.04',
+                    :hardwaremodel   => 'x86_64' )
     end
 
-    describe "with default params" do
-
-      it { is_expected.to contain_apt__key('ceph').with(
+    context 'with default params' do
+      it { should contain_apt__key('ceph').with(
         :id     => '08B73419AC32B4E966C1A330E84AC2C0460F3994',
         :source => 'https://download.ceph.com/keys/release.asc',
         :before => 'Apt::Source[ceph]',
-      ) }
+      )}
 
-      it { is_expected.to contain_apt__source('ceph').with(
+      it { should contain_apt__source('ceph').with(
         :location => 'http://download.ceph.com/debian-mimic/',
         :release  => 'trusty',
-      ) }
-
+      )}
     end
 
-    describe "when overriding ceph release" do
+    context 'when overriding ceph release' do
       let :params do
         {
-         :release => 'firefly'
+          :release => 'firefly'
         }
       end
 
-      it { is_expected.to contain_apt__source('ceph').with(
+      it { should contain_apt__source('ceph').with(
         :location => 'http://download.ceph.com/debian-firefly/',
         :release  => 'trusty',
-      ) }
+      )}
     end
 
-    describe "when wanting fast-cgi" do
+    context 'when wanting fast-cgi' do
       let :params do
         {
-         :fastcgi => true
+          :fastcgi => true
         }
       end
 
-      it { is_expected.to contain_apt__key('ceph-gitbuilder').with(
+      it { should contain_apt__key('ceph-gitbuilder').with(
         :id     => 'FCC5CB2ED8E6F6FB79D5B3316EAEAE2203C3951A',
         :server => 'keyserver.ubuntu.com',
-      ) }
+      )}
 
-      it { is_expected.to contain_apt__source('ceph').with(
+      it { should contain_apt__source('ceph').with(
         :location => 'http://download.ceph.com/debian-mimic/',
         :release  => 'trusty',
-      ) }
+      )}
 
-      it { is_expected.to contain_apt__source('ceph-fastcgi').with(
+      it { should contain_apt__source('ceph-fastcgi').with(
         :ensure   => 'present',
         :location => 'http://gitbuilder.ceph.com/libapache-mod-fastcgi-deb-trusty-x86_64-basic/ref/master',
         :release  => 'trusty',
         :require  => 'Apt::Key[ceph-gitbuilder]'
-      ) }
-
+      )}
     end
 
-    describe "with ensure => absent to disable" do
+    context 'with ensure => absent to disable' do
       let :params do
         {
           :ensure  => 'absent',
@@ -149,38 +136,32 @@ describe 'ceph::repo' do
         }
       end
 
-      it { is_expected.to contain_apt__source('ceph').with(
+      it { should contain_apt__source('ceph').with(
         :ensure   => 'absent',
         :location => 'http://download.ceph.com/debian-mimic/',
         :release  => 'trusty',
-      ) }
+      )}
 
-      it { is_expected.to contain_apt__source('ceph-fastcgi').with(
+      it { should contain_apt__source('ceph-fastcgi').with(
         :ensure   => 'absent',
         :location => 'http://gitbuilder.ceph.com/libapache-mod-fastcgi-deb-trusty-x86_64-basic/ref/master',
         :release  => 'trusty',
         :require  => 'Apt::Key[ceph-gitbuilder]'
-      ) }
-
+      )}
     end
-
   end
 
-  describe 'RHEL7' do
-
-    let :facts do
-    {
-      :osfamily                  => 'RedHat',
-      :operatingsystem           => 'RedHat',
-      :operatingsystemmajrelease => '7',
-    }
+  shared_examples 'ceph::repo on RHEL' do
+    before do
+      facts.merge!( :osfamily                  => 'RedHat',
+                    :operatingsystem           => 'RedHat',
+                    :operatingsystemmajrelease => '7' )
     end
 
-    describe "with default params" do
+    context 'with default params' do
+      it { should_not contain_file_line('exclude base') }
 
-      it { is_expected.not_to contain_file_line('exclude base') }
-
-      it { is_expected.to contain_yumrepo('ext-epel-7').with(
+      it { should contain_yumrepo('ext-epel-7').with(
         :enabled    => '1',
         :descr      => 'External EPEL 7',
         :name       => 'ext-epel-7',
@@ -190,9 +171,9 @@ describe 'ceph::repo' do
         :mirrorlist => 'http://mirrors.fedoraproject.org/metalink?repo=epel-7&arch=$basearch',
         :priority   => '20',
         :exclude    => 'python-ceph-compat python-rbd python-rados python-cephfs',
-      ) }
+      )}
 
-      it { is_expected.to contain_yumrepo('ext-ceph').with(
+      it { should contain_yumrepo('ext-ceph').with(
         :enabled    => '1',
         :descr      => 'External Ceph mimic',
         :name       => 'ext-ceph-mimic',
@@ -201,9 +182,9 @@ describe 'ceph::repo' do
         :gpgkey     => 'https://download.ceph.com/keys/release.asc',
         :mirrorlist => 'absent',
         :priority   => '10'
-     ) }
+     )}
 
-      it { is_expected.to contain_yumrepo('ext-ceph-noarch').with(
+      it { should contain_yumrepo('ext-ceph-noarch').with(
         :enabled    => '1',
         :descr      => 'External Ceph noarch',
         :name       => 'ext-ceph-mimic-noarch',
@@ -212,19 +193,19 @@ describe 'ceph::repo' do
         :gpgkey     => 'https://download.ceph.com/keys/release.asc',
         :mirrorlist => 'absent',
         :priority   => '10'
-      ) }
+      )}
     end
 
-    describe "when overriding ceph release" do
+    context 'when overriding ceph release' do
       let :params do
         {
-         :release => 'firefly'
+          :release => 'firefly'
         }
       end
 
-      it { is_expected.not_to contain_file_line('exclude base') }
+      it { should_not contain_file_line('exclude base') }
 
-      it { is_expected.to contain_yumrepo('ext-epel-7').with(
+      it { should contain_yumrepo('ext-epel-7').with(
         :enabled    => '1',
         :descr      => 'External EPEL 7',
         :name       => 'ext-epel-7',
@@ -234,9 +215,9 @@ describe 'ceph::repo' do
         :mirrorlist => 'http://mirrors.fedoraproject.org/metalink?repo=epel-7&arch=$basearch',
         :priority   => '20',
         :exclude    => 'python-ceph-compat python-rbd python-rados python-cephfs',
-      ) }
+      )}
 
-      it { is_expected.to contain_yumrepo('ext-ceph').with(
+      it { should contain_yumrepo('ext-ceph').with(
         :enabled    => '1',
         :descr      => 'External Ceph firefly',
         :name       => 'ext-ceph-firefly',
@@ -245,9 +226,9 @@ describe 'ceph::repo' do
         :gpgkey     => 'https://download.ceph.com/keys/release.asc',
         :mirrorlist => 'absent',
         :priority   => '10'
-     ) }
+      )}
 
-      it { is_expected.to contain_yumrepo('ext-ceph-noarch').with(
+      it { should contain_yumrepo('ext-ceph-noarch').with(
         :enabled    => '1',
         :descr      => 'External Ceph noarch',
         :name       => 'ext-ceph-firefly-noarch',
@@ -256,31 +237,31 @@ describe 'ceph::repo' do
         :gpgkey     => 'https://download.ceph.com/keys/release.asc',
         :mirrorlist => 'absent',
         :priority   => '10'
-      ) }
+      )}
     end
 
-    describe "when disabling EPEL" do
+    context 'when disabling EPEL' do
       let :params do
         {
-         :enable_epel => false,
+          :enable_epel => false,
         }
       end
 
-      it { is_expected.to_not contain_yumrepo('ext-epel-7') }
+      it { should_not contain_yumrepo('ext-epel-7') }
     end
 
-    describe "when using a proxy for yum repositories" do
+    context 'when using a proxy for yum repositories' do
       let :params do
         {
-         :proxy => 'http://someproxy.com:8080/',
-         :proxy_username => 'proxyuser',
-         :proxy_password => 'proxypassword'
+          :proxy => 'http://someproxy.com:8080/',
+          :proxy_username => 'proxyuser',
+          :proxy_password => 'proxypassword'
         }
       end
 
-      it { is_expected.not_to contain_file_line('exclude base') }
+      it { should_not contain_file_line('exclude base') }
 
-      it { is_expected.to contain_yumrepo('ext-epel-7').with(
+      it { should contain_yumrepo('ext-epel-7').with(
         :enabled        => '1',
         :descr          => 'External EPEL 7',
         :name           => 'ext-epel-7',
@@ -293,9 +274,9 @@ describe 'ceph::repo' do
         :proxy          => 'http://someproxy.com:8080/',
         :proxy_username => 'proxyuser',
         :proxy_password => 'proxypassword',
-      ) }
+      )}
 
-      it { is_expected.to contain_yumrepo('ext-ceph').with(
+      it { should contain_yumrepo('ext-ceph').with(
         :enabled        => '1',
         :descr          => 'External Ceph mimic',
         :name           => 'ext-ceph-mimic',
@@ -307,9 +288,9 @@ describe 'ceph::repo' do
         :proxy          => 'http://someproxy.com:8080/',
         :proxy_username => 'proxyuser',
         :proxy_password => 'proxypassword',
-     ) }
+      )}
 
-      it { is_expected.to contain_yumrepo('ext-ceph-noarch').with(
+      it { should contain_yumrepo('ext-ceph-noarch').with(
         :enabled        => '1',
         :descr          => 'External Ceph noarch',
         :name           => 'ext-ceph-mimic-noarch',
@@ -321,10 +302,10 @@ describe 'ceph::repo' do
         :proxy          => 'http://someproxy.com:8080/',
         :proxy_username => 'proxyuser',
         :proxy_password => 'proxypassword',
-      ) }
+      )}
     end
 
-    describe "with ensure => absent to disable" do
+    context 'with ensure => absent to disable' do
       let :params do
         {
           :ensure  => 'absent',
@@ -332,9 +313,9 @@ describe 'ceph::repo' do
         }
       end
 
-      it { is_expected.not_to contain_file_line('exclude base') }
+      it { should_not contain_file_line('exclude base') }
 
-      it { is_expected.to contain_yumrepo('ext-epel-7').with(
+      it { should contain_yumrepo('ext-epel-7').with(
         :enabled    => '0',
         :descr      => 'External EPEL 7',
         :name       => 'ext-epel-7',
@@ -344,9 +325,9 @@ describe 'ceph::repo' do
         :mirrorlist => 'http://mirrors.fedoraproject.org/metalink?repo=epel-7&arch=$basearch',
         :priority   => '20',
         :exclude    => 'python-ceph-compat python-rbd python-rados python-cephfs',
-      ) }
+      )}
 
-      it { is_expected.to contain_yumrepo('ext-ceph').with(
+      it { should contain_yumrepo('ext-ceph').with(
         :enabled    => '0',
         :descr      => 'External Ceph mimic',
         :name       => 'ext-ceph-mimic',
@@ -355,9 +336,9 @@ describe 'ceph::repo' do
         :gpgkey     => 'https://download.ceph.com/keys/release.asc',
         :mirrorlist => 'absent',
         :priority   => '10'
-     ) }
+      )}
 
-      it { is_expected.to contain_yumrepo('ext-ceph-noarch').with(
+      it { should contain_yumrepo('ext-ceph-noarch').with(
         :enabled    => '0',
         :descr      => 'External Ceph noarch',
         :name       => 'ext-ceph-mimic-noarch',
@@ -366,9 +347,9 @@ describe 'ceph::repo' do
         :gpgkey     => 'https://download.ceph.com/keys/release.asc',
         :mirrorlist => 'absent',
         :priority   => '10'
-      ) }
+      )}
 
-      it { is_expected.to contain_yumrepo('ext-ceph-fastcgi').with(
+      it { should contain_yumrepo('ext-ceph-fastcgi').with(
         :enabled    => '0',
         :descr      => 'FastCGI basearch packages for Ceph',
         :name       => 'ext-ceph-fastcgi',
@@ -377,20 +358,19 @@ describe 'ceph::repo' do
         :gpgkey     => 'https://download.ceph.com/keys/autobuild.asc',
         :mirrorlist => 'absent',
         :priority   => '20'
-      ) }
-
+      )}
     end
 
-    describe "with ceph fast-cgi" do
+    context 'with ceph fast-cgi' do
       let :params do
         {
           :fastcgi => true
         }
       end
 
-      it { is_expected.not_to contain_file_line('exclude base') }
+      it { should_not contain_file_line('exclude base') }
 
-      it { is_expected.to contain_yumrepo('ext-epel-7').with(
+      it { should contain_yumrepo('ext-epel-7').with(
         :enabled    => '1',
         :descr      => 'External EPEL 7',
         :name       => 'ext-epel-7',
@@ -400,9 +380,9 @@ describe 'ceph::repo' do
         :mirrorlist => 'http://mirrors.fedoraproject.org/metalink?repo=epel-7&arch=$basearch',
         :priority   => '20',
         :exclude    => 'python-ceph-compat python-rbd python-rados python-cephfs',
-      ) }
+      )}
 
-      it { is_expected.to contain_yumrepo('ext-ceph').with(
+      it { should contain_yumrepo('ext-ceph').with(
         :enabled    => '1',
         :descr      => 'External Ceph mimic',
         :name       => 'ext-ceph-mimic',
@@ -411,9 +391,9 @@ describe 'ceph::repo' do
         :gpgkey     => 'https://download.ceph.com/keys/release.asc',
         :mirrorlist => 'absent',
         :priority   => '10'
-     ) }
+      )}
 
-      it { is_expected.to contain_yumrepo('ext-ceph-noarch').with(
+      it { should contain_yumrepo('ext-ceph-noarch').with(
         :enabled    => '1',
         :descr      => 'External Ceph noarch',
         :name       => 'ext-ceph-mimic-noarch',
@@ -422,9 +402,9 @@ describe 'ceph::repo' do
         :gpgkey     => 'https://download.ceph.com/keys/release.asc',
         :mirrorlist => 'absent',
         :priority   => '10'
-      ) }
+      )}
 
-      it { is_expected.to contain_yumrepo('ext-ceph-fastcgi').with(
+      it { should contain_yumrepo('ext-ceph-fastcgi').with(
         :enabled    => '1',
         :descr      => 'FastCGI basearch packages for Ceph',
         :name       => 'ext-ceph-fastcgi',
@@ -433,26 +413,21 @@ describe 'ceph::repo' do
         :gpgkey     => 'https://download.ceph.com/keys/autobuild.asc',
         :mirrorlist => 'absent',
         :priority   => '20'
-      ) }
-
+      )}
     end
   end
 
-  describe 'CentOS7' do
-
-    let :facts do
-    {
-      :osfamily                  => 'RedHat',
-      :operatingsystem           => 'CentOS',
-      :operatingsystemmajrelease => '7',
-    }
+  shared_examples 'ceph::repo on CentOS' do
+    before do
+      facts.merge!( :osfamily                  => 'RedHat',
+                    :operatingsystem           => 'CentOS',
+                    :operatingsystemmajrelease => '7' )
     end
 
-    describe "with default params" do
+    context 'with default params' do
+      it { should_not contain_file_line('exclude base') }
 
-      it { is_expected.not_to contain_file_line('exclude base') }
-
-      it { is_expected.to contain_yumrepo('ext-epel-7').with(
+      it { should contain_yumrepo('ext-epel-7').with(
         :enabled    => '1',
         :descr      => 'External EPEL 7',
         :name       => 'ext-epel-7',
@@ -462,9 +437,9 @@ describe 'ceph::repo' do
         :mirrorlist => 'http://mirrors.fedoraproject.org/metalink?repo=epel-7&arch=$basearch',
         :priority   => '20',
         :exclude    => 'python-ceph-compat python-rbd python-rados python-cephfs',
-      ) }
+      )}
 
-      it { is_expected.to contain_yumrepo('ext-ceph').with(
+      it { should contain_yumrepo('ext-ceph').with(
         :enabled    => '1',
         :descr      => 'External Ceph mimic',
         :name       => 'ext-ceph-mimic',
@@ -473,9 +448,9 @@ describe 'ceph::repo' do
         :gpgkey     => 'https://download.ceph.com/keys/release.asc',
         :mirrorlist => 'absent',
         :priority   => '10'
-     ) }
+      )}
 
-      it { is_expected.to contain_yumrepo('ext-ceph-noarch').with(
+      it { should contain_yumrepo('ext-ceph-noarch').with(
         :enabled    => '1',
         :descr      => 'External Ceph noarch',
         :name       => 'ext-ceph-mimic-noarch',
@@ -484,24 +459,24 @@ describe 'ceph::repo' do
         :gpgkey     => 'https://download.ceph.com/keys/release.asc',
         :mirrorlist => 'absent',
         :priority   => '10'
-      ) }
+      )}
     end
 
-    describe "when overriding ceph release" do
+    context 'when overriding ceph release' do
       let :params do
         {
-         :release => 'firefly'
+          :release => 'firefly'
         }
       end
 
-      it { is_expected.to contain_file_line('exclude base').with(
+      it { should contain_file_line('exclude base').with(
         :ensure => 'present',
         :path   => '/etc/yum.repos.d/CentOS-Base.repo',
         :after  => '^\[base\]$',
         :line   => 'exclude=python-ceph-compat python-rbd python-rados python-cephfs',
-      ) }
+      )}
 
-      it { is_expected.to contain_yumrepo('ext-epel-7').with(
+      it { should contain_yumrepo('ext-epel-7').with(
         :enabled    => '1',
         :descr      => 'External EPEL 7',
         :name       => 'ext-epel-7',
@@ -511,9 +486,9 @@ describe 'ceph::repo' do
         :mirrorlist => 'http://mirrors.fedoraproject.org/metalink?repo=epel-7&arch=$basearch',
         :priority   => '20',
         :exclude    => 'python-ceph-compat python-rbd python-rados python-cephfs',
-      ) }
+      )}
 
-      it { is_expected.to contain_yumrepo('ext-ceph').with(
+      it { should contain_yumrepo('ext-ceph').with(
         :enabled    => '1',
         :descr      => 'External Ceph firefly',
         :name       => 'ext-ceph-firefly',
@@ -522,9 +497,9 @@ describe 'ceph::repo' do
         :gpgkey     => 'https://download.ceph.com/keys/release.asc',
         :mirrorlist => 'absent',
         :priority   => '10'
-     ) }
+      )}
 
-      it { is_expected.to contain_yumrepo('ext-ceph-noarch').with(
+      it { should contain_yumrepo('ext-ceph-noarch').with(
         :enabled    => '1',
         :descr      => 'External Ceph noarch',
         :name       => 'ext-ceph-firefly-noarch',
@@ -533,45 +508,47 @@ describe 'ceph::repo' do
         :gpgkey     => 'https://download.ceph.com/keys/release.asc',
         :mirrorlist => 'absent',
         :priority   => '10'
-      ) }
+      )}
     end
 
-    describe "when using CentOS SIG repository" do
+    context 'when using CentOS SIG repository' do
       let :params do
         {
-         :enable_sig => true,
+          :enable_sig => true,
         }
       end
 
-      it { is_expected.to_not contain_file_line('exclude base') }
-      it { is_expected.to_not contain_yumrepo('ext-epel-7') }
-      it { is_expected.to_not contain_yumrepo('ext-ceph') }
-      it { is_expected.to_not contain_yumrepo('ext-ceph-noarch') }
-      it { is_expected.to contain_yumrepo('ceph-luminous-sig').with_ensure('absent') }
-      it { is_expected.to contain_yumrepo('ceph-storage-sig').with(
+      it { should_not contain_file_line('exclude base') }
+      it { should_not contain_yumrepo('ext-epel-7') }
+      it { should_not contain_yumrepo('ext-ceph') }
+      it { should_not contain_yumrepo('ext-ceph-noarch') }
+      it { should contain_yumrepo('ceph-luminous-sig').with_ensure('absent') }
+
+      it { should contain_yumrepo('ceph-storage-sig').with(
         :baseurl => 'https://buildlogs.centos.org/centos/7/storage/x86_64/ceph-mimic/',
-      ) }
+      )}
     end
 
-    describe "when using CentOS SIG repository from a mirror" do
+    context 'when using CentOS SIG repository from a mirror' do
       let :params do
         {
-         :enable_sig  => true,
-         :ceph_mirror => 'https://mymirror/luminous/',
+          :enable_sig  => true,
+          :ceph_mirror => 'https://mymirror/luminous/',
         }
       end
 
-      it { is_expected.to_not contain_file_line('exclude base') }
-      it { is_expected.to_not contain_yumrepo('ext-epel-7') }
-      it { is_expected.to_not contain_yumrepo('ext-ceph') }
-      it { is_expected.to_not contain_yumrepo('ext-ceph-noarch') }
-      it { is_expected.to contain_yumrepo('ceph-luminous-sig').with_ensure('absent') }
-      it { is_expected.to contain_yumrepo('ceph-storage-sig').with(
+      it { should_not contain_file_line('exclude base') }
+      it { should_not contain_yumrepo('ext-epel-7') }
+      it { should_not contain_yumrepo('ext-ceph') }
+      it { should_not contain_yumrepo('ext-ceph-noarch') }
+      it { should contain_yumrepo('ceph-luminous-sig').with_ensure('absent') }
+
+      it { should contain_yumrepo('ceph-storage-sig').with(
         :baseurl => 'https://mymirror/luminous/',
-      ) }
+      )}
     end
 
-    describe "with ensure => absent to disable" do
+    context 'with ensure => absent to disable' do
       let :params do
         {
           :ensure  => 'absent',
@@ -579,9 +556,9 @@ describe 'ceph::repo' do
         }
       end
 
-      it { is_expected.not_to contain_file_line('exclude base') }
+      it { should_not contain_file_line('exclude base') }
 
-      it { is_expected.to contain_yumrepo('ext-epel-7').with(
+      it { should contain_yumrepo('ext-epel-7').with(
         :enabled    => '0',
         :descr      => 'External EPEL 7',
         :name       => 'ext-epel-7',
@@ -591,9 +568,9 @@ describe 'ceph::repo' do
         :mirrorlist => 'http://mirrors.fedoraproject.org/metalink?repo=epel-7&arch=$basearch',
         :priority   => '20',
         :exclude    => 'python-ceph-compat python-rbd python-rados python-cephfs',
-      ) }
+      )}
 
-      it { is_expected.to contain_yumrepo('ext-ceph').with(
+      it { should contain_yumrepo('ext-ceph').with(
         :enabled    => '0',
         :descr      => 'External Ceph mimic',
         :name       => 'ext-ceph-mimic',
@@ -602,9 +579,9 @@ describe 'ceph::repo' do
         :gpgkey     => 'https://download.ceph.com/keys/release.asc',
         :mirrorlist => 'absent',
         :priority   => '10'
-     ) }
+      )}
 
-      it { is_expected.to contain_yumrepo('ext-ceph-noarch').with(
+      it { should contain_yumrepo('ext-ceph-noarch').with(
         :enabled    => '0',
         :descr      => 'External Ceph noarch',
         :name       => 'ext-ceph-mimic-noarch',
@@ -613,9 +590,9 @@ describe 'ceph::repo' do
         :gpgkey     => 'https://download.ceph.com/keys/release.asc',
         :mirrorlist => 'absent',
         :priority   => '10'
-      ) }
+      )}
 
-      it { is_expected.to contain_yumrepo('ext-ceph-fastcgi').with(
+      it { should contain_yumrepo('ext-ceph-fastcgi').with(
         :enabled    => '0',
         :descr      => 'FastCGI basearch packages for Ceph',
         :name       => 'ext-ceph-fastcgi',
@@ -624,20 +601,19 @@ describe 'ceph::repo' do
         :gpgkey     => 'https://download.ceph.com/keys/autobuild.asc',
         :mirrorlist => 'absent',
         :priority   => '20'
-      ) }
-
+      )}
     end
 
-    describe "with ceph fast-cgi" do
+    context 'with ceph fast-cgi' do
       let :params do
         {
           :fastcgi => true
         }
       end
 
-      it { is_expected.not_to contain_file_line('exclude base') }
+      it { should_not contain_file_line('exclude base') }
 
-      it { is_expected.to contain_yumrepo('ext-epel-7').with(
+      it { should contain_yumrepo('ext-epel-7').with(
         :enabled    => '1',
         :descr      => 'External EPEL 7',
         :name       => 'ext-epel-7',
@@ -647,9 +623,9 @@ describe 'ceph::repo' do
         :mirrorlist => 'http://mirrors.fedoraproject.org/metalink?repo=epel-7&arch=$basearch',
         :priority   => '20',
         :exclude    => 'python-ceph-compat python-rbd python-rados python-cephfs',
-      ) }
+      )}
 
-      it { is_expected.to contain_yumrepo('ext-ceph').with(
+      it { should contain_yumrepo('ext-ceph').with(
         :enabled    => '1',
         :descr      => 'External Ceph mimic',
         :name       => 'ext-ceph-mimic',
@@ -658,9 +634,9 @@ describe 'ceph::repo' do
         :gpgkey     => 'https://download.ceph.com/keys/release.asc',
         :mirrorlist => 'absent',
         :priority   => '10'
-     ) }
+      )}
 
-      it { is_expected.to contain_yumrepo('ext-ceph-noarch').with(
+      it { should contain_yumrepo('ext-ceph-noarch').with(
         :enabled    => '1',
         :descr      => 'External Ceph noarch',
         :name       => 'ext-ceph-mimic-noarch',
@@ -669,9 +645,9 @@ describe 'ceph::repo' do
         :gpgkey     => 'https://download.ceph.com/keys/release.asc',
         :mirrorlist => 'absent',
         :priority   => '10'
-      ) }
+      )}
 
-      it { is_expected.to contain_yumrepo('ext-ceph-fastcgi').with(
+      it { should contain_yumrepo('ext-ceph-fastcgi').with(
         :enabled    => '1',
         :descr      => 'FastCGI basearch packages for Ceph',
         :name       => 'ext-ceph-fastcgi',
@@ -680,9 +656,23 @@ describe 'ceph::repo' do
         :gpgkey     => 'https://download.ceph.com/keys/autobuild.asc',
         :mirrorlist => 'absent',
         :priority   => '20'
-      ) }
-
+      )}
     end
   end
 
+  on_supported_os({
+    :supported_os => OSDefaults.get_supported_os
+  }).each do |os,facts|
+    context "on #{os}" do
+      let (:facts) do
+        facts.merge!(OSDefaults.get_facts())
+      end
+
+      it_behaves_like "ceph::repo on #{facts[:operatingsystem]}"
+
+      if facts[:operatingsystem] == 'CentOS'
+        it_behaves_like 'ceph::repo on RHEL'
+      end
+    end
+  end
 end

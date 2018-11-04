@@ -21,7 +21,7 @@ require 'spec_helper'
 
 describe 'ceph::mons' do
 
-  shared_examples_for 'ceph mons' do
+  shared_examples 'ceph mons' do
     let :params do
       {
         :args => {
@@ -41,8 +41,8 @@ describe 'ceph::mons' do
     end
 
     it {
-      is_expected.to contain_service('ceph-mon-A').with('ensure' => "running")
-      is_expected.to contain_service('ceph-mon-B').with('ensure' => "running")
+      should contain_service('ceph-mon-A').with('ensure' => "running")
+      should contain_service('ceph-mon-B').with('ensure' => "running")
     }
   end
 
@@ -59,11 +59,3 @@ describe 'ceph::mons' do
   end
 
 end
-
-# Local Variables:
-# compile-command: "cd ../.. ;
-#    export BUNDLE_PATH=/tmp/vendor ;
-#    bundle install ;
-#    bundle exec rake spec
-# "
-# End:

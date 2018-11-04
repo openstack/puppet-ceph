@@ -18,12 +18,12 @@ require 'spec_helper'
 
 describe 'ceph::mds' do
 
-  shared_examples_for 'ceph mds' do
+  shared_examples 'ceph mds' do
     describe "activated with default params" do
 
-      it { is_expected.to contain_ceph_config('mds/mds_data').with_value('/var/lib/ceph/mds/ceph-myhostname') }
-      it { is_expected.to contain_ceph_config('mds/keyring').with_value('/var/lib/ceph/mds/ceph-myhostname/keyring') }
-      it { is_expected.to contain_package('ceph-mds').with('ensure' => 'present') }
+      it { should contain_ceph_config('mds/mds_data').with_value('/var/lib/ceph/mds/ceph-myhostname') }
+      it { should contain_ceph_config('mds/keyring').with_value('/var/lib/ceph/mds/ceph-myhostname/keyring') }
+      it { should contain_package('ceph-mds').with('ensure' => 'present') }
     end
 
     describe "activated with custom params" do
@@ -36,14 +36,14 @@ describe 'ceph::mds' do
         }
       end
 
-      it { is_expected.to contain_ceph_config('mds/mds_data').with_value('/usr/local/ceph/var/lib/mds/_cluster-_id') }
-      it { is_expected.to contain_ceph_config('mds/keyring').with_value('/usr/local/ceph/var/lib/mds/_cluster-_id/keyring') }
-      it { is_expected.to contain_package('ceph-mds').with('ensure' => 'present') }
+      it { should contain_ceph_config('mds/mds_data').with_value('/usr/local/ceph/var/lib/mds/_cluster-_id') }
+      it { should contain_ceph_config('mds/keyring').with_value('/usr/local/ceph/var/lib/mds/_cluster-_id/keyring') }
+      it { should contain_package('ceph-mds').with('ensure' => 'present') }
       it {
-        is_expected.to contain_service('ceph-mds@mymds').with('ensure' => 'running')
+        should contain_service('ceph-mds@mymds').with('ensure' => 'running')
       }
-      it { is_expected.to contain_ceph_config('mds.mymds/public_addr').with_value('1.2.3.4') }
-      it { is_expected.to contain_file('/usr/local/ceph/var/lib/mds/_cluster-_id').with( {
+      it { should contain_ceph_config('mds.mymds/public_addr').with_value('1.2.3.4') }
+      it { should contain_file('/usr/local/ceph/var/lib/mds/_cluster-_id').with( {
         'ensure'                  => 'directory',
         'owner'                   => 'ceph',
         'group'                   => 'ceph',
@@ -59,8 +59,8 @@ describe 'ceph::mds' do
         }
       end
 
-      it { is_expected.to contain_ceph_config('mds/mds_data').with_ensure('absent') }
-      it { is_expected.to contain_ceph_config('mds/keyring').with_ensure('absent') }
+      it { should contain_ceph_config('mds/mds_data').with_ensure('absent') }
+      it { should contain_ceph_config('mds/keyring').with_ensure('absent') }
 
     end
   end

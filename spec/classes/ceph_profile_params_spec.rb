@@ -19,7 +19,7 @@ require 'spec_helper'
 
 describe 'ceph::profile::params' do
 
-  shared_examples_for 'ceph profile params' do
+  shared_examples 'ceph profile params' do
     describe "should fail when client_keys is not a hash" do
 
       let :pre_condition do
@@ -28,7 +28,7 @@ describe 'ceph::profile::params' do
         }"
       end
 
-      it { is_expected.to raise_error Puppet::Error, /is not a Hash/ }
+      it { should raise_error Puppet::Error, /is not a Hash/ }
     end
 
     describe "should fail when using cephx without client_keys" do
@@ -40,7 +40,7 @@ describe 'ceph::profile::params' do
         }"
       end
 
-      it { is_expected.to raise_error Puppet::Error,
+      it { should raise_error Puppet::Error,
         /client_keys must be provided when using authentication_type = 'cephx'/
       }
     end

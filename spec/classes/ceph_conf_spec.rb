@@ -18,7 +18,6 @@
 require 'spec_helper'
 
 describe 'ceph::conf' do
-
   let :params do
     {
       :args => {
@@ -33,17 +32,24 @@ describe 'ceph::conf' do
     }
   end
 
-  it {
-    is_expected.to contain_ceph_config('A').with('value' => "AA VALUE")
-    is_expected.to contain_ceph_config('B').with('value' => "DEFAULT")
-  }
+  shared_examples 'ceph::conf' do
+    context 'with specified parameters' do
+      it {
+        should contain_ceph_config('A').with_value('AA VALUE')
+        should contain_ceph_config('B').with_value('DEFAULT')
+      }
+    end
+  end
 
+  on_supported_os({
+    :supported_os => OSDefaults.get_supported_os
+  }).each do |os,facts|
+    context "on #{os}" do
+      let (:facts) do
+        facts.merge!(OSDefaults.get_facts())
+      end
+
+      it_behaves_like 'ceph::conf'
+    end
+  end
 end
-
-# Local Variables:
-# compile-command: "cd ../.. ;
-#    export BUNDLE_PATH=/tmp/vendor ;
-#    bundle install ;
-#    bundle exec rake spec
-# "
-# End:

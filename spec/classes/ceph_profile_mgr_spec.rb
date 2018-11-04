@@ -19,8 +19,8 @@ require 'spec_helper'
 
 describe 'ceph::profile::mgr' do
 
-  shared_examples_for 'ceph profile mgr' do
-    it { is_expected.to contain_ceph__mgr('first').with(
+  shared_examples 'ceph profile mgr' do
+    it { should contain_ceph__mgr('first').with(
       :authentication_type => 'cephx',
       :key                 => 'AQASGFDFUHBHDG9SDdsyffV1xgsn1pgr3GcKPg==',
       :inject_key          => true)

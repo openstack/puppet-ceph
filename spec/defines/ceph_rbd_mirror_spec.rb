@@ -17,48 +17,48 @@
 require 'spec_helper'
 
 describe 'ceph::mirror' do
-
-  context 'Ubuntu 16.04' do
-
-    let :facts do
-      {
-        :osfamily               => 'Debian',
-        :operatingsystem        => 'Ubuntu',
-        :operatingsystemrelease => '16.04',
-        :service_provider       => 'systemd',
-      }
+  shared_examples 'ceph::mirror on Debian' do
+    before do
+      facts.merge!( :operatingsystem        => 'Ubuntu',
+                    :operatingsystemrelease => '16.04',
+                    :service_provider       => 'systemd' )
     end
 
-    describe 'with default params' do
+    context 'with default params' do
       let :title do
         'A'
       end
 
-      it { is_expected.to contain_service('ceph-rbd-mirror@A').with('ensure' => 'running') }
-
+      it { should contain_service('ceph-rbd-mirror@A').with('ensure' => 'running') }
     end
   end
 
-  context 'RHEL 7' do
-
-    let :facts do
-      {
-        :osfamily                  => 'RedHat',
-        :operatingsystem           => 'RedHat',
-        :operatingsystemrelease    => '7.2',
-        :operatingsystemmajrelease => '7',
-        :service_provider          => 'systemd',
-      }
+  shared_examples 'ceph::mirror on RedHat' do
+    before do
+      facts.merge!( :operatingsystem           => 'RedHat',
+                    :operatingsystemrelease    => '7.2',
+                    :operatingsystemmajrelease => '7',
+                    :service_provider          => 'systemd' )
     end
 
-    describe 'with default params' do
-
+    context 'with default params' do
       let :title do
         'A'
       end
 
-      it { is_expected.to contain_service('ceph-rbd-mirror@A').with('ensure' => 'running') }
+      it { should contain_service('ceph-rbd-mirror@A').with('ensure' => 'running') }
+    end
+  end
 
+  on_supported_os({
+    :supported_os => OSDefaults.get_supported_os
+  }).each do |os,facts|
+    context "on #{os}" do
+      let (:facts) do
+        facts.merge!(OSDefaults.get_facts())
+      end
+
+      it_behaves_like "ceph::mirror on #{facts[:osfamily]}"
     end
   end
 end

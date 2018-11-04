@@ -18,33 +18,34 @@
 require 'spec_helper'
 
 describe 'ceph::rgw' do
-
   let :pre_condition do
     'include ceph::params'
   end
 
-  shared_examples_for 'ceph rgw civetweb' do
-
+  shared_examples 'ceph rgw civetweb' do
     describe "activated with civetweb params" do
       let :title do
         'radosgw.civetweb'
       end
+
       let :params do
       {
         :frontend_type => 'civetweb',
       }
       end
-      it { is_expected.to contain_ceph_config('client.radosgw.civetweb/user').with_value("#{platform_params[:user]}") }
-      it { is_expected.to contain_ceph_config('client.radosgw.civetweb/host').with_value('myhost') }
-      it { is_expected.to contain_ceph_config('client.radosgw.civetweb/keyring').with_value('/etc/ceph/ceph.client.radosgw.civetweb.keyring') }
-      it { is_expected.to contain_ceph_config('client.radosgw.civetweb/log_file').with_value('/var/log/ceph/radosgw.log') }
-      it { is_expected.to contain_ceph_config('client.radosgw.civetweb/rgw_frontends').with_value('civetweb port=7480') }
+
+      it { should contain_ceph_config('client.radosgw.civetweb/user').with_value("#{platform_params[:user]}") }
+      it { should contain_ceph_config('client.radosgw.civetweb/host').with_value('myhost') }
+      it { should contain_ceph_config('client.radosgw.civetweb/keyring').with_value('/etc/ceph/ceph.client.radosgw.civetweb.keyring') }
+      it { should contain_ceph_config('client.radosgw.civetweb/log_file').with_value('/var/log/ceph/radosgw.log') }
+      it { should contain_ceph_config('client.radosgw.civetweb/rgw_frontends').with_value('civetweb port=7480') }
     end
 
     describe "activated with custom civetweb params" do
       let :title do
         'radosgw.custom'
       end
+
       let :params do
       {
         :frontend_type => 'civetweb',
@@ -52,13 +53,13 @@ describe 'ceph::rgw' do
         :user          => 'root',
       }
       end
-      it { is_expected.to contain_ceph_config('client.radosgw.custom/rgw_frontends').with_value('civetweb port=7481') }
-      it { is_expected.to contain_ceph_config('client.radosgw.custom/user').with_value('root') }
-      it { is_expected.to contain_ceph_config('client.radosgw.custom/host').with_value('myhost') }
-      it { is_expected.to contain_ceph_config('client.radosgw.custom/keyring').with_value('/etc/ceph/ceph.client.radosgw.custom.keyring') }
-      it { is_expected.to contain_ceph_config('client.radosgw.custom/log_file').with_value('/var/log/ceph/radosgw.log') }
-    end
 
+      it { should contain_ceph_config('client.radosgw.custom/rgw_frontends').with_value('civetweb port=7481') }
+      it { should contain_ceph_config('client.radosgw.custom/user').with_value('root') }
+      it { should contain_ceph_config('client.radosgw.custom/host').with_value('myhost') }
+      it { should contain_ceph_config('client.radosgw.custom/keyring').with_value('/etc/ceph/ceph.client.radosgw.custom.keyring') }
+      it { should contain_ceph_config('client.radosgw.custom/log_file').with_value('/var/log/ceph/radosgw.log') }
+    end
   end
 
   on_supported_os({
@@ -91,5 +92,4 @@ describe 'ceph::rgw' do
       it_behaves_like 'ceph rgw civetweb'
     end
   end
-
 end

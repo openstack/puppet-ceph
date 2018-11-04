@@ -18,7 +18,7 @@ require 'spec_helper'
 
 describe 'ceph' do
 
-  shared_examples_for 'ceph' do
+  shared_examples 'ceph' do
     describe "with default params and specified fsid" do
       let :params do
         {
@@ -26,40 +26,40 @@ describe 'ceph' do
         }
       end
 
-      it { is_expected.to contain_package('ceph').with(
+      it { should contain_package('ceph').with(
       'name'   => 'ceph',
       'ensure' => 'present') }
 
-      it { is_expected.to contain_ceph_config('global/fsid').with_value('d5252e7d-75bc-4083-85ed-fe51fa83f62b') }
-      it { is_expected.to_not contain_ceph_config('global/keyring').with_value('/etc/ceph/keyring') }
-      it { is_expected.to_not contain_ceph_config('global/osd_pool_default_pg_num').with_value('128') }
-      it { is_expected.to_not contain_ceph_config('global/osd_pool_default_pgp_num').with_value('128') }
-      it { is_expected.to_not contain_ceph_config('global/osd_pool_default_size').with_value('3') }
-      it { is_expected.to_not contain_ceph_config('global/osd_pool_default_min_size').with_value('2') }
-      it { is_expected.to_not contain_ceph_config('global/osd_pool_default_crush_rule').with_value('0') }
-      it { is_expected.to_not contain_ceph_config('global/osd_crush_update_on_start').with_value(false) }
-      it { is_expected.to_not contain_ceph_config('global/mon_osd_full_ratio').with_value('90') }
-      it { is_expected.to_not contain_ceph_config('global/mon_osd_nearfull_ratio').with_value('85') }
-      it { is_expected.to_not contain_ceph_config('global/mon_initial_members').with_value('mon.01') }
-      it { is_expected.to_not contain_ceph_config('global/mon_host').with_value('mon01.ceph, mon02.ceph') }
-      it { is_expected.to_not contain_ceph_config('global/ms_bind_ipv6').with_value('false') }
-      it { is_expected.to_not contain_ceph_config('global/require_signatures').with_value('false') }
-      it { is_expected.to_not contain_ceph_config('global/cluster_require_signatures').with_value('false') }
-      it { is_expected.to_not contain_ceph_config('global/service_require_signatures').with_value('false') }
-      it { is_expected.to_not contain_ceph_config('global/sign_messages').with_value('true') }
-      it { is_expected.to_not contain_ceph_config('global/cluster_network').with_value('10.0.0.0/24') }
-      it { is_expected.to_not contain_ceph_config('global/public_network').with_value('192.168.0.0/24') }
-      it { is_expected.to_not contain_ceph_config('global/public_addr').with_value('192.168.0.2') }
-      it { is_expected.to_not contain_ceph_config('osd/osd_journal_size').with_value('4096') }
-      it { is_expected.to_not contain_ceph_config('client/rbd_default_features').with_value('15') }
-      it { is_expected.to contain_ceph_config('global/auth_cluster_required').with_value('cephx') }
-      it { is_expected.to contain_ceph_config('global/auth_service_required').with_value('cephx') }
-      it { is_expected.to contain_ceph_config('global/auth_client_required').with_value('cephx') }
-      it { is_expected.to contain_ceph_config('global/auth_supported').with_value('cephx') }
-      it { is_expected.to_not contain_ceph_config('global/auth_cluster_required').with_value('none') }
-      it { is_expected.to_not contain_ceph_config('global/auth_service_required').with_value('none') }
-      it { is_expected.to_not contain_ceph_config('global/auth_client_required').with_value('none') }
-      it { is_expected.to_not contain_ceph_config('global/auth_supported').with_value('none') }
+      it { should contain_ceph_config('global/fsid').with_value('d5252e7d-75bc-4083-85ed-fe51fa83f62b') }
+      it { should_not contain_ceph_config('global/keyring').with_value('/etc/ceph/keyring') }
+      it { should_not contain_ceph_config('global/osd_pool_default_pg_num').with_value('128') }
+      it { should_not contain_ceph_config('global/osd_pool_default_pgp_num').with_value('128') }
+      it { should_not contain_ceph_config('global/osd_pool_default_size').with_value('3') }
+      it { should_not contain_ceph_config('global/osd_pool_default_min_size').with_value('2') }
+      it { should_not contain_ceph_config('global/osd_pool_default_crush_rule').with_value('0') }
+      it { should_not contain_ceph_config('global/osd_crush_update_on_start').with_value(false) }
+      it { should_not contain_ceph_config('global/mon_osd_full_ratio').with_value('90') }
+      it { should_not contain_ceph_config('global/mon_osd_nearfull_ratio').with_value('85') }
+      it { should_not contain_ceph_config('global/mon_initial_members').with_value('mon.01') }
+      it { should_not contain_ceph_config('global/mon_host').with_value('mon01.ceph, mon02.ceph') }
+      it { should_not contain_ceph_config('global/ms_bind_ipv6').with_value('false') }
+      it { should_not contain_ceph_config('global/require_signatures').with_value('false') }
+      it { should_not contain_ceph_config('global/cluster_require_signatures').with_value('false') }
+      it { should_not contain_ceph_config('global/service_require_signatures').with_value('false') }
+      it { should_not contain_ceph_config('global/sign_messages').with_value('true') }
+      it { should_not contain_ceph_config('global/cluster_network').with_value('10.0.0.0/24') }
+      it { should_not contain_ceph_config('global/public_network').with_value('192.168.0.0/24') }
+      it { should_not contain_ceph_config('global/public_addr').with_value('192.168.0.2') }
+      it { should_not contain_ceph_config('osd/osd_journal_size').with_value('4096') }
+      it { should_not contain_ceph_config('client/rbd_default_features').with_value('15') }
+      it { should contain_ceph_config('global/auth_cluster_required').with_value('cephx') }
+      it { should contain_ceph_config('global/auth_service_required').with_value('cephx') }
+      it { should contain_ceph_config('global/auth_client_required').with_value('cephx') }
+      it { should contain_ceph_config('global/auth_supported').with_value('cephx') }
+      it { should_not contain_ceph_config('global/auth_cluster_required').with_value('none') }
+      it { should_not contain_ceph_config('global/auth_service_required').with_value('none') }
+      it { should_not contain_ceph_config('global/auth_client_required').with_value('none') }
+      it { should_not contain_ceph_config('global/auth_supported').with_value('none') }
     end
 
     describe "with custom params and specified fsid" do
@@ -100,48 +100,48 @@ describe 'ceph' do
         }
       end
 
-      it { is_expected.to contain_package('ceph').with(
+      it { should contain_package('ceph').with(
       'name'   => 'ceph',
       'ensure' => 'present') }
 
-      it { is_expected.to contain_ceph_config('global/fsid').with_value('d5252e7d-75bc-4083-85ed-fe51fa83f62b') }
-      it { is_expected.to contain_ceph_config('global/keyring').with_value('/usr/local/ceph/etc/keyring') }
-      it { is_expected.to contain_ceph_config('global/osd_max_object_name_len').with_value('1024') }
-      it { is_expected.to contain_ceph_config('global/osd_max_object_namespace_len').with_value('256') }
-      it { is_expected.to contain_ceph_config('global/osd_pool_default_pg_num').with_value('256') }
-      it { is_expected.to contain_ceph_config('global/osd_pool_default_pgp_num').with_value('256') }
-      it { is_expected.to contain_ceph_config('global/osd_pool_default_size').with_value('2') }
-      it { is_expected.to contain_ceph_config('global/osd_pool_default_min_size').with_value('1') }
-      it { is_expected.to contain_ceph_config('global/osd_pool_default_crush_rule').with_value('10') }
-      it { is_expected.to contain_ceph_config('global/osd_crush_update_on_start').with_value(false) }
-      it { is_expected.to contain_ceph_config('global/mon_osd_full_ratio').with_value('95') }
-      it { is_expected.to contain_ceph_config('global/mon_osd_nearfull_ratio').with_value('90') }
-      it { is_expected.to contain_ceph_config('global/mon_initial_members').with_value('mon.01') }
-      it { is_expected.to contain_ceph_config('global/mon_host').with_value('mon01.ceph, mon02.ceph') }
-      it { is_expected.to contain_ceph_config('global/ms_bind_ipv6').with_value('true') }
-      it { is_expected.to contain_ceph_config('global/require_signatures').with_value('true') }
-      it { is_expected.to contain_ceph_config('global/cluster_require_signatures').with_value('true') }
-      it { is_expected.to contain_ceph_config('global/service_require_signatures').with_value('true') }
-      it { is_expected.to contain_ceph_config('global/sign_messages').with_value('false') }
-      it { is_expected.to contain_ceph_config('global/cluster_network').with_value('10.0.0.0/24') }
-      it { is_expected.to contain_ceph_config('global/public_network').with_value('192.168.0.0/24') }
-      it { is_expected.to contain_ceph_config('global/public_addr').with_value('192.168.0.2') }
-      it { is_expected.to contain_ceph_config('osd/osd_journal_size').with_value('1024') }
-      it { is_expected.to contain_ceph_config('client/rbd_default_features').with_value('12') }
-      it { is_expected.to_not contain_ceph_config('global/auth_cluster_required').with_value('cephx') }
-      it { is_expected.to_not contain_ceph_config('global/auth_service_required').with_value('cephx') }
-      it { is_expected.to_not contain_ceph_config('global/auth_client_required').with_value('cephx') }
-      it { is_expected.to_not contain_ceph_config('global/auth_supported').with_value('cephx') }
-      it { is_expected.to contain_ceph_config('global/auth_cluster_required').with_value('none') }
-      it { is_expected.to contain_ceph_config('global/auth_service_required').with_value('none') }
-      it { is_expected.to contain_ceph_config('global/auth_client_required').with_value('none') }
-      it { is_expected.to contain_ceph_config('global/auth_supported').with_value('none') }
-      it { is_expected.to contain_ceph_config('osd/osd_max_backfills').with_value('1') }
-      it { is_expected.to contain_ceph_config('osd/osd_recovery_max_active').with_value('1') }
-      it { is_expected.to contain_ceph_config('osd/osd_recovery_op_priority').with_value('1') }
-      it { is_expected.to contain_ceph_config('osd/osd_recovery_max_single_start').with_value('1') }
-      it { is_expected.to contain_ceph_config('osd/osd_max_scrubs').with_value('1') }
-      it { is_expected.to contain_ceph_config('osd/osd_op_threads').with_value('2') }
+      it { should contain_ceph_config('global/fsid').with_value('d5252e7d-75bc-4083-85ed-fe51fa83f62b') }
+      it { should contain_ceph_config('global/keyring').with_value('/usr/local/ceph/etc/keyring') }
+      it { should contain_ceph_config('global/osd_max_object_name_len').with_value('1024') }
+      it { should contain_ceph_config('global/osd_max_object_namespace_len').with_value('256') }
+      it { should contain_ceph_config('global/osd_pool_default_pg_num').with_value('256') }
+      it { should contain_ceph_config('global/osd_pool_default_pgp_num').with_value('256') }
+      it { should contain_ceph_config('global/osd_pool_default_size').with_value('2') }
+      it { should contain_ceph_config('global/osd_pool_default_min_size').with_value('1') }
+      it { should contain_ceph_config('global/osd_pool_default_crush_rule').with_value('10') }
+      it { should contain_ceph_config('global/osd_crush_update_on_start').with_value(false) }
+      it { should contain_ceph_config('global/mon_osd_full_ratio').with_value('95') }
+      it { should contain_ceph_config('global/mon_osd_nearfull_ratio').with_value('90') }
+      it { should contain_ceph_config('global/mon_initial_members').with_value('mon.01') }
+      it { should contain_ceph_config('global/mon_host').with_value('mon01.ceph, mon02.ceph') }
+      it { should contain_ceph_config('global/ms_bind_ipv6').with_value('true') }
+      it { should contain_ceph_config('global/require_signatures').with_value('true') }
+      it { should contain_ceph_config('global/cluster_require_signatures').with_value('true') }
+      it { should contain_ceph_config('global/service_require_signatures').with_value('true') }
+      it { should contain_ceph_config('global/sign_messages').with_value('false') }
+      it { should contain_ceph_config('global/cluster_network').with_value('10.0.0.0/24') }
+      it { should contain_ceph_config('global/public_network').with_value('192.168.0.0/24') }
+      it { should contain_ceph_config('global/public_addr').with_value('192.168.0.2') }
+      it { should contain_ceph_config('osd/osd_journal_size').with_value('1024') }
+      it { should contain_ceph_config('client/rbd_default_features').with_value('12') }
+      it { should_not contain_ceph_config('global/auth_cluster_required').with_value('cephx') }
+      it { should_not contain_ceph_config('global/auth_service_required').with_value('cephx') }
+      it { should_not contain_ceph_config('global/auth_client_required').with_value('cephx') }
+      it { should_not contain_ceph_config('global/auth_supported').with_value('cephx') }
+      it { should contain_ceph_config('global/auth_cluster_required').with_value('none') }
+      it { should contain_ceph_config('global/auth_service_required').with_value('none') }
+      it { should contain_ceph_config('global/auth_client_required').with_value('none') }
+      it { should contain_ceph_config('global/auth_supported').with_value('none') }
+      it { should contain_ceph_config('osd/osd_max_backfills').with_value('1') }
+      it { should contain_ceph_config('osd/osd_recovery_max_active').with_value('1') }
+      it { should contain_ceph_config('osd/osd_recovery_op_priority').with_value('1') }
+      it { should contain_ceph_config('osd/osd_recovery_max_single_start').with_value('1') }
+      it { should contain_ceph_config('osd/osd_max_scrubs').with_value('1') }
+      it { should contain_ceph_config('osd/osd_op_threads').with_value('2') }
     end
   end
 

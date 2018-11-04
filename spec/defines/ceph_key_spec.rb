@@ -19,14 +19,12 @@
 require 'spec_helper'
 
 describe 'ceph::key' do
-
   let (:pre_condition) do
     "class { '::ceph': fsid => 'foo' }"
   end
-  shared_examples_for 'ceph key' do
 
+  shared_examples 'ceph key' do
     describe "with custom params" do
-
       let :title do
         'client.admin'
       end
@@ -44,20 +42,19 @@ describe 'ceph::key' do
       end
 
       it {
-        is_expected.to contain_exec('ceph-key-client.admin').with(
+        should contain_exec('ceph-key-client.admin').with(
           'command' => "/bin/true # comment to satisfy puppet syntax requirements\nset -ex\nceph-authtool /etc/ceph/ceph.client.admin.keyring --name 'client.admin' --add-key 'supersecret' --cap mon 'allow *' --cap osd 'allow rw' --cap mgr 'allow *' "
         )
-        is_expected.to contain_file('/etc/ceph/ceph.client.admin.keyring').with(
+        should contain_file('/etc/ceph/ceph.client.admin.keyring').with(
           'owner'                   => 'nobody',
           'group'                   => 'nogroup',
           'mode'                    => '0600',
           'selinux_ignore_defaults' => true,
         )
-        is_expected.to contain_exec('ceph-injectkey-client.admin').with(
+        should contain_exec('ceph-injectkey-client.admin').with(
            'command' => "/bin/true # comment to satisfy puppet syntax requirements\nset -ex\nceph    auth import -i /etc/ceph/ceph.client.admin.keyring"
         )
       }
-
     end
   end
 
@@ -73,10 +70,3 @@ describe 'ceph::key' do
     end
   end
 end
-
-# Local Variables:
-# compile-command: "cd ../.. ;
-#    bundle install ;
-#    bundle exec rake spec
-# "
-# End:

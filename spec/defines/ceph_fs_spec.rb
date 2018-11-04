@@ -16,8 +16,7 @@
 require 'spec_helper'
 
 describe 'ceph::fs' do
-
-  shared_examples_for 'ceph fs' do
+  shared_examples 'ceph fs' do
     describe "activated with custom params" do
       let :title do
         'fsa'
@@ -30,7 +29,7 @@ describe 'ceph::fs' do
         }
       end
 
-      it { is_expected.to contain_exec('create-fs-fsa').with(
+      it { should contain_exec('create-fs-fsa').with(
           :command =>  "/bin/true # comment to satisfy puppet syntax requirements\nset -ex\nceph fs new fsa metadata_pool data_pool",
           :unless  => "/bin/true # comment to satisfy puppet syntax requirements\nset -ex\nceph fs ls | grep 'name: fsa,'"
       )}
@@ -48,5 +47,4 @@ describe 'ceph::fs' do
       it_behaves_like 'ceph fs'
     end
   end
-
 end

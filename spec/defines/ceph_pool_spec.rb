@@ -19,10 +19,8 @@
 require 'spec_helper'
 
 describe 'ceph::pool' do
-
-  shared_examples_for 'ceph pool' do
+  shared_examples 'ceph pool' do
     describe "create with custom params" do
-
       let :title do
         'volumes'
       end
@@ -38,28 +36,26 @@ describe 'ceph::pool' do
       end
 
       it {
-        is_expected.to contain_exec('create-volumes').with(
+        should contain_exec('create-volumes').with(
           'command' => "/bin/true # comment to satisfy puppet syntax requirements\nset -ex\nceph osd pool create volumes 3"
         )
-        is_expected.to contain_exec('set-volumes-pg_num').with(
+        should contain_exec('set-volumes-pg_num').with(
           'command' => "/bin/true # comment to satisfy puppet syntax requirements\nset -ex\nceph osd pool set volumes pg_num 3"
         )
-        is_expected.to contain_exec('set-volumes-pgp_num').with(
+        should contain_exec('set-volumes-pgp_num').with(
           'command' => "/bin/true # comment to satisfy puppet syntax requirements\nset -ex\nceph osd pool set volumes pgp_num 4"
         ).that_requires('Exec[set-volumes-pg_num]')
-        is_expected.to contain_exec('set-volumes-size').with(
+        should contain_exec('set-volumes-size').with(
           'command' => "/bin/true # comment to satisfy puppet syntax requirements\nset -ex\nceph osd pool set volumes size 2"
         )
-        is_expected.to contain_exec('set-volumes-tag').with(
+        should contain_exec('set-volumes-tag').with(
           'command' => "/bin/true # comment to satisfy puppet syntax requirements\nset -ex\nceph osd pool application enable volumes rbd"
         )
-        is_expected.not_to contain_exec('delete-volumes')
+        should_not contain_exec('delete-volumes')
       }
-
     end
 
     describe "delete with custom params" do
-
       let :title do
         'volumes'
       end
@@ -71,12 +67,11 @@ describe 'ceph::pool' do
       end
 
       it {
-        is_expected.not_to contain_exec('create-volumes')
-        is_expected.to contain_exec('delete-volumes').with(
+        should_not contain_exec('create-volumes')
+        should contain_exec('delete-volumes').with(
           'command' => "/bin/true # comment to satisfy puppet syntax requirements\nset -ex\nceph osd pool delete volumes volumes --yes-i-really-really-mean-it"
         )
       }
-
     end
   end
 
@@ -92,10 +87,3 @@ describe 'ceph::pool' do
     end
   end
 end
-
-# Local Variables:
-# compile-command: "cd ../.. ;
-#    bundle install ;
-#    bundle exec rake spec
-# "
-# End:

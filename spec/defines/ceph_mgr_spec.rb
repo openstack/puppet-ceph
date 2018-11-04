@@ -19,61 +19,65 @@ require 'spec_helper'
 describe 'ceph::mgr' do
   let (:title) { 'foo' }
 
-  describe 'with cephx configured but no key specified' do
-    let :params do
-      {
-        :authentication_type => 'cephx'
-      }
+  shared_examples 'ceph::mgr' do
+    context 'with cephx configured but no key specified' do
+      let :params do
+        {
+          :authentication_type => 'cephx'
+        }
+      end
+
+      it { should raise_error(Puppet::Error, /cephx requires a specified key for the manager daemon/) }
     end
 
-    it {
-      is_expected.to raise_error(Puppet::Error, /cephx requires a specified key for the manager daemon/)
-    }
-  end
+    context 'cephx authentication_type' do
+      let :params do
+        {
+          :authentication_type => 'cephx',
+          :key                 => 'AQATGHJTUCBqIBAA7M2yafV1xctn1pgr3GcKPg==',
+        }
+      end
 
-  describe 'cephx authentication_type' do
-    let :params do
-      {
-        :authentication_type => 'cephx',
-        :key                 => 'AQATGHJTUCBqIBAA7M2yafV1xctn1pgr3GcKPg==',
-      }
-    end
-
-    it {
-      is_expected.to contain_file('/var/lib/ceph/mgr').with(
+      it { should contain_file('/var/lib/ceph/mgr').with(
         :ensure => 'directory',
         :owner  => 'ceph',
         :group  => 'ceph'
-      )
-    }
+      )}
 
-    it {
-      is_expected.to contain_file('/var/lib/ceph/mgr/ceph-foo').with(
+      it { should contain_file('/var/lib/ceph/mgr/ceph-foo').with(
         :ensure => 'directory',
         :owner  => 'ceph',
         :group  => 'ceph'
-      )
-    }
+      )}
 
-    it {
-      is_expected.to contain_ceph__key('mgr.foo').with(
+      it { should contain_ceph__key('mgr.foo').with(
         :secret       => 'AQATGHJTUCBqIBAA7M2yafV1xctn1pgr3GcKPg==',
         :cluster      => 'ceph',
-        :keyring_path => "/var/lib/ceph/mgr/ceph-foo/keyring",
+        :keyring_path => '/var/lib/ceph/mgr/ceph-foo/keyring',
         :cap_mon      => 'allow profile mgr',
         :cap_osd      => 'allow *',
         :cap_mds      => 'allow *',
         :user         => 'ceph',
         :group        => 'ceph',
         :inject       => false,
-      )
-    }
+      )}
 
-    it {
-      is_expected.to contain_service('ceph-mgr@foo').with(
+      it { should contain_service('ceph-mgr@foo').with(
         :ensure => 'running',
         :enable => true,
-      )
-    }
+      )}
+    end
+  end
+
+  on_supported_os({
+    :supported_os => OSDefaults.get_supported_os
+  }).each do |os,facts|
+    context "on #{os}" do
+      let (:facts) do
+        facts.merge!(OSDefaults.get_facts())
+      end
+
+      it_behaves_like 'ceph::mgr'
+    end
   end
 end

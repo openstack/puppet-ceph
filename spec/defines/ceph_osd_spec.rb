@@ -20,16 +20,13 @@
 require 'spec_helper'
 
 describe 'ceph::osd' do
-
-  shared_examples_for 'ceph osd' do
-
+  shared_examples 'ceph osd' do
     describe "with default params" do
-
       let :title do
         '/srv'
       end
 
-      it { is_expected.to contain_exec('ceph-osd-check-udev-/srv').with(
+      it { should contain_exec('ceph-osd-check-udev-/srv').with(
         'command'   => "/bin/true # comment to satisfy puppet syntax requirements
 # Before Infernalis the udev rules race causing the activation to fail so we
 # disable them. More at: http://www.spinics.net/lists/ceph-devel/msg28436.html
@@ -42,7 +39,7 @@ test -f /usr/lib/udev/rules.d/95-ceph-osd.rules && test \$DISABLE_UDEV -eq 1
 ",
        'logoutput' => true,
       ) }
-      it { is_expected.to contain_exec('ceph-osd-prepare-/srv').with(
+      it { should contain_exec('ceph-osd-prepare-/srv').with(
         'command'   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 disk=$(readlink -f /srv)
@@ -64,7 +61,7 @@ ceph-disk list | egrep \" *(${disk}1?|${disk}p1?) .*ceph data, (prepared|active)
 ",
         'logoutput' => true
       ) }
-      it { is_expected.to contain_exec('ceph-osd-activate-/srv').with(
+      it { should contain_exec('ceph-osd-activate-/srv').with(
         'command'   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 disk=$(readlink -f /srv)
@@ -93,7 +90,6 @@ ls -ld /var/lib/ceph/osd/ceph-* | grep \" $(readlink -f /srv)\$\"
     end
 
     describe "with custom params" do
-
       let :title do
         '/srv/data'
       end
@@ -106,7 +102,7 @@ ls -ld /var/lib/ceph/osd/ceph-* | grep \" $(readlink -f /srv)\$\"
         }
       end
 
-      it { is_expected.to contain_exec('ceph-osd-check-udev-/srv/data').with(
+      it { should contain_exec('ceph-osd-check-udev-/srv/data').with(
         'command'   => "/bin/true # comment to satisfy puppet syntax requirements
 # Before Infernalis the udev rules race causing the activation to fail so we
 # disable them. More at: http://www.spinics.net/lists/ceph-devel/msg28436.html
@@ -119,7 +115,7 @@ test -f /usr/lib/udev/rules.d/95-ceph-osd.rules && test \$DISABLE_UDEV -eq 1
 ",
        'logoutput' => true,
       ) }
-      it { is_expected.to contain_exec('ceph-osd-check-fsid-mismatch-/srv/data').with(
+      it { should contain_exec('ceph-osd-check-fsid-mismatch-/srv/data').with(
         'command'   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 test f39ace04-f967-4c3d-9fd2-32af2d2d2cd5 = $(ceph-disk list $(readlink -f /srv/data) | egrep -o '[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}')
@@ -130,7 +126,7 @@ test -z $(ceph-disk list $(readlink -f /srv/data) | egrep -o '[0-9a-f]{8}-([0-9a
 ",
         'logoutput' => true
       ) }
-      it { is_expected.to contain_exec('ceph-osd-prepare-/srv/data').with(
+      it { should contain_exec('ceph-osd-prepare-/srv/data').with(
         'command'   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 disk=$(readlink -f /srv/data)
@@ -152,7 +148,7 @@ ceph-disk list | egrep \" *(${disk}1?|${disk}p1?) .*ceph data, (prepared|active)
 ",
         'logoutput' => true
       ) }
-      it { is_expected.to contain_exec('ceph-osd-activate-/srv/data').with(
+      it { should contain_exec('ceph-osd-activate-/srv/data').with(
         'command'   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 disk=$(readlink -f /srv/data)
@@ -186,7 +182,7 @@ ls -ld /var/lib/ceph/osd/testcluster-* | grep \" $(readlink -f /srv/data)\$\"
         '/dev/nvme0n1'
       end
 
-      it { is_expected.to contain_exec('ceph-osd-check-udev-/dev/nvme0n1').with(
+      it { should contain_exec('ceph-osd-check-udev-/dev/nvme0n1').with(
         'command'   => "/bin/true # comment to satisfy puppet syntax requirements
 # Before Infernalis the udev rules race causing the activation to fail so we
 # disable them. More at: http://www.spinics.net/lists/ceph-devel/msg28436.html
@@ -199,7 +195,7 @@ test -f /usr/lib/udev/rules.d/95-ceph-osd.rules && test \$DISABLE_UDEV -eq 1
 ",
        'logoutput' => true,
       ) }
-      it { is_expected.to contain_exec('ceph-osd-prepare-/dev/nvme0n1').with(
+      it { should contain_exec('ceph-osd-prepare-/dev/nvme0n1').with(
         'command'   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 disk=$(readlink -f /dev/nvme0n1)
@@ -221,7 +217,7 @@ ceph-disk list | egrep \" *(${disk}1?|${disk}p1?) .*ceph data, (prepared|active)
 ",
         'logoutput' => true
       ) }
-      it { is_expected.to contain_exec('ceph-osd-activate-/dev/nvme0n1').with(
+      it { should contain_exec('ceph-osd-activate-/dev/nvme0n1').with(
         'command'   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 disk=$(readlink -f /dev/nvme0n1)
@@ -255,7 +251,7 @@ ls -ld /var/lib/ceph/osd/ceph-* | grep \" $(readlink -f /dev/nvme0n1)\$\"
         '/dev/cciss/c0d0'
       end
 
-      it { is_expected.to contain_exec('ceph-osd-check-udev-/dev/cciss/c0d0').with(
+      it { should contain_exec('ceph-osd-check-udev-/dev/cciss/c0d0').with(
         'command'   => "/bin/true # comment to satisfy puppet syntax requirements
 # Before Infernalis the udev rules race causing the activation to fail so we
 # disable them. More at: http://www.spinics.net/lists/ceph-devel/msg28436.html
@@ -268,7 +264,7 @@ test -f /usr/lib/udev/rules.d/95-ceph-osd.rules && test \$DISABLE_UDEV -eq 1
 ",
        'logoutput' => true,
       ) }
-      it { is_expected.to contain_exec('ceph-osd-prepare-/dev/cciss/c0d0').with(
+      it { should contain_exec('ceph-osd-prepare-/dev/cciss/c0d0').with(
         'command'   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 disk=$(readlink -f /dev/cciss/c0d0)
@@ -290,7 +286,7 @@ ceph-disk list | egrep \" *(${disk}1?|${disk}p1?) .*ceph data, (prepared|active)
 ",
         'logoutput' => true
       ) }
-      it { is_expected.to contain_exec('ceph-osd-activate-/dev/cciss/c0d0').with(
+      it { should contain_exec('ceph-osd-activate-/dev/cciss/c0d0').with(
         'command'   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 disk=$(readlink -f /dev/cciss/c0d0)
@@ -330,7 +326,7 @@ ls -ld /var/lib/ceph/osd/ceph-* | grep \" $(readlink -f /dev/cciss/c0d0)\$\"
         }
       end
 
-      it { is_expected.to contain_exec('remove-osd-/srv').with(
+      it { should contain_exec('remove-osd-/srv').with(
         'command'   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 disk=$(readlink -f /srv)
@@ -372,7 +368,6 @@ fi
     end
 
     describe "with ensure set to bad value" do
-
       let :title do
         '/srv'
       end
@@ -383,7 +378,7 @@ fi
         }
       end
 
-      it { is_expected.to raise_error(Puppet::Error, /Ensure on OSD must be either present or absent/) }
+      it { should raise_error(Puppet::Error, /Ensure on OSD must be either present or absent/) }
     end
   end
 
@@ -399,10 +394,3 @@ fi
     end
   end
 end
-
-# Local Variables:
-# compile-command: "cd ../.. ;
-#    bundle install ;
-#    bundle exec rake spec
-# "
-# End:

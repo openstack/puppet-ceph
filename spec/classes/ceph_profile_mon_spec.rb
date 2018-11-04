@@ -19,14 +19,14 @@ require 'spec_helper'
 
 describe 'ceph::profile::mon' do
 
-  shared_examples_for 'ceph profile mon' do
+  shared_examples 'ceph profile mon' do
 
-    it { is_expected.to contain_ceph__mon('first').with(
+    it { should contain_ceph__mon('first').with(
       :authentication_type => 'cephx',
       :key                 => 'AQATGHJTUCBqIBAA7M2yafV1xctn1pgr3GcKPg==',
       :public_addr         => '10.11.12.2')
     }
-    it { is_expected.to contain_class('ceph::keys').with(
+    it { should contain_class('ceph::keys').with(
       'args' => {
         'client.admin' => {
           'secret'  => 'AQBMGHJTkC8HKhAAJ7NH255wYypgm1oVuV41MA==',

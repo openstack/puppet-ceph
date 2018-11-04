@@ -20,57 +20,47 @@
 require 'spec_helper'
 
 describe 'ceph::rgw::apache_proxy_fcgi' do
-
-  describe 'Debian Family' do
-
-    let :facts do
-      {
-        :concat_basedir         => '/var/lib/puppet/concat',
-        :fqdn                   => 'myhost.domain',
-        :hostname               => 'myhost',
-        :osfamily               => 'Debian',
-        :operatingsystem        => 'Ubuntu',
-        :lsbdistid              => 'Ubuntu',
-        :operatingsystemrelease => '14.04',
-        :lsbdistcodename        => 'trusty',
-      }
+  shared_examples 'ceph::rgw::apache_proxy_fcgi on Debian' do
+    before do
+      facts.merge!( :operatingsystem        => 'Ubuntu',
+                    :lsbdistid              => 'Ubuntu',
+                    :operatingsystemrelease => '14.04',
+                    :lsbdistcodename        => 'trusty' )
     end
 
-    describe 'activated with default params' do
-
+    context 'activated with default params' do
       let :title do
         'radosgw.gateway'
       end
 
-      it { is_expected.to contain_apache__vhost('myhost.domain-radosgw').with( {
-        'servername'        => 'myhost.domain',
-        'serveradmin'       => 'root@localhost',
-        'port'              => 80,
-        'docroot'           => '/var/www',
-        'access_log'        => true,
-        'error_log'         => true,
-        'rewrite_rule'      => '.* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization},L]',
-        'setenv'            => 'proxy-nokeepalive 1',
-        'proxy_pass'        => {'path' => '/', 'url' => 'fcgi://127.0.0.1:9000/'},
-      })}
-
-      it { is_expected.to contain_class('apache').with(
-        'default_mods'    => false,
-        'default_vhost'   => false,
-        'purge_configs'   => true,
-        'purge_vhost_dir' => true,
+      it { should contain_apache__vhost('myhost.domain-radosgw').with(
+        :servername        => 'myhost.domain',
+        :serveradmin       => 'root@localhost',
+        :port              => 80,
+        :docroot           => '/var/www',
+        :access_log        => true,
+        :error_log         => true,
+        :rewrite_rule      => '.* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization},L]',
+        :setenv            => 'proxy-nokeepalive 1',
+        :proxy_pass        => {'path' => '/', 'url' => 'fcgi://127.0.0.1:9000/'},
       )}
-      it { is_expected.to contain_class('apache::mod::alias') }
-      it { is_expected.to contain_class('apache::mod::auth_basic') }
-      it { is_expected.to contain_class('apache::mod::env') }
-      it { is_expected.to contain_class('apache::mod::proxy') }
-      it { is_expected.to contain_class('apache::mod::mime') }
-      it { is_expected.to contain_class('apache::mod::rewrite') }
 
+      it { should contain_class('apache').with(
+        :default_mods    => false,
+        :default_vhost   => false,
+        :purge_configs   => true,
+        :purge_vhost_dir => true,
+      )}
+
+      it { should contain_class('apache::mod::alias') }
+      it { should contain_class('apache::mod::auth_basic') }
+      it { should contain_class('apache::mod::env') }
+      it { should contain_class('apache::mod::proxy') }
+      it { should contain_class('apache::mod::mime') }
+      it { should contain_class('apache::mod::rewrite') }
     end
 
-    describe "activated with custom params" do
-
+    context 'activated with custom params' do
       let :title do
         'myid'
       end
@@ -90,82 +80,74 @@ describe 'ceph::rgw::apache_proxy_fcgi' do
         }
       end
 
-      it { is_expected.to contain_class('apache').with(
-        'default_mods'    => true,
-        'default_vhost'   => true,
-        'purge_configs'   => false,
-        'purge_vhost_dir' => false,
+      it { should contain_class('apache').with(
+        :default_mods    => true,
+        :default_vhost   => true,
+        :purge_configs   => false,
+        :purge_vhost_dir => false,
       )}
-      it { is_expected.to contain_apache__listen('8888') }
-      it { is_expected.to contain_apache__vhost('mydns.hostname-radosgw').with( {
-        'servername'        => 'mydns.hostname',
-        'serveradmin'       => 'admin@hostname',
-        'port'              => 1111,
-        'docroot'           => '/var/www',
-        'access_log'        => false,
-        'error_log'         => false,
-        'rewrite_rule'      => '.* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization},L]',
-        'setenv'            => 'proxy-nokeepalive 1',
-        'proxy_pass'        => {'path' => '/', 'url' => 'fcgi://127.0.0.1:9999/'},
-      } ) }
 
-      it { is_expected.to contain_class('apache::mod::alias') }
-      it { is_expected.to contain_class('apache::mod::proxy') }
-      it { is_expected.to contain_class('apache::mod::mime') }
-      it { is_expected.to contain_class('apache::mod::rewrite') }
+      it { should contain_apache__listen('8888') }
 
+      it { should contain_apache__vhost('mydns.hostname-radosgw').with(
+        :servername        => 'mydns.hostname',
+        :serveradmin       => 'admin@hostname',
+        :port              => 1111,
+        :docroot           => '/var/www',
+        :access_log        => false,
+        :error_log         => false,
+        :rewrite_rule      => '.* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization},L]',
+        :setenv            => 'proxy-nokeepalive 1',
+        :proxy_pass        => {'path' => '/', 'url' => 'fcgi://127.0.0.1:9999/'},
+      )}
+
+      it { should contain_class('apache::mod::alias') }
+      it { should contain_class('apache::mod::proxy') }
+      it { should contain_class('apache::mod::mime') }
+      it { should contain_class('apache::mod::rewrite') }
     end
   end
 
-  describe 'RedHat Family' do
-
-    let :facts do
-      {
-        :concat_basedir            => '/var/lib/puppet/concat',
-        :fqdn                      => 'myhost.domain',
-        :hostname                  => 'myhost',
-        :osfamily                  => 'RedHat',
-        :operatingsystem           => 'RedHat',
-        :operatingsystemrelease    => '7.2',
-        :operatingsystemmajrelease => '7',
-      }
+  shared_examples 'ceph::rgw::apache_proxy_fcgi on RedHat' do
+    before do
+      facts.merge!( :operatingsystem           => 'RedHat',
+                    :operatingsystemrelease    => '7.2',
+                    :operatingsystemmajrelease => '7' )
     end
 
-    describe 'activated with default params' do
-
+    context 'activated with default params' do
       let :title do
         'radosgw.gateway'
       end
 
-      it { is_expected.to contain_apache__vhost('myhost.domain-radosgw').with( {
-        'servername'        => 'myhost.domain',
-        'serveradmin'       => 'root@localhost',
-        'port'              => 80,
-        'docroot'           => '/var/www',
-        'access_log'        => true,
-        'error_log'         => true,
-        'rewrite_rule'      => '.* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization},L]',
-        'setenv'            => 'proxy-nokeepalive 1',
-        'proxy_pass'        => {'path' => '/', 'url' => 'fcgi://127.0.0.1:9000/'},
-      })}
-
-      it { is_expected.to contain_class('apache').with(
-        'default_mods'    => false,
-        'default_vhost'   => false,
-        'purge_configs'   => true,
-        'purge_vhost_dir' => true,
+      it { should contain_apache__vhost('myhost.domain-radosgw').with(
+        :servername        => 'myhost.domain',
+        :serveradmin       => 'root@localhost',
+        :port              => 80,
+        :docroot           => '/var/www',
+        :access_log        => true,
+        :error_log         => true,
+        :rewrite_rule      => '.* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization},L]',
+        :setenv            => 'proxy-nokeepalive 1',
+        :proxy_pass        => {'path' => '/', 'url' => 'fcgi://127.0.0.1:9000/'},
       )}
-      it { is_expected.to contain_class('apache::mod::alias') }
-      it { is_expected.to contain_class('apache::mod::auth_basic') }
-      it { is_expected.to contain_class('apache::mod::env') }
-      it { is_expected.to contain_class('apache::mod::proxy') }
-      it { is_expected.to contain_class('apache::mod::mime') }
-      it { is_expected.to contain_class('apache::mod::rewrite') }
 
+      it { should contain_class('apache').with(
+        :default_mods    => false,
+        :default_vhost   => false,
+        :purge_configs   => true,
+        :purge_vhost_dir => true,
+      )}
+
+      it { should contain_class('apache::mod::alias') }
+      it { should contain_class('apache::mod::auth_basic') }
+      it { should contain_class('apache::mod::env') }
+      it { should contain_class('apache::mod::proxy') }
+      it { should contain_class('apache::mod::mime') }
+      it { should contain_class('apache::mod::rewrite') }
     end
 
-    describe "activated with custom params" do
-
+    context 'activated with custom params' do
       let :title do
         'myid'
       end
@@ -185,31 +167,45 @@ describe 'ceph::rgw::apache_proxy_fcgi' do
         }
       end
 
-      it { is_expected.to contain_class('apache').with(
-        'default_mods'    => true,
-        'default_vhost'   => true,
-        'purge_configs'   => false,
-        'purge_vhost_dir' => false,
+      it { should contain_class('apache').with(
+        :default_mods    => true,
+        :default_vhost   => true,
+        :purge_configs   => false,
+        :purge_vhost_dir => false,
       )}
-      it { is_expected.to contain_apache__listen('8888') }
-      it { is_expected.to contain_apache__vhost('mydns.hostname-radosgw').with( {
-        'servername'        => 'mydns.hostname',
-        'serveradmin'       => 'admin@hostname',
-        'port'              => 1111,
-        'docroot'           => '/var/www',
-        'access_log'        => false,
-        'error_log'         => false,
-        'rewrite_rule'      => '.* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization},L]',
-        'setenv'            => 'proxy-nokeepalive 1',
-        'proxy_pass'        => {'path' => '/', 'url' => 'fcgi://127.0.0.1:9999/'},
-      } ) }
 
-      it { is_expected.to contain_class('apache::mod::alias') }
-      it { is_expected.to contain_class('apache::mod::proxy') }
-      it { is_expected.to contain_class('apache::mod::mime') }
-      it { is_expected.to contain_class('apache::mod::rewrite') }
+      it { should contain_apache__listen('8888') }
 
+      it { should contain_apache__vhost('mydns.hostname-radosgw').with(
+        :servername   => 'mydns.hostname',
+        :serveradmin  => 'admin@hostname',
+        :port         => 1111,
+        :docroot      => '/var/www',
+        :access_log   => false,
+        :error_log    => false,
+        :rewrite_rule => '.* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization},L]',
+        :setenv       => 'proxy-nokeepalive 1',
+        :proxy_pass   => {'path' => '/', 'url' => 'fcgi://127.0.0.1:9999/'},
+      )}
+
+      it { should contain_class('apache::mod::alias') }
+      it { should contain_class('apache::mod::proxy') }
+      it { should contain_class('apache::mod::mime') }
+      it { should contain_class('apache::mod::rewrite') }
     end
   end
 
+  on_supported_os({
+    :supported_os => OSDefaults.get_supported_os
+  }).each do |os,facts|
+    context "on #{os}" do
+      let (:facts) do
+        facts.merge!(OSDefaults.get_facts( :concat_basedir => '/var/lib/puppet/concat',
+                                           :fqdn           => 'myhost.domain',
+                                           :hostname       => 'myhost' ))
+      end
+
+      it_behaves_like "ceph::rgw::apache_proxy_fcgi on #{facts[:osfamily]}"
+    end
+  end
 end

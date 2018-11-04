@@ -19,34 +19,23 @@
 require 'spec_helper'
 
 describe 'ceph::rgw::keystone' do
-
-  describe 'Debian Family' do
-
-    let :facts do
-      {
-        :concat_basedir         => '/var/lib/puppet/concat',
-        :fqdn                   => 'myhost.domain',
-        :hostname               => 'myhost',
-        :lsbdistid              => 'Ubuntu',
-        :lsbdistcodename        => 'trusty',
-        :osfamily               => 'Debian',
-        :operatingsystem        => 'Ubuntu',
-        :operatingsystemrelease => '14.04',
-        :lsbdistrelease         => '14.04',
-      }
+  shared_examples 'ceph::rgw::keystone on Debian' do
+    before do
+      facts.merge!( :lsbdistid              => 'Ubuntu',
+                    :lsbdistcodename        => 'trusty',
+                    :operatingsystem        => 'Ubuntu',
+                    :operatingsystemrelease => '14.04',
+                    :lsbdistrelease         => '14.04' )
     end
 
-    describe "create with default params" do
-
+    context 'create with default params' do
       let :pre_condition do
-        "
-          include ceph::params
-          class { 'ceph': fsid => 'd5252e7d-75bc-4083-85ed-fe51fa83f62b' }
-          class { 'ceph::repo': fastcgi => true, }
-          include ceph
-          ceph::rgw { 'radosgw.gateway': }
-          ceph::rgw::apache_fastcgi { 'radosgw.gateway': }
-        "
+        "include ceph::params
+         class { 'ceph': fsid => 'd5252e7d-75bc-4083-85ed-fe51fa83f62b' }
+         class { 'ceph::repo': fastcgi => true, }
+         include ceph
+         ceph::rgw { 'radosgw.gateway': }
+         ceph::rgw::apache_fastcgi { 'radosgw.gateway': }"
       end
 
       let :title do
@@ -60,44 +49,40 @@ describe 'ceph::rgw::keystone' do
         }
       end
 
-      it { is_expected.to contain_ceph_config('client.radosgw.gateway/rgw_keystone_url').with_value('http://keystone.default:5000') }
-      it { is_expected.to contain_ceph_config('client.radosgw.gateway/rgw_keystone_admin_token').with_value('defaulttoken') }
-      it { is_expected.to contain_ceph_config('client.radosgw.gateway/rgw_keystone_accepted_roles').with_value('Member') }
-      it { is_expected.to contain_ceph_config('client.radosgw.gateway/rgw_keystone_token_cache_size').with_value(500) }
-      it { is_expected.to contain_ceph_config('client.radosgw.gateway/rgw_s3_auth_use_keystone').with_value(true) }
-      it { is_expected.to contain_ceph_config('client.radosgw.gateway/rgw_keystone_revocation_interval').with_value(600) }
-      it { is_expected.to contain_ceph_config('client.radosgw.gateway/nss_db_path').with_value('/var/lib/ceph/nss') }
-      it { is_expected.to contain_ceph_config('client.radosgw.gateway/rgw_keystone_implicit_tenants').with_value(true) }
+      it { should contain_ceph_config('client.radosgw.gateway/rgw_keystone_url').with_value('http://keystone.default:5000') }
+      it { should contain_ceph_config('client.radosgw.gateway/rgw_keystone_admin_token').with_value('defaulttoken') }
+      it { should contain_ceph_config('client.radosgw.gateway/rgw_keystone_accepted_roles').with_value('Member') }
+      it { should contain_ceph_config('client.radosgw.gateway/rgw_keystone_token_cache_size').with_value(500) }
+      it { should contain_ceph_config('client.radosgw.gateway/rgw_s3_auth_use_keystone').with_value(true) }
+      it { should contain_ceph_config('client.radosgw.gateway/rgw_keystone_revocation_interval').with_value(600) }
+      it { should contain_ceph_config('client.radosgw.gateway/nss_db_path').with_value('/var/lib/ceph/nss') }
+      it { should contain_ceph_config('client.radosgw.gateway/rgw_keystone_implicit_tenants').with_value(true) }
 
-      it { is_expected.to contain_exec('radosgw.gateway-nssdb-ca').with(
-         'command' => "/bin/true  # comment to satisfy puppet syntax requirements
+      it { should contain_exec('radosgw.gateway-nssdb-ca').with(
+         :command => "/bin/true  # comment to satisfy puppet syntax requirements
 set -ex
 wget --no-check-certificate http://keystone.default:5000/v2.0/certificates/ca -O - |
   openssl x509 -pubkey | certutil -A -d /var/lib/ceph/nss -n ca -t \"TCu,Cu,Tuw\"
 ",
-         'user'    => 'www-data',
+         :user    => 'www-data',
       ) }
-      it { is_expected.to contain_exec('radosgw.gateway-nssdb-signing').with(
-         'command' => "/bin/true  # comment to satisfy puppet syntax requirements
+      it { should contain_exec('radosgw.gateway-nssdb-signing').with(
+         :command => "/bin/true  # comment to satisfy puppet syntax requirements
 set -ex
 wget --no-check-certificate http://keystone.default:5000/v2.0/certificates/signing -O - |
   openssl x509 -pubkey | certutil -A -d /var/lib/ceph/nss -n signing_cert -t \"P,P,P\"
 ",
-         'user'    => 'www-data',
-      ) }
-
+         :user    => 'www-data',
+      )}
     end
 
-    describe "create with custom params" do
-
+    context 'create with custom params' do
       let :pre_condition do
-        "
-          include ceph::params
-          class { 'ceph': fsid => 'd5252e7d-75bc-4083-85ed-fe51fa83f62b' }
-          class { 'ceph::repo': fastcgi => true, }
-          ceph::rgw { 'radosgw.custom': }
-          ceph::rgw::apache_fastcgi { 'radosgw.custom': }
-        "
+        "include ceph::params
+         class { 'ceph': fsid => 'd5252e7d-75bc-4083-85ed-fe51fa83f62b' }
+         class { 'ceph::repo': fastcgi => true, }
+         ceph::rgw { 'radosgw.custom': }
+         ceph::rgw::apache_fastcgi { 'radosgw.custom': }"
       end
 
       let :title do
@@ -118,45 +103,42 @@ wget --no-check-certificate http://keystone.default:5000/v2.0/certificates/signi
         }
       end
 
-      it { is_expected.to contain_ceph_config('client.radosgw.custom/rgw_keystone_url').with_value('http://keystone.custom:5000') }
-      it { is_expected.to contain_ceph_config('client.radosgw.custom/rgw_keystone_admin_token').with_value('mytoken') }
-      it { is_expected.to contain_ceph_config('client.radosgw.custom/rgw_keystone_accepted_roles').with_value('_role1_,role2') }
-      it { is_expected.to contain_ceph_config('client.radosgw.custom/rgw_keystone_token_cache_size').with_value(100) }
-      it { is_expected.to contain_ceph_config('client.radosgw.custom/rgw_s3_auth_use_keystone').with_value(false) }
-      it { is_expected.to contain_ceph_config('client.radosgw.custom/rgw_keystone_revocation_interval').with_value(0) }
-      it { is_expected.to contain_ceph_config('client.radosgw.custom/nss_db_path').with_ensure('absent') }
-      it { is_expected.to contain_ceph_config('client.radosgw.custom/rgw_keystone_implicit_tenants').with_value(false) }
+      it { should contain_ceph_config('client.radosgw.custom/rgw_keystone_url').with_value('http://keystone.custom:5000') }
+      it { should contain_ceph_config('client.radosgw.custom/rgw_keystone_admin_token').with_value('mytoken') }
+      it { should contain_ceph_config('client.radosgw.custom/rgw_keystone_accepted_roles').with_value('_role1_,role2') }
+      it { should contain_ceph_config('client.radosgw.custom/rgw_keystone_token_cache_size').with_value(100) }
+      it { should contain_ceph_config('client.radosgw.custom/rgw_s3_auth_use_keystone').with_value(false) }
+      it { should contain_ceph_config('client.radosgw.custom/rgw_keystone_revocation_interval').with_value(0) }
+      it { should contain_ceph_config('client.radosgw.custom/nss_db_path').with_ensure('absent') }
+      it { should contain_ceph_config('client.radosgw.custom/rgw_keystone_implicit_tenants').with_value(false) }
 
-      it { is_expected.to_not contain_exec('radosgw.custom-nssdb-ca').with(
-         'command' => "/bin/true  # comment to satisfy puppet syntax requirements
+      it { should_not contain_exec('radosgw.custom-nssdb-ca').with(
+         :command => "/bin/true  # comment to satisfy puppet syntax requirements
 set -ex
 wget --no-check-certificate http://keystone.custom:5000/v2.0/certificates/ca -O - |
   openssl x509 -pubkey | certutil -A -d /some/path/to/nss -n ca -t \"TCu,Cu,Tuw\"
 ",
-         'user'    => 'www-data',
+         :user    => 'www-data',
       ) }
-      it { is_expected.to_not contain_exec('radosgw.custom-nssdb-signing').with(
-         'command' => "/bin/true  # comment to satisfy puppet syntax requirements
+      it { should_not contain_exec('radosgw.custom-nssdb-signing').with(
+         :command => "/bin/true  # comment to satisfy puppet syntax requirements
 set -ex
 wget --no-check-certificate http://keystone.custom:5000/v2.0/certificates/signing -O - |
   openssl x509 -pubkey | certutil -A -d /some/path/to/nss -n signing_cert -t \"P,P,P\"
 ",
-         'user'    => 'www-data',
-      ) }
+         :user    => 'www-data',
+      )}
 
     end
 
-    describe "create with keystone v3 and no pki params" do
-
+    context 'create with keystone v3 and no pki params' do
       let :pre_condition do
-        "
-          include ceph::params
-          class { 'ceph': fsid => 'd5252e7d-75bc-4083-85ed-fe51fa83f62b' }
-          class { 'ceph::repo': fastcgi => true, }
-          include ceph
-          ceph::rgw { 'radosgw.gateway': }
-          ceph::rgw::apache_fastcgi { 'radosgw.gateway': }
-        "
+        "include ceph::params
+         class { 'ceph': fsid => 'd5252e7d-75bc-4083-85ed-fe51fa83f62b' }
+         class { 'ceph::repo': fastcgi => true, }
+         include ceph
+         ceph::rgw { 'radosgw.gateway': }
+         ceph::rgw::apache_fastcgi { 'radosgw.gateway': }"
       end
 
       let :title do
@@ -174,42 +156,31 @@ wget --no-check-certificate http://keystone.custom:5000/v2.0/certificates/signin
         }
       end
 
-      it { is_expected.to contain_ceph_config('client.radosgw.gateway/rgw_keystone_url').with_value('http://keystone.default:5000') }
-      it { is_expected.to contain_ceph_config('client.radosgw.gateway/rgw_keystone_admin_domain').with_value('default') }
-      it { is_expected.to contain_ceph_config('client.radosgw.gateway/rgw_keystone_admin_project').with_value('openstack') }
-      it { is_expected.to contain_ceph_config('client.radosgw.gateway/rgw_keystone_admin_user').with_value('rgwuser') }
-      it { is_expected.to contain_ceph_config('client.radosgw.gateway/rgw_keystone_admin_password').with_value('123456') }
-      it { is_expected.to contain_ceph_config('client.radosgw.gateway/rgw_keystone_admin_token').with_ensure('absent') }
-
+      it { should contain_ceph_config('client.radosgw.gateway/rgw_keystone_url').with_value('http://keystone.default:5000') }
+      it { should contain_ceph_config('client.radosgw.gateway/rgw_keystone_admin_domain').with_value('default') }
+      it { should contain_ceph_config('client.radosgw.gateway/rgw_keystone_admin_project').with_value('openstack') }
+      it { should contain_ceph_config('client.radosgw.gateway/rgw_keystone_admin_user').with_value('rgwuser') }
+      it { should contain_ceph_config('client.radosgw.gateway/rgw_keystone_admin_password').with_value('123456') }
+      it { should contain_ceph_config('client.radosgw.gateway/rgw_keystone_admin_token').with_ensure('absent') }
     end
-
   end
 
-  describe 'RedHat Family' do
-
-    let :facts do
-      {
-        :concat_basedir            => '/var/lib/puppet/concat',
-        :fqdn                      => 'myhost.domain',
-        :hostname                  => 'myhost',
-        :lsbdistcodename           => 'Maipo',
-        :osfamily                  => 'RedHat',
-        :operatingsystem           => 'RedHat',
-        :operatingsystemrelease    => '7.2',
-        :operatingsystemmajrelease => '7',
-      }
+  shared_examples 'ceph::rgw::keystone on RedHat' do
+    before do
+      facts.merge!( :lsbdistcodename           => 'Maipo',
+                    :osfamily                  => 'RedHat',
+                    :operatingsystem           => 'RedHat',
+                    :operatingsystemrelease    => '7.2',
+                    :operatingsystemmajrelease => '7' )
     end
 
-    describe "create with default params" do
-
+    context 'create with default params' do
       let :pre_condition do
-        "
-          include ceph::params
-          class { 'ceph': fsid => 'd5252e7d-75bc-4083-85ed-fe51fa83f62b' }
-          include ceph
-          ceph::rgw { 'radosgw.gateway': }
-          ceph::rgw::apache_proxy_fcgi { 'radosgw.gateway': }
-        "
+        "include ceph::params
+         class { 'ceph': fsid => 'd5252e7d-75bc-4083-85ed-fe51fa83f62b' }
+         include ceph
+         ceph::rgw { 'radosgw.gateway': }
+         ceph::rgw::apache_proxy_fcgi { 'radosgw.gateway': }"
       end
 
       let :title do
@@ -223,43 +194,40 @@ wget --no-check-certificate http://keystone.custom:5000/v2.0/certificates/signin
         }
       end
 
-      it { is_expected.to contain_ceph_config('client.radosgw.gateway/rgw_keystone_url').with_value('http://keystone.default:5000') }
-      it { is_expected.to contain_ceph_config('client.radosgw.gateway/rgw_keystone_admin_token').with_value('defaulttoken') }
-      it { is_expected.to contain_ceph_config('client.radosgw.gateway/rgw_keystone_accepted_roles').with_value('Member') }
-      it { is_expected.to contain_ceph_config('client.radosgw.gateway/rgw_keystone_token_cache_size').with_value(500) }
-      it { is_expected.to contain_ceph_config('client.radosgw.gateway/rgw_s3_auth_use_keystone').with_value(true) }
-      it { is_expected.to contain_ceph_config('client.radosgw.gateway/rgw_keystone_revocation_interval').with_value(600) }
-      it { is_expected.to contain_ceph_config('client.radosgw.gateway/nss_db_path').with_value('/var/lib/ceph/nss') }
-      it { is_expected.to contain_ceph_config('client.radosgw.gateway/rgw_keystone_implicit_tenants').with_value(true) }
+      it { should contain_ceph_config('client.radosgw.gateway/rgw_keystone_url').with_value('http://keystone.default:5000') }
+      it { should contain_ceph_config('client.radosgw.gateway/rgw_keystone_admin_token').with_value('defaulttoken') }
+      it { should contain_ceph_config('client.radosgw.gateway/rgw_keystone_accepted_roles').with_value('Member') }
+      it { should contain_ceph_config('client.radosgw.gateway/rgw_keystone_token_cache_size').with_value(500) }
+      it { should contain_ceph_config('client.radosgw.gateway/rgw_s3_auth_use_keystone').with_value(true) }
+      it { should contain_ceph_config('client.radosgw.gateway/rgw_keystone_revocation_interval').with_value(600) }
+      it { should contain_ceph_config('client.radosgw.gateway/nss_db_path').with_value('/var/lib/ceph/nss') }
+      it { should contain_ceph_config('client.radosgw.gateway/rgw_keystone_implicit_tenants').with_value(true) }
 
-      it { is_expected.to contain_exec('radosgw.gateway-nssdb-ca').with(
-         'command' => "/bin/true  # comment to satisfy puppet syntax requirements
+      it { should contain_exec('radosgw.gateway-nssdb-ca').with(
+         :command => "/bin/true  # comment to satisfy puppet syntax requirements
 set -ex
 wget --no-check-certificate http://keystone.default:5000/v2.0/certificates/ca -O - |
   openssl x509 -pubkey | certutil -A -d /var/lib/ceph/nss -n ca -t \"TCu,Cu,Tuw\"
 ",
-         'user'    => 'apache',
+         :user    => 'apache',
       ) }
-      it { is_expected.to contain_exec('radosgw.gateway-nssdb-signing').with(
-         'command' => "/bin/true  # comment to satisfy puppet syntax requirements
+      it { should contain_exec('radosgw.gateway-nssdb-signing').with(
+         :command => "/bin/true  # comment to satisfy puppet syntax requirements
 set -ex
 wget --no-check-certificate http://keystone.default:5000/v2.0/certificates/signing -O - |
   openssl x509 -pubkey | certutil -A -d /var/lib/ceph/nss -n signing_cert -t \"P,P,P\"
 ",
-         'user'    => 'apache',
+         :user    => 'apache',
       ) }
 
     end
 
-    describe "create with custom params" do
-
+    context 'create with custom params' do
       let :pre_condition do
-        "
-          include ceph::params
-          class { 'ceph': fsid => 'd5252e7d-75bc-4083-85ed-fe51fa83f62b' }
-          ceph::rgw { 'radosgw.custom': }
-          ceph::rgw::apache_proxy_fcgi { 'radosgw.gateway': }
-        "
+        "include ceph::params
+         class { 'ceph': fsid => 'd5252e7d-75bc-4083-85ed-fe51fa83f62b' }
+         ceph::rgw { 'radosgw.custom': }
+         ceph::rgw::apache_proxy_fcgi { 'radosgw.gateway': }"
       end
 
       let :title do
@@ -280,44 +248,41 @@ wget --no-check-certificate http://keystone.default:5000/v2.0/certificates/signi
         }
       end
 
-      it { is_expected.to contain_ceph_config('client.radosgw.custom/rgw_keystone_url').with_value('http://keystone.custom:5000') }
-      it { is_expected.to contain_ceph_config('client.radosgw.custom/rgw_keystone_admin_token').with_value('mytoken') }
-      it { is_expected.to contain_ceph_config('client.radosgw.custom/rgw_keystone_accepted_roles').with_value('_role1_,role2') }
-      it { is_expected.to contain_ceph_config('client.radosgw.custom/rgw_keystone_token_cache_size').with_value(100) }
-      it { is_expected.to contain_ceph_config('client.radosgw.custom/rgw_s3_auth_use_keystone').with_value(false) }
-      it { is_expected.to contain_ceph_config('client.radosgw.custom/rgw_keystone_revocation_interval').with_value(0) }
-      it { is_expected.to contain_ceph_config('client.radosgw.custom/nss_db_path').with_ensure('absent') }
-      it { is_expected.to contain_ceph_config('client.radosgw.custom/rgw_keystone_implicit_tenants').with_value(false) }
+      it { should contain_ceph_config('client.radosgw.custom/rgw_keystone_url').with_value('http://keystone.custom:5000') }
+      it { should contain_ceph_config('client.radosgw.custom/rgw_keystone_admin_token').with_value('mytoken') }
+      it { should contain_ceph_config('client.radosgw.custom/rgw_keystone_accepted_roles').with_value('_role1_,role2') }
+      it { should contain_ceph_config('client.radosgw.custom/rgw_keystone_token_cache_size').with_value(100) }
+      it { should contain_ceph_config('client.radosgw.custom/rgw_s3_auth_use_keystone').with_value(false) }
+      it { should contain_ceph_config('client.radosgw.custom/rgw_keystone_revocation_interval').with_value(0) }
+      it { should contain_ceph_config('client.radosgw.custom/nss_db_path').with_ensure('absent') }
+      it { should contain_ceph_config('client.radosgw.custom/rgw_keystone_implicit_tenants').with_value(false) }
 
-      it { is_expected.to_not contain_exec('radosgw.custom-nssdb-ca').with(
-         'command' => "/bin/true  # comment to satisfy puppet syntax requirements
+      it { should_not contain_exec('radosgw.custom-nssdb-ca').with(
+         :command => "/bin/true  # comment to satisfy puppet syntax requirements
 set -ex
 wget --no-check-certificate http://keystone.custom:5000/v2.0/certificates/ca -O - |
   openssl x509 -pubkey | certutil -A -d /some/path/to/nss -n ca -t \"TCu,Cu,Tuw\"
 ",
-         'user'    => 'apache',
-      ) }
-      it { is_expected.to_not contain_exec('radosgw.custom-nssdb-signing').with(
-         'command' => "/bin/true  # comment to satisfy puppet syntax requirements
+         :user    => 'apache',
+      )}
+
+      it { should_not contain_exec('radosgw.custom-nssdb-signing').with(
+         :command => "/bin/true  # comment to satisfy puppet syntax requirements
 set -ex
 wget --no-check-certificate http://keystone.custom:5000/v2.0/certificates/signing -O - |
   openssl x509 -pubkey | certutil -A -d /some/path/to/nss -n signing_cert -t \"P,P,P\"
 ",
-         'user'    => 'apache',
-      ) }
-
+         :user    => 'apache',
+      )}
     end
 
-    describe "create with keystone v3 and no pki params" do
-
+    context 'create with keystone v3 and no pki params' do
       let :pre_condition do
-        "
-          include ceph::params
-          class { 'ceph': fsid => 'd5252e7d-75bc-4083-85ed-fe51fa83f62b' }
-          include ceph
-          ceph::rgw { 'radosgw.gateway': }
-          ceph::rgw::apache_proxy_fcgi { 'radosgw.gateway': }
-        "
+        "include ceph::params
+         class { 'ceph': fsid => 'd5252e7d-75bc-4083-85ed-fe51fa83f62b' }
+         include ceph
+         ceph::rgw { 'radosgw.gateway': }
+         ceph::rgw::apache_proxy_fcgi { 'radosgw.gateway': }"
       end
 
       let :title do
@@ -335,15 +300,26 @@ wget --no-check-certificate http://keystone.custom:5000/v2.0/certificates/signin
         }
       end
 
-      it { is_expected.to contain_ceph_config('client.radosgw.gateway/rgw_keystone_url').with_value('http://keystone.default:5000') }
-      it { is_expected.to contain_ceph_config('client.radosgw.gateway/rgw_keystone_admin_domain').with_value('default') }
-      it { is_expected.to contain_ceph_config('client.radosgw.gateway/rgw_keystone_admin_project').with_value('openstack') }
-      it { is_expected.to contain_ceph_config('client.radosgw.gateway/rgw_keystone_admin_user').with_value('rgwuser') }
-      it { is_expected.to contain_ceph_config('client.radosgw.gateway/rgw_keystone_admin_password').with_value('123456') }
-      it { is_expected.to contain_ceph_config('client.radosgw.gateway/rgw_keystone_admin_token').with_ensure('absent') }
-
+      it { should contain_ceph_config('client.radosgw.gateway/rgw_keystone_url').with_value('http://keystone.default:5000') }
+      it { should contain_ceph_config('client.radosgw.gateway/rgw_keystone_admin_domain').with_value('default') }
+      it { should contain_ceph_config('client.radosgw.gateway/rgw_keystone_admin_project').with_value('openstack') }
+      it { should contain_ceph_config('client.radosgw.gateway/rgw_keystone_admin_user').with_value('rgwuser') }
+      it { should contain_ceph_config('client.radosgw.gateway/rgw_keystone_admin_password').with_value('123456') }
+      it { should contain_ceph_config('client.radosgw.gateway/rgw_keystone_admin_token').with_ensure('absent') }
     end
+  end
 
+  on_supported_os({
+    :supported_os => OSDefaults.get_supported_os
+  }).each do |os,facts|
+    context "on #{os}" do
+      let (:facts) do
+        facts.merge!(OSDefaults.get_facts( :concat_basedir => '/var/lib/puppet/concat',
+                                           :fqdn           => 'myhost.domain',
+                                           :hostname       => 'myhost' ))
+      end
 
+      it_behaves_like "ceph::rgw::keystone on #{facts[:osfamily]}"
+    end
   end
 end
