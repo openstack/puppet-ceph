@@ -32,10 +32,9 @@ describe 'ceph::rgw::keystone' do
       let :pre_condition do
         "include ceph::params
          class { 'ceph': fsid => 'd5252e7d-75bc-4083-85ed-fe51fa83f62b' }
-         class { 'ceph::repo': fastcgi => true, }
+         class { 'ceph::repo': }
          include ceph
-         ceph::rgw { 'radosgw.gateway': }
-         ceph::rgw::apache_fastcgi { 'radosgw.gateway': }"
+         ceph::rgw { 'radosgw.gateway': }"
       end
 
       let :title do
@@ -80,9 +79,8 @@ wget --no-check-certificate http://keystone.default:5000/v2.0/certificates/signi
       let :pre_condition do
         "include ceph::params
          class { 'ceph': fsid => 'd5252e7d-75bc-4083-85ed-fe51fa83f62b' }
-         class { 'ceph::repo': fastcgi => true, }
-         ceph::rgw { 'radosgw.custom': }
-         ceph::rgw::apache_fastcgi { 'radosgw.custom': }"
+         class { 'ceph::repo': }
+         ceph::rgw { 'radosgw.custom': }"
       end
 
       let :title do
@@ -135,10 +133,9 @@ wget --no-check-certificate http://keystone.custom:5000/v2.0/certificates/signin
       let :pre_condition do
         "include ceph::params
          class { 'ceph': fsid => 'd5252e7d-75bc-4083-85ed-fe51fa83f62b' }
-         class { 'ceph::repo': fastcgi => true, }
+         class { 'ceph::repo': }
          include ceph
-         ceph::rgw { 'radosgw.gateway': }
-         ceph::rgw::apache_fastcgi { 'radosgw.gateway': }"
+         ceph::rgw { 'radosgw.gateway': }"
       end
 
       let :title do

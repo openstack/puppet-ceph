@@ -1,0 +1,4 @@
+---
+upgrade:
+  - |
+    The deprecated class ceph::rgw::apache_fastcgi is now removed.
