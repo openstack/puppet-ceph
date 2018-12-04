@@ -170,43 +170,45 @@ not on ${::operatingsystem}, which can lead to packaging issues.")
         }
 
 
-        yumrepo { 'ext-ceph':
-          # puppet versions prior to 3.5 do not support ensure, use enabled instead
-          enabled    => $enabled,
-          descr      => "External Ceph ${release}",
-          name       => "ext-ceph-${release}",
-          baseurl    => "http://download.ceph.com/rpm-${release}/el${el}/\$basearch",
-          gpgcheck   => '1',
-          gpgkey     => 'https://download.ceph.com/keys/release.asc',
-          mirrorlist => absent,
-          priority   => '10', # prefer ceph repos over EPEL
-          tag        => 'ceph',
-        }
-
-        yumrepo { 'ext-ceph-noarch':
-          # puppet versions prior to 3.5 do not support ensure, use enabled instead
-          enabled    => $enabled,
-          descr      => 'External Ceph noarch',
-          name       => "ext-ceph-${release}-noarch",
-          baseurl    => "http://download.ceph.com/rpm-${release}/el${el}/noarch",
-          gpgcheck   => '1',
-          gpgkey     => 'https://download.ceph.com/keys/release.asc',
-          mirrorlist => absent,
-          priority   => '10', # prefer ceph repos over EPEL
-          tag        => 'ceph',
-        }
-
-        if $fastcgi {
-          yumrepo { 'ext-ceph-fastcgi':
+        if ($::operatingsystem != 'Fedora') {
+          yumrepo { 'ext-ceph':
+            # puppet versions prior to 3.5 do not support ensure, use enabled instead
             enabled    => $enabled,
-            descr      => 'FastCGI basearch packages for Ceph',
-            name       => 'ext-ceph-fastcgi',
-            baseurl    => "http://gitbuilder.ceph.com/mod_fastcgi-rpm-rhel${el}-x86_64-basic/ref/master",
+            descr      => "External Ceph ${release}",
+            name       => "ext-ceph-${release}",
+            baseurl    => "http://download.ceph.com/rpm-${release}/el${el}/\$basearch",
             gpgcheck   => '1',
-            gpgkey     => 'https://download.ceph.com/keys/autobuild.asc',
+            gpgkey     => 'https://download.ceph.com/keys/release.asc',
             mirrorlist => absent,
-            priority   => '20', # prefer ceph repos over EPEL
+            priority   => '10', # prefer ceph repos over EPEL
             tag        => 'ceph',
+          }
+
+          yumrepo { 'ext-ceph-noarch':
+            # puppet versions prior to 3.5 do not support ensure, use enabled instead
+            enabled    => $enabled,
+            descr      => 'External Ceph noarch',
+            name       => "ext-ceph-${release}-noarch",
+            baseurl    => "http://download.ceph.com/rpm-${release}/el${el}/noarch",
+            gpgcheck   => '1',
+            gpgkey     => 'https://download.ceph.com/keys/release.asc',
+            mirrorlist => absent,
+            priority   => '10', # prefer ceph repos over EPEL
+            tag        => 'ceph',
+          }
+
+          if $fastcgi {
+            yumrepo { 'ext-ceph-fastcgi':
+              enabled    => $enabled,
+              descr      => 'FastCGI basearch packages for Ceph',
+              name       => 'ext-ceph-fastcgi',
+              baseurl    => "http://gitbuilder.ceph.com/mod_fastcgi-rpm-rhel${el}-x86_64-basic/ref/master",
+              gpgcheck   => '1',
+              gpgkey     => 'https://download.ceph.com/keys/autobuild.asc',
+              mirrorlist => absent,
+              priority   => '20', # prefer ceph repos over EPEL
+              tag        => 'ceph',
+            }
           }
         }
 
