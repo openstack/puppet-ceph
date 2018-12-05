@@ -20,6 +20,7 @@ ceph
 8. [Beaker Integration Tests - Apply the module and test results](#beaker-integration-tests)
 9. [Contributors - Those with commits](#contributors)
 10. [Release Notes - Notes on the most recent updates to the module](#release-notes)
+11. [Repository - Repository for the module](#repository)
 
 Overview
 --------
