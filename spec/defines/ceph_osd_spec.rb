@@ -53,7 +53,7 @@ if ! test -b $disk ; then
         chown -h ceph:ceph $disk
     fi
 fi
-ceph-disk prepare --cluster ceph  $(readlink -f /srv) $(readlink -f '')
+ceph-disk prepare  --cluster ceph  $(readlink -f /srv) $(readlink -f '')
 udevadm settle
 ",
         'unless'    => "/bin/true # comment to satisfy puppet syntax requirements
@@ -92,6 +92,96 @@ ls -ld /var/lib/ceph/osd/ceph-* | grep \" $(readlink -f /srv)\$\"
       ) }
     end
 
+    describe "with bluestore params" do
+      let :title do
+        '/srv/data'
+      end
+
+      let :params do
+        {
+          :cluster       => 'testcluster',
+          :journal       => '/srv/journal',
+          :fsid          => 'f39ace04-f967-4c3d-9fd2-32af2d2d2cd5',
+          :store_type    => 'bluestore',
+          :bluestore_wal => '/srv/wal',
+          :bluestore_db  => '/srv/db',
+        }
+      end
+
+      it { should contain_exec('ceph-osd-check-udev-/srv/data').with(
+        'command'   => "/bin/true # comment to satisfy puppet syntax requirements
+# Before Infernalis the udev rules race causing the activation to fail so we
+# disable them. More at: http://www.spinics.net/lists/ceph-devel/msg28436.html
+mv -f /usr/lib/udev/rules.d/95-ceph-osd.rules /usr/lib/udev/rules.d/95-ceph-osd.rules.disabled && udevadm control --reload || true
+",
+       'onlyif'    => "/bin/true # comment to satisfy puppet syntax requirements
+set -ex
+DISABLE_UDEV=$(ceph --version | awk 'match(\$3, /[0-9]+\\.[0-9]+/) {if (substr(\$3, RSTART, RLENGTH) <= 0.94) {print 1} else { print 0 } }')
+test -f /usr/lib/udev/rules.d/95-ceph-osd.rules && test \$DISABLE_UDEV -eq 1
+",
+       'logoutput' => true,
+      ) }
+      it { should contain_exec('ceph-osd-check-fsid-mismatch-/srv/data').with(
+        'command'   => "/bin/true # comment to satisfy puppet syntax requirements
+set -ex
+test f39ace04-f967-4c3d-9fd2-32af2d2d2cd5 = $(ceph-disk list $(readlink -f /srv/data) | egrep -o '[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}')
+",
+        'unless'    => "/bin/true # comment to satisfy puppet syntax requirements
+set -ex
+test -z $(ceph-disk list $(readlink -f /srv/data) | egrep -o '[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}')
+",
+        'logoutput' => true
+      ) }
+      it { should contain_exec('ceph-osd-prepare-/srv/data').with(
+        'command'   => "/bin/true # comment to satisfy puppet syntax requirements
+set -ex
+disk=$(readlink -f /srv/data)
+if ! test -b $disk ; then
+    echo $disk | egrep -e '^/dev' -q -v
+    mkdir -p $disk
+    if getent passwd ceph >/dev/null 2>&1; then
+        chown -h ceph:ceph $disk
+    fi
+fi
+ceph-disk prepare --bluestore --cluster testcluster --cluster-uuid f39ace04-f967-4c3d-9fd2-32af2d2d2cd5 $(readlink -f /srv/data) --block-wal $(readlink -f /srv/wal) --block-db $(readlink -f /srv/db)
+udevadm settle
+",
+        'unless'    => "/bin/true # comment to satisfy puppet syntax requirements
+set -ex
+disk=$(readlink -f /srv/data)
+ceph-disk list | egrep \" *(${disk}1?|${disk}p1?) .*ceph data, (prepared|active)\" ||
+{ test -f $disk/fsid && test -f $disk/ceph_fsid && test -f $disk/magic ;}
+",
+        'logoutput' => true
+      ) }
+      it { should contain_exec('ceph-osd-activate-/srv/data').with(
+        'command'   => "/bin/true # comment to satisfy puppet syntax requirements
+set -ex
+disk=$(readlink -f /srv/data)
+if ! test -b $disk ; then
+    echo $disk | egrep -e '^/dev' -q -v
+    mkdir -p $disk
+    if getent passwd ceph >/dev/null 2>&1; then
+        chown -h ceph:ceph $disk
+    fi
+fi
+# activate happens via udev when using the entire device
+if ! test -b \$disk && ! ( test -b \${disk}1 || test -b \${disk}p1 ); then
+  ceph-disk activate $disk || true
+fi
+if test -f /usr/lib/udev/rules.d/95-ceph-osd.rules.disabled && ( test -b ${disk}1 || test -b ${disk}p1 ); then
+  ceph-disk activate ${disk}1 || true
+fi
+",
+        'unless'    => "/bin/true # comment to satisfy puppet syntax requirements
+set -ex
+ceph-disk list | egrep \" *(\${disk}1?|\${disk}p1?) .*ceph data, active\" ||
+ls -ld /var/lib/ceph/osd/testcluster-* | grep \" $(readlink -f /srv/data)\$\"
+",
+        'logoutput' => true
+      ) }
+    end
+
     describe "with custom params" do
 
       let :title do
@@ -100,9 +190,10 @@ ls -ld /var/lib/ceph/osd/ceph-* | grep \" $(readlink -f /srv)\$\"
 
       let :params do
         {
-          :cluster => 'testcluster',
-          :journal => '/srv/journal',
-          :fsid    => 'f39ace04-f967-4c3d-9fd2-32af2d2d2cd5',
+          :cluster    => 'testcluster',
+          :journal    => '/srv/journal',
+          :fsid       => 'f39ace04-f967-4c3d-9fd2-32af2d2d2cd5',
+          :store_type => 'filestore'
         }
       end
 
@@ -141,7 +232,7 @@ if ! test -b $disk ; then
         chown -h ceph:ceph $disk
     fi
 fi
-ceph-disk prepare --cluster testcluster --cluster-uuid f39ace04-f967-4c3d-9fd2-32af2d2d2cd5 $(readlink -f /srv/data) $(readlink -f /srv/journal)
+ceph-disk prepare --filestore --cluster testcluster --cluster-uuid f39ace04-f967-4c3d-9fd2-32af2d2d2cd5 $(readlink -f /srv/data) $(readlink -f /srv/journal)
 udevadm settle
 ",
         'unless'    => "/bin/true # comment to satisfy puppet syntax requirements
@@ -210,7 +301,7 @@ if ! test -b $disk ; then
         chown -h ceph:ceph $disk
     fi
 fi
-ceph-disk prepare --cluster ceph  $(readlink -f /dev/nvme0n1) $(readlink -f '')
+ceph-disk prepare  --cluster ceph  $(readlink -f /dev/nvme0n1) $(readlink -f '')
 udevadm settle
 ",
         'unless'    => "/bin/true # comment to satisfy puppet syntax requirements
@@ -279,7 +370,7 @@ if ! test -b $disk ; then
         chown -h ceph:ceph $disk
     fi
 fi
-ceph-disk prepare --cluster ceph  $(readlink -f /dev/cciss/c0d0) $(readlink -f '')
+ceph-disk prepare  --cluster ceph  $(readlink -f /dev/cciss/c0d0) $(readlink -f '')
 udevadm settle
 ",
         'unless'    => "/bin/true # comment to satisfy puppet syntax requirements

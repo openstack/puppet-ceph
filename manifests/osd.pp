@@ -31,9 +31,21 @@
 #   If set to absent, it will stop the OSD service and remove
 #   the associated data directory.
 #
-# [*journal*] The OSD journal path.
+# [*journal*] The OSD filestore journal path.
 #   Optional. Defaults to co-locating the journal with the data
 #   defined by *title*.
+#
+# [*bluestore_wal*] The OSD bluestore WAL path.
+#   Optional. Defaults to co-locating the WAL with the data
+#   defined by *title*.
+#
+# [*bluestore_db*] The OSD bluestore WAL path.
+#   Optional. Defaults to co-locating the DB with the data
+#   defined by *title*.
+#
+# [*store_type*] The OSD backing store type.
+#   Optional. Defaults undef and will follow the ceph version default.
+#   should be either filestore or bluestore.
 #
 # [*cluster*] The ceph cluster
 #   Optional. Same default as ceph.
@@ -52,6 +64,9 @@ define ceph::osd (
   $ensure = present,
   $journal = "''",
   $cluster = undef,
+  $bluestore_wal = undef,
+  $bluestore_db = undef,
+  $store_type = undef,
   $exec_timeout = $::ceph::params::exec_timeout,
   $selinux_file_context = 'ceph_var_lib_t',
   $fsid = $::ceph::profile::params::fsid,
@@ -67,6 +82,23 @@ define ceph::osd (
       $cluster_name = 'ceph'
     }
     $cluster_option = "--cluster ${cluster_name}"
+
+    if $store_type {
+      $osd_type = "--${store_type}"
+    }
+
+    if ($bluestore_wal) or ($bluestore_db) {
+      if $bluestore_wal {
+        $wal_opts = "--block-wal $(readlink -f ${bluestore_wal})"
+      }
+      if $bluestore_db {
+        $block_opts = "--block-db $(readlink -f ${bluestore_db})"
+      }
+      $journal_opts = "${wal_opts} ${block_opts}"
+
+    } else {
+      $journal_opts = "$(readlink -f ${journal})"
+    }
 
     if $ensure == present {
 
@@ -130,7 +162,7 @@ if ! test -b \$disk ; then
         chown -h ceph:ceph \$disk
     fi
 fi
-ceph-disk prepare ${cluster_option} ${fsid_option} $(readlink -f ${data}) $(readlink -f ${journal})
+ceph-disk prepare ${osd_type} ${cluster_option} ${fsid_option} $(readlink -f ${data}) ${journal_opts}
 udevadm settle
 ",
         unless    => "/bin/true # comment to satisfy puppet syntax requirements
