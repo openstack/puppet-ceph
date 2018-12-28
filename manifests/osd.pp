@@ -89,10 +89,10 @@ define ceph::osd (
 
     if ($bluestore_wal) or ($bluestore_db) {
       if $bluestore_wal {
-        $wal_opts = "--block-wal $(readlink -f ${bluestore_wal})"
+        $wal_opts = "--block.wal $(readlink -f ${bluestore_wal})"
       }
       if $bluestore_db {
-        $block_opts = "--block-db $(readlink -f ${bluestore_db})"
+        $block_opts = "--block.db $(readlink -f ${bluestore_db})"
       }
       $journal_opts = "${wal_opts} ${block_opts}"
 
