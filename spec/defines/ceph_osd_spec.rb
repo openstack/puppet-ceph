@@ -140,7 +140,7 @@ if ! test -b $disk ; then
         chown -h ceph:ceph $disk
     fi
 fi
-ceph-disk prepare --bluestore --cluster testcluster --cluster-uuid f39ace04-f967-4c3d-9fd2-32af2d2d2cd5 $(readlink -f /srv/data) --block-wal $(readlink -f /srv/wal) --block-db $(readlink -f /srv/db)
+ceph-disk prepare --bluestore --cluster testcluster --cluster-uuid f39ace04-f967-4c3d-9fd2-32af2d2d2cd5 $(readlink -f /srv/data) --block.wal $(readlink -f /srv/wal) --block.db $(readlink -f /srv/db)
 udevadm settle
 ",
         'unless'    => "/bin/true # comment to satisfy puppet syntax requirements
