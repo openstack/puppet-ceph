@@ -60,6 +60,12 @@
 # [*fsid*] The ceph cluster FSID
 #   Optional. Defaults to $::ceph::profile::params::fsid
 #
+# [*dmcrypt*] Encrypt [data-path] and/or journal devices with dm-crypt.
+#   Optional. Defaults to false.
+#
+# [*dmcrypt_key_dir*] Directory where dm-crypt keys are stored.
+#   Optional. Defaults to '/etc/ceph/dmcrypt-keys'.
+#
 define ceph::osd (
   $ensure = present,
   $journal = "''",
@@ -70,6 +76,8 @@ define ceph::osd (
   $exec_timeout = $::ceph::params::exec_timeout,
   $selinux_file_context = 'ceph_var_lib_t',
   $fsid = $::ceph::profile::params::fsid,
+  $dmcrypt = false,
+  $dmcrypt_key_dir = '/etc/ceph/dmcrypt-keys',
   ) {
 
     include ::ceph::params
@@ -98,6 +106,12 @@ define ceph::osd (
 
     } else {
       $journal_opts = "$(readlink -f ${journal})"
+    }
+
+    if $dmcrypt {
+      $dmcrypt_options = " --dmcrypt --dmcrypt-key-dir '${dmcrypt_key_dir}'"
+    } else {
+      $dmcrypt_options = ''
     }
 
     if $ensure == present {
@@ -162,13 +176,14 @@ if ! test -b \$disk ; then
         chown -h ceph:ceph \$disk
     fi
 fi
-ceph-disk prepare ${osd_type} ${cluster_option} ${fsid_option} $(readlink -f ${data}) ${journal_opts}
+ceph-disk prepare ${osd_type} ${cluster_option}${dmcrypt_options} ${fsid_option} $(readlink -f ${data}) ${journal_opts}
 udevadm settle
 ",
         unless    => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 disk=$(readlink -f ${data})
-ceph-disk list | egrep \" *(\${disk}1?|\${disk}p1?) .*ceph data, (prepared|active)\" ||
+ceph-disk list | egrep \" *((\${disk}1?|\${disk}p1?) .*ceph data, (prepared|active)|\\
+(\${disk}5?|\${disk}p5?) .*ceph lockbox, (prepared|active), for (\${disk}1?|\${disk}p1?))\" ||
 { test -f \$disk/fsid && test -f \$disk/ceph_fsid && test -f \$disk/magic ;}
 ",
         logoutput => true,
@@ -211,7 +226,8 @@ fi
 ",
         unless    => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-ceph-disk list | egrep \" *(\${disk}1?|\${disk}p1?) .*ceph data, active\" ||
+ceph-disk list | egrep \" *((\${disk}1?|\${disk}p1?) .*ceph data, active|\\
+(\${disk}5?|\${disk}p5?) .*ceph lockbox, active, for (\${disk}1?|\${disk}p1?))\" ||
 ls -ld /var/lib/ceph/osd/${cluster_name}-* | grep \" $(readlink -f ${data})\$\"
 ",
         logoutput => true,

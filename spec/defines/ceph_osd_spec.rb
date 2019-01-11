@@ -56,7 +56,8 @@ udevadm settle
         'unless'    => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 disk=$(readlink -f /srv)
-ceph-disk list | egrep \" *(${disk}1?|${disk}p1?) .*ceph data, (prepared|active)\" ||
+ceph-disk list | egrep \" *((${disk}1?|${disk}p1?) .*ceph data, (prepared|active)|\\
+(${disk}5?|${disk}p5?) .*ceph lockbox, (prepared|active), for (${disk}1?|${disk}p1?))\" ||
 { test -f $disk/fsid && test -f $disk/ceph_fsid && test -f $disk/magic ;}
 ",
         'logoutput' => true
@@ -82,7 +83,8 @@ fi
 ",
         'unless'    => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-ceph-disk list | egrep \" *(\${disk}1?|\${disk}p1?) .*ceph data, active\" ||
+ceph-disk list | egrep \" *((\${disk}1?|\${disk}p1?) .*ceph data, active|\\
+(\${disk}5?|\${disk}p5?) .*ceph lockbox, active, for (\${disk}1?|\${disk}p1?))\" ||
 ls -ld /var/lib/ceph/osd/ceph-* | grep \" $(readlink -f /srv)\$\"
 ",
         'logoutput' => true
@@ -146,7 +148,8 @@ udevadm settle
         'unless'    => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 disk=$(readlink -f /srv/data)
-ceph-disk list | egrep \" *(${disk}1?|${disk}p1?) .*ceph data, (prepared|active)\" ||
+ceph-disk list | egrep \" *((${disk}1?|${disk}p1?) .*ceph data, (prepared|active)|\\
+(${disk}5?|${disk}p5?) .*ceph lockbox, (prepared|active), for (${disk}1?|${disk}p1?))\" ||
 { test -f $disk/fsid && test -f $disk/ceph_fsid && test -f $disk/magic ;}
 ",
         'logoutput' => true
@@ -172,8 +175,164 @@ fi
 ",
         'unless'    => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-ceph-disk list | egrep \" *(\${disk}1?|\${disk}p1?) .*ceph data, active\" ||
+ceph-disk list | egrep \" *((\${disk}1?|\${disk}p1?) .*ceph data, active|\\
+(\${disk}5?|\${disk}p5?) .*ceph lockbox, active, for (\${disk}1?|\${disk}p1?))\" ||
 ls -ld /var/lib/ceph/osd/testcluster-* | grep \" $(readlink -f /srv/data)\$\"
+",
+        'logoutput' => true
+      ) }
+    end
+
+     describe "with dmcrypt enabled" do
+
+       let :title do
+        '/dev/sdc'
+      end
+
+       let :params do
+        {
+          :dmcrypt => true,
+        }
+      end
+
+       it { is_expected.to contain_exec('ceph-osd-check-udev-/dev/sdc').with(
+        'command'   => "/bin/true # comment to satisfy puppet syntax requirements
+# Before Infernalis the udev rules race causing the activation to fail so we
+# disable them. More at: http://www.spinics.net/lists/ceph-devel/msg28436.html
+mv -f /usr/lib/udev/rules.d/95-ceph-osd.rules /usr/lib/udev/rules.d/95-ceph-osd.rules.disabled && udevadm control --reload || true
+",
+       'onlyif'    => "/bin/true # comment to satisfy puppet syntax requirements
+set -ex
+DISABLE_UDEV=$(ceph --version | awk 'match(\$3, /[0-9]+\\.[0-9]+/) {if (substr(\$3, RSTART, RLENGTH) <= 0.94) {print 1} else { print 0 } }')
+test -f /usr/lib/udev/rules.d/95-ceph-osd.rules && test \$DISABLE_UDEV -eq 1
+",
+       'logoutput' => true,
+      ) }
+      it { is_expected.to contain_exec('ceph-osd-prepare-/dev/sdc').with(
+        'command'   => "/bin/true # comment to satisfy puppet syntax requirements
+set -ex
+disk=$(readlink -f /dev/sdc)
+if ! test -b $disk ; then
+    echo $disk | egrep -e '^/dev' -q -v
+    mkdir -p $disk
+    if getent passwd ceph >/dev/null 2>&1; then
+        chown -h ceph:ceph $disk
+    fi
+fi
+ceph-disk prepare  --cluster ceph --dmcrypt --dmcrypt-key-dir '/etc/ceph/dmcrypt-keys'  $(readlink -f /dev/sdc) $(readlink -f '')
+udevadm settle
+",
+        'unless'    => "/bin/true # comment to satisfy puppet syntax requirements
+set -ex
+disk=$(readlink -f /dev/sdc)
+ceph-disk list | egrep \" *((${disk}1?|${disk}p1?) .*ceph data, (prepared|active)|\\
+(${disk}5?|${disk}p5?) .*ceph lockbox, (prepared|active), for (${disk}1?|${disk}p1?))\" ||
+{ test -f $disk/fsid && test -f $disk/ceph_fsid && test -f $disk/magic ;}
+",
+        'logoutput' => true
+      ) }
+      it { is_expected.to contain_exec('ceph-osd-activate-/dev/sdc').with(
+        'command'   => "/bin/true # comment to satisfy puppet syntax requirements
+set -ex
+disk=$(readlink -f /dev/sdc)
+if ! test -b $disk ; then
+    echo $disk | egrep -e '^/dev' -q -v
+    mkdir -p $disk
+    if getent passwd ceph >/dev/null 2>&1; then
+        chown -h ceph:ceph $disk
+    fi
+fi
+# activate happens via udev when using the entire device
+if ! test -b \$disk && ! ( test -b \${disk}1 || test -b \${disk}p1 ); then
+  ceph-disk activate $disk || true
+fi
+if test -f /usr/lib/udev/rules.d/95-ceph-osd.rules.disabled && ( test -b ${disk}1 || test -b ${disk}p1 ); then
+  ceph-disk activate ${disk}1 || true
+fi
+",
+        'unless'    => "/bin/true # comment to satisfy puppet syntax requirements
+set -ex
+ceph-disk list | egrep \" *((\${disk}1?|\${disk}p1?) .*ceph data, active|\\
+(\${disk}5?|\${disk}p5?) .*ceph lockbox, active, for (\${disk}1?|\${disk}p1?))\" ||
+ls -ld /var/lib/ceph/osd/ceph-* | grep \" $(readlink -f /dev/sdc)\$\"
+",
+        'logoutput' => true
+      ) }
+    end
+
+     describe "with dmcrypt custom keydir" do
+
+       let :title do
+        '/dev/sdc'
+      end
+
+       let :params do
+        {
+          :dmcrypt         => true,
+          :dmcrypt_key_dir => '/srv/ceph/keys',
+        }
+      end
+
+       it { is_expected.to contain_exec('ceph-osd-check-udev-/dev/sdc').with(
+        'command'   => "/bin/true # comment to satisfy puppet syntax requirements
+# Before Infernalis the udev rules race causing the activation to fail so we
+# disable them. More at: http://www.spinics.net/lists/ceph-devel/msg28436.html
+mv -f /usr/lib/udev/rules.d/95-ceph-osd.rules /usr/lib/udev/rules.d/95-ceph-osd.rules.disabled && udevadm control --reload || true
+",
+       'onlyif'    => "/bin/true # comment to satisfy puppet syntax requirements
+set -ex
+DISABLE_UDEV=$(ceph --version | awk 'match(\$3, /[0-9]+\\.[0-9]+/) {if (substr(\$3, RSTART, RLENGTH) <= 0.94) {print 1} else { print 0 } }')
+test -f /usr/lib/udev/rules.d/95-ceph-osd.rules && test \$DISABLE_UDEV -eq 1
+",
+       'logoutput' => true,
+      ) }
+      it { is_expected.to contain_exec('ceph-osd-prepare-/dev/sdc').with(
+        'command'   => "/bin/true # comment to satisfy puppet syntax requirements
+set -ex
+disk=$(readlink -f /dev/sdc)
+if ! test -b $disk ; then
+    echo $disk | egrep -e '^/dev' -q -v
+    mkdir -p $disk
+    if getent passwd ceph >/dev/null 2>&1; then
+        chown -h ceph:ceph $disk
+    fi
+fi
+ceph-disk prepare  --cluster ceph --dmcrypt --dmcrypt-key-dir '/srv/ceph/keys'  $(readlink -f /dev/sdc) $(readlink -f '')
+udevadm settle
+",
+        'unless'    => "/bin/true # comment to satisfy puppet syntax requirements
+set -ex
+disk=$(readlink -f /dev/sdc)
+ceph-disk list | egrep \" *((${disk}1?|${disk}p1?) .*ceph data, (prepared|active)|\\
+(${disk}5?|${disk}p5?) .*ceph lockbox, (prepared|active), for (${disk}1?|${disk}p1?))\" ||
+{ test -f $disk/fsid && test -f $disk/ceph_fsid && test -f $disk/magic ;}
+",
+        'logoutput' => true
+      ) }
+      it { is_expected.to contain_exec('ceph-osd-activate-/dev/sdc').with(
+        'command'   => "/bin/true # comment to satisfy puppet syntax requirements
+set -ex
+disk=$(readlink -f /dev/sdc)
+if ! test -b $disk ; then
+    echo $disk | egrep -e '^/dev' -q -v
+    mkdir -p $disk
+    if getent passwd ceph >/dev/null 2>&1; then
+        chown -h ceph:ceph $disk
+    fi
+fi
+# activate happens via udev when using the entire device
+if ! test -b \$disk && ! ( test -b \${disk}1 || test -b \${disk}p1 ); then
+  ceph-disk activate $disk || true
+fi
+if test -f /usr/lib/udev/rules.d/95-ceph-osd.rules.disabled && ( test -b ${disk}1 || test -b ${disk}p1 ); then
+  ceph-disk activate ${disk}1 || true
+fi
+",
+        'unless'    => "/bin/true # comment to satisfy puppet syntax requirements
+set -ex
+ceph-disk list | egrep \" *((\${disk}1?|\${disk}p1?) .*ceph data, active|\\
+(\${disk}5?|\${disk}p5?) .*ceph lockbox, active, for (\${disk}1?|\${disk}p1?))\" ||
+ls -ld /var/lib/ceph/osd/ceph-* | grep \" $(readlink -f /dev/sdc)\$\"
 ",
         'logoutput' => true
       ) }
@@ -234,7 +393,8 @@ udevadm settle
         'unless'    => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 disk=$(readlink -f /srv/data)
-ceph-disk list | egrep \" *(${disk}1?|${disk}p1?) .*ceph data, (prepared|active)\" ||
+ceph-disk list | egrep \" *((${disk}1?|${disk}p1?) .*ceph data, (prepared|active)|\\
+(${disk}5?|${disk}p5?) .*ceph lockbox, (prepared|active), for (${disk}1?|${disk}p1?))\" ||
 { test -f $disk/fsid && test -f $disk/ceph_fsid && test -f $disk/magic ;}
 ",
         'logoutput' => true
@@ -260,7 +420,8 @@ fi
 ",
         'unless'    => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-ceph-disk list | egrep \" *(\${disk}1?|\${disk}p1?) .*ceph data, active\" ||
+ceph-disk list | egrep \" *((\${disk}1?|\${disk}p1?) .*ceph data, active|\\
+(\${disk}5?|\${disk}p5?) .*ceph lockbox, active, for (\${disk}1?|\${disk}p1?))\" ||
 ls -ld /var/lib/ceph/osd/testcluster-* | grep \" $(readlink -f /srv/data)\$\"
 ",
         'logoutput' => true
@@ -303,7 +464,8 @@ udevadm settle
         'unless'    => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 disk=$(readlink -f /dev/nvme0n1)
-ceph-disk list | egrep \" *(${disk}1?|${disk}p1?) .*ceph data, (prepared|active)\" ||
+ceph-disk list | egrep \" *((${disk}1?|${disk}p1?) .*ceph data, (prepared|active)|\\
+(${disk}5?|${disk}p5?) .*ceph lockbox, (prepared|active), for (${disk}1?|${disk}p1?))\" ||
 { test -f $disk/fsid && test -f $disk/ceph_fsid && test -f $disk/magic ;}
 ",
         'logoutput' => true
@@ -329,7 +491,8 @@ fi
 ",
         'unless'    => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-ceph-disk list | egrep \" *(\${disk}1?|\${disk}p1?) .*ceph data, active\" ||
+ceph-disk list | egrep \" *((\${disk}1?|\${disk}p1?) .*ceph data, active|\\
+(\${disk}5?|\${disk}p5?) .*ceph lockbox, active, for (\${disk}1?|\${disk}p1?))\" ||
 ls -ld /var/lib/ceph/osd/ceph-* | grep \" $(readlink -f /dev/nvme0n1)\$\"
 ",
         'logoutput' => true
@@ -372,7 +535,8 @@ udevadm settle
         'unless'    => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 disk=$(readlink -f /dev/cciss/c0d0)
-ceph-disk list | egrep \" *(${disk}1?|${disk}p1?) .*ceph data, (prepared|active)\" ||
+ceph-disk list | egrep \" *((${disk}1?|${disk}p1?) .*ceph data, (prepared|active)|\\
+(${disk}5?|${disk}p5?) .*ceph lockbox, (prepared|active), for (${disk}1?|${disk}p1?))\" ||
 { test -f $disk/fsid && test -f $disk/ceph_fsid && test -f $disk/magic ;}
 ",
         'logoutput' => true
@@ -398,7 +562,8 @@ fi
 ",
         'unless'    => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-ceph-disk list | egrep \" *(\${disk}1?|\${disk}p1?) .*ceph data, active\" ||
+ceph-disk list | egrep \" *((\${disk}1?|\${disk}p1?) .*ceph data, active|\\
+(\${disk}5?|\${disk}p5?) .*ceph lockbox, active, for (\${disk}1?|\${disk}p1?))\" ||
 ls -ld /var/lib/ceph/osd/ceph-* | grep \" $(readlink -f /dev/cciss/c0d0)\$\"
 ",
         'logoutput' => true
