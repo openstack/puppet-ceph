@@ -159,8 +159,6 @@ describe 'ceph::repo' do
     end
 
     context 'with default params' do
-      it { should_not contain_file_line('exclude base') }
-
       it { should contain_yumrepo('ext-epel-7').with(
         :enabled    => '1',
         :descr      => 'External EPEL 7',
@@ -202,8 +200,6 @@ describe 'ceph::repo' do
           :release => 'firefly'
         }
       end
-
-      it { should_not contain_file_line('exclude base') }
 
       it { should contain_yumrepo('ext-epel-7').with(
         :enabled    => '1',
@@ -259,8 +255,6 @@ describe 'ceph::repo' do
         }
       end
 
-      it { should_not contain_file_line('exclude base') }
-
       it { should contain_yumrepo('ext-epel-7').with(
         :enabled        => '1',
         :descr          => 'External EPEL 7',
@@ -312,8 +306,6 @@ describe 'ceph::repo' do
           :fastcgi => true
         }
       end
-
-      it { should_not contain_file_line('exclude base') }
 
       it { should contain_yumrepo('ext-epel-7').with(
         :enabled    => '0',
@@ -367,8 +359,6 @@ describe 'ceph::repo' do
           :fastcgi => true
         }
       end
-
-      it { should_not contain_file_line('exclude base') }
 
       it { should contain_yumrepo('ext-epel-7').with(
         :enabled    => '1',
@@ -425,8 +415,6 @@ describe 'ceph::repo' do
     end
 
     context 'with default params' do
-      it { should_not contain_file_line('exclude base') }
-
       it { should contain_yumrepo('ext-epel-7').with(
         :enabled    => '1',
         :descr      => 'External EPEL 7',
@@ -468,13 +456,6 @@ describe 'ceph::repo' do
           :release => 'firefly'
         }
       end
-
-      it { should contain_file_line('exclude base').with(
-        :ensure => 'present',
-        :path   => '/etc/yum.repos.d/CentOS-Base.repo',
-        :after  => '^\[base\]$',
-        :line   => 'exclude=python-ceph-compat python-rbd python-rados python-cephfs',
-      )}
 
       it { should contain_yumrepo('ext-epel-7').with(
         :enabled    => '1',
@@ -518,7 +499,6 @@ describe 'ceph::repo' do
         }
       end
 
-      it { should_not contain_file_line('exclude base') }
       it { should_not contain_yumrepo('ext-epel-7') }
       it { should_not contain_yumrepo('ext-ceph') }
       it { should_not contain_yumrepo('ext-ceph-noarch') }
@@ -537,7 +517,6 @@ describe 'ceph::repo' do
         }
       end
 
-      it { should_not contain_file_line('exclude base') }
       it { should_not contain_yumrepo('ext-epel-7') }
       it { should_not contain_yumrepo('ext-ceph') }
       it { should_not contain_yumrepo('ext-ceph-noarch') }
@@ -555,8 +534,6 @@ describe 'ceph::repo' do
           :fastcgi => true
         }
       end
-
-      it { should_not contain_file_line('exclude base') }
 
       it { should contain_yumrepo('ext-epel-7').with(
         :enabled    => '0',
@@ -610,8 +587,6 @@ describe 'ceph::repo' do
           :fastcgi => true
         }
       end
-
-      it { should_not contain_file_line('exclude base') }
 
       it { should contain_yumrepo('ext-epel-7').with(
         :enabled    => '1',

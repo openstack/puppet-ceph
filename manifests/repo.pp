@@ -150,19 +150,6 @@ not on ${::operatingsystem}, which can lead to packaging issues.")
           $el = '7'
         }
 
-        # Firefly is the last ceph.com supported release which conflicts with
-        # the CentOS 7 base channel. Therefore make sure to only exclude the
-        # conflicting packages in the exact combination of CentOS7 and Firefly.
-        # TODO: Remove this once Firefly becomes EOL
-        if ($::operatingsystem == 'CentOS' and $el == '7' and $release == 'firefly') {
-          file_line { 'exclude base':
-            ensure => $ensure,
-            path   => '/etc/yum.repos.d/CentOS-Base.repo',
-            after  => '^\[base\]$',
-            line   => 'exclude=python-ceph-compat python-rbd python-rados python-cephfs',
-          } -> Package<| tag == 'ceph' |>
-        }
-
         Yumrepo {
           proxy          => $proxy,
           proxy_username => $proxy_username,

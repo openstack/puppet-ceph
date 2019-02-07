@@ -1,0 +1,4 @@
+---
+upgrade:
+  - |
+    Ceph Firefly is EOL since a long time and is no longer supported.
