@@ -28,7 +28,7 @@ describe 'ceph::profile::params' do
         }"
       end
 
-      it { should raise_error Puppet::Error, /is not a Hash/ }
+      it { should raise_error(Puppet::Error) }
     end
 
     describe "should fail when using cephx without client_keys" do
