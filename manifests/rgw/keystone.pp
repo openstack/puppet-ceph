@@ -49,29 +49,11 @@
 #
 # [*rgw_keystone_token_cache_size*]
 #   (Optional) How many tokens to keep cached.
-#   Not useful when using PKI as every token is checked.
 #   Defaults to 500
 #
 # [*rgw_s3_auth_use_keystone*]
 #   (Optional) Whether to enable keystone auth for S3.
 #   Defaults to true
-#
-# [*use_pki*]
-#   (Optional) Whether to use PKI related configuration.
-#   Defaults to true
-#
-# [*rgw_keystone_revocation_interval*]
-#   (Optional) Interval to check for expired tokens.
-#   Not useful if not using PKI tokens (if not, set to high value).
-#   Defaults is 600 (seconds)
-#
-# [*nss_db_path*]
-#   (Optional) Path to NSS < - > keystone tokens db files.
-#   Defaults to undef
-#
-# [*user*]
-#   (Optional) User running the web frontend.
-#   Defaults to 'www-data'
 #
 # [*rgw_keystone_implicit_tenants*]
 #   (Optional) Set 'true' for a private tenant for each user.
@@ -87,6 +69,23 @@
 #   (Optional) The keystone admin token.
 #   Defaults to undef
 #
+# [*use_pki*]
+#   (Optional) Whether to use PKI related configuration.
+#   Defaults to undef
+#
+# [*rgw_keystone_revocation_interval*]
+#   (Optional) Interval to check for expired tokens.
+#   Not useful if not using PKI tokens (if not, set to high value).
+#   Defaults to undef
+#
+# [*nss_db_path*]
+#   (Optional) Path to NSS < - > keystone tokens db files.
+#   Defaults to undef
+#
+# [*user*]
+#   (Optional) User running the web frontend.
+#   Defaults to undef
+#
 define ceph::rgw::keystone (
   $rgw_keystone_admin_domain,
   $rgw_keystone_admin_project,
@@ -96,14 +95,14 @@ define ceph::rgw::keystone (
   $rgw_keystone_accepted_roles      = 'Member',
   $rgw_keystone_token_cache_size    = 500,
   $rgw_s3_auth_use_keystone         = true,
-  $use_pki                          = true,
-  $rgw_keystone_revocation_interval = 600,
-  $nss_db_path                      = '/var/lib/ceph/nss',
-  $user                             = $::ceph::params::user_radosgw,
   $rgw_keystone_implicit_tenants    = true,
   ## DEPRECATED PARAMS
   $rgw_keystone_version             = undef,
   $rgw_keystone_admin_token         = undef,
+  $use_pki                          = undef,
+  $rgw_keystone_revocation_interval = undef,
+  $nss_db_path                      = undef,
+  $user                             = undef,
 ) {
 
   unless $name =~ /^radosgw\..+/ {
@@ -116,13 +115,25 @@ define ceph::rgw::keystone (
   if $rgw_keystone_admin_token {
     warning('ceph::rgw::keystone::rgw_keystone_admin_token is deprecated')
   }
+  if $use_pki {
+    warning('ceph::rgw::keystone::use_pki is deprecated')
+  }
+  if $rgw_keystone_revocation_interval {
+    warning('ceph::rgw::keystone::rgw_keystone_revocation_interval is deprecated')
+  }
+  if $nss_db_path {
+    warning('ceph::rgw::keystone::nss_db_path is deprecated')
+  }
+  if $user {
+    warning('ceph::rgw::keystone::user is deprecated')
+  }
 
   ceph_config {
-    "client.${name}/rgw_keystone_url":                 value => $rgw_keystone_url;
-    "client.${name}/rgw_keystone_accepted_roles":      value => join(any2array($rgw_keystone_accepted_roles), ',');
-    "client.${name}/rgw_keystone_token_cache_size":    value => $rgw_keystone_token_cache_size;
-    "client.${name}/rgw_s3_auth_use_keystone":         value => $rgw_s3_auth_use_keystone;
-    "client.${name}/rgw_keystone_implicit_tenants":    value => $rgw_keystone_implicit_tenants;
+    "client.${name}/rgw_keystone_url":              value => $rgw_keystone_url;
+    "client.${name}/rgw_keystone_accepted_roles":   value => join(any2array($rgw_keystone_accepted_roles), ',');
+    "client.${name}/rgw_keystone_token_cache_size": value => $rgw_keystone_token_cache_size;
+    "client.${name}/rgw_s3_auth_use_keystone":      value => $rgw_s3_auth_use_keystone;
+    "client.${name}/rgw_keystone_implicit_tenants": value => $rgw_keystone_implicit_tenants;
   }
 
   # FIXME(ykarel) Cleanup once https://tracker.ceph.com/issues/24228 is fixed for luminous
@@ -142,58 +153,8 @@ define ceph::rgw::keystone (
     "client.${name}/rgw_keystone_admin_token":    ensure => absent;
   }
 
-  if $use_pki {
-    # fetch the keystone signing cert, add to nss db
-    $pkg_nsstools = $::ceph::params::pkg_nsstools
-    ensure_packages($pkg_nsstools, {'ensure' => 'present'})
-
-    file { $nss_db_path:
-      ensure => directory,
-      owner  => $user,
-      group  => 'root',
-    }
-
-    ceph_config {
-      "client.${name}/nss_db_path":                      value => $nss_db_path;
-      "client.${name}/rgw_keystone_revocation_interval": value => $rgw_keystone_revocation_interval;
-    }
-
-    exec { "${name}-nssdb-ca":
-      command => "/bin/true  # comment to satisfy puppet syntax requirements
-set -ex
-wget --no-check-certificate ${rgw_keystone_url}/v2.0/certificates/ca -O - |
-  openssl x509 -pubkey | certutil -A -d ${nss_db_path} -n ca -t \"TCu,Cu,Tuw\"
-",
-      unless  => "/bin/true  # comment to satisfy puppet syntax requirements
-set -ex
-certutil -d ${nss_db_path} -L | grep ^ca
-",
-      user    => $user,
-    }
-
-    exec { "${name}-nssdb-signing":
-      command => "/bin/true  # comment to satisfy puppet syntax requirements
-set -ex
-wget --no-check-certificate ${rgw_keystone_url}/v2.0/certificates/signing -O - |
-  openssl x509 -pubkey | certutil -A -d ${nss_db_path} -n signing_cert -t \"P,P,P\"
-",
-      unless  => "/bin/true  # comment to satisfy puppet syntax requirements
-set -ex
-certutil -d ${nss_db_path} -L | grep ^signing_cert
-",
-      user    => $user,
-    }
-
-    Package[$pkg_nsstools]
-    -> Package[$::ceph::params::packages]
-    -> File[$nss_db_path]
-    -> Exec["${name}-nssdb-ca"]
-    -> Exec["${name}-nssdb-signing"]
-    ~> Service<| tag == 'ceph-radosgw' |>
-  } else {
-    ceph_config {
-      "client.${name}/nss_db_path":                      ensure => absent;
-      "client.${name}/rgw_keystone_revocation_interval": value => $rgw_keystone_revocation_interval;
-    }
+  ceph_config {
+    "client.${name}/nss_db_path":                      ensure => absent;
+    "client.${name}/rgw_keystone_revocation_interval": ensure => absent;
   }
 }

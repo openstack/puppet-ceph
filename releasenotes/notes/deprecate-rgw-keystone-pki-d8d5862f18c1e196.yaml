@@ -1,0 +1,16 @@
+---
+upgrade:
+  - |
+    The PKI functionality in the ceph::rgw::keystone class is now deprecated
+    and the functionality is removed since Keystone v2.0 API is not available
+    anymore and PKI tokens is removed.
+deprecations:
+  - |
+    ceph::rgw::keystone::use_pki is deprecated and has no effect.
+  - |
+    ceph::rgw::keystone::rgw_keystone_revocation_interval is deprecated and
+    has no effect.
+  - |
+    ceph::rgw::keystone::nss_db_path is deprecated and has no effect.
+  - |
+    ceph::rgw::keystone::user is deprecated and has no effect.
