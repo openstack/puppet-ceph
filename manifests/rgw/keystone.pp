@@ -23,63 +23,76 @@
 #
 ### == Parameters
 #
-# [*rgw_keystone_admin_token*] The keystone admin token.
-#   Required if rgw_keystone_version is v2.0.
+# [*rgw_keystone_admin_domain*]
+#   (Required) The name of OpenStack domain with admin
+#   privilege when using OpenStack Identity API v3.
 #
-# [*rgw_keystone_url*] The internal or admin url for keystone.
-#   Optional. Default is 'http://127.0.0.1:5000'
+# [*rgw_keystone_admin_project*]
+#   (Optional) The name of OpenStack project with admin
+#   privilege when using OpenStack Identity API v3
 #
-# [*rgw_keystone_version*] The api version for keystone.
-#   Possible values 'v2.0', 'v3'
-#   Optional. Default is 'v2.0'
+# [*rgw_keystone_admin_user*]
+#   (Required) The user name of OpenStack tenant with admin
+#   privilege (Service Tenant).
 #
-# [*rgw_keystone_accepted_roles*] Roles to accept from keystone.
-#   Optional. Default is 'Member'.
+# [*rgw_keystone_admin_password*]
+#   (Required) The password for OpenStack admin user.
+#
+# [*rgw_keystone_url*]
+#   (Optional) The internal or admin url for keystone.
+#   Defaults to 'http://127.0.0.1:5000'
+#
+# [*rgw_keystone_accepted_roles*]
+#   (Optional) Roles to accept from keystone.
 #   Comma separated list of roles.
+#   Defaults to 'Member'
 #
-# [*rgw_keystone_token_cache_size*] How many tokens to keep cached.
-#   Optional. Default is 500.
+# [*rgw_keystone_token_cache_size*]
+#   (Optional) How many tokens to keep cached.
 #   Not useful when using PKI as every token is checked.
+#   Defaults to 500
 #
-# [*rgw_s3_auth_use_keystone*] Whether to enable keystone auth for S3.
-#   Optional. Default to true.
+# [*rgw_s3_auth_use_keystone*]
+#   (Optional) Whether to enable keystone auth for S3.
+#   Defaults to true
 #
-# [*use_pki*] Whether to use PKI related configuration.
-#   Optional. Default to true.
+# [*use_pki*]
+#   (Optional) Whether to use PKI related configuration.
+#   Defaults to true
 #
-# [*rgw_keystone_revocation_interval*] Interval to check for expired tokens.
-#   Optional. Default is 600 (seconds).
+# [*rgw_keystone_revocation_interval*]
+#   (Optional) Interval to check for expired tokens.
 #   Not useful if not using PKI tokens (if not, set to high value).
+#   Defaults is 600 (seconds)
 #
-# [*nss_db_path*] Path to NSS < - > keystone tokens db files.
-#   Optional. Default is undef.
+# [*nss_db_path*]
+#   (Optional) Path to NSS < - > keystone tokens db files.
+#   Defaults to undef
 #
-# [*user*] User running the web frontend.
-#   Optional. Default is 'www-data'.
+# [*user*]
+#   (Optional) User running the web frontend.
+#   Defaults to 'www-data'
 #
-# [*rgw_keystone_admin_domain*] The name of OpenStack domain with admin
-#   privilege when using OpenStack Identity API v3
-#   Optional. Default is undef
+# [*rgw_keystone_implicit_tenants*]
+#   (Optional) Set 'true' for a private tenant for each user.
+#   Defaults to true
 #
-# [*rgw_keystone_admin_project*] The name of OpenStack project with admin
-#   privilege when using OpenStack Identity API v3
-#   Optional. Default is 'openstack'
+## DEPRECATED PARAMS
 #
-# [*rgw_keystone_admin_user*] The user name of OpenStack tenant with admin
-#   privilege (Service Tenant)
-#   Required if rgw_keystone_version is 'v3'.
+# [*rgw_keystone_version*]
+#   (Optional) The api version for keystone.
+#   Defaults to undef
 #
-# [*rgw_keystone_admin_password*] The password for OpenStack admin user
-#   Required if rgw_keystone_version is 'v3'.
+# [*rgw_keystone_admin_token*]
+#   (Optional) The keystone admin token.
+#   Defaults to undef
 #
-# [*rgw_keystone_implicit_tenants*] Set 'true' for a private tenant
-#   for each user.
-#   Defaults is true
-
 define ceph::rgw::keystone (
-  $rgw_keystone_admin_token         = undef,
+  $rgw_keystone_admin_domain,
+  $rgw_keystone_admin_project,
+  $rgw_keystone_admin_user,
+  $rgw_keystone_admin_password,
   $rgw_keystone_url                 = 'http://127.0.0.1:5000',
-  $rgw_keystone_version             = 'v2.0',
   $rgw_keystone_accepted_roles      = 'Member',
   $rgw_keystone_token_cache_size    = 500,
   $rgw_s3_auth_use_keystone         = true,
@@ -87,15 +100,21 @@ define ceph::rgw::keystone (
   $rgw_keystone_revocation_interval = 600,
   $nss_db_path                      = '/var/lib/ceph/nss',
   $user                             = $::ceph::params::user_radosgw,
-  $rgw_keystone_admin_domain        = $::ceph::profile::params::rgw_keystone_admin_domain,
-  $rgw_keystone_admin_project       = $::ceph::profile::params::rgw_keystone_admin_project,
-  $rgw_keystone_admin_user          = $::ceph::profile::params::rgw_keystone_admin_user,
-  $rgw_keystone_admin_password      = $::ceph::profile::params::rgw_keystone_admin_password,
   $rgw_keystone_implicit_tenants    = true,
+  ## DEPRECATED PARAMS
+  $rgw_keystone_version             = undef,
+  $rgw_keystone_admin_token         = undef,
 ) {
 
   unless $name =~ /^radosgw\..+/ {
     fail("Define name must be started with 'radosgw.'")
+  }
+
+  if $rgw_keystone_version {
+    warning('ceph::rgw::keystone::rgw_keystone_version is deprecated')
+  }
+  if $rgw_keystone_admin_token {
+    warning('ceph::rgw::keystone::rgw_keystone_admin_token is deprecated')
   }
 
   ceph_config {
@@ -114,33 +133,13 @@ define ceph::rgw::keystone (
     }
   }
 
-  if $rgw_keystone_version == 'v2.0' {
-    if $rgw_keystone_admin_token == undef
-    {
-      fail( 'Missing rgw_keystone_admin_token for Keystone V2 integration')
-    }
-    ceph_config {
-      "client.${name}/rgw_keystone_admin_token": value => $rgw_keystone_admin_token;
-    }
-  } elsif $rgw_keystone_version == 'v3' {
-    if $rgw_keystone_admin_domain == undef
-      or $rgw_keystone_admin_project == undef
-      or $rgw_keystone_admin_user == undef
-      or $rgw_keystone_admin_password == undef
-    {
-      fail( 'Incomplete parameters for Keystone V3 integration')
-    }
-    ceph_config {
-      "client.${name}/rgw_keystone_api_version":    value => 3;
-      "client.${name}/rgw_keystone_admin_domain":   value => $rgw_keystone_admin_domain;
-      "client.${name}/rgw_keystone_admin_project":  value => $rgw_keystone_admin_project;
-      "client.${name}/rgw_keystone_admin_user":     value => $rgw_keystone_admin_user;
-      "client.${name}/rgw_keystone_admin_password": value => $rgw_keystone_admin_password;
-      "client.${name}/rgw_keystone_admin_token":    ensure => absent;
-    }
-
-  } else {
-    fail("Unsupported keystone version: ${rgw_keystone_version}")
+  ceph_config {
+    "client.${name}/rgw_keystone_api_version":    value => 3;
+    "client.${name}/rgw_keystone_admin_domain":   value => $rgw_keystone_admin_domain;
+    "client.${name}/rgw_keystone_admin_project":  value => $rgw_keystone_admin_project;
+    "client.${name}/rgw_keystone_admin_user":     value => $rgw_keystone_admin_user;
+    "client.${name}/rgw_keystone_admin_password": value => $rgw_keystone_admin_password;
+    "client.${name}/rgw_keystone_admin_token":    ensure => absent;
   }
 
   if $use_pki {

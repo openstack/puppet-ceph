@@ -1,0 +1,18 @@
+---
+upgrade:
+  - |
+    The ceph::rgw::keystone class now defaults to configuration it for Keystone
+    V3 API. The v2.0 functionality is removed.
+  - |
+    The ceph::rgw::keystone class now requires the rgw_keystone_admin_domain,
+    rgw_keystone_admin_project, rgw_keystone_admin_user and
+    rgw_keystone_admin_password parameters to be configured, these were previously
+    only required when configuring Keystone V3, which is now the default and v2.0
+    has been removed.
+deprecations:
+  - |
+    The ceph::rgw::keystone::rgw_keystone_version is deprecated and now has no
+    effect.
+  - |
+    The ceph::rgw::keystone::rgw_keystone_admin_token is deprecated and now has
+    no effect.
