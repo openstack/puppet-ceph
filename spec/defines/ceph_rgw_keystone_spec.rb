@@ -49,7 +49,7 @@ describe 'ceph::rgw::keystone' do
       it { should contain_ceph_config('client.radosgw.gateway/rgw_keystone_admin_password').with_value('123456') }
       it { should contain_ceph_config('client.radosgw.gateway/rgw_keystone_admin_token').with_ensure('absent') }
       it { should contain_ceph_config('client.radosgw.gateway/rgw_keystone_url').with_value('http://127.0.0.1:5000') }
-      it { should contain_ceph_config('client.radosgw.gateway/rgw_keystone_accepted_roles').with_value('Member') }
+      it { should contain_ceph_config('client.radosgw.gateway/rgw_keystone_accepted_roles').with_value('member') }
       it { should contain_ceph_config('client.radosgw.gateway/rgw_keystone_token_cache_size').with_value(500) }
       it { should contain_ceph_config('client.radosgw.gateway/rgw_s3_auth_use_keystone').with_value(true) }
       it { should contain_ceph_config('client.radosgw.gateway/rgw_keystone_implicit_tenants').with_value(true) }
