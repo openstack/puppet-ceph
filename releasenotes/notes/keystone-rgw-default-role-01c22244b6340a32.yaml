@@ -1,0 +1,5 @@
+---
+upgrade:
+  - |
+    The default value for ceph::rgw::keystone::rgw_keystone_accepted_roles is
+    changed from Member to member
