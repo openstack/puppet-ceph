@@ -64,6 +64,9 @@
 # [*rgw_frontends*] Arguments to the rgw frontend
 #   Optional. Default is 'civetweb port=7480'.
 #
+# [*rgw_swift_url*] The URL for the Ceph Object Gateway Swift API.
+#   Optional. Default is http://$fqdn:7480.
+#
 # Deprecated Parameters:
 #
 # [*syslog*] Whether or not to log to syslog.
@@ -84,6 +87,7 @@ define ceph::rgw (
   $rgw_port           = undef,
   $frontend_type      = 'civetweb',
   $rgw_frontends      = 'civetweb port=7480',
+  $rgw_swift_url      = "http://${::fqdn}:7480",
   $syslog             = undef,
 ) {
 
@@ -103,6 +107,8 @@ define ceph::rgw (
     "client.${name}/keyring":            value => $keyring_path;
     "client.${name}/log_file":           value => $log_file;
     "client.${name}/user":               value => $user;
+    "client.${name}/rgw_dns_name":       value => $rgw_dns_name;
+    "client.${name}/rgw_swift_url":      value => $rgw_swift_url;
   }
 
   if($frontend_type == 'civetweb')
@@ -114,7 +120,6 @@ define ceph::rgw (
   elsif ( ( $frontend_type == 'apache-fastcgi' ) or ( $frontend_type == 'apache-proxy-fcgi' ) )
   {
     ceph_config {
-      "client.${name}/rgw_dns_name":       value => $rgw_dns_name;
       "client.${name}/rgw_print_continue": value => $rgw_print_continue;
       "client.${name}/rgw_socket_path":    value => $rgw_socket_path;
     }

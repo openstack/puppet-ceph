@@ -39,6 +39,8 @@ describe 'ceph::rgw' do
       it { should contain_ceph_config('client.radosgw.civetweb/keyring').with_value('/etc/ceph/ceph.client.radosgw.civetweb.keyring') }
       it { should contain_ceph_config('client.radosgw.civetweb/log_file').with_value('/var/log/ceph/radosgw.log') }
       it { should contain_ceph_config('client.radosgw.civetweb/rgw_frontends').with_value('civetweb port=7480') }
+      it { should contain_ceph_config('client.radosgw.civetweb/rgw_dns_name').with_value('myhost.domain') }
+      it { should contain_ceph_config('client.radosgw.civetweb/rgw_swift_url').with_value('http://myhost.domain:7480') }
     end
 
     describe "activated with custom civetweb params" do
@@ -51,6 +53,8 @@ describe 'ceph::rgw' do
         :frontend_type => 'civetweb',
         :rgw_frontends => 'civetweb port=7481',
         :user          => 'root',
+        :rgw_dns_name  => 'mydns.hostname',
+        :rgw_swift_url => 'https://mydns.hostname:443'
       }
       end
 
@@ -59,6 +63,8 @@ describe 'ceph::rgw' do
       it { should contain_ceph_config('client.radosgw.custom/host').with_value('myhost') }
       it { should contain_ceph_config('client.radosgw.custom/keyring').with_value('/etc/ceph/ceph.client.radosgw.custom.keyring') }
       it { should contain_ceph_config('client.radosgw.custom/log_file').with_value('/var/log/ceph/radosgw.log') }
+      it { should contain_ceph_config('client.radosgw.custom/rgw_dns_name').with_value('mydns.hostname') }
+      it { should contain_ceph_config('client.radosgw.custom/rgw_swift_url').with_value('https://mydns.hostname:443') }
     end
   end
 
