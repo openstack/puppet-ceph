@@ -37,7 +37,7 @@
 #   Optional. Defaults to False
 #
 # [*release*] The name of the Ceph release to install
-#   Optional. Default to 'mimic'.
+#   Optional. Default to 'nautilus'.
 #
 
 class ceph::params (
@@ -45,7 +45,7 @@ class ceph::params (
   $packages        = ['ceph'], # just provide the minimum per default
   $rgw_socket_path = '/tmp/radosgw.sock',
   $enable_sig      = false,
-  $release         = 'mimic',
+  $release         = 'nautilus',
 ) {
   $pkg_mds = 'ceph-mds'
 

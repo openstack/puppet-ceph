@@ -34,7 +34,7 @@
 #  Optional. Defaults to 'present'.
 #
 # [*release*] The name of the Ceph release to install
-#   Optional. Default to 'mimic' in ceph::params.
+#   Optional. Default to 'nautilus' in ceph::params.
 #
 # [*fastcgi*] Install Ceph fastcgi apache module for Ceph
 #   Optional. Defaults to 'false'

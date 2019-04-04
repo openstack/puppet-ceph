@@ -36,7 +36,7 @@ describe 'ceph::repo' do
       )}
 
       it { should contain_apt__source('ceph').with(
-        :location => 'http://download.ceph.com/debian-mimic/',
+        :location => 'http://download.ceph.com/debian-nautilus/',
         :release  => 'jessie',
       )}
     end
@@ -44,12 +44,12 @@ describe 'ceph::repo' do
     context 'when overriding ceph mirror' do
       let :params do
         {
-          :ceph_mirror => 'http://myserver.com/debian-mimic/'
+          :ceph_mirror => 'http://myserver.com/debian-nautilus/'
         }
       end
 
       it { should contain_apt__source('ceph').with(
-        :location => 'http://myserver.com/debian-mimic/',
+        :location => 'http://myserver.com/debian-nautilus/',
         :release  => 'jessie',
       )}
     end
@@ -85,7 +85,7 @@ describe 'ceph::repo' do
       )}
 
       it { should contain_apt__source('ceph').with(
-        :location => 'http://download.ceph.com/debian-mimic/',
+        :location => 'http://download.ceph.com/debian-nautilus/',
         :release  => 'trusty',
       )}
     end
@@ -116,7 +116,7 @@ describe 'ceph::repo' do
       )}
 
       it { should contain_apt__source('ceph').with(
-        :location => 'http://download.ceph.com/debian-mimic/',
+        :location => 'http://download.ceph.com/debian-nautilus/',
         :release  => 'trusty',
       )}
 
@@ -138,7 +138,7 @@ describe 'ceph::repo' do
 
       it { should contain_apt__source('ceph').with(
         :ensure   => 'absent',
-        :location => 'http://download.ceph.com/debian-mimic/',
+        :location => 'http://download.ceph.com/debian-nautilus/',
         :release  => 'trusty',
       )}
 
@@ -173,9 +173,9 @@ describe 'ceph::repo' do
 
       it { should contain_yumrepo('ext-ceph').with(
         :enabled    => '1',
-        :descr      => 'External Ceph mimic',
-        :name       => 'ext-ceph-mimic',
-        :baseurl    => 'http://download.ceph.com/rpm-mimic/el7/$basearch',
+        :descr      => 'External Ceph nautilus',
+        :name       => 'ext-ceph-nautilus',
+        :baseurl    => 'http://download.ceph.com/rpm-nautilus/el7/$basearch',
         :gpgcheck   => '1',
         :gpgkey     => 'https://download.ceph.com/keys/release.asc',
         :mirrorlist => 'absent',
@@ -185,8 +185,8 @@ describe 'ceph::repo' do
       it { should contain_yumrepo('ext-ceph-noarch').with(
         :enabled    => '1',
         :descr      => 'External Ceph noarch',
-        :name       => 'ext-ceph-mimic-noarch',
-        :baseurl    => 'http://download.ceph.com/rpm-mimic/el7/noarch',
+        :name       => 'ext-ceph-nautilus-noarch',
+        :baseurl    => 'http://download.ceph.com/rpm-nautilus/el7/noarch',
         :gpgcheck   => '1',
         :gpgkey     => 'https://download.ceph.com/keys/release.asc',
         :mirrorlist => 'absent',
@@ -272,9 +272,9 @@ describe 'ceph::repo' do
 
       it { should contain_yumrepo('ext-ceph').with(
         :enabled        => '1',
-        :descr          => 'External Ceph mimic',
-        :name           => 'ext-ceph-mimic',
-        :baseurl        => 'http://download.ceph.com/rpm-mimic/el7/$basearch',
+        :descr          => 'External Ceph nautilus',
+        :name           => 'ext-ceph-nautilus',
+        :baseurl        => 'http://download.ceph.com/rpm-nautilus/el7/$basearch',
         :gpgcheck       => '1',
         :gpgkey         => 'https://download.ceph.com/keys/release.asc',
         :mirrorlist     => 'absent',
@@ -287,8 +287,8 @@ describe 'ceph::repo' do
       it { should contain_yumrepo('ext-ceph-noarch').with(
         :enabled        => '1',
         :descr          => 'External Ceph noarch',
-        :name           => 'ext-ceph-mimic-noarch',
-        :baseurl        => 'http://download.ceph.com/rpm-mimic/el7/noarch',
+        :name           => 'ext-ceph-nautilus-noarch',
+        :baseurl        => 'http://download.ceph.com/rpm-nautilus/el7/noarch',
         :gpgcheck       => '1',
         :gpgkey         => 'https://download.ceph.com/keys/release.asc',
         :mirrorlist     => 'absent',
@@ -321,9 +321,9 @@ describe 'ceph::repo' do
 
       it { should contain_yumrepo('ext-ceph').with(
         :enabled    => '0',
-        :descr      => 'External Ceph mimic',
-        :name       => 'ext-ceph-mimic',
-        :baseurl    => 'http://download.ceph.com/rpm-mimic/el7/$basearch',
+        :descr      => 'External Ceph nautilus',
+        :name       => 'ext-ceph-nautilus',
+        :baseurl    => 'http://download.ceph.com/rpm-nautilus/el7/$basearch',
         :gpgcheck   => '1',
         :gpgkey     => 'https://download.ceph.com/keys/release.asc',
         :mirrorlist => 'absent',
@@ -333,8 +333,8 @@ describe 'ceph::repo' do
       it { should contain_yumrepo('ext-ceph-noarch').with(
         :enabled    => '0',
         :descr      => 'External Ceph noarch',
-        :name       => 'ext-ceph-mimic-noarch',
-        :baseurl    => 'http://download.ceph.com/rpm-mimic/el7/noarch',
+        :name       => 'ext-ceph-nautilus-noarch',
+        :baseurl    => 'http://download.ceph.com/rpm-nautilus/el7/noarch',
         :gpgcheck   => '1',
         :gpgkey     => 'https://download.ceph.com/keys/release.asc',
         :mirrorlist => 'absent',
@@ -374,9 +374,9 @@ describe 'ceph::repo' do
 
       it { should contain_yumrepo('ext-ceph').with(
         :enabled    => '1',
-        :descr      => 'External Ceph mimic',
-        :name       => 'ext-ceph-mimic',
-        :baseurl    => 'http://download.ceph.com/rpm-mimic/el7/$basearch',
+        :descr      => 'External Ceph nautilus',
+        :name       => 'ext-ceph-nautilus',
+        :baseurl    => 'http://download.ceph.com/rpm-nautilus/el7/$basearch',
         :gpgcheck   => '1',
         :gpgkey     => 'https://download.ceph.com/keys/release.asc',
         :mirrorlist => 'absent',
@@ -386,8 +386,8 @@ describe 'ceph::repo' do
       it { should contain_yumrepo('ext-ceph-noarch').with(
         :enabled    => '1',
         :descr      => 'External Ceph noarch',
-        :name       => 'ext-ceph-mimic-noarch',
-        :baseurl    => 'http://download.ceph.com/rpm-mimic/el7/noarch',
+        :name       => 'ext-ceph-nautilus-noarch',
+        :baseurl    => 'http://download.ceph.com/rpm-nautilus/el7/noarch',
         :gpgcheck   => '1',
         :gpgkey     => 'https://download.ceph.com/keys/release.asc',
         :mirrorlist => 'absent',
@@ -429,9 +429,9 @@ describe 'ceph::repo' do
 
       it { should contain_yumrepo('ext-ceph').with(
         :enabled    => '1',
-        :descr      => 'External Ceph mimic',
-        :name       => 'ext-ceph-mimic',
-        :baseurl    => 'http://download.ceph.com/rpm-mimic/el7/$basearch',
+        :descr      => 'External Ceph nautilus',
+        :name       => 'ext-ceph-nautilus',
+        :baseurl    => 'http://download.ceph.com/rpm-nautilus/el7/$basearch',
         :gpgcheck   => '1',
         :gpgkey     => 'https://download.ceph.com/keys/release.asc',
         :mirrorlist => 'absent',
@@ -441,8 +441,8 @@ describe 'ceph::repo' do
       it { should contain_yumrepo('ext-ceph-noarch').with(
         :enabled    => '1',
         :descr      => 'External Ceph noarch',
-        :name       => 'ext-ceph-mimic-noarch',
-        :baseurl    => 'http://download.ceph.com/rpm-mimic/el7/noarch',
+        :name       => 'ext-ceph-nautilus-noarch',
+        :baseurl    => 'http://download.ceph.com/rpm-nautilus/el7/noarch',
         :gpgcheck   => '1',
         :gpgkey     => 'https://download.ceph.com/keys/release.asc',
         :mirrorlist => 'absent',
@@ -505,7 +505,7 @@ describe 'ceph::repo' do
       it { should contain_yumrepo('ceph-luminous-sig').with_ensure('absent') }
 
       it { should contain_yumrepo('ceph-storage-sig').with(
-        :baseurl => 'https://buildlogs.centos.org/centos/7/storage/x86_64/ceph-mimic/',
+        :baseurl => 'https://buildlogs.centos.org/centos/7/storage/x86_64/ceph-nautilus/',
       )}
     end
 
@@ -549,9 +549,9 @@ describe 'ceph::repo' do
 
       it { should contain_yumrepo('ext-ceph').with(
         :enabled    => '0',
-        :descr      => 'External Ceph mimic',
-        :name       => 'ext-ceph-mimic',
-        :baseurl    => 'http://download.ceph.com/rpm-mimic/el7/$basearch',
+        :descr      => 'External Ceph nautilus',
+        :name       => 'ext-ceph-nautilus',
+        :baseurl    => 'http://download.ceph.com/rpm-nautilus/el7/$basearch',
         :gpgcheck   => '1',
         :gpgkey     => 'https://download.ceph.com/keys/release.asc',
         :mirrorlist => 'absent',
@@ -561,8 +561,8 @@ describe 'ceph::repo' do
       it { should contain_yumrepo('ext-ceph-noarch').with(
         :enabled    => '0',
         :descr      => 'External Ceph noarch',
-        :name       => 'ext-ceph-mimic-noarch',
-        :baseurl    => 'http://download.ceph.com/rpm-mimic/el7/noarch',
+        :name       => 'ext-ceph-nautilus-noarch',
+        :baseurl    => 'http://download.ceph.com/rpm-nautilus/el7/noarch',
         :gpgcheck   => '1',
         :gpgkey     => 'https://download.ceph.com/keys/release.asc',
         :mirrorlist => 'absent',
@@ -602,9 +602,9 @@ describe 'ceph::repo' do
 
       it { should contain_yumrepo('ext-ceph').with(
         :enabled    => '1',
-        :descr      => 'External Ceph mimic',
-        :name       => 'ext-ceph-mimic',
-        :baseurl    => 'http://download.ceph.com/rpm-mimic/el7/$basearch',
+        :descr      => 'External Ceph nautilus',
+        :name       => 'ext-ceph-nautilus',
+        :baseurl    => 'http://download.ceph.com/rpm-nautilus/el7/$basearch',
         :gpgcheck   => '1',
         :gpgkey     => 'https://download.ceph.com/keys/release.asc',
         :mirrorlist => 'absent',
@@ -614,8 +614,8 @@ describe 'ceph::repo' do
       it { should contain_yumrepo('ext-ceph-noarch').with(
         :enabled    => '1',
         :descr      => 'External Ceph noarch',
-        :name       => 'ext-ceph-mimic-noarch',
-        :baseurl    => 'http://download.ceph.com/rpm-mimic/el7/noarch',
+        :name       => 'ext-ceph-nautilus-noarch',
+        :baseurl    => 'http://download.ceph.com/rpm-nautilus/el7/noarch',
         :gpgcheck   => '1',
         :gpgkey     => 'https://download.ceph.com/keys/release.asc',
         :mirrorlist => 'absent',
