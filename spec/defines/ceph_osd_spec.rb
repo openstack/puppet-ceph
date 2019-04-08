@@ -23,69 +23,52 @@ describe 'ceph::osd' do
   shared_examples 'ceph osd' do
     describe "with default params" do
       let :title do
-        '/srv'
+        'vg_test/lv_test'
       end
 
-      it { should contain_exec('ceph-osd-check-udev-/srv').with(
-        'command'   => "/bin/true # comment to satisfy puppet syntax requirements
-# Before Infernalis the udev rules race causing the activation to fail so we
-# disable them. More at: http://www.spinics.net/lists/ceph-devel/msg28436.html
-mv -f /usr/lib/udev/rules.d/95-ceph-osd.rules /usr/lib/udev/rules.d/95-ceph-osd.rules.disabled && udevadm control --reload || true
-",
-       'onlyif'    => "/bin/true # comment to satisfy puppet syntax requirements
-set -ex
-DISABLE_UDEV=$(ceph --version | awk 'match(\$3, /[0-9]+\\.[0-9]+/) {if (substr(\$3, RSTART, RLENGTH) <= 0.94) {print 1} else { print 0 } }')
-test -f /usr/lib/udev/rules.d/95-ceph-osd.rules && test \$DISABLE_UDEV -eq 1
-",
-       'logoutput' => true,
-      ) }
-      it { should contain_exec('ceph-osd-prepare-/srv').with(
+      it { should contain_exec('ceph-osd-prepare-vg_test/lv_test').with(
         'command'   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-disk=$(readlink -f /srv)
-if ! test -b $disk ; then
-    echo $disk | egrep -e '^/dev' -q -v
-    mkdir -p $disk
-    if getent passwd ceph >/dev/null 2>&1; then
-        chown -h ceph:ceph $disk
-    fi
+
+if [ $(echo vg_test/lv_test|cut -c 1) = '/' ]; then
+    disk=vg_test/lv_test
+else
+    # If data is vg/lv, block device is /dev/vg/lv
+    disk=/dev/vg_test/lv_test
 fi
-ceph-disk prepare  --cluster ceph  $(readlink -f /srv) $(readlink -f '')
-udevadm settle
+if ! test -b \$disk ; then
+    # Since nautilus, only block devices or lvm logical volumes can be used for OSDs
+    exit 1
+fi
+ceph-volume lvm prepare  --cluster ceph  --data vg_test/lv_test 
 ",
         'unless'    => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-disk=$(readlink -f /srv)
-ceph-disk list | egrep \" *((${disk}1?|${disk}p1?) .*ceph data, (prepared|active)|\\
-(${disk}5?|${disk}p5?) .*ceph lockbox, (prepared|active), for (${disk}1?|${disk}p1?))\" ||
-{ test -f $disk/fsid && test -f $disk/ceph_fsid && test -f $disk/magic ;}
+ceph-volume lvm list vg_test/lv_test
 ",
         'logoutput' => true
       ) }
-      it { should contain_exec('ceph-osd-activate-/srv').with(
+      it { should contain_exec('ceph-osd-activate-vg_test/lv_test').with(
         'command'   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-disk=$(readlink -f /srv)
-if ! test -b $disk ; then
-    echo $disk | egrep -e '^/dev' -q -v
-    mkdir -p $disk
-    if getent passwd ceph >/dev/null 2>&1; then
-        chown -h ceph:ceph $disk
-    fi
+if [ $(echo vg_test/lv_test|cut -c 1) = '/' ]; then
+    disk=vg_test/lv_test
+else
+    # If data is vg/lv, block device is /dev/vg/lv
+    disk=/dev/vg_test/lv_test
 fi
-# activate happens via udev when using the entire device
-if ! test -b \$disk && ! ( test -b \${disk}1 || test -b \${disk}p1 ); then
-  ceph-disk activate $disk || true
+if ! test -b \$disk ; then
+    # Since nautilus, only block devices or lvm logical volumes can be used for OSDs
+    exit 1
 fi
-if test -f /usr/lib/udev/rules.d/95-ceph-osd.rules.disabled && ( test -b ${disk}1 || test -b ${disk}p1 ); then
-  ceph-disk activate ${disk}1 || true
-fi
+id=$(ceph-volume lvm list vg_test/lv_test | grep 'osd id'|awk -F 'osd id' '{print \$2}'|tr -d ' ')
+fsid=$(ceph-volume lvm list vg_test/lv_test | grep 'osd fsid'|awk -F 'osd fsid' '{print \$2}'|tr -d ' ')
+ceph-volume lvm activate \$id \$fsid
 ",
         'unless'    => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-ceph-disk list | egrep \" *((\${disk}1?|\${disk}p1?) .*ceph data, active|\\
-(\${disk}5?|\${disk}p5?) .*ceph lockbox, active, for (\${disk}1?|\${disk}p1?))\" ||
-ls -ld /var/lib/ceph/osd/ceph-* | grep \" $(readlink -f /srv)\$\"
+id=$(ceph-volume lvm list vg_test/lv_test | grep 'osd id'|awk -F 'osd id' '{print \$2}'|tr -d ' ')
+ps -fCceph-osd|grep \"\\--id \$id \"
 ",
         'logoutput' => true
       ) }
@@ -93,7 +76,7 @@ ls -ld /var/lib/ceph/osd/ceph-* | grep \" $(readlink -f /srv)\$\"
 
     describe "with bluestore params" do
       let :title do
-        '/srv/data'
+        'vg_test/lv_test'
       end
 
       let :params do
@@ -102,82 +85,68 @@ ls -ld /var/lib/ceph/osd/ceph-* | grep \" $(readlink -f /srv)\$\"
           :journal       => '/srv/journal',
           :fsid          => 'f39ace04-f967-4c3d-9fd2-32af2d2d2cd5',
           :store_type    => 'bluestore',
-          :bluestore_wal => '/srv/wal',
-          :bluestore_db  => '/srv/db',
+          :bluestore_wal => 'vg_test/lv_wal',
+          :bluestore_db  => 'vg_test/lv_db',
         }
       end
 
-      it { should contain_exec('ceph-osd-check-udev-/srv/data').with(
-        'command'   => "/bin/true # comment to satisfy puppet syntax requirements
-# Before Infernalis the udev rules race causing the activation to fail so we
-# disable them. More at: http://www.spinics.net/lists/ceph-devel/msg28436.html
-mv -f /usr/lib/udev/rules.d/95-ceph-osd.rules /usr/lib/udev/rules.d/95-ceph-osd.rules.disabled && udevadm control --reload || true
-",
-       'onlyif'    => "/bin/true # comment to satisfy puppet syntax requirements
-set -ex
-DISABLE_UDEV=$(ceph --version | awk 'match(\$3, /[0-9]+\\.[0-9]+/) {if (substr(\$3, RSTART, RLENGTH) <= 0.94) {print 1} else { print 0 } }')
-test -f /usr/lib/udev/rules.d/95-ceph-osd.rules && test \$DISABLE_UDEV -eq 1
-",
-       'logoutput' => true,
-      ) }
-      it { should contain_exec('ceph-osd-check-fsid-mismatch-/srv/data').with(
+      it { should contain_exec('ceph-osd-check-fsid-mismatch-vg_test/lv_test').with(
         'command'   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-test f39ace04-f967-4c3d-9fd2-32af2d2d2cd5 = $(ceph-disk list $(readlink -f /srv/data) | egrep -o '[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}')
+exit 1
 ",
         'unless'    => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-test -z $(ceph-disk list $(readlink -f /srv/data) | egrep -o '[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}')
+if [ -z $(ceph-volume lvm list vg_test/lv_test |grep 'cluster fsid' | awk -F'fsid' '{print \$2}'|tr -d  ' ') ]; then
+    exit 0
+fi
+test f39ace04-f967-4c3d-9fd2-32af2d2d2cd5 = $(ceph-volume lvm list vg_test/lv_test |grep 'cluster fsid' | awk -F'fsid' '{print \$2}'|tr -d  ' ')
 ",
         'logoutput' => true
       ) }
-      it { should contain_exec('ceph-osd-prepare-/srv/data').with(
+      it { should contain_exec('ceph-osd-prepare-vg_test/lv_test').with(
         'command'   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-disk=$(readlink -f /srv/data)
-if ! test -b $disk ; then
-    echo $disk | egrep -e '^/dev' -q -v
-    mkdir -p $disk
-    if getent passwd ceph >/dev/null 2>&1; then
-        chown -h ceph:ceph $disk
-    fi
+
+if [ $(echo vg_test/lv_test|cut -c 1) = '/' ]; then
+    disk=vg_test/lv_test
+else
+    # If data is vg/lv, block device is /dev/vg/lv
+    disk=/dev/vg_test/lv_test
 fi
-ceph-disk prepare --bluestore --cluster testcluster --cluster-uuid f39ace04-f967-4c3d-9fd2-32af2d2d2cd5 $(readlink -f /srv/data) --block.wal $(readlink -f /srv/wal) --block.db $(readlink -f /srv/db)
-udevadm settle
+if ! test -b \$disk ; then
+    # Since nautilus, only block devices or lvm logical volumes can be used for OSDs
+    exit 1
+fi
+ceph-volume lvm prepare --bluestore --cluster testcluster --cluster-fsid f39ace04-f967-4c3d-9fd2-32af2d2d2cd5 --data vg_test/lv_test --block.wal vg_test/lv_wal --block.db vg_test/lv_db
 ",
         'unless'    => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-disk=$(readlink -f /srv/data)
-ceph-disk list | egrep \" *((${disk}1?|${disk}p1?) .*ceph data, (prepared|active)|\\
-(${disk}5?|${disk}p5?) .*ceph lockbox, (prepared|active), for (${disk}1?|${disk}p1?))\" ||
-{ test -f $disk/fsid && test -f $disk/ceph_fsid && test -f $disk/magic ;}
+ceph-volume lvm list vg_test/lv_test
 ",
         'logoutput' => true
       ) }
-      it { should contain_exec('ceph-osd-activate-/srv/data').with(
+      it { should contain_exec('ceph-osd-activate-vg_test/lv_test').with(
         'command'   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-disk=$(readlink -f /srv/data)
-if ! test -b $disk ; then
-    echo $disk | egrep -e '^/dev' -q -v
-    mkdir -p $disk
-    if getent passwd ceph >/dev/null 2>&1; then
-        chown -h ceph:ceph $disk
-    fi
+if [ $(echo vg_test/lv_test|cut -c 1) = '/' ]; then
+    disk=vg_test/lv_test
+else
+    # If data is vg/lv, block device is /dev/vg/lv
+    disk=/dev/vg_test/lv_test
 fi
-# activate happens via udev when using the entire device
-if ! test -b \$disk && ! ( test -b \${disk}1 || test -b \${disk}p1 ); then
-  ceph-disk activate $disk || true
+if ! test -b \$disk ; then
+    # Since nautilus, only block devices or lvm logical volumes can be used for OSDs
+    exit 1
 fi
-if test -f /usr/lib/udev/rules.d/95-ceph-osd.rules.disabled && ( test -b ${disk}1 || test -b ${disk}p1 ); then
-  ceph-disk activate ${disk}1 || true
-fi
+id=$(ceph-volume lvm list vg_test/lv_test | grep 'osd id'|awk -F 'osd id' '{print \$2}'|tr -d ' ')
+fsid=$(ceph-volume lvm list vg_test/lv_test | grep 'osd fsid'|awk -F 'osd fsid' '{print \$2}'|tr -d ' ')
+ceph-volume lvm activate \$id \$fsid
 ",
         'unless'    => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-ceph-disk list | egrep \" *((\${disk}1?|\${disk}p1?) .*ceph data, active|\\
-(\${disk}5?|\${disk}p5?) .*ceph lockbox, active, for (\${disk}1?|\${disk}p1?))\" ||
-ls -ld /var/lib/ceph/osd/testcluster-* | grep \" $(readlink -f /srv/data)\$\"
+id=$(ceph-volume lvm list vg_test/lv_test | grep 'osd id'|awk -F 'osd id' '{print \$2}'|tr -d ' ')
+ps -fCceph-osd|grep \"\\--id \$id \"
 ",
         'logoutput' => true
       ) }
@@ -195,66 +164,49 @@ ls -ld /var/lib/ceph/osd/testcluster-* | grep \" $(readlink -f /srv/data)\$\"
         }
       end
 
-       it { is_expected.to contain_exec('ceph-osd-check-udev-/dev/sdc').with(
-        'command'   => "/bin/true # comment to satisfy puppet syntax requirements
-# Before Infernalis the udev rules race causing the activation to fail so we
-# disable them. More at: http://www.spinics.net/lists/ceph-devel/msg28436.html
-mv -f /usr/lib/udev/rules.d/95-ceph-osd.rules /usr/lib/udev/rules.d/95-ceph-osd.rules.disabled && udevadm control --reload || true
-",
-       'onlyif'    => "/bin/true # comment to satisfy puppet syntax requirements
-set -ex
-DISABLE_UDEV=$(ceph --version | awk 'match(\$3, /[0-9]+\\.[0-9]+/) {if (substr(\$3, RSTART, RLENGTH) <= 0.94) {print 1} else { print 0 } }')
-test -f /usr/lib/udev/rules.d/95-ceph-osd.rules && test \$DISABLE_UDEV -eq 1
-",
-       'logoutput' => true,
-      ) }
       it { is_expected.to contain_exec('ceph-osd-prepare-/dev/sdc').with(
         'command'   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-disk=$(readlink -f /dev/sdc)
-if ! test -b $disk ; then
-    echo $disk | egrep -e '^/dev' -q -v
-    mkdir -p $disk
-    if getent passwd ceph >/dev/null 2>&1; then
-        chown -h ceph:ceph $disk
-    fi
+
+if [ $(echo /dev/sdc|cut -c 1) = '/' ]; then
+    disk=/dev/sdc
+else
+    # If data is vg/lv, block device is /dev/vg/lv
+    disk=/dev//dev/sdc
 fi
-ceph-disk prepare  --cluster ceph --dmcrypt --dmcrypt-key-dir '/etc/ceph/dmcrypt-keys'  $(readlink -f /dev/sdc) $(readlink -f '')
-udevadm settle
+if ! test -b \$disk ; then
+    # Since nautilus, only block devices or lvm logical volumes can be used for OSDs
+    exit 1
+fi
+ceph-volume lvm prepare  --cluster ceph --dmcrypt --dmcrypt-key-dir '/etc/ceph/dmcrypt-keys'  --data /dev/sdc 
 ",
         'unless'    => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-disk=$(readlink -f /dev/sdc)
-ceph-disk list | egrep \" *((${disk}1?|${disk}p1?) .*ceph data, (prepared|active)|\\
-(${disk}5?|${disk}p5?) .*ceph lockbox, (prepared|active), for (${disk}1?|${disk}p1?))\" ||
-{ test -f $disk/fsid && test -f $disk/ceph_fsid && test -f $disk/magic ;}
+ceph-volume lvm list /dev/sdc
 ",
         'logoutput' => true
       ) }
       it { is_expected.to contain_exec('ceph-osd-activate-/dev/sdc').with(
         'command'   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-disk=$(readlink -f /dev/sdc)
-if ! test -b $disk ; then
-    echo $disk | egrep -e '^/dev' -q -v
-    mkdir -p $disk
-    if getent passwd ceph >/dev/null 2>&1; then
-        chown -h ceph:ceph $disk
-    fi
+if [ $(echo /dev/sdc|cut -c 1) = '/' ]; then
+    disk=/dev/sdc
+else
+    # If data is vg/lv, block device is /dev/vg/lv
+    disk=/dev//dev/sdc
 fi
-# activate happens via udev when using the entire device
-if ! test -b \$disk && ! ( test -b \${disk}1 || test -b \${disk}p1 ); then
-  ceph-disk activate $disk || true
+if ! test -b \$disk ; then
+    # Since nautilus, only block devices or lvm logical volumes can be used for OSDs
+    exit 1
 fi
-if test -f /usr/lib/udev/rules.d/95-ceph-osd.rules.disabled && ( test -b ${disk}1 || test -b ${disk}p1 ); then
-  ceph-disk activate ${disk}1 || true
-fi
+id=$(ceph-volume lvm list /dev/sdc | grep 'osd id'|awk -F 'osd id' '{print \$2}'|tr -d ' ')
+fsid=$(ceph-volume lvm list /dev/sdc | grep 'osd fsid'|awk -F 'osd fsid' '{print \$2}'|tr -d ' ')
+ceph-volume lvm activate \$id \$fsid
 ",
         'unless'    => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-ceph-disk list | egrep \" *((\${disk}1?|\${disk}p1?) .*ceph data, active|\\
-(\${disk}5?|\${disk}p5?) .*ceph lockbox, active, for (\${disk}1?|\${disk}p1?))\" ||
-ls -ld /var/lib/ceph/osd/ceph-* | grep \" $(readlink -f /dev/sdc)\$\"
+id=$(ceph-volume lvm list /dev/sdc | grep 'osd id'|awk -F 'osd id' '{print \$2}'|tr -d ' ')
+ps -fCceph-osd|grep \"\\--id \$id \"
 ",
         'logoutput' => true
       ) }
@@ -273,66 +225,49 @@ ls -ld /var/lib/ceph/osd/ceph-* | grep \" $(readlink -f /dev/sdc)\$\"
         }
       end
 
-       it { is_expected.to contain_exec('ceph-osd-check-udev-/dev/sdc').with(
-        'command'   => "/bin/true # comment to satisfy puppet syntax requirements
-# Before Infernalis the udev rules race causing the activation to fail so we
-# disable them. More at: http://www.spinics.net/lists/ceph-devel/msg28436.html
-mv -f /usr/lib/udev/rules.d/95-ceph-osd.rules /usr/lib/udev/rules.d/95-ceph-osd.rules.disabled && udevadm control --reload || true
-",
-       'onlyif'    => "/bin/true # comment to satisfy puppet syntax requirements
-set -ex
-DISABLE_UDEV=$(ceph --version | awk 'match(\$3, /[0-9]+\\.[0-9]+/) {if (substr(\$3, RSTART, RLENGTH) <= 0.94) {print 1} else { print 0 } }')
-test -f /usr/lib/udev/rules.d/95-ceph-osd.rules && test \$DISABLE_UDEV -eq 1
-",
-       'logoutput' => true,
-      ) }
       it { is_expected.to contain_exec('ceph-osd-prepare-/dev/sdc').with(
         'command'   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-disk=$(readlink -f /dev/sdc)
-if ! test -b $disk ; then
-    echo $disk | egrep -e '^/dev' -q -v
-    mkdir -p $disk
-    if getent passwd ceph >/dev/null 2>&1; then
-        chown -h ceph:ceph $disk
-    fi
+
+if [ $(echo /dev/sdc|cut -c 1) = '/' ]; then
+    disk=/dev/sdc
+else
+    # If data is vg/lv, block device is /dev/vg/lv
+    disk=/dev//dev/sdc
 fi
-ceph-disk prepare  --cluster ceph --dmcrypt --dmcrypt-key-dir '/srv/ceph/keys'  $(readlink -f /dev/sdc) $(readlink -f '')
-udevadm settle
+if ! test -b \$disk ; then
+    # Since nautilus, only block devices or lvm logical volumes can be used for OSDs
+    exit 1
+fi
+ceph-volume lvm prepare  --cluster ceph --dmcrypt --dmcrypt-key-dir '/srv/ceph/keys'  --data /dev/sdc 
 ",
         'unless'    => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-disk=$(readlink -f /dev/sdc)
-ceph-disk list | egrep \" *((${disk}1?|${disk}p1?) .*ceph data, (prepared|active)|\\
-(${disk}5?|${disk}p5?) .*ceph lockbox, (prepared|active), for (${disk}1?|${disk}p1?))\" ||
-{ test -f $disk/fsid && test -f $disk/ceph_fsid && test -f $disk/magic ;}
+ceph-volume lvm list /dev/sdc
 ",
         'logoutput' => true
       ) }
       it { is_expected.to contain_exec('ceph-osd-activate-/dev/sdc').with(
         'command'   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-disk=$(readlink -f /dev/sdc)
-if ! test -b $disk ; then
-    echo $disk | egrep -e '^/dev' -q -v
-    mkdir -p $disk
-    if getent passwd ceph >/dev/null 2>&1; then
-        chown -h ceph:ceph $disk
-    fi
+if [ $(echo /dev/sdc|cut -c 1) = '/' ]; then
+    disk=/dev/sdc
+else
+    # If data is vg/lv, block device is /dev/vg/lv
+    disk=/dev//dev/sdc
 fi
-# activate happens via udev when using the entire device
-if ! test -b \$disk && ! ( test -b \${disk}1 || test -b \${disk}p1 ); then
-  ceph-disk activate $disk || true
+if ! test -b \$disk ; then
+    # Since nautilus, only block devices or lvm logical volumes can be used for OSDs
+    exit 1
 fi
-if test -f /usr/lib/udev/rules.d/95-ceph-osd.rules.disabled && ( test -b ${disk}1 || test -b ${disk}p1 ); then
-  ceph-disk activate ${disk}1 || true
-fi
+id=$(ceph-volume lvm list /dev/sdc | grep 'osd id'|awk -F 'osd id' '{print \$2}'|tr -d ' ')
+fsid=$(ceph-volume lvm list /dev/sdc | grep 'osd fsid'|awk -F 'osd fsid' '{print \$2}'|tr -d ' ')
+ceph-volume lvm activate \$id \$fsid
 ",
         'unless'    => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-ceph-disk list | egrep \" *((\${disk}1?|\${disk}p1?) .*ceph data, active|\\
-(\${disk}5?|\${disk}p5?) .*ceph lockbox, active, for (\${disk}1?|\${disk}p1?))\" ||
-ls -ld /var/lib/ceph/osd/ceph-* | grep \" $(readlink -f /dev/sdc)\$\"
+id=$(ceph-volume lvm list /dev/sdc | grep 'osd id'|awk -F 'osd id' '{print \$2}'|tr -d ' ')
+ps -fCceph-osd|grep \"\\--id \$id \"
 ",
         'logoutput' => true
       ) }
@@ -340,89 +275,75 @@ ls -ld /var/lib/ceph/osd/ceph-* | grep \" $(readlink -f /dev/sdc)\$\"
 
     describe "with custom params" do
       let :title do
-        '/srv/data'
+        'vg_test/lv_test'
       end
 
       let :params do
         {
           :cluster    => 'testcluster',
-          :journal    => '/srv/journal',
+          :journal    => 'vg_test/lv_journal',
           :fsid       => 'f39ace04-f967-4c3d-9fd2-32af2d2d2cd5',
           :store_type => 'filestore'
         }
       end
 
-      it { should contain_exec('ceph-osd-check-udev-/srv/data').with(
-        'command'   => "/bin/true # comment to satisfy puppet syntax requirements
-# Before Infernalis the udev rules race causing the activation to fail so we
-# disable them. More at: http://www.spinics.net/lists/ceph-devel/msg28436.html
-mv -f /usr/lib/udev/rules.d/95-ceph-osd.rules /usr/lib/udev/rules.d/95-ceph-osd.rules.disabled && udevadm control --reload || true
-",
-       'onlyif'    => "/bin/true # comment to satisfy puppet syntax requirements
-set -ex
-DISABLE_UDEV=$(ceph --version | awk 'match(\$3, /[0-9]+\\.[0-9]+/) {if (substr(\$3, RSTART, RLENGTH) <= 0.94) {print 1} else { print 0 } }')
-test -f /usr/lib/udev/rules.d/95-ceph-osd.rules && test \$DISABLE_UDEV -eq 1
-",
-       'logoutput' => true,
-      ) }
-      it { should contain_exec('ceph-osd-check-fsid-mismatch-/srv/data').with(
+      it { should contain_exec('ceph-osd-check-fsid-mismatch-vg_test/lv_test').with(
         'command'   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-test f39ace04-f967-4c3d-9fd2-32af2d2d2cd5 = $(ceph-disk list $(readlink -f /srv/data) | egrep -o '[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}')
+exit 1
 ",
         'unless'    => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-test -z $(ceph-disk list $(readlink -f /srv/data) | egrep -o '[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}')
+if [ -z $(ceph-volume lvm list vg_test/lv_test |grep 'cluster fsid' | awk -F'fsid' '{print \$2}'|tr -d  ' ') ]; then
+    exit 0
+fi
+test f39ace04-f967-4c3d-9fd2-32af2d2d2cd5 = $(ceph-volume lvm list vg_test/lv_test |grep 'cluster fsid' | awk -F'fsid' '{print \$2}'|tr -d  ' ')
 ",
         'logoutput' => true
       ) }
-      it { should contain_exec('ceph-osd-prepare-/srv/data').with(
+      it { should contain_exec('ceph-osd-prepare-vg_test/lv_test').with(
         'command'   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-disk=$(readlink -f /srv/data)
-if ! test -b $disk ; then
-    echo $disk | egrep -e '^/dev' -q -v
-    mkdir -p $disk
-    if getent passwd ceph >/dev/null 2>&1; then
-        chown -h ceph:ceph $disk
-    fi
+
+if [ $(echo vg_test/lv_test|cut -c 1) = '/' ]; then
+    disk=vg_test/lv_test
+else
+    # If data is vg/lv, block device is /dev/vg/lv
+    disk=/dev/vg_test/lv_test
 fi
-ceph-disk prepare --filestore --cluster testcluster --cluster-uuid f39ace04-f967-4c3d-9fd2-32af2d2d2cd5 $(readlink -f /srv/data) $(readlink -f /srv/journal)
-udevadm settle
+if ! test -b \$disk ; then
+    # Since nautilus, only block devices or lvm logical volumes can be used for OSDs
+    exit 1
+fi
+ceph-volume lvm prepare --filestore --cluster testcluster --cluster-fsid f39ace04-f967-4c3d-9fd2-32af2d2d2cd5 --data vg_test/lv_test --journal vg_test/lv_journal
 ",
         'unless'    => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-disk=$(readlink -f /srv/data)
-ceph-disk list | egrep \" *((${disk}1?|${disk}p1?) .*ceph data, (prepared|active)|\\
-(${disk}5?|${disk}p5?) .*ceph lockbox, (prepared|active), for (${disk}1?|${disk}p1?))\" ||
-{ test -f $disk/fsid && test -f $disk/ceph_fsid && test -f $disk/magic ;}
+ceph-volume lvm list vg_test/lv_test
 ",
         'logoutput' => true
       ) }
-      it { should contain_exec('ceph-osd-activate-/srv/data').with(
+      it { should contain_exec('ceph-osd-activate-vg_test/lv_test').with(
         'command'   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-disk=$(readlink -f /srv/data)
-if ! test -b $disk ; then
-    echo $disk | egrep -e '^/dev' -q -v
-    mkdir -p $disk
-    if getent passwd ceph >/dev/null 2>&1; then
-        chown -h ceph:ceph $disk
-    fi
+if [ $(echo vg_test/lv_test|cut -c 1) = '/' ]; then
+    disk=vg_test/lv_test
+else
+    # If data is vg/lv, block device is /dev/vg/lv
+    disk=/dev/vg_test/lv_test
 fi
-# activate happens via udev when using the entire device
-if ! test -b \$disk && ! ( test -b \${disk}1 || test -b \${disk}p1 ); then
-  ceph-disk activate $disk || true
+if ! test -b \$disk ; then
+    # Since nautilus, only block devices or lvm logical volumes can be used for OSDs
+    exit 1
 fi
-if test -f /usr/lib/udev/rules.d/95-ceph-osd.rules.disabled && ( test -b ${disk}1 || test -b ${disk}p1 ); then
-  ceph-disk activate ${disk}1 || true
-fi
+id=$(ceph-volume lvm list vg_test/lv_test | grep 'osd id'|awk -F 'osd id' '{print \$2}'|tr -d ' ')
+fsid=$(ceph-volume lvm list vg_test/lv_test | grep 'osd fsid'|awk -F 'osd fsid' '{print \$2}'|tr -d ' ')
+ceph-volume lvm activate \$id \$fsid
 ",
         'unless'    => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-ceph-disk list | egrep \" *((\${disk}1?|\${disk}p1?) .*ceph data, active|\\
-(\${disk}5?|\${disk}p5?) .*ceph lockbox, active, for (\${disk}1?|\${disk}p1?))\" ||
-ls -ld /var/lib/ceph/osd/testcluster-* | grep \" $(readlink -f /srv/data)\$\"
+id=$(ceph-volume lvm list vg_test/lv_test | grep 'osd id'|awk -F 'osd id' '{print \$2}'|tr -d ' ')
+ps -fCceph-osd|grep \"\\--id \$id \"
 ",
         'logoutput' => true
       ) }
@@ -434,66 +355,49 @@ ls -ld /var/lib/ceph/osd/testcluster-* | grep \" $(readlink -f /srv/data)\$\"
         '/dev/nvme0n1'
       end
 
-      it { should contain_exec('ceph-osd-check-udev-/dev/nvme0n1').with(
-        'command'   => "/bin/true # comment to satisfy puppet syntax requirements
-# Before Infernalis the udev rules race causing the activation to fail so we
-# disable them. More at: http://www.spinics.net/lists/ceph-devel/msg28436.html
-mv -f /usr/lib/udev/rules.d/95-ceph-osd.rules /usr/lib/udev/rules.d/95-ceph-osd.rules.disabled && udevadm control --reload || true
-",
-       'onlyif'    => "/bin/true # comment to satisfy puppet syntax requirements
-set -ex
-DISABLE_UDEV=$(ceph --version | awk 'match(\$3, /[0-9]+\\.[0-9]+/) {if (substr(\$3, RSTART, RLENGTH) <= 0.94) {print 1} else { print 0 } }')
-test -f /usr/lib/udev/rules.d/95-ceph-osd.rules && test \$DISABLE_UDEV -eq 1
-",
-       'logoutput' => true,
-      ) }
       it { should contain_exec('ceph-osd-prepare-/dev/nvme0n1').with(
         'command'   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-disk=$(readlink -f /dev/nvme0n1)
-if ! test -b $disk ; then
-    echo $disk | egrep -e '^/dev' -q -v
-    mkdir -p $disk
-    if getent passwd ceph >/dev/null 2>&1; then
-        chown -h ceph:ceph $disk
-    fi
+
+if [ $(echo /dev/nvme0n1|cut -c 1) = '/' ]; then
+    disk=/dev/nvme0n1
+else
+    # If data is vg/lv, block device is /dev/vg/lv
+    disk=/dev//dev/nvme0n1
 fi
-ceph-disk prepare  --cluster ceph  $(readlink -f /dev/nvme0n1) $(readlink -f '')
-udevadm settle
+if ! test -b \$disk ; then
+    # Since nautilus, only block devices or lvm logical volumes can be used for OSDs
+    exit 1
+fi
+ceph-volume lvm prepare  --cluster ceph  --data /dev/nvme0n1 
 ",
         'unless'    => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-disk=$(readlink -f /dev/nvme0n1)
-ceph-disk list | egrep \" *((${disk}1?|${disk}p1?) .*ceph data, (prepared|active)|\\
-(${disk}5?|${disk}p5?) .*ceph lockbox, (prepared|active), for (${disk}1?|${disk}p1?))\" ||
-{ test -f $disk/fsid && test -f $disk/ceph_fsid && test -f $disk/magic ;}
+ceph-volume lvm list /dev/nvme0n1
 ",
         'logoutput' => true
       ) }
       it { should contain_exec('ceph-osd-activate-/dev/nvme0n1').with(
         'command'   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-disk=$(readlink -f /dev/nvme0n1)
-if ! test -b $disk ; then
-    echo $disk | egrep -e '^/dev' -q -v
-    mkdir -p $disk
-    if getent passwd ceph >/dev/null 2>&1; then
-        chown -h ceph:ceph $disk
-    fi
+if [ $(echo /dev/nvme0n1|cut -c 1) = '/' ]; then
+    disk=/dev/nvme0n1
+else
+    # If data is vg/lv, block device is /dev/vg/lv
+    disk=/dev//dev/nvme0n1
 fi
-# activate happens via udev when using the entire device
-if ! test -b \$disk && ! ( test -b \${disk}1 || test -b \${disk}p1 ); then
-  ceph-disk activate $disk || true
+if ! test -b \$disk ; then
+    # Since nautilus, only block devices or lvm logical volumes can be used for OSDs
+    exit 1
 fi
-if test -f /usr/lib/udev/rules.d/95-ceph-osd.rules.disabled && ( test -b ${disk}1 || test -b ${disk}p1 ); then
-  ceph-disk activate ${disk}1 || true
-fi
+id=$(ceph-volume lvm list /dev/nvme0n1 | grep 'osd id'|awk -F 'osd id' '{print \$2}'|tr -d ' ')
+fsid=$(ceph-volume lvm list /dev/nvme0n1 | grep 'osd fsid'|awk -F 'osd fsid' '{print \$2}'|tr -d ' ')
+ceph-volume lvm activate \$id \$fsid
 ",
         'unless'    => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-ceph-disk list | egrep \" *((\${disk}1?|\${disk}p1?) .*ceph data, active|\\
-(\${disk}5?|\${disk}p5?) .*ceph lockbox, active, for (\${disk}1?|\${disk}p1?))\" ||
-ls -ld /var/lib/ceph/osd/ceph-* | grep \" $(readlink -f /dev/nvme0n1)\$\"
+id=$(ceph-volume lvm list /dev/nvme0n1 | grep 'osd id'|awk -F 'osd id' '{print \$2}'|tr -d ' ')
+ps -fCceph-osd|grep \"\\--id \$id \"
 ",
         'logoutput' => true
       ) }
@@ -505,66 +409,49 @@ ls -ld /var/lib/ceph/osd/ceph-* | grep \" $(readlink -f /dev/nvme0n1)\$\"
         '/dev/cciss/c0d0'
       end
 
-      it { should contain_exec('ceph-osd-check-udev-/dev/cciss/c0d0').with(
-        'command'   => "/bin/true # comment to satisfy puppet syntax requirements
-# Before Infernalis the udev rules race causing the activation to fail so we
-# disable them. More at: http://www.spinics.net/lists/ceph-devel/msg28436.html
-mv -f /usr/lib/udev/rules.d/95-ceph-osd.rules /usr/lib/udev/rules.d/95-ceph-osd.rules.disabled && udevadm control --reload || true
-",
-       'onlyif'    => "/bin/true # comment to satisfy puppet syntax requirements
-set -ex
-DISABLE_UDEV=$(ceph --version | awk 'match(\$3, /[0-9]+\\.[0-9]+/) {if (substr(\$3, RSTART, RLENGTH) <= 0.94) {print 1} else { print 0 } }')
-test -f /usr/lib/udev/rules.d/95-ceph-osd.rules && test \$DISABLE_UDEV -eq 1
-",
-       'logoutput' => true,
-      ) }
       it { should contain_exec('ceph-osd-prepare-/dev/cciss/c0d0').with(
         'command'   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-disk=$(readlink -f /dev/cciss/c0d0)
-if ! test -b $disk ; then
-    echo $disk | egrep -e '^/dev' -q -v
-    mkdir -p $disk
-    if getent passwd ceph >/dev/null 2>&1; then
-        chown -h ceph:ceph $disk
-    fi
+
+if [ $(echo /dev/cciss/c0d0|cut -c 1) = '/' ]; then
+    disk=/dev/cciss/c0d0
+else
+    # If data is vg/lv, block device is /dev/vg/lv
+    disk=/dev//dev/cciss/c0d0
 fi
-ceph-disk prepare  --cluster ceph  $(readlink -f /dev/cciss/c0d0) $(readlink -f '')
-udevadm settle
+if ! test -b \$disk ; then
+    # Since nautilus, only block devices or lvm logical volumes can be used for OSDs
+    exit 1
+fi
+ceph-volume lvm prepare  --cluster ceph  --data /dev/cciss/c0d0 
 ",
         'unless'    => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-disk=$(readlink -f /dev/cciss/c0d0)
-ceph-disk list | egrep \" *((${disk}1?|${disk}p1?) .*ceph data, (prepared|active)|\\
-(${disk}5?|${disk}p5?) .*ceph lockbox, (prepared|active), for (${disk}1?|${disk}p1?))\" ||
-{ test -f $disk/fsid && test -f $disk/ceph_fsid && test -f $disk/magic ;}
+ceph-volume lvm list /dev/cciss/c0d0
 ",
         'logoutput' => true
       ) }
       it { should contain_exec('ceph-osd-activate-/dev/cciss/c0d0').with(
         'command'   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-disk=$(readlink -f /dev/cciss/c0d0)
-if ! test -b $disk ; then
-    echo $disk | egrep -e '^/dev' -q -v
-    mkdir -p $disk
-    if getent passwd ceph >/dev/null 2>&1; then
-        chown -h ceph:ceph $disk
-    fi
+if [ $(echo /dev/cciss/c0d0|cut -c 1) = '/' ]; then
+    disk=/dev/cciss/c0d0
+else
+    # If data is vg/lv, block device is /dev/vg/lv
+    disk=/dev//dev/cciss/c0d0
 fi
-# activate happens via udev when using the entire device
-if ! test -b \$disk && ! ( test -b \${disk}1 || test -b \${disk}p1 ); then
-  ceph-disk activate $disk || true
+if ! test -b \$disk ; then
+    # Since nautilus, only block devices or lvm logical volumes can be used for OSDs
+    exit 1
 fi
-if test -f /usr/lib/udev/rules.d/95-ceph-osd.rules.disabled && ( test -b ${disk}1 || test -b ${disk}p1 ); then
-  ceph-disk activate ${disk}1 || true
-fi
+id=$(ceph-volume lvm list /dev/cciss/c0d0 | grep 'osd id'|awk -F 'osd id' '{print \$2}'|tr -d ' ')
+fsid=$(ceph-volume lvm list /dev/cciss/c0d0 | grep 'osd fsid'|awk -F 'osd fsid' '{print \$2}'|tr -d ' ')
+ceph-volume lvm activate \$id \$fsid
 ",
         'unless'    => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-ceph-disk list | egrep \" *((\${disk}1?|\${disk}p1?) .*ceph data, active|\\
-(\${disk}5?|\${disk}p5?) .*ceph lockbox, active, for (\${disk}1?|\${disk}p1?))\" ||
-ls -ld /var/lib/ceph/osd/ceph-* | grep \" $(readlink -f /dev/cciss/c0d0)\$\"
+id=$(ceph-volume lvm list /dev/cciss/c0d0 | grep 'osd id'|awk -F 'osd id' '{print \$2}'|tr -d ' ')
+ps -fCceph-osd|grep \"\\--id \$id \"
 ",
         'logoutput' => true
       ) }
@@ -573,7 +460,7 @@ ls -ld /var/lib/ceph/osd/ceph-* | grep \" $(readlink -f /dev/cciss/c0d0)\$\"
     describe "with ensure absent" do
 
       let :title do
-        '/srv'
+        'vg_test/lv_test'
       end
 
       let :params do
@@ -582,41 +469,31 @@ ls -ld /var/lib/ceph/osd/ceph-* | grep \" $(readlink -f /dev/cciss/c0d0)\$\"
         }
       end
 
-      it { should contain_exec('remove-osd-/srv').with(
+      it { should contain_exec('remove-osd-vg_test/lv_test').with(
         'command'   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-disk=$(readlink -f /srv)
-if [ -z \"\$id\" ] ; then
-  id=$(ceph-disk list | sed -nEe \"s:^ *${disk}1? .*(ceph data|mounted on).*osd\\.([0-9]+).*:\\2:p\")
-fi
-if [ -z \"\$id\" ] ; then
-  id=$(ls -ld /var/lib/ceph/osd/ceph-* | sed -nEe \"s:.*/ceph-([0-9]+) *-> *${disk}\$:\\1:p\" || true)
-fi
+id=$(ceph-volume lvm list vg_test/lv_test | grep 'osd id'|awk -F 'osd id' '{print \$2}'|tr -d ' ')
 if [ \"\$id\" ] ; then
+  ceph --cluster ceph osd out osd.\$id
   stop ceph-osd cluster=ceph id=\$id || true
   service ceph stop osd.\$id || true
-  systemctl stop ceph-osd@$id || true
+  systemctl stop ceph-osd@\$id || true
   ceph --cluster ceph osd crush remove osd.\$id
   ceph --cluster ceph auth del osd.\$id
   ceph --cluster ceph osd rm \$id
   rm -fr /var/lib/ceph/osd/ceph-\$id/*
   umount /var/lib/ceph/osd/ceph-\$id || true
   rm -fr /var/lib/ceph/osd/ceph-\$id
+  ceph-volume lvm zap vg_test/lv_test
 fi
 ",
         'unless'    => "/bin/true # comment to satisfy puppet syntax requirements
-set -ex
-disk=$(readlink -f /srv)
-if [ -z \"\$id\" ] ; then
-  id=$(ceph-disk list | sed -nEe \"s:^ *${disk}1? .*(ceph data|mounted on).*osd\\.([0-9]+).*:\\2:p\")
-fi
-if [ -z \"\$id\" ] ; then
-  id=$(ls -ld /var/lib/ceph/osd/ceph-* | sed -nEe \"s:.*/ceph-([0-9]+) *-> *${disk}\$:\\1:p\" || true)
-fi
-if [ \"\$id\" ] ; then
-  test ! -d /var/lib/ceph/osd/ceph-\$id
+set -x
+ceph-volume lvm list vg_test/lv_test
+if [ \$? -eq 0 ]; then
+    exit 1
 else
-  true # if there is no id  we do nothing
+    exit 0
 fi
 ",
         'logoutput' => true

@@ -2,6 +2,14 @@
     templates:
       - puppet-openstack-check-jobs
       - puppet-openstack-module-unit-jobs
-      - puppet-openstack-integration-jobs-scenario001
-      - puppet-openstack-integration-jobs-scenario004
       - release-notes-jobs-python3
+    check:
+      jobs:
+        - puppet-openstack-integration-5-scenario001-tempest-ubuntu-bionic-mimic:
+            voting: false
+        - puppet-openstack-integration-5-scenario001-tempest-centos-7-luminous:
+            voting: false
+        - puppet-openstack-integration-5-scenario004-tempest-ubuntu-bionic-mimic:
+            voting: false
+        - puppet-openstack-integration-5-scenario004-tempest-centos-7-mimic:
+            voting: false

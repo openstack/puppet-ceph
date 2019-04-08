@@ -24,7 +24,7 @@
 # === Parameters:
 #
 # [*title*] The OSD data path.
-#   Mandatory. A path in which the OSD data is to be stored.
+#   Mandatory. The path for a disk or vg/lv used for the OSD
 #
 # [*ensure*] Installs ( present ) or remove ( absent ) an OSD
 #   Optional. Defaults to present.
@@ -68,7 +68,7 @@
 #
 define ceph::osd (
   $ensure = present,
-  $journal = "''",
+  $journal = undef,
   $cluster = undef,
   $bluestore_wal = undef,
   $bluestore_db = undef,
@@ -97,15 +97,17 @@ define ceph::osd (
 
     if ($bluestore_wal) or ($bluestore_db) {
       if $bluestore_wal {
-        $wal_opts = "--block.wal $(readlink -f ${bluestore_wal})"
+        $wal_opts = "--block.wal ${bluestore_wal}"
       }
       if $bluestore_db {
-        $block_opts = "--block.db $(readlink -f ${bluestore_db})"
+        $block_opts = "--block.db ${bluestore_db}"
       }
       $journal_opts = "${wal_opts} ${block_opts}"
 
+    } elsif $journal {
+      $journal_opts = "--journal ${journal}"
     } else {
-      $journal_opts = "$(readlink -f ${journal})"
+      $journal_opts = ''
     }
 
     if $dmcrypt {
@@ -116,11 +118,9 @@ define ceph::osd (
 
     if $ensure == present {
 
-      $ceph_check_udev = "ceph-osd-check-udev-${name}"
       $ceph_prepare = "ceph-osd-prepare-${name}"
       $ceph_activate = "ceph-osd-activate-${name}"
 
-      Package<| tag == 'ceph' |> -> Exec[$ceph_check_udev]
       Ceph_config<||> -> Exec[$ceph_prepare]
       Ceph::Mon<||> -> Exec[$ceph_prepare]
       Ceph::Key<||> -> Exec[$ceph_prepare]
@@ -128,63 +128,47 @@ define ceph::osd (
       # Ensure none is activated before prepare is finished for all
       Exec<| tag == 'prepare' |> -> Exec<| tag == 'activate' |>
 
-      $udev_rules_file = '/usr/lib/udev/rules.d/95-ceph-osd.rules'
-      exec { $ceph_check_udev:
-        command   => "/bin/true # comment to satisfy puppet syntax requirements
-# Before Infernalis the udev rules race causing the activation to fail so we
-# disable them. More at: http://www.spinics.net/lists/ceph-devel/msg28436.html
-mv -f ${udev_rules_file} ${udev_rules_file}.disabled && udevadm control --reload || true
-",
-        onlyif    => "/bin/true # comment to satisfy puppet syntax requirements
-set -ex
-DISABLE_UDEV=$(ceph --version | awk 'match(\$3, /[0-9]+\\.[0-9]+/) {if (substr(\$3, RSTART, RLENGTH) <= 0.94) {print 1} else { print 0 } }')
-test -f ${udev_rules_file} && test \$DISABLE_UDEV -eq 1
-",
-        logoutput => true,
-      }
-
       if $fsid {
-        $fsid_option = "--cluster-uuid ${fsid}"
+        $fsid_option = "--cluster-fsid ${fsid}"
         $ceph_check_fsid_mismatch = "ceph-osd-check-fsid-mismatch-${name}"
-        Exec[$ceph_check_udev] -> Exec[$ceph_check_fsid_mismatch]
         Exec[$ceph_check_fsid_mismatch] -> Exec[$ceph_prepare]
         # return error if $(readlink -f ${data}) has fsid differing from ${fsid}, unless there is no fsid
         exec { $ceph_check_fsid_mismatch:
           command   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-test ${fsid} = $(ceph-disk list $(readlink -f ${data}) | egrep -o '[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}')
+exit 1
 ",
           unless    => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-test -z $(ceph-disk list $(readlink -f ${data}) | egrep -o '[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}')
+if [ -z $(ceph-volume lvm list ${data} |grep 'cluster fsid' | awk -F'fsid' '{print \$2}'|tr -d  ' ') ]; then
+    exit 0
+fi
+test ${fsid} = $(ceph-volume lvm list ${data} |grep 'cluster fsid' | awk -F'fsid' '{print \$2}'|tr -d  ' ')
 ",
           logoutput => true,
           timeout   => $exec_timeout,
         }
       }
 
-      Exec[$ceph_check_udev] -> Exec[$ceph_prepare]
-      # ceph-disk: prepare should be idempotent http://tracker.ceph.com/issues/7475
       exec { $ceph_prepare:
         command   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-disk=$(readlink -f ${data})
-if ! test -b \$disk ; then
-    echo \$disk | egrep -e '^/dev' -q -v
-    mkdir -p \$disk
-    if getent passwd ceph >/dev/null 2>&1; then
-        chown -h ceph:ceph \$disk
-    fi
+
+if [ $(echo ${data}|cut -c 1) = '/' ]; then
+    disk=${data}
+else
+    # If data is vg/lv, block device is /dev/vg/lv
+    disk=/dev/${data}
 fi
-ceph-disk prepare ${osd_type} ${cluster_option}${dmcrypt_options} ${fsid_option} $(readlink -f ${data}) ${journal_opts}
-udevadm settle
+if ! test -b \$disk ; then
+    # Since nautilus, only block devices or lvm logical volumes can be used for OSDs
+    exit 1
+fi
+ceph-volume lvm prepare ${osd_type} ${cluster_option}${dmcrypt_options} ${fsid_option} --data ${data} ${journal_opts}
 ",
         unless    => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-disk=$(readlink -f ${data})
-ceph-disk list | egrep \" *((\${disk}1?|\${disk}p1?) .*ceph data, (prepared|active)|\\
-(\${disk}5?|\${disk}p5?) .*ceph lockbox, (prepared|active), for (\${disk}1?|\${disk}p1?))\" ||
-{ test -f \$disk/fsid && test -f \$disk/ceph_fsid && test -f \$disk/magic ;}
+ceph-volume lvm list ${data}
 ",
         logoutput => true,
         timeout   => $exec_timeout,
@@ -208,27 +192,24 @@ restorecon -R $(readlink -f ${data})
       exec { $ceph_activate:
         command   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-disk=$(readlink -f ${data})
+if [ $(echo ${data}|cut -c 1) = '/' ]; then
+    disk=${data}
+else
+    # If data is vg/lv, block device is /dev/vg/lv
+    disk=/dev/${data}
+fi
 if ! test -b \$disk ; then
-    echo \$disk | egrep -e '^/dev' -q -v
-    mkdir -p \$disk
-    if getent passwd ceph >/dev/null 2>&1; then
-        chown -h ceph:ceph \$disk
-    fi
+    # Since nautilus, only block devices or lvm logical volumes can be used for OSDs
+    exit 1
 fi
-# activate happens via udev when using the entire device
-if ! test -b \$disk && ! ( test -b \${disk}1 || test -b \${disk}p1 ); then
-  ceph-disk activate \$disk || true
-fi
-if test -f ${udev_rules_file}.disabled && ( test -b \${disk}1 || test -b \${disk}p1 ); then
-  ceph-disk activate \${disk}1 || true
-fi
+id=$(ceph-volume lvm list ${data} | grep 'osd id'|awk -F 'osd id' '{print \$2}'|tr -d ' ')
+fsid=$(ceph-volume lvm list ${data} | grep 'osd fsid'|awk -F 'osd fsid' '{print \$2}'|tr -d ' ')
+ceph-volume lvm activate \$id \$fsid
 ",
         unless    => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-ceph-disk list | egrep \" *((\${disk}1?|\${disk}p1?) .*ceph data, active|\\
-(\${disk}5?|\${disk}p5?) .*ceph lockbox, active, for (\${disk}1?|\${disk}p1?))\" ||
-ls -ld /var/lib/ceph/osd/${cluster_name}-* | grep \" $(readlink -f ${data})\$\"
+id=$(ceph-volume lvm list ${data} | grep 'osd id'|awk -F 'osd id' '{print \$2}'|tr -d ' ')
+ps -fCceph-osd|grep \"\\--id \$id \"
 ",
         logoutput => true,
         tag       => 'activate',
@@ -240,14 +221,9 @@ ls -ld /var/lib/ceph/osd/${cluster_name}-* | grep \" $(readlink -f ${data})\$\"
       exec { "remove-osd-${name}":
         command   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-disk=$(readlink -f ${data})
-if [ -z \"\$id\" ] ; then
-  id=$(ceph-disk list | sed -nEe \"s:^ *\${disk}1? .*(ceph data|mounted on).*osd\\.([0-9]+).*:\\2:p\")
-fi
-if [ -z \"\$id\" ] ; then
-  id=$(ls -ld /var/lib/ceph/osd/${cluster_name}-* | sed -nEe \"s:.*/${cluster_name}-([0-9]+) *-> *\${disk}\$:\\1:p\" || true)
-fi
+id=$(ceph-volume lvm list ${data} | grep 'osd id'|awk -F 'osd id' '{print \$2}'|tr -d ' ')
 if [ \"\$id\" ] ; then
+  ceph ${cluster_option} osd out osd.\$id
   stop ceph-osd cluster=${cluster_name} id=\$id || true
   service ceph stop osd.\$id || true
   systemctl stop ceph-osd@\$id || true
@@ -257,21 +233,16 @@ if [ \"\$id\" ] ; then
   rm -fr /var/lib/ceph/osd/${cluster_name}-\$id/*
   umount /var/lib/ceph/osd/${cluster_name}-\$id || true
   rm -fr /var/lib/ceph/osd/${cluster_name}-\$id
+  ceph-volume lvm zap ${data}
 fi
 ",
         unless    => "/bin/true # comment to satisfy puppet syntax requirements
-set -ex
-disk=$(readlink -f ${data})
-if [ -z \"\$id\" ] ; then
-  id=$(ceph-disk list | sed -nEe \"s:^ *\${disk}1? .*(ceph data|mounted on).*osd\\.([0-9]+).*:\\2:p\")
-fi
-if [ -z \"\$id\" ] ; then
-  id=$(ls -ld /var/lib/ceph/osd/${cluster_name}-* | sed -nEe \"s:.*/${cluster_name}-([0-9]+) *-> *\${disk}\$:\\1:p\" || true)
-fi
-if [ \"\$id\" ] ; then
-  test ! -d /var/lib/ceph/osd/${cluster_name}-\$id
+set -x
+ceph-volume lvm list ${data}
+if [ \$? -eq 0 ]; then
+    exit 1
 else
-  true # if there is no id  we do nothing
+    exit 0
 fi
 ",
         logoutput => true,
