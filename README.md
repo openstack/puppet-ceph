@@ -131,5 +131,5 @@ Release Notes
 Repository
 -------------
 
-* https://git.openstack.org/cgit/openstack/puppet-ceph
+* https://opendev.org/openstack/puppet-ceph
 
