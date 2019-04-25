@@ -1,0 +1,10 @@
+---
+features:
+  - |
+    Support for Ceph Nautilus release (LTS) has been added to puppet-ceph.
+issues:
+  - |
+    puppet-ceph can still work with previous release Luminous (LTS) and Mimic
+    but only working with LVM backend. Filestore based OSDs are not longer
+    supported by puppet-ceph, so the recommendation is to keep using latest
+    2.X.Y to manage Luminous and Mimic deployments.
