@@ -93,6 +93,8 @@ define ceph::osd (
 
     if $store_type {
       $osd_type = "--${store_type}"
+    } else {
+      $osd_type = ''
     }
 
     if ($bluestore_wal) or ($bluestore_db) {
