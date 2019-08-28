@@ -47,14 +47,11 @@ describe 'ceph::rgw::keystone' do
       it { should contain_ceph_config('client.radosgw.gateway/rgw_keystone_admin_project').with_value('openstack') }
       it { should contain_ceph_config('client.radosgw.gateway/rgw_keystone_admin_user').with_value('rgwuser') }
       it { should contain_ceph_config('client.radosgw.gateway/rgw_keystone_admin_password').with_value('123456') }
-      it { should contain_ceph_config('client.radosgw.gateway/rgw_keystone_admin_token').with_ensure('absent') }
       it { should contain_ceph_config('client.radosgw.gateway/rgw_keystone_url').with_value('http://127.0.0.1:5000') }
       it { should contain_ceph_config('client.radosgw.gateway/rgw_keystone_accepted_roles').with_value('member') }
       it { should contain_ceph_config('client.radosgw.gateway/rgw_keystone_token_cache_size').with_value(500) }
       it { should contain_ceph_config('client.radosgw.gateway/rgw_s3_auth_use_keystone').with_value(true) }
       it { should contain_ceph_config('client.radosgw.gateway/rgw_keystone_implicit_tenants').with_value(true) }
-      it { should contain_ceph_config('client.radosgw.gateway/rgw_keystone_revocation_interval').with_ensure('absent') }
-      it { should contain_ceph_config('client.radosgw.gateway/nss_db_path').with_ensure('absent') }
     end
 
     context 'create with custom params' do
@@ -88,14 +85,11 @@ describe 'ceph::rgw::keystone' do
       it { should contain_ceph_config('client.radosgw.custom/rgw_keystone_admin_project').with_value('openstack') }
       it { should contain_ceph_config('client.radosgw.custom/rgw_keystone_admin_user').with_value('rgwuser') }
       it { should contain_ceph_config('client.radosgw.custom/rgw_keystone_admin_password').with_value('123456') }
-      it { should contain_ceph_config('client.radosgw.custom/rgw_keystone_admin_token').with_ensure('absent') }
       it { should contain_ceph_config('client.radosgw.custom/rgw_keystone_url').with_value('http://keystone.custom:5000') }
       it { should contain_ceph_config('client.radosgw.custom/rgw_keystone_accepted_roles').with_value('_role1_,role2') }
       it { should contain_ceph_config('client.radosgw.custom/rgw_keystone_token_cache_size').with_value(100) }
       it { should contain_ceph_config('client.radosgw.custom/rgw_s3_auth_use_keystone').with_value(false) }
       it { should contain_ceph_config('client.radosgw.custom/rgw_keystone_implicit_tenants').with_value(false) }
-      it { should contain_ceph_config('client.radosgw.custom/rgw_keystone_revocation_interval').with_ensure('absent') }
-      it { should contain_ceph_config('client.radosgw.custom/nss_db_path').with_ensure('absent') }
     end
   end
 

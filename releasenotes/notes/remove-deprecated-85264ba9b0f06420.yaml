@@ -1,0 +1,6 @@
+---
+upgrade:
+  - |
+    The deprecated parameters rgw_keystone_version, rgw_keystone_admin_token,
+    use_pki, rgw_keystone_revocation_interval, nss_db_path and user in
+    ceph::rgw::keystone is removed.

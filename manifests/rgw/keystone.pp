@@ -59,33 +59,6 @@
 #   (Optional) Set 'true' for a private tenant for each user.
 #   Defaults to true
 #
-## DEPRECATED PARAMS
-#
-# [*rgw_keystone_version*]
-#   (Optional) The api version for keystone.
-#   Defaults to undef
-#
-# [*rgw_keystone_admin_token*]
-#   (Optional) The keystone admin token.
-#   Defaults to undef
-#
-# [*use_pki*]
-#   (Optional) Whether to use PKI related configuration.
-#   Defaults to undef
-#
-# [*rgw_keystone_revocation_interval*]
-#   (Optional) Interval to check for expired tokens.
-#   Not useful if not using PKI tokens (if not, set to high value).
-#   Defaults to undef
-#
-# [*nss_db_path*]
-#   (Optional) Path to NSS < - > keystone tokens db files.
-#   Defaults to undef
-#
-# [*user*]
-#   (Optional) User running the web frontend.
-#   Defaults to undef
-#
 define ceph::rgw::keystone (
   $rgw_keystone_admin_domain,
   $rgw_keystone_admin_project,
@@ -96,36 +69,10 @@ define ceph::rgw::keystone (
   $rgw_keystone_token_cache_size    = 500,
   $rgw_s3_auth_use_keystone         = true,
   $rgw_keystone_implicit_tenants    = true,
-  ## DEPRECATED PARAMS
-  $rgw_keystone_version             = undef,
-  $rgw_keystone_admin_token         = undef,
-  $use_pki                          = undef,
-  $rgw_keystone_revocation_interval = undef,
-  $nss_db_path                      = undef,
-  $user                             = undef,
 ) {
 
   unless $name =~ /^radosgw\..+/ {
     fail("Define name must be started with 'radosgw.'")
-  }
-
-  if $rgw_keystone_version {
-    warning('ceph::rgw::keystone::rgw_keystone_version is deprecated')
-  }
-  if $rgw_keystone_admin_token {
-    warning('ceph::rgw::keystone::rgw_keystone_admin_token is deprecated')
-  }
-  if $use_pki {
-    warning('ceph::rgw::keystone::use_pki is deprecated')
-  }
-  if $rgw_keystone_revocation_interval {
-    warning('ceph::rgw::keystone::rgw_keystone_revocation_interval is deprecated')
-  }
-  if $nss_db_path {
-    warning('ceph::rgw::keystone::nss_db_path is deprecated')
-  }
-  if $user {
-    warning('ceph::rgw::keystone::user is deprecated')
   }
 
   ceph_config {
@@ -150,11 +97,5 @@ define ceph::rgw::keystone (
     "client.${name}/rgw_keystone_admin_project":  value => $rgw_keystone_admin_project;
     "client.${name}/rgw_keystone_admin_user":     value => $rgw_keystone_admin_user;
     "client.${name}/rgw_keystone_admin_password": value => $rgw_keystone_admin_password;
-    "client.${name}/rgw_keystone_admin_token":    ensure => absent;
-  }
-
-  ceph_config {
-    "client.${name}/nss_db_path":                      ensure => absent;
-    "client.${name}/rgw_keystone_revocation_interval": ensure => absent;
   }
 }
