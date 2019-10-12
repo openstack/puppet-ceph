@@ -58,7 +58,7 @@
 #   Optional. Defaults to 'ceph_var_lib_t'
 #
 # [*fsid*] The ceph cluster FSID
-#   Optional. Defaults to $::ceph::profile::params::fsid
+#   Optional. Defaults to $::ceph::fsid
 #
 # [*dmcrypt*] Encrypt [data-path] and/or journal devices with dm-crypt.
 #   Optional. Defaults to false.
@@ -75,7 +75,7 @@ define ceph::osd (
   $store_type = undef,
   $exec_timeout = $::ceph::params::exec_timeout,
   $selinux_file_context = 'ceph_var_lib_t',
-  $fsid = $::ceph::profile::params::fsid,
+  $fsid = $::ceph::fsid,
   $dmcrypt = false,
   $dmcrypt_key_dir = '/etc/ceph/dmcrypt-keys',
   ) {
