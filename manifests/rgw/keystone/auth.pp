@@ -44,21 +44,20 @@
 #   Name of the keystone service used by RGW
 #   Defaults to 'swift::object-store'
 #
-
 class ceph::rgw::keystone::auth (
-  $password     = $::ceph::profile::params::rgw_keystone_admin_password,
-  $user         = $::ceph::profile::params::rgw_keystone_admin_user,
+  $password     = $ceph::profile::params::rgw_keystone_admin_password,
+  $user         = $ceph::profile::params::rgw_keystone_admin_user,
   $email        = 'rgwuser@localhost',
   $roles        = ['admin', 'Member'],
   $public_url   = 'http://127.0.0.1:8080/swift/v1',
   $admin_url    = 'http://127.0.0.1:8080/swift/v1',
   $internal_url = 'http://127.0.0.1:8080/swift/v1',
   $region       = 'RegionOne',
-  $tenant       = $::ceph::profile::params::rgw_keystone_admin_project,
+  $tenant       = $ceph::profile::params::rgw_keystone_admin_project,
   $rgw_service  = 'swift::object-store',
 ) {
 
-  include ::openstacklib::openstackclient
+  include openstacklib::openstackclient
 
   ensure_resource('keystone_service', 'swift::object-store', {
     'ensure'      => 'present',

@@ -34,12 +34,12 @@
 #   Mandatory. Get one with `ceph osd pool ls`
 #
 # [*exec_timeout*] The default exec resource timeout, in seconds
-#   Optional. Defaults to $::ceph::params::exec_timeout
+#   Optional. Defaults to $ceph::params::exec_timeout
 #
 define ceph::fs (
   $metadata_pool,
   $data_pool,
-  $exec_timeout = $::ceph::params::exec_timeout,
+  $exec_timeout = $ceph::params::exec_timeout,
 ) {
   Ceph_config<||> -> Exec["create-fs-${name}"]
   Ceph::Pool<||> -> Exec["create-fs-${name}"]

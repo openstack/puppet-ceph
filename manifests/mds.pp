@@ -52,7 +52,7 @@
 #
 class ceph::mds (
   $public_addr    = undef,
-  $pkg_mds        = $::ceph::params::pkg_mds,
+  $pkg_mds        = $ceph::params::pkg_mds,
   $pkg_mds_ensure = present,
   $mds_activate   = true,
   $mds_data       = undef,

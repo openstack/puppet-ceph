@@ -36,7 +36,7 @@
 class ceph::osds(
   $args = {},
   $defaults = {},
-  $pid_max = $::ceph::profile::params::pid_max,
+  $pid_max = $ceph::profile::params::pid_max,
 )
 {
   create_resources(ceph::osd, $args, $defaults)

@@ -51,14 +51,14 @@
 #   Optional. Same default as ceph.
 #
 # [*exec_timeout*] The default exec resource timeout, in seconds
-#   Optional. Defaults to $::ceph::params::exec_timeout
+#   Optional. Defaults to $ceph::params::exec_timeout
 #
 # [*selinux_file_context*] The SELinux file context to apply
 #   on the directory backing the OSD service.
 #   Optional. Defaults to 'ceph_var_lib_t'
 #
 # [*fsid*] The ceph cluster FSID
-#   Optional. Defaults to $::ceph::profile::params::fsid
+#   Optional. Defaults to $ceph::profile::params::fsid
 #
 # [*dmcrypt*] Encrypt [data-path] and/or journal devices with dm-crypt.
 #   Optional. Defaults to false.
@@ -73,14 +73,14 @@ define ceph::osd (
   $bluestore_wal = undef,
   $bluestore_db = undef,
   $store_type = undef,
-  $exec_timeout = $::ceph::params::exec_timeout,
+  $exec_timeout = $ceph::params::exec_timeout,
   $selinux_file_context = 'ceph_var_lib_t',
-  $fsid = $::ceph::profile::params::fsid,
+  $fsid = $ceph::profile::params::fsid,
   $dmcrypt = false,
   $dmcrypt_key_dir = '/etc/ceph/dmcrypt-keys',
   ) {
 
-    include ::ceph::params
+    include ceph::params
 
     $data = $name
 
@@ -187,14 +187,14 @@ ceph-volume lvm list ${data}
         tag       => 'prepare',
       }
       if (str2bool($::selinux) == true) {
-        ensure_packages($::ceph::params::pkg_policycoreutils, {'ensure' => 'present'})
+        ensure_packages($ceph::params::pkg_policycoreutils, {'ensure' => 'present'})
         exec { "fcontext_${name}":
           command => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 semanage fcontext -a -t ${selinux_file_context} \"$(readlink -f ${data})(/.*)?\"
 restorecon -R $(readlink -f ${data})
 ",
-          require => [Package[$::ceph::params::pkg_policycoreutils],Exec[$ceph_prepare]],
+          require => [Package[$ceph::params::pkg_policycoreutils],Exec[$ceph_prepare]],
           before  => Exec[$ceph_activate],
           unless  => "/usr/bin/test -b $(readlink -f ${data}) || (semanage fcontext -l | grep $(readlink -f ${data}))",
         }

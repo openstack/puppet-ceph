@@ -20,7 +20,7 @@
 # Profile for a Ceph fs
 #
 class ceph::profile::fs {
-  require ::ceph::profile::base
+  require ceph::profile::base
 
   ceph::fs { $ceph::profile::params::fs_name:
     metadata_pool => $ceph::profile::params::fs_metadata_pool,

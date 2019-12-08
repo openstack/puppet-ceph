@@ -137,7 +137,6 @@
 #   calling ceph_config from in-house modules will get dup-declaration errors.
 #   Boolean.  Default false.
 #
-
 class ceph (
   $fsid,
   $ensure                        = present,
@@ -174,14 +173,15 @@ class ceph (
   # DEPRECATED PARAMETERS
   $set_osd_params                = false,
 ) {
-  include ::ceph::params
+
+  include ceph::params
 
   if $set_osd_params {
     warning('set_osd_params is deprecated. It is here to allow a transition to using \
 this module to assign values and will be removed in a future release.')
   }
 
-  package { $::ceph::params::packages :
+  package { $ceph::params::packages :
     ensure => $ensure,
     tag    => 'ceph'
   }

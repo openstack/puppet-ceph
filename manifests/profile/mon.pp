@@ -21,7 +21,7 @@
 # Profile for a Ceph mon
 #
 class ceph::profile::mon {
-  require ::ceph::profile::base
+  require ceph::profile::base
 
   ceph::mon { $::hostname:
     authentication_type => $ceph::profile::params::authentication_type,
@@ -37,7 +37,7 @@ class ceph::profile::mon {
   }
 
   if !empty($ceph::profile::params::client_keys) {
-    class { '::ceph::keys':
+    class { 'ceph::keys':
       args     => $ceph::profile::params::client_keys,
       defaults => $defaults
     }

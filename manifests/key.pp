@@ -129,7 +129,7 @@ define ceph::key (
       group                   => $group,
       mode                    => $mode,
       selinux_ignore_defaults => true,
-      require                 => Package[$::ceph::params::packages],
+      require                 => Package[$ceph::params::packages],
     }
   }
 

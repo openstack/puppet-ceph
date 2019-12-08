@@ -61,18 +61,18 @@
 #
 class ceph::repo (
   $ensure         = present,
-  $release        = $::ceph::params::release,
+  $release        = $ceph::params::release,
   $fastcgi        = false,
   $proxy          = undef,
   $proxy_username = undef,
   $proxy_password = undef,
   $enable_epel    = true,
-  $enable_sig     = $::ceph::params::enable_sig,
+  $enable_sig     = $ceph::params::enable_sig,
   $ceph_mirror    = undef,
 ) inherits ceph::params {
   case $::osfamily {
     'Debian': {
-      include ::apt
+      include apt
 
       if $ceph_mirror {
         $ceph_mirror_real = $ceph_mirror

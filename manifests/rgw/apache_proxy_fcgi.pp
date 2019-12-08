@@ -80,7 +80,7 @@ define ceph::rgw::apache_proxy_fcgi (
   $custom_apache_ports  = undef,
 ) {
 
-  class { '::apache':
+  class { 'apache':
     default_mods    => $apache_mods,
     default_vhost   => $apache_vhost,
     purge_configs   => $apache_purge_configs,
@@ -92,14 +92,14 @@ define ceph::rgw::apache_proxy_fcgi (
   }
 
   if !$apache_mods {
-    include ::apache::mod::auth_basic
-    include ::apache::mod::env
+    include apache::mod::auth_basic
+    include apache::mod::env
   }
-  include ::apache::mod::alias
-  include ::apache::mod::mime
-  include ::apache::mod::rewrite
-  include ::apache::mod::proxy
-  ::apache::mod { 'proxy_fcgi': }
+  include apache::mod::alias
+  include apache::mod::mime
+  include apache::mod::rewrite
+  include apache::mod::proxy
+  apache::mod { 'proxy_fcgi': }
 
   apache::vhost { "${rgw_dns_name}-radosgw":
     servername   => $rgw_dns_name,

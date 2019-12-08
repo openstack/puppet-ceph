@@ -21,9 +21,9 @@
 # Profile for a Ceph osd
 #
 class ceph::profile::osd {
-  require ::ceph::profile::client
+  require ceph::profile::client
 
-  class { '::ceph::osds':
+  class { 'ceph::osds':
     args => $ceph::profile::params::osds,
   }
 }

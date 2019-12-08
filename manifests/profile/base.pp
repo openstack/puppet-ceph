@@ -20,17 +20,17 @@
 # Base profile to install ceph and configure /etc/ceph/ceph.conf
 #
 class ceph::profile::base {
-  include ::ceph::profile::params
+  include ceph::profile::params
 
   if ( $ceph::profile::params::manage_repo ) {
     Class['ceph::repo'] -> Class['ceph']
 
-    class { '::ceph::repo':
+    class { 'ceph::repo':
       release => $ceph::profile::params::release,
     }
   }
 
-  class { '::ceph':
+  class { 'ceph':
     fsid                          => $ceph::profile::params::fsid,
     authentication_type           => $ceph::profile::params::authentication_type,
     osd_journal_size              => $ceph::profile::params::osd_journal_size,

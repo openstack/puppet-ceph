@@ -20,10 +20,10 @@
 # Profile for Ceph rbd mirror
 #
 class ceph::profile::mirror {
-  require ::ceph::profile::client
-  $rbd_name = $::ceph::profile::params::rbd_mirror_client_name ? {
+  require ceph::profile::client
+  $rbd_name = $ceph::profile::params::rbd_mirror_client_name ? {
     undef   => 'openstack',
-    default => $::ceph::profile::params::rbd_mirror_client_name,
+    default => $ceph::profile::params::rbd_mirror_client_name,
   }
   ceph::mirror { $rbd_name:
   }

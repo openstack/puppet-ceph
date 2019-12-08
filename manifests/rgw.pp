@@ -72,17 +72,16 @@
 # [*syslog*] Whether or not to log to syslog.
 #   Optional. Default is true.
 #
-
 define ceph::rgw (
-  $pkg_radosgw        = $::ceph::params::pkg_radosgw,
+  $pkg_radosgw        = $ceph::params::pkg_radosgw,
   $rgw_ensure         = 'running',
   $rgw_enable         = true,
   $rgw_data           = "/var/lib/ceph/radosgw/ceph-${name}",
-  $user               = $::ceph::params::user_radosgw,
+  $user               = $ceph::params::user_radosgw,
   $keyring_path       = "/etc/ceph/ceph.client.${name}.keyring",
   $log_file           = '/var/log/ceph/radosgw.log',
   $rgw_dns_name       = $::fqdn,
-  $rgw_socket_path    = $::ceph::params::rgw_socket_path,
+  $rgw_socket_path    = $ceph::params::rgw_socket_path,
   $rgw_print_continue = false,
   $rgw_port           = undef,
   $frontend_type      = 'civetweb',
@@ -91,7 +90,7 @@ define ceph::rgw (
   $syslog             = undef,
 ) {
 
-  include ::stdlib
+  include stdlib
 
   if $syslog
   {

@@ -21,13 +21,13 @@
 # Profile for a Ceph client
 #
 class ceph::profile::client {
-  require ::ceph::profile::base
+  require ceph::profile::base
 
   # If the same server is hosting a mon, osd and client, the key resource is
   # ultimately handled by the mon class.
   if ! defined(Class['ceph::keys']) {
     if !empty($ceph::profile::params::client_keys) {
-      class { '::ceph::keys':
+      class { 'ceph::keys':
         args => $ceph::profile::params::client_keys
       }
     }

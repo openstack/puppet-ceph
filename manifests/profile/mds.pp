@@ -20,9 +20,9 @@
 # Profile for a Ceph mds
 #
 class ceph::profile::mds {
-  require ::ceph::profile::base
+  require ceph::profile::base
 
-  class { '::ceph::mds':
+  class { 'ceph::mds':
     public_addr => $ceph::profile::params::public_addr,
   }
 

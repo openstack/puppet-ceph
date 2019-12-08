@@ -48,7 +48,7 @@
 #   cephfs,rbd,rgw or freeform for custom application.
 #
 # [*exec_timeout*] The default exec resource timeout, in seconds
-#   Optional. Defaults to $::ceph::params::exec_timeout
+#   Optional. Defaults to $ceph::params::exec_timeout
 #
 define ceph::pool (
   $ensure = present,
@@ -56,7 +56,7 @@ define ceph::pool (
   $pgp_num = undef,
   $size = undef,
   $tag = undef,
-  $exec_timeout = $::ceph::params::exec_timeout,
+  $exec_timeout = $ceph::params::exec_timeout,
 ) {
 
   if $ensure == present {

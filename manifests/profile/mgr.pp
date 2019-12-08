@@ -20,7 +20,7 @@
 # Profile for a Ceph mgr
 #
 class ceph::profile::mgr {
-  require ::ceph::profile::base
+  require ceph::profile::base
 
   ceph::mgr { $::hostname:
     authentication_type => $ceph::profile::params::authentication_type,

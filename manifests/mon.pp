@@ -55,7 +55,7 @@
 #   Optional. $key and $keyring are mutually exclusive.
 #
 # [*exec_timeout*] The default exec resource timeout, in seconds
-#   Optional. Defaults to $::ceph::params::exec_timeout
+#   Optional. Defaults to $ceph::params::exec_timeout
 #
 define ceph::mon (
   $ensure = present,
@@ -65,10 +65,10 @@ define ceph::mon (
   $authentication_type = 'cephx',
   $key = undef,
   $keyring  = undef,
-  $exec_timeout = $::ceph::params::exec_timeout,
+  $exec_timeout = $ceph::params::exec_timeout,
   ) {
 
-    include ::stdlib
+    include stdlib
 
     # a puppet name translates into a ceph id, the meaning is different
     $id = $name

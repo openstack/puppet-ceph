@@ -20,7 +20,7 @@ require 'spec_helper'
 
 describe 'ceph::key' do
   let (:pre_condition) do
-    "class { '::ceph': fsid => 'foo' }"
+    "class { 'ceph': fsid => 'foo' }"
   end
 
   shared_examples 'ceph key' do
