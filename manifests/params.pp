@@ -61,7 +61,11 @@ class ceph::params (
       $pkg_radosgw         = 'ceph-radosgw'
       $user_radosgw        = 'apache'
       $pkg_fastcgi         = 'mod_fastcgi'
-      $pkg_policycoreutils = 'policycoreutils-python'
+      if (Integer.new($::os['release']['major']) > 7) {
+        $pkg_policycoreutils = 'policycoreutils-python-utils'
+      } else {
+        $pkg_policycoreutils = 'policycoreutils-python'
+      }
     }
 
     default: {
