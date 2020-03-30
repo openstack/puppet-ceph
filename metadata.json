@@ -11,6 +11,10 @@
         {
             "name": "puppet",
             "version_requirement": "5.x"
+        },
+        {
+            "name": "puppet",
+            "version_requirement": "6.x"
         }
     ],
     "operatingsystem_support": [
@@ -29,7 +33,13 @@
         {
             "operatingsystem": "RedHat",
             "operatingsystemrelease": [
-                "7"
+                "8"
+            ]
+        },
+        {
+            "operatingsystem": "CentOS",
+            "operatingsystemrelease": [
+                "8"
             ]
         },
         {
