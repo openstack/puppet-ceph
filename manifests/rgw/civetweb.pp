@@ -25,7 +25,7 @@ define ceph::rgw::civetweb (
   $rgw_frontends = 'civetweb port=7480',
 ) {
 
-  unless $name =~ /^radosgw\..+/ {
+  unless $name =~ /^(radosgw|rgw)\..+/ {
     fail("Define name must be started with 'radosgw.'")
   }
 

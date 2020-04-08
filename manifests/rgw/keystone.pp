@@ -71,7 +71,7 @@ define ceph::rgw::keystone (
   $rgw_keystone_implicit_tenants    = true,
 ) {
 
-  unless $name =~ /^radosgw\..+/ {
+  unless $name =~ /^(radosgw|rgw)\..+/ {
     fail("Define name must be started with 'radosgw.'")
   }
 
