@@ -505,7 +505,7 @@ describe 'ceph::repo' do
       it { should contain_yumrepo('ceph-luminous-sig').with_ensure('absent') }
 
       it { should contain_yumrepo('ceph-storage-sig').with(
-        :baseurl => 'https://buildlogs.centos.org/centos/7/storage/x86_64/ceph-nautilus/',
+        :baseurl => 'http://mirror.centos.org/centos/7/storage/x86_64/ceph-nautilus/',
       )}
     end
 
