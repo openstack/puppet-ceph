@@ -127,7 +127,8 @@ not on ${::operatingsystem}, which can lead to packaging issues.")
         if $ceph_mirror {
           $ceph_mirror_real = $ceph_mirror
         } else {
-          $ceph_mirror_real = "https://buildlogs.centos.org/centos/7/storage/x86_64/ceph-${release}/"
+          # NOTE(tobias-urdin): mirror.centos.org doesnt have https support
+          $ceph_mirror_real = "http://mirror.centos.org/centos/${::operatingsystemmajrelease}/storage/x86_64/ceph-${release}/"
         }
         yumrepo { 'ceph-luminous-sig':
           ensure => 'absent',
