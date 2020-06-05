@@ -106,8 +106,16 @@ define ceph::rgw (
     "client.${name}/keyring":            value => $keyring_path;
     "client.${name}/log_file":           value => $log_file;
     "client.${name}/user":               value => $user;
-    "client.${name}/rgw_dns_name":       value => $rgw_dns_name;
     "client.${name}/rgw_swift_url":      value => $rgw_swift_url;
+  }
+  if $rgw_dns_name {
+    ceph_config {
+      "client.${name}/rgw_dns_name": value => $rgw_dns_name;
+    }
+  } else {
+    ceph_config {
+      "client.${name}/rgw_dns_name": ensure => absent;
+    }
   }
 
   if($frontend_type == 'civetweb')
