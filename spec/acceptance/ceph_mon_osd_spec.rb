@@ -54,17 +54,20 @@ describe 'ceph mon osd' do
       apply_manifest(pp, :catch_changes => true)
 
       if os[:family].casecmp('RedHat') == 0
-        shell 'sleep 10' # we need to wait a bit until the OSD is up
-
-        shell 'ceph -s', { :acceptable_exit_codes => [0] } do |r|
-          expect(r.stdout).to match(/mon: 1 daemons/)
-          expect(r.stderr).to be_empty
+        describe command('sleep 10') do
+          its(:exit_status) { should eq 0 }
         end
 
-        shell 'ceph osd tree | grep osd.0', { :acceptable_exit_codes => [0] } do |r|
-          expect(r.stdout).to match(/up/)
-          expect(r.stderr).to be_empty
+        describe command('ceph -s') do
+          its(:exit_status) { should eq 0 }
+          its(:stdout) { should match /mon: 1 daemons/) }
+          its(:stderr) { should be_empty }
         end
+
+        describe command('ceph osd tree | grep osd.0') do
+          its(:exit_status) { should eq 0 }
+          its(:stdout) { should match /up/ }
+          its(:stderr) { should be_empty }
       end
     end
   end

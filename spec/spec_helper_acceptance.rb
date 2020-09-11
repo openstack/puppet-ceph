@@ -1,1 +1,1 @@
-require 'puppet-openstack_spec_helper/beaker_spec_helper'
+require 'puppet-openstack_spec_helper/litmus_spec_helper'

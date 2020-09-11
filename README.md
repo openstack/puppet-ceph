@@ -17,10 +17,9 @@ ceph
 5. [Limitations - OS compatibility, etc.](#limitations)
 6. [Use Cases - Examples of how to use this module](#limitations)
 7. [Development - Guide for contributing to the module](#development)
-8. [Beaker Integration Tests - Apply the module and test results](#beaker-integration-tests)
-9. [Contributors - Those with commits](#contributors)
-10. [Release Notes - Notes on the most recent updates to the module](#release-notes)
-11. [Repository - Repository for the module](#repository)
+8. [Contributors - Those with commits](#contributors)
+9. [Release Notes - Notes on the most recent updates to the module](#release-notes)
+10. [Repository - Repository for the module](#repository)
 
 Overview
 --------
@@ -80,36 +79,6 @@ IRC channels:
 
 * irc.freenode.net#puppet-openstack
 * irc.oftc.net#ceph-devel
-
-Beaker Integration Tests
-------------------------
-
-Relies on
-[rspec-beaker](https://github.com/puppetlabs/beaker-rspec)
-and tests are in spec/acceptance.
-It also requires [Vagrant and Virtualbox](http://docs-v1.vagrantup.com/v1/docs/getting-started/)
-.
-
-```
-bundle install
-bundle exec rspec spec/acceptance
-```
-
-The BEAKER_set environment variable contains the resource set of linux
-distribution configurations for which integration tests are going
-to be run. Available values are
-
-* two-centos-70-x64
-* centos-70-x64
-* two-ubuntu-server-1404-x64
-* ubuntu-server-1404-x64
-
-The default is
-
-```
-BEAKER_set=two-ubuntu-server-1404-x64 \
-bundle exec rspec spec/acceptance
-```
 
 Development
 -----------
