@@ -62,23 +62,9 @@
 # [*osd_pool_default_min_size*] The default minimum num of replicas.
 #   Optional. Integer. Default provided by Ceph.
 #
-# [*osd_pool_default_crush_rule*] The default CRUSH ruleset to use
-#   when creating a pool.
-#   Optional. Integer. Default provided by Ceph.
-#
 # [*osd_crush_update_on_start*] The default OSDs behaviour on start when
 #   it comes to registering their location in the CRUSH map.
 #   Optional. Boolean. Defaults to undef.
-#
-# [*mon_osd_full_ratio*] Percentage of disk space used before
-#   an OSD considered full
-#   Optional. Integer e.g. 95, NOTE: ends in config as .95
-#   Default provided by Ceph.
-#
-# [*mon_osd_nearfull_ratio*] Percentage of disk space used before
-#   an OSD considered nearfull
-#   Optional. Float e.g. 90, NOTE: ends in config as .90
-#   Default provided by Ceph.
 #
 # [*cluster_network*] The address of the cluster network.
 #   Optional. {cluster-network-ip/netmask}
