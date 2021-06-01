@@ -77,7 +77,7 @@ Mailing lists:
 
 IRC channels:
 
-* irc.freenode.net#puppet-openstack
+* irc.oftc.net#puppet-openstack
 * irc.oftc.net#ceph-devel
 
 Development
