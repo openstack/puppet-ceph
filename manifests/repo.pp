@@ -144,12 +144,7 @@ not on ${::operatingsystem}, which can lead to packaging issues.")
         Yumrepo['ceph-luminous-sig'] -> Yumrepo['ceph-storage-sig'] -> Package<| tag == 'ceph' |>
       } else {
         # If you want to deploy Ceph using packages provided by ceph.com repositories.
-        if ((($::operatingsystem == 'RedHat' or $::operatingsystem == 'CentOS') and (versioncmp($::operatingsystemmajrelease, '7') < 0))
-              or ($::operatingsystem == 'Fedora' and (versioncmp($::operatingsystemmajrelease, '19') < 0))) {
-          $el = '6'
-        } else {
-          $el = '7'
-        }
+        $el = $::operatingsystemmajrelease
 
         Yumrepo {
           proxy          => $proxy,
@@ -158,45 +153,43 @@ not on ${::operatingsystem}, which can lead to packaging issues.")
         }
 
 
-        if ($::operatingsystem != 'Fedora') {
-          yumrepo { 'ext-ceph':
-            # puppet versions prior to 3.5 do not support ensure, use enabled instead
-            enabled    => $enabled,
-            descr      => "External Ceph ${release}",
-            name       => "ext-ceph-${release}",
-            baseurl    => "http://download.ceph.com/rpm-${release}/el${el}/\$basearch",
-            gpgcheck   => '1',
-            gpgkey     => 'https://download.ceph.com/keys/release.asc',
-            mirrorlist => absent,
-            priority   => '10', # prefer ceph repos over EPEL
-            tag        => 'ceph',
-          }
+        yumrepo { 'ext-ceph':
+          # puppet versions prior to 3.5 do not support ensure, use enabled instead
+          enabled    => $enabled,
+          descr      => "External Ceph ${release}",
+          name       => "ext-ceph-${release}",
+          baseurl    => "http://download.ceph.com/rpm-${release}/el${el}/\$basearch",
+          gpgcheck   => '1',
+          gpgkey     => 'https://download.ceph.com/keys/release.asc',
+          mirrorlist => absent,
+          priority   => '10', # prefer ceph repos over EPEL
+          tag        => 'ceph',
+        }
 
-          yumrepo { 'ext-ceph-noarch':
-            # puppet versions prior to 3.5 do not support ensure, use enabled instead
-            enabled    => $enabled,
-            descr      => 'External Ceph noarch',
-            name       => "ext-ceph-${release}-noarch",
-            baseurl    => "http://download.ceph.com/rpm-${release}/el${el}/noarch",
-            gpgcheck   => '1',
-            gpgkey     => 'https://download.ceph.com/keys/release.asc',
-            mirrorlist => absent,
-            priority   => '10', # prefer ceph repos over EPEL
-            tag        => 'ceph',
-          }
+        yumrepo { 'ext-ceph-noarch':
+          # puppet versions prior to 3.5 do not support ensure, use enabled instead
+          enabled    => $enabled,
+          descr      => 'External Ceph noarch',
+          name       => "ext-ceph-${release}-noarch",
+          baseurl    => "http://download.ceph.com/rpm-${release}/el${el}/noarch",
+          gpgcheck   => '1',
+          gpgkey     => 'https://download.ceph.com/keys/release.asc',
+          mirrorlist => absent,
+          priority   => '10', # prefer ceph repos over EPEL
+          tag        => 'ceph',
+        }
 
-          if $fastcgi {
-            yumrepo { 'ext-ceph-fastcgi':
-              enabled    => $enabled,
-              descr      => 'FastCGI basearch packages for Ceph',
-              name       => 'ext-ceph-fastcgi',
-              baseurl    => "http://gitbuilder.ceph.com/mod_fastcgi-rpm-rhel${el}-x86_64-basic/ref/master",
-              gpgcheck   => '1',
-              gpgkey     => 'https://download.ceph.com/keys/autobuild.asc',
-              mirrorlist => absent,
-              priority   => '20', # prefer ceph repos over EPEL
-              tag        => 'ceph',
-            }
+        if $fastcgi {
+          yumrepo { 'ext-ceph-fastcgi':
+            enabled    => $enabled,
+            descr      => 'FastCGI basearch packages for Ceph',
+            name       => 'ext-ceph-fastcgi',
+            baseurl    => "http://gitbuilder.ceph.com/mod_fastcgi-rpm-rhel${el}-x86_64-basic/ref/master",
+            gpgcheck   => '1',
+            gpgkey     => 'https://download.ceph.com/keys/autobuild.asc',
+            mirrorlist => absent,
+            priority   => '20', # prefer ceph repos over EPEL
+            tag        => 'ceph',
           }
         }
 
@@ -206,7 +199,7 @@ not on ${::operatingsystem}, which can lead to packaging issues.")
         }
       }
 
-      if $enable_epel and ($::operatingsystem != 'Fedora') {
+      if $enable_epel {
         yumrepo { "ext-epel-${el}":
           # puppet versions prior to 3.5 do not support ensure, use enabled instead
           enabled    => $enabled,

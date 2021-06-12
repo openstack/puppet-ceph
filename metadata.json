@@ -21,12 +21,6 @@
             ]
         },
         {
-            "operatingsystem": "Fedora",
-            "operatingsystemrelease": [
-                "24"
-            ]
-        },
-        {
             "operatingsystem": "RedHat",
             "operatingsystemrelease": [
                 "8"

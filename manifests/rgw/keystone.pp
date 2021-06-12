@@ -84,8 +84,7 @@ define ceph::rgw::keystone (
   }
 
   # FIXME(ykarel) Cleanup once https://tracker.ceph.com/issues/24228 is fixed for luminous
-  if ($::os['name'] == 'Fedora') or
-    ($::os['family'] == 'RedHat' and Integer.new($::os['release']['major']) > 7) {
+  if ($::os['family'] == 'RedHat' and Integer.new($::os['release']['major']) > 7) {
     ceph_config {
       "client.${name}/rgw_ldap_secret": value => '';
     }

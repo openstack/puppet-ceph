@@ -1,0 +1,4 @@
+---
+upgrade:
+  - |
+    Fedora is no longer supported.
