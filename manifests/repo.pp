@@ -193,9 +193,11 @@ not on ${::operatingsystem}, which can lead to packaging issues.")
           }
         }
 
-        # prefer ceph.com repos over EPEL
-        package { 'yum-plugin-priorities':
-          ensure => present,
+        if Integer($el) < 8 {
+          # prefer ceph.com repos over EPEL
+          package { 'yum-plugin-priorities':
+            ensure => present,
+          }
         }
       }
 
