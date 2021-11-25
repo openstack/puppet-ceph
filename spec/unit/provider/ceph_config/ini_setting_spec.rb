@@ -54,7 +54,6 @@ describe provider_class do
     provider.create
     expect(provider.exists?).to be_truthy
     validate(<<-EOS
-
 [global]
 ceph_is_foo = bar
     EOS
