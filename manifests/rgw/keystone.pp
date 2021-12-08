@@ -88,6 +88,6 @@ define ceph::rgw::keystone (
     "client.${name}/rgw_keystone_admin_domain":   value => $rgw_keystone_admin_domain;
     "client.${name}/rgw_keystone_admin_project":  value => $rgw_keystone_admin_project;
     "client.${name}/rgw_keystone_admin_user":     value => $rgw_keystone_admin_user;
-    "client.${name}/rgw_keystone_admin_password": value => $rgw_keystone_admin_password;
+    "client.${name}/rgw_keystone_admin_password": value => $rgw_keystone_admin_password, secret => true;
   }
 }

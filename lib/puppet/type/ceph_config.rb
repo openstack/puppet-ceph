@@ -45,5 +45,29 @@ Puppet::Type.newtype(:ceph_config) do
       value.downcase! if value =~ /^(true|false)$/i
       value
     end
+
+    def is_to_s( currentvalue )
+      if resource.secret?
+        return '[old secret redacted]'
+      else
+        return currentvalue
+      end
+    end
+
+    def should_to_s( newvalue )
+      if resource.secret?
+        return '[new secret redacted]'
+      else
+        return newvalue
+      end
+    end
+  end
+
+  newparam(:secret, :boolean => true) do
+    desc 'Whether to hide the value from Puppet logs. Defaults to `false`.'
+
+    newvalues(:true, :false)
+
+    defaultto false
   end
 end
