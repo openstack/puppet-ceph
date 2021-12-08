@@ -83,13 +83,6 @@ define ceph::rgw::keystone (
     "client.${name}/rgw_keystone_implicit_tenants": value => $rgw_keystone_implicit_tenants;
   }
 
-  # FIXME(ykarel) Cleanup once https://tracker.ceph.com/issues/24228 is fixed for luminous
-  if ($::os['family'] == 'RedHat' and Integer.new($::os['release']['major']) > 7) {
-    ceph_config {
-      "client.${name}/rgw_ldap_secret": value => '';
-    }
-  }
-
   ceph_config {
     "client.${name}/rgw_keystone_api_version":    value => 3;
     "client.${name}/rgw_keystone_admin_domain":   value => $rgw_keystone_admin_domain;
