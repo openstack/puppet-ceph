@@ -43,19 +43,7 @@ describe 'ceph::osds' do
       should contain_ceph__osd('/srv/data').with(
         :ensure  => 'present',
         :cluster => 'CLUSTER')
-      should_not contain_sysctl__value('kernel.pid_max')
     }
-  end
-
-  context 'sets pid_max when enabled' do
-    let :params do
-    {
-      :pid_max => 123456,
-    }
-    end
-    it do
-      should contain_sysctl__value('kernel.pid_max').with_value(123456)
-    end
   end
 
   on_supported_os({

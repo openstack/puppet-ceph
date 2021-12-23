@@ -1,0 +1,9 @@
+---
+upgrade:
+  - |
+    The puppet-ceph module no longer depends on any sysctl module thus the
+    dependency on duritong/sysctl module is removed and not needed anymore.
+deprecations:
+  - |
+    The pid_max parameter in classes ceph::osds and ceph::profile::params is
+    deprecated and no longer used.

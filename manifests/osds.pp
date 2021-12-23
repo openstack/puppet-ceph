@@ -27,6 +27,8 @@
 # [*defaults*] A config hash
 #   Optional. Defaults to a empty hash
 #
+# **DEPRECATED PARAMS**
+#
 # [*pid_max*] Value for pid_max. Defaults to undef. Optional.
 #   For OSD nodes it is recommended that you raise pid_max above the
 #   default value because you may hit the system max during
@@ -34,17 +36,15 @@
 #   http://docs.ceph.com/docs/nautilus/rados/troubleshooting/troubleshooting-osd/
 #
 class ceph::osds(
-  $args = {},
+  $args     = {},
   $defaults = {},
-  $pid_max = $ceph::profile::params::pid_max,
-)
-{
-  create_resources(ceph::osd, $args, $defaults)
+  # DEPRECATED PARAMS
+  $pid_max  = undef,
+) {
 
-  if $pid_max {
-    $sysctl_settings = {
-      'kernel.pid_max' => { value => $pid_max },
-    }
-    ensure_resources(sysctl::value,$sysctl_settings)
+  if $pid_max != undef {
+    warning('pid_max parameter is deprecated and has no effect.')
   }
+
+  create_resources(ceph::osd, $args, $defaults)
 }
