@@ -1,0 +1,5 @@
+---
+features:
+  - |
+    The new ``ceph::repo::stream`` parameter has been added. Set this parameter
+    to ``true`` when CentOS Stream and SIG repository are used.

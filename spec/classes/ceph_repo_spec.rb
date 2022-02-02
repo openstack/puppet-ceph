@@ -509,6 +509,24 @@ describe 'ceph::repo' do
       )}
     end
 
+    context 'when using CentOS SIG repository and CentOS Stream' do
+      let :params do
+        {
+          :enable_sig => true,
+          :stream     => true,
+        }
+      end
+
+      it { should_not contain_yumrepo('ext-epel-8') }
+      it { should_not contain_yumrepo('ext-ceph') }
+      it { should_not contain_yumrepo('ext-ceph-noarch') }
+      it { should contain_yumrepo('ceph-luminous-sig').with_ensure('absent') }
+
+      it { should contain_yumrepo('ceph-storage-sig').with(
+        :baseurl => 'http://mirror.centos.org/centos/8-stream/storage/x86_64/ceph-nautilus/',
+      )}
+    end
+
     context 'when using CentOS SIG repository from a mirror' do
       let :params do
         {

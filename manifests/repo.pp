@@ -56,6 +56,9 @@
 #   https://wiki.centos.org/SpecialInterestGroup/Storage/
 #   Optional. Defaults to False in ceph::params.
 #
+# [*stream*] Whether this is CentOS Stream or not. This parameter is used in CentOS only.
+#   Optional. Defaults to False.
+#
 # [*ceph_mirror*] Ceph mirror used to download packages.
 #   Optional. Defaults to undef.
 #
@@ -68,6 +71,7 @@ class ceph::repo (
   $proxy_password = undef,
   $enable_epel    = true,
   $enable_sig     = $ceph::params::enable_sig,
+  $stream         = false,
   $ceph_mirror    = undef,
 ) inherits ceph::params {
   case $::osfamily {
@@ -128,7 +132,11 @@ not on ${::operatingsystem}, which can lead to packaging issues.")
           $ceph_mirror_real = $ceph_mirror
         } else {
           # NOTE(tobias-urdin): mirror.centos.org doesnt have https support
-          $ceph_mirror_real = "http://mirror.centos.org/centos/${::operatingsystemmajrelease}/storage/x86_64/ceph-${release}/"
+          if $stream {
+            $ceph_mirror_real = "http://mirror.centos.org/centos/${::operatingsystemmajrelease}-stream/storage/x86_64/ceph-${release}/"
+          } else {
+            $ceph_mirror_real = "http://mirror.centos.org/centos/${::operatingsystemmajrelease}/storage/x86_64/ceph-${release}/"
+          }
         }
         yumrepo { 'ceph-luminous-sig':
           ensure => 'absent',
