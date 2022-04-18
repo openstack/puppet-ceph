@@ -133,7 +133,12 @@ not on ${::operatingsystem}, which can lead to packaging issues.")
         } else {
           # NOTE(tobias-urdin): mirror.centos.org doesnt have https support
           if $stream {
-            $ceph_mirror_real = "http://mirror.centos.org/centos/${::operatingsystemmajrelease}-stream/storage/x86_64/ceph-${release}/"
+            if versioncmp($::operatingsystemmajrelease, '9') >= 0 {
+              $centos_mirror = 'mirror.stream.centos.org/SIGs'
+            } else {
+              $centos_mirror = 'mirror.centos.org/centos'
+            }
+            $ceph_mirror_real = "http://${centos_mirror}/${::operatingsystemmajrelease}-stream/storage/x86_64/ceph-${release}/"
           } else {
             $ceph_mirror_real = "http://mirror.centos.org/centos/${::operatingsystemmajrelease}/storage/x86_64/ceph-${release}/"
           }
