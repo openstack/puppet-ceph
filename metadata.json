@@ -23,12 +23,14 @@
         {
             "operatingsystem": "RedHat",
             "operatingsystemrelease": [
+                "7",
                 "8"
             ]
         },
         {
             "operatingsystem": "CentOS",
             "operatingsystemrelease": [
+                "7",
                 "8"
             ]
         },
