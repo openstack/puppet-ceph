@@ -1,0 +1,4 @@
+---
+upgrade:
+  - |
+    Ubuntu 16.04 (Xenial) is no longer supported.
