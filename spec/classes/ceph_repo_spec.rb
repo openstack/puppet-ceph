@@ -509,7 +509,11 @@ describe 'ceph::repo' do
       )}
     end
 
-    context 'when using CentOS SIG repository and CentOS Stream' do
+    context 'when using CentOS SIG repository and CentOS Stream 8' do
+      before do
+        facts.merge!( :operatingsystemmajrelease => "8" )
+      end
+
       let :params do
         {
           :enable_sig => true,
@@ -524,6 +528,23 @@ describe 'ceph::repo' do
 
       it { should contain_yumrepo('ceph-storage-sig').with(
         :baseurl => 'http://mirror.centos.org/centos/8-stream/storage/x86_64/ceph-nautilus/',
+      )}
+    end
+
+    context 'when using CentOS SIG repository and CentOS Stream 9' do
+      before do
+        facts.merge!( :operatingsystemmajrelease => "9" )
+      end
+
+      let :params do
+        {
+          :enable_sig => true,
+          :stream     => true,
+        }
+      end
+
+      it { should contain_yumrepo('ceph-storage-sig').with(
+        :baseurl => 'http://mirror.stream.centos.org/SIGs/9-stream/storage/x86_64/ceph-nautilus/',
       )}
     end
 
