@@ -193,6 +193,8 @@ this module to assign values and will be removed in a future release.')
     ceph_config {
       'global/fsid':                         value => $fsid;
       'global/keyring':                      value => $keyring;
+      'global/osd_max_object_name_len':      value => $osd_max_object_name_len;
+      'global/osd_max_object_namespace_len': value => $osd_max_object_namespace_len;
       'global/osd_pool_default_pg_num':      value => $osd_pool_default_pg_num;
       'global/osd_pool_default_pgp_num':     value => $osd_pool_default_pgp_num;
       'global/osd_pool_default_size':        value => $osd_pool_default_size;
@@ -213,21 +215,6 @@ this module to assign values and will be removed in a future release.')
       'global/public_addr':                  value => $public_addr;
       'osd/osd_journal_size':                value => $osd_journal_size;
       'client/rbd_default_features':         value => $rbd_default_features;
-    }
-
-
-    # NOTE(aschultz): for backwards compatibility in p-o-i & elsewhere we only
-    # define these here if they are set. Once this patch lands, we can update
-    # p-o-i to leverage these parameters and ditch these if clauses.
-    if $osd_max_object_name_len {
-      ceph_config {
-        'global/osd_max_object_name_len':      value => $osd_max_object_name_len;
-      }
-    }
-    if $osd_max_object_namespace_len {
-      ceph_config {
-        'global/osd_max_object_namespace_len': value => $osd_max_object_namespace_len;
-      }
     }
 
     if $authentication_type == 'cephx' {
