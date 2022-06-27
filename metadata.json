@@ -4,7 +4,7 @@
     "author": "Puppet Ceph community and OpenStack Contributors",
     "summary": "Community Developed Ceph Module",
     "license": "Apache-2.0",
-    "source": "git://github.com/openstack/puppet-ceph.git",
+    "source": "https://opendev.org/openstack/puppet-ceph.git",
     "project_page": "https://launchpad.net/puppet-ceph",
     "issues_url": "https://bugs.launchpad.net/puppet-ceph",
     "requirements": [
