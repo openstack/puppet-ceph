@@ -68,7 +68,7 @@ define ceph::rgw::apache_proxy_fcgi (
   $admin_email          = 'root@localhost',
   $docroot              = '/var/www',
   $rgw_dns_name         = $::fqdn,
-  $rgw_port             = '80',
+  $rgw_port             = 80,
   $rewrite_rule         = '.* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization},L]',
   $setenv               = 'proxy-nokeepalive 1',
   $proxy_pass           = {'path' => '/', 'url' => 'fcgi://127.0.0.1:9000/'},
