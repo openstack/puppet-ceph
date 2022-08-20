@@ -48,22 +48,10 @@ define ceph::mirror (
 
   $service_name = "ceph-rbd-mirror@${name}"
 
-  #Xenial reports 'debian' as the service provider
-  #'systemd' should cover supported RHEL type systems
-  if( ( $::service_provider == 'systemd' ) or
-  ( $::operatingsystemrelease == '16.04' ) )
-  {
-    Service{
-      name   => $service_name,
-      enable => $rbd_mirror_enable,
-    }
-  }
-  else {
-    fail( 'Unsupported operating system. Ubuntu 16.04 and RedHat/CentOS 7 are supported' )
-  }
-
   service { $service_name:
     ensure => $rbd_mirror_ensure,
+    enable => $rbd_mirror_enable,
+    name   => $service_name,
     tag    => ['ceph-rbd-mirror']
   }
 

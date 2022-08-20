@@ -22,11 +22,10 @@ describe 'ceph::rgw' do
     'include ceph::params'
   end
 
-  shared_examples 'ceph::rgw on Ubuntu 14.04' do
+  shared_examples 'ceph::rgw on Ubuntu 16.04' do
     before do
       facts.merge!( :operatingsystem        => 'Ubuntu',
-                    :operatingsystemrelease => '14.04',
-                    :service_provider       => 'upstart' )
+                    :operatingsystemrelease => '16.04' )
     end
 
     context 'activated with default params' do
@@ -56,7 +55,6 @@ describe 'ceph::rgw' do
         :selinux_ignore_defaults => true,
       )}
 
-      it { should contain_file('/var/lib/ceph/radosgw/ceph-radosgw.gateway/done') }
       it { should contain_service('radosgw-radosgw.gateway') }
     end
 
@@ -70,9 +68,9 @@ describe 'ceph::rgw' do
           :pkg_radosgw   => 'pkgradosgw',
           :rgw_ensure    => 'stopped',
           :rgw_enable    => false,
-          :rgw_data      => "/var/lib/ceph/radosgw/ceph-radosgw.custom",
+          :rgw_data      => '/var/lib/ceph/radosgw/ceph-radosgw.custom',
           :user          => 'wwwuser',
-          :keyring_path  => "/etc/ceph/ceph.radosgw.custom.keyring",
+          :keyring_path  => '/etc/ceph/ceph.radosgw.custom.keyring',
           :log_file      => '/var/log/ceph/mylogfile.log',
           :rgw_dns_name  => 'mydns.hostname',
           :rgw_swift_url => 'https://mydns.hostname:443'
@@ -87,78 +85,6 @@ describe 'ceph::rgw' do
       it { should contain_ceph_config('client.radosgw.custom/user').with_value('wwwuser') }
       it { should contain_ceph_config('client.radosgw.custom/rgw_dns_name').with_value('mydns.hostname') }
       it { should contain_ceph_config('client.radosgw.custom/rgw_swift_url').with_value('https://mydns.hostname:443') }
-
-      it { should contain_file('/var/lib/ceph/radosgw/ceph-radosgw.custom').with(
-        :ensure                  => 'directory',
-        :owner                   => 'root',
-        :group                   => 'root',
-        :mode                    => '0750',
-        :selinux_ignore_defaults => true,
-      )}
-
-      it { should_not contain_file('/var/lib/ceph/radosgw/ceph-radosgw.gateway/done') }
-      it { should contain_service('radosgw-radosgw.custom').with('ensure' => 'stopped' ) }
-    end
-  end
-
-  shared_examples 'ceph::rgw on Ubuntu 16.04' do
-    before do
-      facts.merge!( :operatingsystem        => 'Ubuntu',
-                    :operatingsystemrelease => '16.04',
-                    :service_provider       => 'systemd' )
-    end
-
-    context 'activated with default params' do
-      let :title do
-        'radosgw.gateway'
-      end
-
-      it { should contain_package('radosgw').with('ensure' => 'installed') }
-      it { should contain_ceph_config('client.radosgw.gateway/user').with_value('www-data') }
-      it { should contain_ceph_config('client.radosgw.gateway/host').with_value('myhost') }
-      it { should contain_ceph_config('client.radosgw.gateway/keyring').with_value('/etc/ceph/ceph.client.radosgw.gateway.keyring') }
-      it { should contain_ceph_config('client.radosgw.gateway/log_file').with_value('/var/log/ceph/radosgw.log') }
-
-      it { should contain_file('/var/lib/ceph/radosgw').with(
-        :ensure                  => 'directory',
-        :mode                    => '0755',
-        :selinux_ignore_defaults => true,
-      )}
-
-      it { should contain_file('/var/lib/ceph/radosgw/ceph-radosgw.gateway').with(
-        :ensure                  => 'directory',
-        :owner                   => 'root',
-        :group                   => 'root',
-        :mode                    => '0750',
-        :selinux_ignore_defaults => true,
-      )}
-
-      it { should contain_service('radosgw-radosgw.gateway') }
-    end
-
-    context 'activated with custom params' do
-      let :title do
-        'radosgw.custom'
-      end
-
-      let :params do
-        {
-          :pkg_radosgw  => 'pkgradosgw',
-          :rgw_ensure   => 'stopped',
-          :rgw_enable   => false,
-          :rgw_data     => '/var/lib/ceph/radosgw/ceph-radosgw.custom',
-          :user         => 'wwwuser',
-          :keyring_path => '/etc/ceph/ceph.radosgw.custom.keyring',
-          :log_file     => '/var/log/ceph/mylogfile.log',
-        }
-      end
-
-      it { should contain_package('pkgradosgw').with('ensure' => 'installed') }
-
-      it { should contain_ceph_config('client.radosgw.custom/host').with_value('myhost') }
-      it { should contain_ceph_config('client.radosgw.custom/keyring').with_value('/etc/ceph/ceph.radosgw.custom.keyring') }
-      it { should contain_ceph_config('client.radosgw.custom/log_file').with_value('/var/log/ceph/mylogfile.log') }
-      it { should contain_ceph_config('client.radosgw.custom/user').with_value('wwwuser') }
 
       it { should contain_file('/var/lib/ceph/radosgw/ceph-radosgw.custom').with(
         :ensure                  => 'directory',
@@ -255,7 +181,6 @@ describe 'ceph::rgw' do
       end
 
       if facts[:operatingsystem] == 'Ubuntu'
-        it_behaves_like 'ceph::rgw on Ubuntu 14.04'
         it_behaves_like 'ceph::rgw on Ubuntu 16.04'
       end
 

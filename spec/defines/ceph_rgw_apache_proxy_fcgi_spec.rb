@@ -24,8 +24,8 @@ describe 'ceph::rgw::apache_proxy_fcgi' do
     before do
       facts.merge!( :operatingsystem        => 'Ubuntu',
                     :lsbdistid              => 'Ubuntu',
-                    :operatingsystemrelease => '14.04',
-                    :lsbdistcodename        => 'trusty' )
+                    :operatingsystemrelease => '16.04',
+                    :lsbdistcodename        => 'xenial' )
     end
 
     context 'activated with default params' do

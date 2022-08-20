@@ -84,26 +84,6 @@ define ceph::mon (
     # different than the actual service name.
     $mon_service = "ceph-mon-${id}"
 
-    # For Ubuntu Trusty system
-    if $::service_provider == 'upstart' {
-      $init = 'upstart'
-      Service {
-        name     => 'ceph-mon',
-        provider => $::service_provider,
-        start    => "start ceph-mon id=${id}",
-        stop     => "stop ceph-mon id=${id}",
-        status   => "status ceph-mon id=${id}",
-        enable   => $mon_enable,
-      }
-    # Everything else that is supported by puppet-ceph should run systemd.
-    } else {
-      $init = 'systemd'
-      Service {
-        name   => "ceph-mon@${id}",
-        enable => $mon_enable,
-      }
-    }
-
     if $ensure == present {
 
       $ceph_mkfs = "ceph-mon-mkfs-${id}"
@@ -177,8 +157,8 @@ if [ ! -d \$mon_data ] ; then
               --mkfs \
               --id ${id} \
               --keyring ${keyring_path} ; then
-            touch \$mon_data/done \$mon_data/${init} \$mon_data/keyring
-            chown -h ceph:ceph \$mon_data/done \$mon_data/${init} \$mon_data/keyring
+            touch \$mon_data/done \$mon_data/systemd \$mon_data/keyring
+            chown -h ceph:ceph \$mon_data/done \$mon_data/systemd \$mon_data/keyring
         else
             rm -fr \$mon_data
         fi
@@ -187,7 +167,7 @@ if [ ! -d \$mon_data ] ; then
               --mkfs \
               --id ${id} \
               --keyring ${keyring_path} ; then
-            touch \$mon_data/done \$mon_data/${init} \$mon_data/keyring
+            touch \$mon_data/done \$mon_data/systemd \$mon_data/keyring
         else
             rm -fr \$mon_data
         fi
@@ -204,6 +184,8 @@ test -d  \$mon_data
       }
       -> service { $mon_service:
         ensure => running,
+        enable => $mon_enable,
+        name   => "ceph-mon@${id}",
       }
 
       # if the service is running before we setup the configs, notify service
@@ -227,6 +209,8 @@ test ! -e ${keyring_path}
     } elsif $ensure == absent {
       service { $mon_service:
         ensure => stopped,
+        enable => $mon_enable,
+        name   => "ceph-mon@${id}",
       }
       -> exec { "remove-mon-${id}":
         command   => "/bin/true # comment to satisfy puppet syntax requirements

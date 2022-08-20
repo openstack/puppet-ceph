@@ -72,8 +72,8 @@ describe 'ceph::repo' do
     before do
       facts.merge!( :osfamily        => 'Debian',
                     :lsbdistid       => 'Ubuntu',
-                    :lsbdistcodename => 'trusty',
-                    :lsbdistrelease  => '14.04',
+                    :lsbdistcodename => 'xenial',
+                    :lsbdistrelease  => '16.04',
                     :hardwaremodel   => 'x86_64' )
     end
 
@@ -86,7 +86,7 @@ describe 'ceph::repo' do
 
       it { should contain_apt__source('ceph').with(
         :location => 'http://download.ceph.com/debian-nautilus/',
-        :release  => 'trusty',
+        :release  => 'xenial',
       )}
     end
 
@@ -99,7 +99,7 @@ describe 'ceph::repo' do
 
       it { should contain_apt__source('ceph').with(
         :location => 'http://download.ceph.com/debian-firefly/',
-        :release  => 'trusty',
+        :release  => 'xenial',
       )}
     end
 
@@ -117,13 +117,13 @@ describe 'ceph::repo' do
 
       it { should contain_apt__source('ceph').with(
         :location => 'http://download.ceph.com/debian-nautilus/',
-        :release  => 'trusty',
+        :release  => 'xenial',
       )}
 
       it { should contain_apt__source('ceph-fastcgi').with(
         :ensure   => 'present',
-        :location => 'http://gitbuilder.ceph.com/libapache-mod-fastcgi-deb-trusty-x86_64-basic/ref/master',
-        :release  => 'trusty',
+        :location => 'http://gitbuilder.ceph.com/libapache-mod-fastcgi-deb-xenial-x86_64-basic/ref/master',
+        :release  => 'xenial',
         :require  => 'Apt::Key[ceph-gitbuilder]'
       )}
     end
@@ -139,13 +139,13 @@ describe 'ceph::repo' do
       it { should contain_apt__source('ceph').with(
         :ensure   => 'absent',
         :location => 'http://download.ceph.com/debian-nautilus/',
-        :release  => 'trusty',
+        :release  => 'xenial',
       )}
 
       it { should contain_apt__source('ceph-fastcgi').with(
         :ensure   => 'absent',
-        :location => 'http://gitbuilder.ceph.com/libapache-mod-fastcgi-deb-trusty-x86_64-basic/ref/master',
-        :release  => 'trusty',
+        :location => 'http://gitbuilder.ceph.com/libapache-mod-fastcgi-deb-xenial-x86_64-basic/ref/master',
+        :release  => 'xenial',
         :require  => 'Apt::Key[ceph-gitbuilder]'
       )}
     end

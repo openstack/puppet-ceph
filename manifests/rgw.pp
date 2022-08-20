@@ -166,33 +166,10 @@ define ceph::rgw (
   # than the actual service name
   $rgw_service = "radosgw-${name}"
 
-  # service definition
-  # if Ubuntu does not use systemd
-  if $::service_provider == 'upstart' {
-    if $rgw_enable {
-      file { "${rgw_data}/done":
-        ensure => present,
-        before => Service[$rgw_service],
-      }
-    }
-
-    Service {
-      name     => 'radosgw',
-      start    => "start radosgw id=${name}",
-      stop     => "stop radosgw id=${name}",
-      status   => "status radosgw id=${name}",
-      provider => $::service_provider,
-    }
-  # Everything else that is supported by puppet-ceph should run systemd.
-  } else {
-    Service {
-      name   => "ceph-radosgw@${name}",
-      enable => $rgw_enable,
-    }
-  }
-
   service { $rgw_service:
     ensure => $rgw_ensure,
+    enable => $rgw_enable,
+    name   => "ceph-radosgw@${name}",
     tag    => ['ceph-radosgw']
   }
 
