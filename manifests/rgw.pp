@@ -110,31 +110,29 @@ define ceph::rgw (
     "client.${name}/rgw_swift_url":      value => $rgw_swift_url;
   }
 
-  if($frontend_type == 'civetweb')
-  {
-    ceph::rgw::civetweb { $name:
-      rgw_frontends => $rgw_frontends,
-    }
-  }
-  elsif ( ( $frontend_type == 'apache-fastcgi' ) or ( $frontend_type == 'apache-proxy-fcgi' ) )
-  {
-    ceph_config {
-      "client.${name}/rgw_print_continue": value => $rgw_print_continue;
-      "client.${name}/rgw_socket_path":    value => $rgw_socket_path;
-    }
-    if $frontend_type == 'apache-fastcgi' {
-      ceph_config {
-        "client.${name}/rgw_port": value => $rgw_port;
-      }
-    } elsif $frontend_type == 'apache-proxy-fcgi' {
-      ceph_config {
-        "client.${name}/rgw_frontends": value => $rgw_frontends;
+  case $frontend_type {
+    'civetweb': {
+      ceph::rgw::civetweb { $name:
+        rgw_frontends => $rgw_frontends,
       }
     }
-  }
-  else
-  {
-    fail("Unsupported frontend_type: ${frontend_type}")
+    'apache-fastcgi': {
+      ceph_config {
+        "client.${name}/rgw_port":           value => $rgw_port;
+        "client.${name}/rgw_print_continue": value => $rgw_print_continue;
+        "client.${name}/rgw_socket_path":    value => $rgw_socket_path;
+      }
+    }
+    'apache-proxy-fcgi': {
+      ceph_config {
+        "client.${name}/rgw_frontends":      value => $rgw_frontends;
+        "client.${name}/rgw_print_continue": value => $rgw_print_continue;
+        "client.${name}/rgw_socket_path":    value => $rgw_socket_path;
+      }
+    }
+    default: {
+      fail("Unsupported frontend_type: ${frontend_type}")
+    }
   }
 
   package { $pkg_radosgw:
