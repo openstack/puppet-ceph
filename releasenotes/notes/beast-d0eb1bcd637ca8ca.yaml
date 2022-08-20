@@ -1,0 +1,5 @@
+---
+features:
+  - |
+    Now this module supports setting up the Ceph Object Gateway service with
+    the beast HTTP frontend library.

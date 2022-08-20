@@ -59,10 +59,11 @@
 #   Optional. Default is undef.
 #
 # [*frontend_type*] What type of frontend to use
-#   Optional. Default is civetweb, Other options are apache-proxy-fcgi or apache-fastcgi.
+#   Optional. Default is civetweb, Other options are beast, apache-proxy-fcgi
+#   or apache-fastcgi.
 #
 # [*rgw_frontends*] Arguments to the rgw frontend
-#   Optional. Default is 'civetweb port=7480'.
+#   Optional. Default is undef.
 #
 # [*rgw_swift_url*] The URL for the Ceph Object Gateway Swift API.
 #   Optional. Default is http://$fqdn:7480.
@@ -85,7 +86,7 @@ define ceph::rgw (
   $rgw_print_continue = false,
   $rgw_port           = undef,
   $frontend_type      = 'civetweb',
-  $rgw_frontends      = 'civetweb port=7480',
+  $rgw_frontends      = undef,
   $rgw_swift_url      = "http://${::fqdn}:7480",
   $syslog             = undef,
 ) {
@@ -111,6 +112,11 @@ define ceph::rgw (
   }
 
   case $frontend_type {
+    'beast': {
+      ceph::rgw::beast { $name:
+        rgw_frontends => $rgw_frontends,
+      }
+    }
     'civetweb': {
       ceph::rgw::civetweb { $name:
         rgw_frontends => $rgw_frontends,
@@ -124,8 +130,9 @@ define ceph::rgw (
       }
     }
     'apache-proxy-fcgi': {
+      $rgw_frontends_real = pick($rgw_frontends, 'fastcgi socket_port=9000 socket_host=127.0.0.1');
       ceph_config {
-        "client.${name}/rgw_frontends":      value => $rgw_frontends;
+        "client.${name}/rgw_frontends":      value => $rgw_frontends_real;
         "client.${name}/rgw_print_continue": value => $rgw_print_continue;
         "client.${name}/rgw_socket_path":    value => $rgw_socket_path;
       }
