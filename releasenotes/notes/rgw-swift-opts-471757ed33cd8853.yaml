@@ -1,0 +1,9 @@
+---
+features:
+  - |
+    The ``ceph::rgw`` class now supports the following new parameters.
+
+    - ``rgw_swift_url_prefix``
+    - ``rgw_swift_account_in_url``
+    - ``rgw_swift_versioning_enabled``
+    - ``rgw_trust_forwarded_https``

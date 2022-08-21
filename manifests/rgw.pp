@@ -68,27 +68,47 @@
 # [*rgw_swift_url*] The URL for the Ceph Object Gateway Swift API.
 #   Optional. Default is http://$fqdn:7480.
 #
+# [*rgw_swift_url_prefix*] The URL prefix for the Swift API.
+#   Optional. Default is 'swift'.
+#
+# [*rgw_swift_account_in_url*] Whether or not the Swift account name should
+#   be included in the Swift API URL.
+#   Optional. Default is false.
+#
+# [*rgw_swift_versioning_enabled*] Enables the Object Versioning of OpenStack
+#   Object Storage API
+#   Optional. Default is false.
+#
+# [*rgw_trust_forwarded_https*] Trust the Forwarded and X-Forwarded-Proto
+#   headers sent by the proxy when determining whether the connection is
+#   secure.
+#   Optional. Default is false
+#
 # Deprecated Parameters:
 #
 # [*syslog*] Whether or not to log to syslog.
 #   Optional. Default is true.
 #
 define ceph::rgw (
-  $pkg_radosgw        = $ceph::params::pkg_radosgw,
-  $rgw_ensure         = 'running',
-  $rgw_enable         = true,
-  $rgw_data           = "/var/lib/ceph/radosgw/ceph-${name}",
-  $user               = $ceph::params::user_radosgw,
-  $keyring_path       = "/etc/ceph/ceph.client.${name}.keyring",
-  $log_file           = '/var/log/ceph/radosgw.log',
-  $rgw_dns_name       = $::fqdn,
-  $rgw_socket_path    = $ceph::params::rgw_socket_path,
-  $rgw_print_continue = false,
-  $rgw_port           = undef,
-  $frontend_type      = 'civetweb',
-  $rgw_frontends      = undef,
-  $rgw_swift_url      = "http://${::fqdn}:7480",
-  $syslog             = undef,
+  $pkg_radosgw                  = $ceph::params::pkg_radosgw,
+  $rgw_ensure                   = 'running',
+  $rgw_enable                   = true,
+  $rgw_data                     = "/var/lib/ceph/radosgw/ceph-${name}",
+  $user                         = $ceph::params::user_radosgw,
+  $keyring_path                 = "/etc/ceph/ceph.client.${name}.keyring",
+  $log_file                     = '/var/log/ceph/radosgw.log',
+  $rgw_dns_name                 = $::fqdn,
+  $rgw_socket_path              = $ceph::params::rgw_socket_path,
+  $rgw_print_continue           = false,
+  $rgw_port                     = undef,
+  $frontend_type                = 'civetweb',
+  $rgw_frontends                = undef,
+  $rgw_swift_url                = "http://${::fqdn}:7480",
+  $rgw_swift_url_prefix         = 'swift',
+  $rgw_swift_account_in_url     = false,
+  $rgw_swift_versioning_enabled = false,
+  $rgw_trust_forwarded_https    = false,
+  $syslog                       = undef,
 ) {
 
   include stdlib
@@ -103,12 +123,16 @@ define ceph::rgw (
   }
 
   ceph_config {
-    "client.${name}/host":               value => $::hostname;
-    "client.${name}/keyring":            value => $keyring_path;
-    "client.${name}/log_file":           value => $log_file;
-    "client.${name}/user":               value => $user;
-    "client.${name}/rgw_dns_name":       value => $rgw_dns_name;
-    "client.${name}/rgw_swift_url":      value => $rgw_swift_url;
+    "client.${name}/host":                         value => $::hostname;
+    "client.${name}/keyring":                      value => $keyring_path;
+    "client.${name}/log_file":                     value => $log_file;
+    "client.${name}/user":                         value => $user;
+    "client.${name}/rgw_dns_name":                 value => $rgw_dns_name;
+    "client.${name}/rgw_swift_url":                value => $rgw_swift_url;
+    "client.${name}/rgw_swift_account_in_url":     value => $rgw_swift_account_in_url;
+    "client.${name}/rgw_swift_url_prefix":         value => $rgw_swift_url_prefix;
+    "client.${name}/rgw_swift_versioning_enabled": value => $rgw_swift_versioning_enabled;
+    "client.${name}/rgw_trust_forwarded_https":    value => $rgw_trust_forwarded_https;
   }
 
   case $frontend_type {

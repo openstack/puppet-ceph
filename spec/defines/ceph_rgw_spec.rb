@@ -40,6 +40,10 @@ describe 'ceph::rgw' do
       it { should contain_ceph_config('client.radosgw.gateway/log_file').with_value('/var/log/ceph/radosgw.log') }
       it { should contain_ceph_config('client.radosgw.gateway/rgw_dns_name').with_value('myhost.domain') }
       it { should contain_ceph_config('client.radosgw.gateway/rgw_swift_url').with_value('http://myhost.domain:7480') }
+      it { should contain_ceph_config('client.radosgw.gateway/rgw_swift_url_prefix').with_value('swift') }
+      it { should contain_ceph_config('client.radosgw.gateway/rgw_swift_account_in_url').with_value(false) }
+      it { should contain_ceph_config('client.radosgw.gateway/rgw_swift_versioning_enabled').with_value(false) }
+      it { should contain_ceph_config('client.radosgw.gateway/rgw_trust_forwarded_https').with_value(false) }
 
       it { should contain_file('/var/lib/ceph/radosgw').with(
         :ensure                  => 'directory',
@@ -65,15 +69,19 @@ describe 'ceph::rgw' do
 
       let :params do
         {
-          :pkg_radosgw   => 'pkgradosgw',
-          :rgw_ensure    => 'stopped',
-          :rgw_enable    => false,
-          :rgw_data      => '/var/lib/ceph/radosgw/ceph-radosgw.custom',
-          :user          => 'wwwuser',
-          :keyring_path  => '/etc/ceph/ceph.radosgw.custom.keyring',
-          :log_file      => '/var/log/ceph/mylogfile.log',
-          :rgw_dns_name  => 'mydns.hostname',
-          :rgw_swift_url => 'https://mydns.hostname:443'
+          :pkg_radosgw                  => 'pkgradosgw',
+          :rgw_ensure                   => 'stopped',
+          :rgw_enable                   => false,
+          :rgw_data                     => '/var/lib/ceph/radosgw/ceph-radosgw.custom',
+          :user                         => 'wwwuser',
+          :keyring_path                 => '/etc/ceph/ceph.radosgw.custom.keyring',
+          :log_file                     => '/var/log/ceph/mylogfile.log',
+          :rgw_dns_name                 => 'mydns.hostname',
+          :rgw_swift_url                => 'https://mydns.hostname:443',
+          :rgw_swift_url_prefix         => '/',
+          :rgw_swift_account_in_url     => true,
+          :rgw_swift_versioning_enabled => true,
+          :rgw_trust_forwarded_https    => true,
         }
       end
 
@@ -85,6 +93,10 @@ describe 'ceph::rgw' do
       it { should contain_ceph_config('client.radosgw.custom/user').with_value('wwwuser') }
       it { should contain_ceph_config('client.radosgw.custom/rgw_dns_name').with_value('mydns.hostname') }
       it { should contain_ceph_config('client.radosgw.custom/rgw_swift_url').with_value('https://mydns.hostname:443') }
+      it { should contain_ceph_config('client.radosgw.custom/rgw_swift_url_prefix').with_value('/') }
+      it { should contain_ceph_config('client.radosgw.custom/rgw_swift_account_in_url').with_value(true) }
+      it { should contain_ceph_config('client.radosgw.custom/rgw_swift_versioning_enabled').with_value(true) }
+      it { should contain_ceph_config('client.radosgw.custom/rgw_trust_forwarded_https').with_value(true) }
 
       it { should contain_file('/var/lib/ceph/radosgw/ceph-radosgw.custom').with(
         :ensure                  => 'directory',
@@ -116,6 +128,12 @@ describe 'ceph::rgw' do
       it { should contain_ceph_config('client.radosgw.gateway/host').with_value('myhost') }
       it { should contain_ceph_config('client.radosgw.gateway/keyring').with_value('/etc/ceph/ceph.client.radosgw.gateway.keyring') }
       it { should contain_ceph_config('client.radosgw.gateway/log_file').with_value('/var/log/ceph/radosgw.log') }
+      it { should contain_ceph_config('client.radosgw.gateway/rgw_dns_name').with_value('myhost.domain') }
+      it { should contain_ceph_config('client.radosgw.gateway/rgw_swift_url').with_value('http://myhost.domain:7480') }
+      it { should contain_ceph_config('client.radosgw.gateway/rgw_swift_url_prefix').with_value('swift') }
+      it { should contain_ceph_config('client.radosgw.gateway/rgw_swift_account_in_url').with_value(false) }
+      it { should contain_ceph_config('client.radosgw.gateway/rgw_swift_versioning_enabled').with_value(false) }
+      it { should contain_ceph_config('client.radosgw.gateway/rgw_trust_forwarded_https').with_value(false) }
 
       it { should contain_file('/var/lib/ceph/radosgw').with(
         :ensure                  => 'directory',
@@ -141,13 +159,19 @@ describe 'ceph::rgw' do
 
       let :params do
         {
-          :pkg_radosgw        => 'pkgradosgw',
-          :rgw_ensure         => 'stopped',
-          :rgw_enable         => false,
-          :rgw_data           => "/var/lib/ceph/radosgw/ceph-radosgw.custom",
-          :user               => 'wwwuser',
-          :keyring_path       => "/etc/ceph/ceph.radosgw.custom.keyring",
-          :log_file           => '/var/log/ceph/mylogfile.log',
+          :pkg_radosgw                  => 'pkgradosgw',
+          :rgw_ensure                   => 'stopped',
+          :rgw_enable                   => false,
+          :rgw_data                     => "/var/lib/ceph/radosgw/ceph-radosgw.custom",
+          :user                         => 'wwwuser',
+          :keyring_path                 => "/etc/ceph/ceph.radosgw.custom.keyring",
+          :log_file                     => '/var/log/ceph/mylogfile.log',
+          :rgw_dns_name                 => 'mydns.hostname',
+          :rgw_swift_url                => 'https://mydns.hostname:443',
+          :rgw_swift_url_prefix         => '/',
+          :rgw_swift_account_in_url     => true,
+          :rgw_swift_versioning_enabled => true,
+          :rgw_trust_forwarded_https    => true,
         }
       end
 
@@ -157,6 +181,12 @@ describe 'ceph::rgw' do
       it { should contain_ceph_config('client.radosgw.custom/keyring').with_value('/etc/ceph/ceph.radosgw.custom.keyring') }
       it { should contain_ceph_config('client.radosgw.custom/log_file').with_value('/var/log/ceph/mylogfile.log') }
       it { should contain_ceph_config('client.radosgw.custom/user').with_value('wwwuser') }
+      it { should contain_ceph_config('client.radosgw.custom/rgw_dns_name').with_value('mydns.hostname') }
+      it { should contain_ceph_config('client.radosgw.custom/rgw_swift_url').with_value('https://mydns.hostname:443') }
+      it { should contain_ceph_config('client.radosgw.custom/rgw_swift_url_prefix').with_value('/') }
+      it { should contain_ceph_config('client.radosgw.custom/rgw_swift_account_in_url').with_value(true) }
+      it { should contain_ceph_config('client.radosgw.custom/rgw_swift_versioning_enabled').with_value(true) }
+      it { should contain_ceph_config('client.radosgw.custom/rgw_trust_forwarded_https').with_value(true) }
 
       it { should contain_file('/var/lib/ceph/radosgw/ceph-radosgw.custom').with(
         :ensure                  => 'directory',
