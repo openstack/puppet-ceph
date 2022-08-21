@@ -67,29 +67,24 @@ describe 'ceph::rgw' do
     end
   end
 
-  on_supported_os({
-    :supported_os => OSDefaults.get_supported_os
-  }).each do |os,facts|
+  on_supported_os.each do |os, facts|
     context "on #{os}" do
       let (:facts) do
-        facts.merge!(OSDefaults.get_facts({
-          :concat_basedir         => '/var/lib/puppet/concat',
-          :fqdn                   => 'myhost.domain',
-          :hostname               => 'myhost',
-        }))
+        facts.merge!(OSDefaults.get_facts(
+          :fqdn     => 'myhost.domain',
+          :hostname => 'myhost'
+        ))
       end
 
       let :platform_params do
         case facts[:osfamily]
         when 'Debian'
           {
-            :pkg_radosgw => 'radosgw',
-            :user        => 'www-data',
+            :user => 'www-data',
           }
         when 'RedHat'
           {
-            :pkg_radosgw => 'ceph-radosgw',
-            :user        => 'apache',
+            :user => 'apache',
           }
         end
       end

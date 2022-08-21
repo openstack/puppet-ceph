@@ -17,13 +17,7 @@
 require 'spec_helper'
 
 describe 'ceph::mirror' do
-  shared_examples 'ceph::mirror on Debian' do
-    before do
-      facts.merge!( :operatingsystem        => 'Ubuntu',
-                    :operatingsystemrelease => '16.04',
-                    :service_provider       => 'systemd' )
-    end
-
+  shared_examples 'ceph::mirror' do
     context 'with default params' do
       let :title do
         'A'
@@ -33,32 +27,13 @@ describe 'ceph::mirror' do
     end
   end
 
-  shared_examples 'ceph::mirror on RedHat' do
-    before do
-      facts.merge!( :operatingsystem           => 'RedHat',
-                    :operatingsystemrelease    => '7.2',
-                    :operatingsystemmajrelease => '7',
-                    :service_provider          => 'systemd' )
-    end
-
-    context 'with default params' do
-      let :title do
-        'A'
-      end
-
-      it { should contain_service('ceph-rbd-mirror@A').with('ensure' => 'running') }
-    end
-  end
-
-  on_supported_os({
-    :supported_os => OSDefaults.get_supported_os
-  }).each do |os,facts|
+  on_supported_os.each do |os,facts|
     context "on #{os}" do
       let (:facts) do
         facts.merge!(OSDefaults.get_facts())
       end
 
-      it_behaves_like "ceph::mirror on #{facts[:osfamily]}"
+      it_behaves_like "ceph::mirror"
     end
   end
 end
