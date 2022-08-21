@@ -34,6 +34,7 @@ describe 'ceph::rgw' do
       end
 
       it { should contain_package('radosgw').with('ensure' => 'installed') }
+      it { should contain_ceph_config('client.radosgw.gateway/rgw_enable_apis').with_ensure('absent') }
       it { should contain_ceph_config('client.radosgw.gateway/user').with_value('www-data') }
       it { should contain_ceph_config('client.radosgw.gateway/host').with_value('myhost') }
       it { should contain_ceph_config('client.radosgw.gateway/keyring').with_value('/etc/ceph/ceph.client.radosgw.gateway.keyring') }
@@ -72,6 +73,7 @@ describe 'ceph::rgw' do
           :pkg_radosgw                  => 'pkgradosgw',
           :rgw_ensure                   => 'stopped',
           :rgw_enable                   => false,
+          :rgw_enable_apis              => ['s3', 'swift'],
           :rgw_data                     => '/var/lib/ceph/radosgw/ceph-radosgw.custom',
           :user                         => 'wwwuser',
           :keyring_path                 => '/etc/ceph/ceph.radosgw.custom.keyring',
@@ -87,6 +89,7 @@ describe 'ceph::rgw' do
 
       it { should contain_package('pkgradosgw').with('ensure' => 'installed') }
 
+      it { should contain_ceph_config('client.radosgw.custom/rgw_enable_apis').with_value('s3,swift') }
       it { should contain_ceph_config('client.radosgw.custom/host').with_value('myhost') }
       it { should contain_ceph_config('client.radosgw.custom/keyring').with_value('/etc/ceph/ceph.radosgw.custom.keyring') }
       it { should contain_ceph_config('client.radosgw.custom/log_file').with_value('/var/log/ceph/mylogfile.log') }
@@ -124,6 +127,7 @@ describe 'ceph::rgw' do
       end
 
       it { should contain_package('ceph-radosgw').with('ensure' => 'installed') }
+      it { should contain_ceph_config('client.radosgw.gateway/rgw_enable_apis').with_ensure('absent') }
       it { should contain_ceph_config('client.radosgw.gateway/user').with_value('apache') }
       it { should contain_ceph_config('client.radosgw.gateway/host').with_value('myhost') }
       it { should contain_ceph_config('client.radosgw.gateway/keyring').with_value('/etc/ceph/ceph.client.radosgw.gateway.keyring') }
@@ -162,6 +166,7 @@ describe 'ceph::rgw' do
           :pkg_radosgw                  => 'pkgradosgw',
           :rgw_ensure                   => 'stopped',
           :rgw_enable                   => false,
+          :rgw_enable_apis              => ['s3', 'swift'],
           :rgw_data                     => "/var/lib/ceph/radosgw/ceph-radosgw.custom",
           :user                         => 'wwwuser',
           :keyring_path                 => "/etc/ceph/ceph.radosgw.custom.keyring",
@@ -177,6 +182,7 @@ describe 'ceph::rgw' do
 
       it { should contain_package('pkgradosgw').with('ensure' => 'installed') }
 
+      it { should contain_ceph_config('client.radosgw.custom/rgw_enable_apis').with_value('s3,swift') }
       it { should contain_ceph_config('client.radosgw.custom/host').with_value('myhost') }
       it { should contain_ceph_config('client.radosgw.custom/keyring').with_value('/etc/ceph/ceph.radosgw.custom.keyring') }
       it { should contain_ceph_config('client.radosgw.custom/log_file').with_value('/var/log/ceph/mylogfile.log') }

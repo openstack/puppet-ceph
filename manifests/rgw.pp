@@ -34,6 +34,9 @@
 # [*rgw_enable*] Whether to enable radosgw service on boot.
 #   Optional. Default is true.
 #
+# [*rgw_enable_apis*] Enables the specified APIs.
+#   Optional. Default is undef.
+#
 # [*rgw_data*] The path where the radosgw data should be stored.
 #   Optional. Default is '/var/lib/ceph/radosgw/${cluster}-${name}.
 #
@@ -93,6 +96,7 @@ define ceph::rgw (
   $pkg_radosgw                  = $ceph::params::pkg_radosgw,
   $rgw_ensure                   = 'running',
   $rgw_enable                   = true,
+  $rgw_enable_apis              = undef,
   $rgw_data                     = "/var/lib/ceph/radosgw/ceph-${name}",
   $user                         = $ceph::params::user_radosgw,
   $keyring_path                 = "/etc/ceph/ceph.client.${name}.keyring",
@@ -120,6 +124,12 @@ define ceph::rgw (
 
   unless $name =~ /^radosgw\..+/ {
     fail("Define name must be started with 'radosgw.'")
+  }
+
+  if $rgw_enable_apis == undef {
+    ceph_config { "client.${name}/rgw_enable_apis": ensure => absent }
+  } else {
+    ceph_config { "client.${name}/rgw_enable_apis": value => join(any2array($rgw_enable_apis), ',')}
   }
 
   ceph_config {
