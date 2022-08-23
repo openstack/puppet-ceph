@@ -5,3 +5,18 @@
       - puppet-openstack-integration-jobs-scenario001
       - puppet-openstack-integration-jobs-scenario004
       - release-notes-jobs-python3
+    check:
+      jobs:
+        - puppet-ceph-unit-5.5-centos-8-stream
+    gate:
+      jobs:
+        - puppet-ceph-unit-5.5-centos-8-stream
+- job:
+    name: puppet-ceph-unit-5.5-centos-8-stream
+    parent: puppet-openstack-unit-base
+    nodeset: centos-8-stream
+    # stable/ussuri is the last release with Puppet 5.x support
+    override-checkout: stable/ussuri
+    vars:
+      puppet_gem_version: 5.5.0
+      rspec_puppet_version: '= 2.9.0'
