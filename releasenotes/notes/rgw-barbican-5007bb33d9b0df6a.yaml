@@ -1,0 +1,5 @@
+---
+features:
+  - |
+    The new ``ceph::rgw::barbican`` defined resource type has been added. This
+    allows managing settings for Barbican integration of Ceph Object Gateway.
