@@ -15,6 +15,8 @@
 #
 # Author: Ricardo Rocha <ricardo@catalyst.net.nz>
 #
+# == Define: ceph::rgw::keystone
+#
 # Configures keystone auth/authz for the ceph radosgw.
 #
 ### == Name
