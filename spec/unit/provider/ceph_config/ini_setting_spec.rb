@@ -39,11 +39,13 @@ describe provider_class do
   let(:tmpfile) { tmpfilename("ceph_config_test") }
 
   let(:params) { {
-      :path    => tmpfile,
+    :path => tmpfile,
   } }
 
   def validate(expected)
-    expect(File.read(tmpfile)).to eq(expected)
+    # NOTE(tkajinam): Remove heading \n to fix an issue with Puppet 5
+    #                 + CentOS8 Stream.
+    expect(File.read(tmpfile).gsub(/^\n/, '')).to eq(expected)
   end
 
   it 'should create keys = value and ensure space around equals' do
