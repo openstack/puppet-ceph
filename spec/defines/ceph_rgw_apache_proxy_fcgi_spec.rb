@@ -26,8 +26,8 @@ describe 'ceph::rgw::apache_proxy_fcgi' do
         'radosgw.gateway'
       end
 
-      it { should contain_apache__vhost('myhost.domain-radosgw').with(
-        :servername        => 'myhost.domain',
+      it { should contain_apache__vhost('foo.example.com-radosgw').with(
+        :servername        => 'foo.example.com',
         :serveradmin       => 'root@localhost',
         :port              => 80,
         :docroot           => '/var/www',
@@ -104,10 +104,7 @@ describe 'ceph::rgw::apache_proxy_fcgi' do
   on_supported_os.each do |os, facts|
     context "on #{os}" do
       let (:facts) do
-        facts.merge!(OSDefaults.get_facts(
-          :fqdn     => 'myhost.domain',
-          :hostname => 'myhost'
-        ))
+        facts.merge!(OSDefaults.get_facts())
       end
 
       it_behaves_like 'ceph::rgw::apache_proxy_fcgi'

@@ -42,7 +42,7 @@
 #   Optional. Default is running.
 #
 # [*mds_id*] The ID of the MDS instance.
-#   Optional. Default is $::hostname
+#   Optional. Default is $facts['networking']['hostname']
 #
 # [*keyring*] The location of the keyring used by MDSs
 #   Optional. Same default as ceph.
@@ -58,7 +58,7 @@ class ceph::mds (
   $mds_data       = undef,
   $mds_enable     = true,
   $mds_ensure     = 'running',
-  $mds_id         = $::hostname,
+  $mds_id         = $facts['networking']['hostname'],
   $keyring        = undef,
   $cluster        = 'ceph',
 ) inherits ceph::params {

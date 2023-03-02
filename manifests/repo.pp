@@ -74,7 +74,7 @@ class ceph::repo (
   $stream         = false,
   $ceph_mirror    = undef,
 ) inherits ceph::params {
-  case $::osfamily {
+  case $facts['os']['family'] {
     'Debian': {
       include apt
 
@@ -93,7 +93,7 @@ class ceph::repo (
       apt::source { 'ceph':
         ensure   => $ensure,
         location => $ceph_mirror_real,
-        release  => $::lsbdistcodename,
+        release  => $facts['os']['distro']['codename'],
         tag      => 'ceph',
       }
 
@@ -107,8 +107,8 @@ class ceph::repo (
 
         apt::source { 'ceph-fastcgi':
           ensure   => $ensure,
-          location => "http://gitbuilder.ceph.com/libapache-mod-fastcgi-deb-${::lsbdistcodename}-${::hardwaremodel}-basic/ref/master",
-          release  => $::lsbdistcodename,
+          location => "http://gitbuilder.ceph.com/libapache-mod-fastcgi-deb-${facts['os']['distro']['codename']}-${facts['os']['hardware']}-basic/ref/master",
+          release  => $facts['os']['distro']['codename'],
           require  => Apt::Key['ceph-gitbuilder'],
         }
 
@@ -124,23 +124,23 @@ class ceph::repo (
       # If you want to deploy Ceph using packages provided by CentOS SIG
       # https://wiki.centos.org/SpecialInterestGroup/Storage/
       if $enable_sig {
-        if $::operatingsystem != 'CentOS' {
+        if $facts['os']['name'] != 'CentOS' {
           warning("CentOS SIG repository is only supported on CentOS operating system, \
-not on ${::operatingsystem}, which can lead to packaging issues.")
+not on ${facts['os']['name']}, which can lead to packaging issues.")
         }
         if $ceph_mirror {
           $ceph_mirror_real = $ceph_mirror
         } else {
           # NOTE(tobias-urdin): mirror.centos.org doesnt have https support
           if $stream {
-            if versioncmp($::operatingsystemmajrelease, '9') >= 0 {
+            if versioncmp($facts['os']['release']['major'], '9') >= 0 {
               $centos_mirror = 'mirror.stream.centos.org/SIGs'
             } else {
               $centos_mirror = 'mirror.centos.org/centos'
             }
-            $ceph_mirror_real = "http://${centos_mirror}/${::operatingsystemmajrelease}-stream/storage/x86_64/ceph-${release}/"
+            $ceph_mirror_real = "http://${centos_mirror}/${facts['os']['release']['major']}-stream/storage/x86_64/ceph-${release}/"
           } else {
-            $ceph_mirror_real = "http://mirror.centos.org/centos/${::operatingsystemmajrelease}/storage/x86_64/ceph-${release}/"
+            $ceph_mirror_real = "http://mirror.centos.org/centos/${facts['os']['release']['major']}/storage/x86_64/ceph-${release}/"
           }
         }
         yumrepo { 'ceph-luminous-sig':
@@ -157,7 +157,7 @@ not on ${::operatingsystem}, which can lead to packaging issues.")
         Yumrepo['ceph-luminous-sig'] -> Yumrepo['ceph-storage-sig'] -> Package<| tag == 'ceph' |>
       } else {
         # If you want to deploy Ceph using packages provided by ceph.com repositories.
-        $el = $::operatingsystemmajrelease
+        $el = $facts['os']['release']['major']
 
         Yumrepo {
           proxy          => $proxy,
@@ -232,8 +232,7 @@ not on ${::operatingsystem}, which can lead to packaging issues.")
     }
 
     default: {
-      fail("Unsupported osfamily: ${::osfamily} operatingsystem: ${::operatingsystem}, \
-module ${module_name} only supports osfamily Debian and RedHat")
+      fail("Unsupported osfamily: ${facts['os']['family']}")
     }
   }
 }

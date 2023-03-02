@@ -20,7 +20,7 @@ require 'spec_helper'
 describe 'ceph::profile::mgr' do
 
   shared_examples 'ceph profile mgr' do
-    it { should contain_ceph__mgr('first').with(
+    it { should contain_ceph__mgr('foo').with(
       :authentication_type => 'cephx',
       :key                 => 'AQASGFDFUHBHDG9SDdsyffV1xgsn1pgr3GcKPg==',
       :inject_key          => true)
@@ -29,8 +29,8 @@ describe 'ceph::profile::mgr' do
 
   on_supported_os.each do |os, facts|
     context "on #{os}" do
-      let(:facts) do
-        facts.merge({:hostname => 'first'})
+      let (:facts) do
+        facts.merge!(OSDefaults.get_facts())
       end
 
       it_behaves_like 'ceph profile mgr'

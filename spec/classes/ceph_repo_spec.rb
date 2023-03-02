@@ -30,7 +30,7 @@ describe 'ceph::repo' do
 
       it { should contain_apt__source('ceph').with(
         :location => 'http://download.ceph.com/debian-nautilus/',
-        :release  => facts[:lsbdistcodename],
+        :release  => facts[:os]['distro']['codename'],
       )}
     end
 
@@ -43,7 +43,7 @@ describe 'ceph::repo' do
 
       it { should contain_apt__source('ceph').with(
         :location => 'http://myserver.com/debian-nautilus/',
-        :release  => facts[:lsbdistcodename],
+        :release  => facts[:os]['distro']['codename'],
       )}
     end
 
@@ -61,13 +61,13 @@ describe 'ceph::repo' do
 
       it { should contain_apt__source('ceph').with(
         :location => 'http://download.ceph.com/debian-nautilus/',
-        :release  => facts[:lsbdistcodename],
+        :release  => facts[:os]['distro']['codename'],
       )}
 
       it { should contain_apt__source('ceph-fastcgi').with(
         :ensure   => 'present',
-        :location => "http://gitbuilder.ceph.com/libapache-mod-fastcgi-deb-#{facts[:lsbdistcodename]}-x86_64-basic/ref/master",
-        :release  => facts[:lsbdistcodename],
+        :location => "http://gitbuilder.ceph.com/libapache-mod-fastcgi-deb-#{facts[:os]['distro']['codename']}-x86_64-basic/ref/master",
+        :release  => facts[:os]['distro']['codename'],
         :require  => 'Apt::Key[ceph-gitbuilder]'
       )}
     end
@@ -83,13 +83,13 @@ describe 'ceph::repo' do
       it { should contain_apt__source('ceph').with(
         :ensure   => 'absent',
         :location => 'http://download.ceph.com/debian-nautilus/',
-        :release  => facts[:lsbdistcodename],
+        :release  => facts[:os]['distro']['codename'],
       )}
 
       it { should contain_apt__source('ceph-fastcgi').with(
         :ensure   => 'absent',
-        :location => "http://gitbuilder.ceph.com/libapache-mod-fastcgi-deb-#{facts[:lsbdistcodename]}-x86_64-basic/ref/master",
-        :release  => facts[:lsbdistcodename],
+        :location => "http://gitbuilder.ceph.com/libapache-mod-fastcgi-deb-#{facts[:os]['distro']['codename']}-x86_64-basic/ref/master",
+        :release  => facts[:os]['distro']['codename'],
         :require  => 'Apt::Key[ceph-gitbuilder]'
       )}
     end
@@ -97,14 +97,14 @@ describe 'ceph::repo' do
 
   shared_examples 'ceph::repo on RedHat' do
     context 'with default params' do
-      it { should contain_yumrepo("ext-epel-#{facts[:operatingsystemmajrelease]}").with(
+      it { should contain_yumrepo("ext-epel-#{facts[:os]['release']['major']}").with(
         :enabled    => '1',
-        :descr      => "External EPEL #{facts[:operatingsystemmajrelease]}",
-        :name       => "ext-epel-#{facts[:operatingsystemmajrelease]}",
+        :descr      => "External EPEL #{facts[:os]['release']['major']}",
+        :name       => "ext-epel-#{facts[:os]['release']['major']}",
         :baseurl    => 'absent',
         :gpgcheck   => '1',
-        :gpgkey     => "https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-#{facts[:operatingsystemmajrelease]}",
-        :mirrorlist => "http://mirrors.fedoraproject.org/metalink?repo=epel-#{facts[:operatingsystemmajrelease]}&arch=$basearch",
+        :gpgkey     => "https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-#{facts[:os]['release']['major']}",
+        :mirrorlist => "http://mirrors.fedoraproject.org/metalink?repo=epel-#{facts[:os]['release']['major']}&arch=$basearch",
         :priority   => '20',
         :exclude    => 'python-ceph-compat python-rbd python-rados python-cephfs',
       )}
@@ -113,7 +113,7 @@ describe 'ceph::repo' do
         :enabled    => '1',
         :descr      => 'External Ceph nautilus',
         :name       => 'ext-ceph-nautilus',
-        :baseurl    => "http://download.ceph.com/rpm-nautilus/el#{facts[:operatingsystemmajrelease]}/$basearch",
+        :baseurl    => "http://download.ceph.com/rpm-nautilus/el#{facts[:os]['release']['major']}/$basearch",
         :gpgcheck   => '1',
         :gpgkey     => 'https://download.ceph.com/keys/release.asc',
         :mirrorlist => 'absent',
@@ -124,7 +124,7 @@ describe 'ceph::repo' do
         :enabled    => '1',
         :descr      => 'External Ceph noarch',
         :name       => 'ext-ceph-nautilus-noarch',
-        :baseurl    => "http://download.ceph.com/rpm-nautilus/el#{facts[:operatingsystemmajrelease]}/noarch",
+        :baseurl    => "http://download.ceph.com/rpm-nautilus/el#{facts[:os]['release']['major']}/noarch",
         :gpgcheck   => '1',
         :gpgkey     => 'https://download.ceph.com/keys/release.asc',
         :mirrorlist => 'absent',
@@ -139,14 +139,14 @@ describe 'ceph::repo' do
         }
       end
 
-      it { should contain_yumrepo("ext-epel-#{facts[:operatingsystemmajrelease]}").with(
+      it { should contain_yumrepo("ext-epel-#{facts[:os]['release']['major']}").with(
         :enabled    => '1',
-        :descr      => "External EPEL #{facts[:operatingsystemmajrelease]}",
-        :name       => "ext-epel-#{facts[:operatingsystemmajrelease]}",
+        :descr      => "External EPEL #{facts[:os]['release']['major']}",
+        :name       => "ext-epel-#{facts[:os]['release']['major']}",
         :baseurl    => 'absent',
         :gpgcheck   => '1',
-        :gpgkey     => "https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-#{facts[:operatingsystemmajrelease]}",
-        :mirrorlist => "http://mirrors.fedoraproject.org/metalink?repo=epel-#{facts[:operatingsystemmajrelease]}&arch=$basearch",
+        :gpgkey     => "https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-#{facts[:os]['release']['major']}",
+        :mirrorlist => "http://mirrors.fedoraproject.org/metalink?repo=epel-#{facts[:os]['release']['major']}&arch=$basearch",
         :priority   => '20',
         :exclude    => 'python-ceph-compat python-rbd python-rados python-cephfs',
       )}
@@ -155,7 +155,7 @@ describe 'ceph::repo' do
         :enabled    => '1',
         :descr      => 'External Ceph firefly',
         :name       => 'ext-ceph-firefly',
-        :baseurl    => "http://download.ceph.com/rpm-firefly/el#{facts[:operatingsystemmajrelease]}/$basearch",
+        :baseurl    => "http://download.ceph.com/rpm-firefly/el#{facts[:os]['release']['major']}/$basearch",
         :gpgcheck   => '1',
         :gpgkey     => 'https://download.ceph.com/keys/release.asc',
         :mirrorlist => 'absent',
@@ -166,7 +166,7 @@ describe 'ceph::repo' do
         :enabled    => '1',
         :descr      => 'External Ceph noarch',
         :name       => 'ext-ceph-firefly-noarch',
-        :baseurl    => "http://download.ceph.com/rpm-firefly/el#{facts[:operatingsystemmajrelease]}/noarch",
+        :baseurl    => "http://download.ceph.com/rpm-firefly/el#{facts[:os]['release']['major']}/noarch",
         :gpgcheck   => '1',
         :gpgkey     => 'https://download.ceph.com/keys/release.asc',
         :mirrorlist => 'absent',
@@ -181,7 +181,7 @@ describe 'ceph::repo' do
         }
       end
 
-      it { should_not contain_yumrepo("ext-epel-#{facts[:operatingsystemmajrelease]}") }
+      it { should_not contain_yumrepo("ext-epel-#{facts[:os]['release']['major']}") }
     end
 
     context 'when using a proxy for yum repositories' do
@@ -193,14 +193,14 @@ describe 'ceph::repo' do
         }
       end
 
-      it { should contain_yumrepo("ext-epel-#{facts[:operatingsystemmajrelease]}").with(
+      it { should contain_yumrepo("ext-epel-#{facts[:os]['release']['major']}").with(
         :enabled        => '1',
-        :descr          => "External EPEL #{facts[:operatingsystemmajrelease]}",
-        :name           => "ext-epel-#{facts[:operatingsystemmajrelease]}",
+        :descr          => "External EPEL #{facts[:os]['release']['major']}",
+        :name           => "ext-epel-#{facts[:os]['release']['major']}",
         :baseurl        => 'absent',
         :gpgcheck       => '1',
-        :gpgkey         => "https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-#{facts[:operatingsystemmajrelease]}",
-        :mirrorlist     => "http://mirrors.fedoraproject.org/metalink?repo=epel-#{facts[:operatingsystemmajrelease]}&arch=$basearch",
+        :gpgkey         => "https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-#{facts[:os]['release']['major']}",
+        :mirrorlist     => "http://mirrors.fedoraproject.org/metalink?repo=epel-#{facts[:os]['release']['major']}&arch=$basearch",
         :priority       => '20',
         :exclude        => 'python-ceph-compat python-rbd python-rados python-cephfs',
         :proxy          => 'http://someproxy.com:8080/',
@@ -212,7 +212,7 @@ describe 'ceph::repo' do
         :enabled        => '1',
         :descr          => 'External Ceph nautilus',
         :name           => 'ext-ceph-nautilus',
-        :baseurl        => "http://download.ceph.com/rpm-nautilus/el#{facts[:operatingsystemmajrelease]}/$basearch",
+        :baseurl        => "http://download.ceph.com/rpm-nautilus/el#{facts[:os]['release']['major']}/$basearch",
         :gpgcheck       => '1',
         :gpgkey         => 'https://download.ceph.com/keys/release.asc',
         :mirrorlist     => 'absent',
@@ -226,7 +226,7 @@ describe 'ceph::repo' do
         :enabled        => '1',
         :descr          => 'External Ceph noarch',
         :name           => 'ext-ceph-nautilus-noarch',
-        :baseurl        => "http://download.ceph.com/rpm-nautilus/el#{facts[:operatingsystemmajrelease]}/noarch",
+        :baseurl        => "http://download.ceph.com/rpm-nautilus/el#{facts[:os]['release']['major']}/noarch",
         :gpgcheck       => '1',
         :gpgkey         => 'https://download.ceph.com/keys/release.asc',
         :mirrorlist     => 'absent',
@@ -245,14 +245,14 @@ describe 'ceph::repo' do
         }
       end
 
-      it { should contain_yumrepo("ext-epel-#{facts[:operatingsystemmajrelease]}").with(
+      it { should contain_yumrepo("ext-epel-#{facts[:os]['release']['major']}").with(
         :enabled    => '0',
-        :descr      => "External EPEL #{facts[:operatingsystemmajrelease]}",
-        :name       => "ext-epel-#{facts[:operatingsystemmajrelease]}",
+        :descr      => "External EPEL #{facts[:os]['release']['major']}",
+        :name       => "ext-epel-#{facts[:os]['release']['major']}",
         :baseurl    => 'absent',
         :gpgcheck   => '1',
-        :gpgkey     => "https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-#{facts[:operatingsystemmajrelease]}",
-        :mirrorlist => "http://mirrors.fedoraproject.org/metalink?repo=epel-#{facts[:operatingsystemmajrelease]}&arch=$basearch",
+        :gpgkey     => "https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-#{facts[:os]['release']['major']}",
+        :mirrorlist => "http://mirrors.fedoraproject.org/metalink?repo=epel-#{facts[:os]['release']['major']}&arch=$basearch",
         :priority   => '20',
         :exclude    => 'python-ceph-compat python-rbd python-rados python-cephfs',
       )}
@@ -261,7 +261,7 @@ describe 'ceph::repo' do
         :enabled    => '0',
         :descr      => 'External Ceph nautilus',
         :name       => 'ext-ceph-nautilus',
-        :baseurl    => "http://download.ceph.com/rpm-nautilus/el#{facts[:operatingsystemmajrelease]}/$basearch",
+        :baseurl    => "http://download.ceph.com/rpm-nautilus/el#{facts[:os]['release']['major']}/$basearch",
         :gpgcheck   => '1',
         :gpgkey     => 'https://download.ceph.com/keys/release.asc',
         :mirrorlist => 'absent',
@@ -272,7 +272,7 @@ describe 'ceph::repo' do
         :enabled    => '0',
         :descr      => 'External Ceph noarch',
         :name       => 'ext-ceph-nautilus-noarch',
-        :baseurl    => "http://download.ceph.com/rpm-nautilus/el#{facts[:operatingsystemmajrelease]}/noarch",
+        :baseurl    => "http://download.ceph.com/rpm-nautilus/el#{facts[:os]['release']['major']}/noarch",
         :gpgcheck   => '1',
         :gpgkey     => 'https://download.ceph.com/keys/release.asc',
         :mirrorlist => 'absent',
@@ -283,7 +283,7 @@ describe 'ceph::repo' do
         :enabled    => '0',
         :descr      => 'FastCGI basearch packages for Ceph',
         :name       => 'ext-ceph-fastcgi',
-        :baseurl    => "http://gitbuilder.ceph.com/mod_fastcgi-rpm-rhel#{facts[:operatingsystemmajrelease]}-x86_64-basic/ref/master",
+        :baseurl    => "http://gitbuilder.ceph.com/mod_fastcgi-rpm-rhel#{facts[:os]['release']['major']}-x86_64-basic/ref/master",
         :gpgcheck   => '1',
         :gpgkey     => 'https://download.ceph.com/keys/autobuild.asc',
         :mirrorlist => 'absent',
@@ -298,14 +298,14 @@ describe 'ceph::repo' do
         }
       end
 
-      it { should contain_yumrepo("ext-epel-#{facts[:operatingsystemmajrelease]}").with(
+      it { should contain_yumrepo("ext-epel-#{facts[:os]['release']['major']}").with(
         :enabled    => '1',
-        :descr      => "External EPEL #{facts[:operatingsystemmajrelease]}",
-        :name       => "ext-epel-#{facts[:operatingsystemmajrelease]}",
+        :descr      => "External EPEL #{facts[:os]['release']['major']}",
+        :name       => "ext-epel-#{facts[:os]['release']['major']}",
         :baseurl    => 'absent',
         :gpgcheck   => '1',
-        :gpgkey     => "https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-#{facts[:operatingsystemmajrelease]}",
-        :mirrorlist => "http://mirrors.fedoraproject.org/metalink?repo=epel-#{facts[:operatingsystemmajrelease]}&arch=$basearch",
+        :gpgkey     => "https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-#{facts[:os]['release']['major']}",
+        :mirrorlist => "http://mirrors.fedoraproject.org/metalink?repo=epel-#{facts[:os]['release']['major']}&arch=$basearch",
         :priority   => '20',
         :exclude    => 'python-ceph-compat python-rbd python-rados python-cephfs',
       )}
@@ -314,7 +314,7 @@ describe 'ceph::repo' do
         :enabled    => '1',
         :descr      => 'External Ceph nautilus',
         :name       => 'ext-ceph-nautilus',
-        :baseurl    => "http://download.ceph.com/rpm-nautilus/el#{facts[:operatingsystemmajrelease]}/$basearch",
+        :baseurl    => "http://download.ceph.com/rpm-nautilus/el#{facts[:os]['release']['major']}/$basearch",
         :gpgcheck   => '1',
         :gpgkey     => 'https://download.ceph.com/keys/release.asc',
         :mirrorlist => 'absent',
@@ -325,7 +325,7 @@ describe 'ceph::repo' do
         :enabled    => '1',
         :descr      => 'External Ceph noarch',
         :name       => 'ext-ceph-nautilus-noarch',
-        :baseurl    => "http://download.ceph.com/rpm-nautilus/el#{facts[:operatingsystemmajrelease]}/noarch",
+        :baseurl    => "http://download.ceph.com/rpm-nautilus/el#{facts[:os]['release']['major']}/noarch",
         :gpgcheck   => '1',
         :gpgkey     => 'https://download.ceph.com/keys/release.asc',
         :mirrorlist => 'absent',
@@ -336,7 +336,7 @@ describe 'ceph::repo' do
         :enabled    => '1',
         :descr      => 'FastCGI basearch packages for Ceph',
         :name       => 'ext-ceph-fastcgi',
-        :baseurl    => "http://gitbuilder.ceph.com/mod_fastcgi-rpm-rhel#{facts[:operatingsystemmajrelease]}-x86_64-basic/ref/master",
+        :baseurl    => "http://gitbuilder.ceph.com/mod_fastcgi-rpm-rhel#{facts[:os]['release']['major']}-x86_64-basic/ref/master",
         :gpgcheck   => '1',
         :gpgkey     => 'https://download.ceph.com/keys/autobuild.asc',
         :mirrorlist => 'absent',
@@ -347,14 +347,14 @@ describe 'ceph::repo' do
 
   shared_examples 'ceph::repo on CentOS' do
     context 'with default params' do
-      it { should contain_yumrepo("ext-epel-#{facts[:operatingsystemmajrelease]}").with(
+      it { should contain_yumrepo("ext-epel-#{facts[:os]['release']['major']}").with(
         :enabled    => '1',
-        :descr      => "External EPEL #{facts[:operatingsystemmajrelease]}",
-        :name       => "ext-epel-#{facts[:operatingsystemmajrelease]}",
+        :descr      => "External EPEL #{facts[:os]['release']['major']}",
+        :name       => "ext-epel-#{facts[:os]['release']['major']}",
         :baseurl    => 'absent',
         :gpgcheck   => '1',
-        :gpgkey     => "https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-#{facts[:operatingsystemmajrelease]}",
-        :mirrorlist => "http://mirrors.fedoraproject.org/metalink?repo=epel-#{facts[:operatingsystemmajrelease]}&arch=$basearch",
+        :gpgkey     => "https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-#{facts[:os]['release']['major']}",
+        :mirrorlist => "http://mirrors.fedoraproject.org/metalink?repo=epel-#{facts[:os]['release']['major']}&arch=$basearch",
         :priority   => '20',
         :exclude    => 'python-ceph-compat python-rbd python-rados python-cephfs',
       )}
@@ -363,7 +363,7 @@ describe 'ceph::repo' do
         :enabled    => '1',
         :descr      => 'External Ceph nautilus',
         :name       => 'ext-ceph-nautilus',
-        :baseurl    => "http://download.ceph.com/rpm-nautilus/el#{facts[:operatingsystemmajrelease]}/$basearch",
+        :baseurl    => "http://download.ceph.com/rpm-nautilus/el#{facts[:os]['release']['major']}/$basearch",
         :gpgcheck   => '1',
         :gpgkey     => 'https://download.ceph.com/keys/release.asc',
         :mirrorlist => 'absent',
@@ -374,7 +374,7 @@ describe 'ceph::repo' do
         :enabled    => '1',
         :descr      => 'External Ceph noarch',
         :name       => 'ext-ceph-nautilus-noarch',
-        :baseurl    => "http://download.ceph.com/rpm-nautilus/el#{facts[:operatingsystemmajrelease]}/noarch",
+        :baseurl    => "http://download.ceph.com/rpm-nautilus/el#{facts[:os]['release']['major']}/noarch",
         :gpgcheck   => '1',
         :gpgkey     => 'https://download.ceph.com/keys/release.asc',
         :mirrorlist => 'absent',
@@ -389,14 +389,14 @@ describe 'ceph::repo' do
         }
       end
 
-      it { should contain_yumrepo("ext-epel-#{facts[:operatingsystemmajrelease]}").with(
+      it { should contain_yumrepo("ext-epel-#{facts[:os]['release']['major']}").with(
         :enabled    => '1',
-        :descr      => "External EPEL #{facts[:operatingsystemmajrelease]}",
-        :name       => "ext-epel-#{facts[:operatingsystemmajrelease]}",
+        :descr      => "External EPEL #{facts[:os]['release']['major']}",
+        :name       => "ext-epel-#{facts[:os]['release']['major']}",
         :baseurl    => 'absent',
         :gpgcheck   => '1',
-        :gpgkey     => "https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-#{facts[:operatingsystemmajrelease]}",
-        :mirrorlist => "http://mirrors.fedoraproject.org/metalink?repo=epel-#{facts[:operatingsystemmajrelease]}&arch=$basearch",
+        :gpgkey     => "https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-#{facts[:os]['release']['major']}",
+        :mirrorlist => "http://mirrors.fedoraproject.org/metalink?repo=epel-#{facts[:os]['release']['major']}&arch=$basearch",
         :priority   => '20',
         :exclude    => 'python-ceph-compat python-rbd python-rados python-cephfs',
       )}
@@ -405,7 +405,7 @@ describe 'ceph::repo' do
         :enabled    => '1',
         :descr      => 'External Ceph firefly',
         :name       => 'ext-ceph-firefly',
-        :baseurl    => "http://download.ceph.com/rpm-firefly/el#{facts[:operatingsystemmajrelease]}/$basearch",
+        :baseurl    => "http://download.ceph.com/rpm-firefly/el#{facts[:os]['release']['major']}/$basearch",
         :gpgcheck   => '1',
         :gpgkey     => 'https://download.ceph.com/keys/release.asc',
         :mirrorlist => 'absent',
@@ -416,7 +416,7 @@ describe 'ceph::repo' do
         :enabled    => '1',
         :descr      => 'External Ceph noarch',
         :name       => 'ext-ceph-firefly-noarch',
-        :baseurl    => "http://download.ceph.com/rpm-firefly/el#{facts[:operatingsystemmajrelease]}/noarch",
+        :baseurl    => "http://download.ceph.com/rpm-firefly/el#{facts[:os]['release']['major']}/noarch",
         :gpgcheck   => '1',
         :gpgkey     => 'https://download.ceph.com/keys/release.asc',
         :mirrorlist => 'absent',
@@ -431,49 +431,13 @@ describe 'ceph::repo' do
         }
       end
 
-      it { should_not contain_yumrepo("ext-epel-#{facts[:operatingsystemmajrelease]}") }
+      it { should_not contain_yumrepo("ext-epel-#{facts[:os]['release']['major']}") }
       it { should_not contain_yumrepo('ext-ceph') }
       it { should_not contain_yumrepo('ext-ceph-noarch') }
       it { should contain_yumrepo('ceph-luminous-sig').with_ensure('absent') }
 
       it { should contain_yumrepo('ceph-storage-sig').with(
-        :baseurl => "http://mirror.centos.org/centos/#{facts[:operatingsystemmajrelease]}/storage/x86_64/ceph-nautilus/",
-      )}
-    end
-
-    context 'when using CentOS SIG repository and CentOS Stream 8' do
-      before do
-        facts.merge!( :operatingsystemmajrelease => "8" )
-      end
-
-      let :params do
-        {
-          :enable_sig => true,
-          :stream     => true,
-        }
-      end
-
-      it { should contain_yumrepo('ceph-luminous-sig').with_ensure('absent') }
-
-      it { should contain_yumrepo('ceph-storage-sig').with(
-        :baseurl => 'http://mirror.centos.org/centos/8-stream/storage/x86_64/ceph-nautilus/',
-      )}
-    end
-
-    context 'when using CentOS SIG repository and CentOS Stream 9' do
-      before do
-        facts.merge!( :operatingsystemmajrelease => "9" )
-      end
-
-      let :params do
-        {
-          :enable_sig => true,
-          :stream     => true,
-        }
-      end
-
-      it { should contain_yumrepo('ceph-storage-sig').with(
-        :baseurl => 'http://mirror.stream.centos.org/SIGs/9-stream/storage/x86_64/ceph-nautilus/',
+        :baseurl => "http://mirror.centos.org/centos/#{facts[:os]['release']['major']}/storage/x86_64/ceph-nautilus/",
       )}
     end
 
@@ -485,7 +449,7 @@ describe 'ceph::repo' do
         }
       end
 
-      it { should_not contain_yumrepo("ext-epel-#{facts[:operatingsystemmajrelease]}") }
+      it { should_not contain_yumrepo("ext-epel-#{facts[:os]['release']['major']}") }
       it { should_not contain_yumrepo('ext-ceph') }
       it { should_not contain_yumrepo('ext-ceph-noarch') }
       it { should contain_yumrepo('ceph-luminous-sig').with_ensure('absent') }
@@ -503,14 +467,14 @@ describe 'ceph::repo' do
         }
       end
 
-      it { should contain_yumrepo("ext-epel-#{facts[:operatingsystemmajrelease]}").with(
+      it { should contain_yumrepo("ext-epel-#{facts[:os]['release']['major']}").with(
         :enabled    => '0',
-        :descr      => "External EPEL #{facts[:operatingsystemmajrelease]}",
-        :name       => "ext-epel-#{facts[:operatingsystemmajrelease]}",
+        :descr      => "External EPEL #{facts[:os]['release']['major']}",
+        :name       => "ext-epel-#{facts[:os]['release']['major']}",
         :baseurl    => 'absent',
         :gpgcheck   => '1',
-        :gpgkey     => "https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-#{facts[:operatingsystemmajrelease]}",
-        :mirrorlist => "http://mirrors.fedoraproject.org/metalink?repo=epel-#{facts[:operatingsystemmajrelease]}&arch=$basearch",
+        :gpgkey     => "https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-#{facts[:os]['release']['major']}",
+        :mirrorlist => "http://mirrors.fedoraproject.org/metalink?repo=epel-#{facts[:os]['release']['major']}&arch=$basearch",
         :priority   => '20',
         :exclude    => 'python-ceph-compat python-rbd python-rados python-cephfs',
       )}
@@ -519,7 +483,7 @@ describe 'ceph::repo' do
         :enabled    => '0',
         :descr      => 'External Ceph nautilus',
         :name       => 'ext-ceph-nautilus',
-        :baseurl    => "http://download.ceph.com/rpm-nautilus/el#{facts[:operatingsystemmajrelease]}/$basearch",
+        :baseurl    => "http://download.ceph.com/rpm-nautilus/el#{facts[:os]['release']['major']}/$basearch",
         :gpgcheck   => '1',
         :gpgkey     => 'https://download.ceph.com/keys/release.asc',
         :mirrorlist => 'absent',
@@ -530,7 +494,7 @@ describe 'ceph::repo' do
         :enabled    => '0',
         :descr      => 'External Ceph noarch',
         :name       => 'ext-ceph-nautilus-noarch',
-        :baseurl    => "http://download.ceph.com/rpm-nautilus/el#{facts[:operatingsystemmajrelease]}/noarch",
+        :baseurl    => "http://download.ceph.com/rpm-nautilus/el#{facts[:os]['release']['major']}/noarch",
         :gpgcheck   => '1',
         :gpgkey     => 'https://download.ceph.com/keys/release.asc',
         :mirrorlist => 'absent',
@@ -541,7 +505,7 @@ describe 'ceph::repo' do
         :enabled    => '0',
         :descr      => 'FastCGI basearch packages for Ceph',
         :name       => 'ext-ceph-fastcgi',
-        :baseurl    => "http://gitbuilder.ceph.com/mod_fastcgi-rpm-rhel#{facts[:operatingsystemmajrelease]}-x86_64-basic/ref/master",
+        :baseurl    => "http://gitbuilder.ceph.com/mod_fastcgi-rpm-rhel#{facts[:os]['release']['major']}-x86_64-basic/ref/master",
         :gpgcheck   => '1',
         :gpgkey     => 'https://download.ceph.com/keys/autobuild.asc',
         :mirrorlist => 'absent',
@@ -556,14 +520,14 @@ describe 'ceph::repo' do
         }
       end
 
-      it { should contain_yumrepo("ext-epel-#{facts[:operatingsystemmajrelease]}").with(
+      it { should contain_yumrepo("ext-epel-#{facts[:os]['release']['major']}").with(
         :enabled    => '1',
-        :descr      => "External EPEL #{facts[:operatingsystemmajrelease]}",
-        :name       => "ext-epel-#{facts[:operatingsystemmajrelease]}",
+        :descr      => "External EPEL #{facts[:os]['release']['major']}",
+        :name       => "ext-epel-#{facts[:os]['release']['major']}",
         :baseurl    => 'absent',
         :gpgcheck   => '1',
-        :gpgkey     => "https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-#{facts[:operatingsystemmajrelease]}",
-        :mirrorlist => "http://mirrors.fedoraproject.org/metalink?repo=epel-#{facts[:operatingsystemmajrelease]}&arch=$basearch",
+        :gpgkey     => "https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-#{facts[:os]['release']['major']}",
+        :mirrorlist => "http://mirrors.fedoraproject.org/metalink?repo=epel-#{facts[:os]['release']['major']}&arch=$basearch",
         :priority   => '20',
         :exclude    => 'python-ceph-compat python-rbd python-rados python-cephfs',
       )}
@@ -572,7 +536,7 @@ describe 'ceph::repo' do
         :enabled    => '1',
         :descr      => 'External Ceph nautilus',
         :name       => 'ext-ceph-nautilus',
-        :baseurl    => "http://download.ceph.com/rpm-nautilus/el#{facts[:operatingsystemmajrelease]}/$basearch",
+        :baseurl    => "http://download.ceph.com/rpm-nautilus/el#{facts[:os]['release']['major']}/$basearch",
         :gpgcheck   => '1',
         :gpgkey     => 'https://download.ceph.com/keys/release.asc',
         :mirrorlist => 'absent',
@@ -583,7 +547,7 @@ describe 'ceph::repo' do
         :enabled    => '1',
         :descr      => 'External Ceph noarch',
         :name       => 'ext-ceph-nautilus-noarch',
-        :baseurl    => "http://download.ceph.com/rpm-nautilus/el#{facts[:operatingsystemmajrelease]}/noarch",
+        :baseurl    => "http://download.ceph.com/rpm-nautilus/el#{facts[:os]['release']['major']}/noarch",
         :gpgcheck   => '1',
         :gpgkey     => 'https://download.ceph.com/keys/release.asc',
         :mirrorlist => 'absent',
@@ -594,7 +558,7 @@ describe 'ceph::repo' do
         :enabled    => '1',
         :descr      => 'FastCGI basearch packages for Ceph',
         :name       => 'ext-ceph-fastcgi',
-        :baseurl    => "http://gitbuilder.ceph.com/mod_fastcgi-rpm-rhel#{facts[:operatingsystemmajrelease]}-x86_64-basic/ref/master",
+        :baseurl    => "http://gitbuilder.ceph.com/mod_fastcgi-rpm-rhel#{facts[:os]['release']['major']}-x86_64-basic/ref/master",
         :gpgcheck   => '1',
         :gpgkey     => 'https://download.ceph.com/keys/autobuild.asc',
         :mirrorlist => 'absent',
@@ -603,18 +567,53 @@ describe 'ceph::repo' do
     end
   end
 
-  on_supported_os({
-    :supported_os => OSDefaults.get_supported_os
-  }).each do |os,facts|
+  shared_examples 'ceph::repo on CentOS Stream 7' do
+    # No specific test cases
+  end
+
+  shared_examples 'ceph::repo on CentOS Stream 8' do
+    context 'when using CentOS SIG repository and CentOS Stream 8' do
+      let :params do
+        {
+          :enable_sig => true,
+          :stream     => true,
+        }
+      end
+
+      it { should contain_yumrepo('ceph-luminous-sig').with_ensure('absent') }
+
+      it { should contain_yumrepo('ceph-storage-sig').with(
+        :baseurl => 'http://mirror.centos.org/centos/8-stream/storage/x86_64/ceph-nautilus/',
+      )}
+    end
+  end
+
+  shared_examples 'ceph::repo on CentOS Stream 9' do
+    context 'when using CentOS SIG repository and CentOS Stream 9' do
+      let :params do
+        {
+          :enable_sig => true,
+          :stream     => true,
+        }
+      end
+
+      it { should contain_yumrepo('ceph-storage-sig').with(
+        :baseurl => 'http://mirror.stream.centos.org/SIGs/9-stream/storage/x86_64/ceph-nautilus/',
+      )}
+    end
+  end
+
+  on_supported_os.each do |os, facts|
     context "on #{os}" do
       let (:facts) do
         facts.merge!(OSDefaults.get_facts())
       end
 
-      it_behaves_like "ceph::repo on #{facts[:osfamily]}"
+      it_behaves_like "ceph::repo on #{facts[:os]['family']}"
 
-      if facts[:operatingsystem] == 'CentOS'
+      if facts[:os]['name'] == 'CentOS'
         it_behaves_like 'ceph::repo on CentOS'
+        it_behaves_like "ceph::repo on CentOS Stream #{facts[:os]['release']['major']}"
       end
     end
   end

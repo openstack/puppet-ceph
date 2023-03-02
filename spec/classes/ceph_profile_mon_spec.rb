@@ -21,7 +21,7 @@ describe 'ceph::profile::mon' do
 
   shared_examples 'ceph profile mon' do
 
-    it { should contain_ceph__mon('first').with(
+    it { should contain_ceph__mon('foo').with(
       :authentication_type => 'cephx',
       :key                 => 'AQATGHJTUCBqIBAA7M2yafV1xctn1pgr3GcKPg==',
       :public_addr         => '10.11.12.2')
@@ -57,15 +57,15 @@ describe 'ceph::profile::mon' do
       'defaults' => {
         'inject'         => true,
         'inject_as_id'   => 'mon.',
-        'inject_keyring' => '/var/lib/ceph/mon/ceph-first/keyring'
+        'inject_keyring' => '/var/lib/ceph/mon/ceph-foo/keyring'
       }
     )}
   end
 
   on_supported_os.each do |os, facts|
     context "on #{os}" do
-      let(:facts) do
-        facts.merge({:hostname => 'first'})
+      let (:facts) do
+        facts.merge!(OSDefaults.get_facts())
       end
 
       it_behaves_like 'ceph profile mon'

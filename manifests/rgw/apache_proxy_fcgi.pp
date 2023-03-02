@@ -34,7 +34,7 @@
 #   Optional. Default is 80.
 #
 # [*rgw_dns_name*] Hostname to use for the service.
-#   Optional. Default is $fqdn.
+#   Optional. Default is $facts['networking']['fqdn'].
 #
 # [*rewrite_rule*] RewriteRule for the apache config.
 #   Optional. Default is '.* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization},L]'.
@@ -67,7 +67,7 @@
 define ceph::rgw::apache_proxy_fcgi (
   $admin_email          = 'root@localhost',
   $docroot              = '/var/www',
-  $rgw_dns_name         = $::fqdn,
+  $rgw_dns_name         = $facts['networking']['fqdn'],
   $rgw_port             = 80,
   $rewrite_rule         = '.* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization},L]',
   $setenv               = 'proxy-nokeepalive 1',

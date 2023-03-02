@@ -60,13 +60,13 @@ Enjoy your ceph cluster!
         mon_initial_members => 'mon1,mon2,mon3',
         mon_host            => '<ip of mon1>,<ip of mon2>,<ip of mon3>',
       }
-      ceph::mon { $::hostname:
+      ceph::mon { $facts['networking']['hostname']:
         key => $mon_key,
       }
       Ceph::Key {
         inject         => true,
         inject_as_id   => 'mon.',
-        inject_keyring => "/var/lib/ceph/mon/ceph-${::hostname}/keyring",
+        inject_keyring => "/var/lib/ceph/mon/ceph-${facts['networking']['hostname']}/keyring",
       }
       ceph::key { 'client.admin':
         secret  => $admin_key,

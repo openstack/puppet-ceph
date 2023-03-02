@@ -4,5 +4,5 @@
 :yaml:
   :datadir: /var/lib/hiera
 :hierarchy:
-  - "nodes/%{::hostname}"
+  - "nodes/%{facts.networking.hostname}"
   - common

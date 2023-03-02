@@ -21,8 +21,8 @@ describe 'ceph::mds' do
   shared_examples 'ceph mds' do
     describe "activated with default params" do
 
-      it { should contain_ceph_config('mds/mds_data').with_value('/var/lib/ceph/mds/ceph-myhostname') }
-      it { should contain_ceph_config('mds/keyring').with_value('/var/lib/ceph/mds/ceph-myhostname/keyring') }
+      it { should contain_ceph_config('mds/mds_data').with_value('/var/lib/ceph/mds/ceph-foo') }
+      it { should contain_ceph_config('mds/keyring').with_value('/var/lib/ceph/mds/ceph-foo/keyring') }
       it { should contain_package('ceph-mds').with('ensure' => 'present') }
     end
 
@@ -68,7 +68,7 @@ describe 'ceph::mds' do
   on_supported_os.each do |os,facts|
     context "on #{os}" do
       let (:facts) do
-        facts.merge!(OSDefaults.get_facts({:hostname => 'myhostname'}))
+        facts.merge!(OSDefaults.get_facts())
       end
 
       it_behaves_like 'ceph mds'

@@ -49,7 +49,7 @@ class ceph::params (
 ) {
   $pkg_mds = 'ceph-mds'
 
-  case $::osfamily {
+  case $facts['os']['family'] {
     'Debian': {
       $pkg_radosgw         = 'radosgw'
       $user_radosgw        = 'www-data'
@@ -61,7 +61,7 @@ class ceph::params (
       $pkg_radosgw         = 'ceph-radosgw'
       $user_radosgw        = 'apache'
       $pkg_fastcgi         = 'mod_fastcgi'
-      if (Integer.new($::os['release']['major']) > 7) {
+      if (Integer.new($facts['os']['release']['major']) > 7) {
         $pkg_policycoreutils = 'policycoreutils-python-utils'
       } else {
         $pkg_policycoreutils = 'policycoreutils-python'
@@ -69,8 +69,7 @@ class ceph::params (
     }
 
     default: {
-      fail("Unsupported osfamily: ${::osfamily} operatingsystem: ${::operatingsystem}, \
-module ${module_name} only supports osfamily Debian or RedHat")
+      fail("Unsupported osfamily: ${facts['os']['family']}")
     }
   }
 }

@@ -31,11 +31,11 @@ describe 'ceph::rgw' do
       it { should contain_package(platform_params[:pkg_radosgw]).with('ensure' => 'installed') }
       it { should contain_ceph_config('client.radosgw.gateway/rgw_enable_apis').with_ensure('absent') }
       it { should contain_ceph_config('client.radosgw.gateway/user').with_value(platform_params[:user]) }
-      it { should contain_ceph_config('client.radosgw.gateway/host').with_value('myhost') }
+      it { should contain_ceph_config('client.radosgw.gateway/host').with_value('foo') }
       it { should contain_ceph_config('client.radosgw.gateway/keyring').with_value('/etc/ceph/ceph.client.radosgw.gateway.keyring') }
       it { should contain_ceph_config('client.radosgw.gateway/log_file').with_value('/var/log/ceph/radosgw.log') }
-      it { should contain_ceph_config('client.radosgw.gateway/rgw_dns_name').with_value('myhost.domain') }
-      it { should contain_ceph_config('client.radosgw.gateway/rgw_swift_url').with_value('http://myhost.domain:7480') }
+      it { should contain_ceph_config('client.radosgw.gateway/rgw_dns_name').with_value('foo.example.com') }
+      it { should contain_ceph_config('client.radosgw.gateway/rgw_swift_url').with_value('http://foo.example.com:7480') }
       it { should contain_ceph_config('client.radosgw.gateway/rgw_swift_url_prefix').with_value('swift') }
       it { should contain_ceph_config('client.radosgw.gateway/rgw_swift_account_in_url').with_value(false) }
       it { should contain_ceph_config('client.radosgw.gateway/rgw_swift_versioning_enabled').with_value(false) }
@@ -85,7 +85,7 @@ describe 'ceph::rgw' do
       it { should contain_package('pkgradosgw').with('ensure' => 'installed') }
       it { should contain_ceph_config('client.radosgw.custom/rgw_enable_apis').with_value('s3,swift') }
       it { should contain_ceph_config('client.radosgw.custom/user').with_value('wwwuser') }
-      it { should contain_ceph_config('client.radosgw.custom/host').with_value('myhost') }
+      it { should contain_ceph_config('client.radosgw.custom/host').with_value('foo') }
       it { should contain_ceph_config('client.radosgw.custom/keyring').with_value('/etc/ceph/ceph.radosgw.custom.keyring') }
       it { should contain_ceph_config('client.radosgw.custom/log_file').with_value('/var/log/ceph/mylogfile.log') }
       it { should contain_ceph_config('client.radosgw.custom/rgw_dns_name').with_value('mydns.hostname') }
@@ -111,14 +111,11 @@ describe 'ceph::rgw' do
   on_supported_os.each do |os, facts|
     context "on #{os}" do
       let (:facts) do
-        facts.merge!(OSDefaults.get_facts(
-          :fqdn     => 'myhost.domain',
-          :hostname => 'myhost'
-        ))
+        facts.merge!(OSDefaults.get_facts())
       end
 
       let(:platform_params) do
-        case facts[:osfamily]
+        case facts[:os]['family']
         when 'Debian'
           {
             :pkg_radosgw => 'radosgw',

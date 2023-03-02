@@ -27,12 +27,12 @@ class ceph::profile::mds {
   }
 
   if !empty($ceph::profile::params::mds_key) {
-    ceph::key { "mds.${::hostname}":
+    ceph::key { "mds.${facts['networking']['hostname']}":
       cap_mon      => 'allow profile mds',
       cap_osd      => 'allow rwx',
       cap_mds      => 'allow',
       inject       => true,
-      keyring_path => "/var/lib/ceph/mds/ceph-${::hostname}/keyring",
+      keyring_path => "/var/lib/ceph/mds/ceph-${facts['networking']['hostname']}/keyring",
       secret       => $ceph::profile::params::mds_key,
       user         => 'ceph',
       group        => 'ceph'

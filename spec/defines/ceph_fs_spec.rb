@@ -39,7 +39,7 @@ describe 'ceph::fs' do
   on_supported_os.each do |os,facts|
     context "on #{os}" do
       let (:facts) do
-        facts.merge!(OSDefaults.get_facts({:hostname => 'myhostname'}))
+        facts.merge!(OSDefaults.get_facts())
       end
 
       it_behaves_like 'ceph fs'

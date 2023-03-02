@@ -23,7 +23,7 @@ describe 'ceph::profile::osd' do
     context 'with the default osd defined in common.yaml' do
 
       before :each do
-        facts.merge!( :hostname => 'osd')
+        facts[:networking]['hostname'] = 'osd'
       end
 
       it { should contain_class('ceph::profile::client') }
@@ -34,7 +34,7 @@ describe 'ceph::profile::osd' do
     context 'with the host specific first.yaml' do
 
       before :each do
-        facts.merge!( :hostname => 'first')
+        facts[:networking]['hostname'] = 'first'
       end
 
       it { should contain_class('ceph::profile::client') }
@@ -44,8 +44,8 @@ describe 'ceph::profile::osd' do
 
   on_supported_os.each do |os, facts|
     context "on #{os}" do
-      let(:facts) do
-        facts.merge({})
+      let (:facts) do
+        facts.merge!(OSDefaults.get_facts())
       end
 
       it_behaves_like 'ceph profile osd'

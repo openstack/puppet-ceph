@@ -24,12 +24,12 @@ describe 'ceph::profile::mds' do
     it { should contain_class('ceph::mds').with(
       'public_addr' => '10.11.12.2',
     )}
-    it { should contain_ceph__key('mds.myhostname').with(
+    it { should contain_ceph__key('mds.foo').with(
       :cap_mon      => 'allow profile mds',
       :cap_osd      => 'allow rwx',
       :cap_mds      => 'allow',
       :inject       => true,
-      :keyring_path => "/var/lib/ceph/mds/ceph-myhostname/keyring",
+      :keyring_path => "/var/lib/ceph/mds/ceph-foo/keyring",
       :secret       => 'AQDLOh1VgEp6FRAAFzT7Zw+Y9V6JJExQAsRnRQ==',
       :user         => 'ceph',
       :group        => 'ceph'
@@ -39,7 +39,7 @@ describe 'ceph::profile::mds' do
   on_supported_os.each do |os, facts|
     context "on #{os}" do
       let (:facts) do
-        facts.merge!(OSDefaults.get_facts({:hostname => 'myhostname'}))
+        facts.merge!(OSDefaults.get_facts())
       end
 
       it_behaves_like 'ceph profile mds'

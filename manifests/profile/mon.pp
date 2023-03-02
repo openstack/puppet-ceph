@@ -23,7 +23,7 @@
 class ceph::profile::mon {
   require ceph::profile::base
 
-  ceph::mon { $::hostname:
+  ceph::mon { $facts['networking']['hostname']:
     authentication_type => $ceph::profile::params::authentication_type,
     key                 => $ceph::profile::params::mon_key,
     keyring             => $ceph::profile::params::mon_keyring,
@@ -33,7 +33,7 @@ class ceph::profile::mon {
   $defaults = {
     inject         => true,
     inject_as_id   => 'mon.',
-    inject_keyring => "/var/lib/ceph/mon/ceph-${::hostname}/keyring",
+    inject_keyring => "/var/lib/ceph/mon/ceph-${facts['networking']['hostname']}/keyring",
   }
 
   if !empty($ceph::profile::params::client_keys) {

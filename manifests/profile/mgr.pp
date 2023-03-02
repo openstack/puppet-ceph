@@ -22,7 +22,7 @@
 class ceph::profile::mgr {
   require ceph::profile::base
 
-  ceph::mgr { $::hostname:
+  ceph::mgr { $facts['networking']['hostname']:
     authentication_type => $ceph::profile::params::authentication_type,
     key                 => $ceph::profile::params::mgr_key,
     inject_key          => true,

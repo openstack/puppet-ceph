@@ -34,12 +34,12 @@ describe 'ceph::rgw' do
       end
 
       it { should contain_ceph_config('client.radosgw.beast/user').with_value("#{platform_params[:user]}") }
-      it { should contain_ceph_config('client.radosgw.beast/host').with_value('myhost') }
+      it { should contain_ceph_config('client.radosgw.beast/host').with_value('foo') }
       it { should contain_ceph_config('client.radosgw.beast/keyring').with_value('/etc/ceph/ceph.client.radosgw.beast.keyring') }
       it { should contain_ceph_config('client.radosgw.beast/log_file').with_value('/var/log/ceph/radosgw.log') }
       it { should contain_ceph_config('client.radosgw.beast/rgw_frontends').with_value('beast port=7480') }
-      it { should contain_ceph_config('client.radosgw.beast/rgw_dns_name').with_value('myhost.domain') }
-      it { should contain_ceph_config('client.radosgw.beast/rgw_swift_url').with_value('http://myhost.domain:7480') }
+      it { should contain_ceph_config('client.radosgw.beast/rgw_dns_name').with_value('foo.example.com') }
+      it { should contain_ceph_config('client.radosgw.beast/rgw_swift_url').with_value('http://foo.example.com:7480') }
     end
 
     describe "activated with custom beast params" do
@@ -59,7 +59,7 @@ describe 'ceph::rgw' do
 
       it { should contain_ceph_config('client.radosgw.custom/rgw_frontends').with_value('beast endpoint=0.0.0.0:8080 port=8080') }
       it { should contain_ceph_config('client.radosgw.custom/user').with_value('root') }
-      it { should contain_ceph_config('client.radosgw.custom/host').with_value('myhost') }
+      it { should contain_ceph_config('client.radosgw.custom/host').with_value('foo') }
       it { should contain_ceph_config('client.radosgw.custom/keyring').with_value('/etc/ceph/ceph.client.radosgw.custom.keyring') }
       it { should contain_ceph_config('client.radosgw.custom/log_file').with_value('/var/log/ceph/radosgw.log') }
       it { should contain_ceph_config('client.radosgw.custom/rgw_dns_name').with_value('mydns.hostname') }
@@ -70,14 +70,11 @@ describe 'ceph::rgw' do
   on_supported_os.each do |os, facts|
     context "on #{os}" do
       let (:facts) do
-        facts.merge!(OSDefaults.get_facts(
-          :fqdn     => 'myhost.domain',
-          :hostname => 'myhost'
-        ))
+        facts.merge!(OSDefaults.get_facts())
       end
 
       let :platform_params do
-        case facts[:osfamily]
+        case facts[:os]['family']
         when 'Debian'
           {
             :user => 'www-data',

@@ -58,7 +58,7 @@ describe 'ceph::profile::client' do
     context 'with the specific client keys defined in client.yaml' do
 
       before :each do
-        facts.merge!( :hostname => 'client')
+        facts[:networking]['hostname'] = 'client'
       end
 
       it { should contain_class('ceph::profile::base') }
@@ -91,8 +91,8 @@ describe 'ceph::profile::client' do
 
   on_supported_os.each do |os, facts|
     context "on #{os}" do
-      let(:facts) do
-        facts.merge({})
+      let (:facts) do
+        facts.merge!(OSDefaults.get_facts())
       end
 
       it_behaves_like 'ceph profile client'

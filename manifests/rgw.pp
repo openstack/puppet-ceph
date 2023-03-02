@@ -50,7 +50,7 @@
 #   Optional. Default is '/var/log/ceph/radosgw.log'.
 #
 # [*rgw_dns_name*] Hostname to use for the service.
-#   Optional. Default is $fqdn.
+#   Optional. Default is $facts['networking']['fqdn'].
 #
 # [*rgw_socket_path*] Path to socket file.
 #   Optional. Default is '/tmp/radosgw.sock'.
@@ -69,7 +69,7 @@
 #   Optional. Default is undef.
 #
 # [*rgw_swift_url*] The URL for the Ceph Object Gateway Swift API.
-#   Optional. Default is http://$fqdn:7480.
+#   Optional. Default is "http://${facts['networking']['fqdn']}:7480".
 #
 # [*rgw_swift_url_prefix*] The URL prefix for the Swift API.
 #   Optional. Default is 'swift'.
@@ -101,13 +101,13 @@ define ceph::rgw (
   $user                         = $ceph::params::user_radosgw,
   $keyring_path                 = "/etc/ceph/ceph.client.${name}.keyring",
   $log_file                     = '/var/log/ceph/radosgw.log',
-  $rgw_dns_name                 = $::fqdn,
+  $rgw_dns_name                 = $facts['networking']['fqdn'],
   $rgw_socket_path              = $ceph::params::rgw_socket_path,
   $rgw_print_continue           = false,
   $rgw_port                     = undef,
   $frontend_type                = 'civetweb',
   $rgw_frontends                = undef,
-  $rgw_swift_url                = "http://${::fqdn}:7480",
+  $rgw_swift_url                = "http://${facts['networking']['fqdn']}:7480",
   $rgw_swift_url_prefix         = 'swift',
   $rgw_swift_account_in_url     = false,
   $rgw_swift_versioning_enabled = false,
@@ -133,7 +133,7 @@ define ceph::rgw (
   }
 
   ceph_config {
-    "client.${name}/host":                         value => $::hostname;
+    "client.${name}/host":                         value => $facts['networking']['hostname'];
     "client.${name}/keyring":                      value => $keyring_path;
     "client.${name}/log_file":                     value => $log_file;
     "client.${name}/user":                         value => $user;
