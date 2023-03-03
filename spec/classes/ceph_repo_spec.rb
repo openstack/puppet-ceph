@@ -98,7 +98,7 @@ describe 'ceph::repo' do
   shared_examples 'ceph::repo on RedHat' do
     context 'with default params' do
       it { should contain_yumrepo("ext-epel-#{facts[:os]['release']['major']}").with(
-        :enabled    => '1',
+        :ensure     => 'present',
         :descr      => "External EPEL #{facts[:os]['release']['major']}",
         :name       => "ext-epel-#{facts[:os]['release']['major']}",
         :baseurl    => 'absent',
@@ -110,7 +110,7 @@ describe 'ceph::repo' do
       )}
 
       it { should contain_yumrepo('ext-ceph').with(
-        :enabled    => '1',
+        :ensure     => 'present',
         :descr      => 'External Ceph nautilus',
         :name       => 'ext-ceph-nautilus',
         :baseurl    => "http://download.ceph.com/rpm-nautilus/el#{facts[:os]['release']['major']}/$basearch",
@@ -121,7 +121,7 @@ describe 'ceph::repo' do
      )}
 
       it { should contain_yumrepo('ext-ceph-noarch').with(
-        :enabled    => '1',
+        :ensure     => 'present',
         :descr      => 'External Ceph noarch',
         :name       => 'ext-ceph-nautilus-noarch',
         :baseurl    => "http://download.ceph.com/rpm-nautilus/el#{facts[:os]['release']['major']}/noarch",
@@ -140,7 +140,7 @@ describe 'ceph::repo' do
       end
 
       it { should contain_yumrepo("ext-epel-#{facts[:os]['release']['major']}").with(
-        :enabled    => '1',
+        :ensure     => 'present',
         :descr      => "External EPEL #{facts[:os]['release']['major']}",
         :name       => "ext-epel-#{facts[:os]['release']['major']}",
         :baseurl    => 'absent',
@@ -152,7 +152,7 @@ describe 'ceph::repo' do
       )}
 
       it { should contain_yumrepo('ext-ceph').with(
-        :enabled    => '1',
+        :ensure     => 'present',
         :descr      => 'External Ceph firefly',
         :name       => 'ext-ceph-firefly',
         :baseurl    => "http://download.ceph.com/rpm-firefly/el#{facts[:os]['release']['major']}/$basearch",
@@ -163,7 +163,7 @@ describe 'ceph::repo' do
       )}
 
       it { should contain_yumrepo('ext-ceph-noarch').with(
-        :enabled    => '1',
+        :ensure     => 'present',
         :descr      => 'External Ceph noarch',
         :name       => 'ext-ceph-firefly-noarch',
         :baseurl    => "http://download.ceph.com/rpm-firefly/el#{facts[:os]['release']['major']}/noarch",
@@ -194,7 +194,7 @@ describe 'ceph::repo' do
       end
 
       it { should contain_yumrepo("ext-epel-#{facts[:os]['release']['major']}").with(
-        :enabled        => '1',
+        :ensure         => 'present',
         :descr          => "External EPEL #{facts[:os]['release']['major']}",
         :name           => "ext-epel-#{facts[:os]['release']['major']}",
         :baseurl        => 'absent',
@@ -209,7 +209,7 @@ describe 'ceph::repo' do
       )}
 
       it { should contain_yumrepo('ext-ceph').with(
-        :enabled        => '1',
+        :ensure         => 'present',
         :descr          => 'External Ceph nautilus',
         :name           => 'ext-ceph-nautilus',
         :baseurl        => "http://download.ceph.com/rpm-nautilus/el#{facts[:os]['release']['major']}/$basearch",
@@ -223,7 +223,7 @@ describe 'ceph::repo' do
       )}
 
       it { should contain_yumrepo('ext-ceph-noarch').with(
-        :enabled        => '1',
+        :ensure         => 'present',
         :descr          => 'External Ceph noarch',
         :name           => 'ext-ceph-nautilus-noarch',
         :baseurl        => "http://download.ceph.com/rpm-nautilus/el#{facts[:os]['release']['major']}/noarch",
@@ -246,7 +246,7 @@ describe 'ceph::repo' do
       end
 
       it { should contain_yumrepo("ext-epel-#{facts[:os]['release']['major']}").with(
-        :enabled    => '0',
+        :ensure     => 'absent',
         :descr      => "External EPEL #{facts[:os]['release']['major']}",
         :name       => "ext-epel-#{facts[:os]['release']['major']}",
         :baseurl    => 'absent',
@@ -258,7 +258,7 @@ describe 'ceph::repo' do
       )}
 
       it { should contain_yumrepo('ext-ceph').with(
-        :enabled    => '0',
+        :ensure     => 'absent',
         :descr      => 'External Ceph nautilus',
         :name       => 'ext-ceph-nautilus',
         :baseurl    => "http://download.ceph.com/rpm-nautilus/el#{facts[:os]['release']['major']}/$basearch",
@@ -269,7 +269,7 @@ describe 'ceph::repo' do
       )}
 
       it { should contain_yumrepo('ext-ceph-noarch').with(
-        :enabled    => '0',
+        :ensure     => 'absent',
         :descr      => 'External Ceph noarch',
         :name       => 'ext-ceph-nautilus-noarch',
         :baseurl    => "http://download.ceph.com/rpm-nautilus/el#{facts[:os]['release']['major']}/noarch",
@@ -280,7 +280,7 @@ describe 'ceph::repo' do
       )}
 
       it { should contain_yumrepo('ext-ceph-fastcgi').with(
-        :enabled    => '0',
+        :ensure     => 'absent',
         :descr      => 'FastCGI basearch packages for Ceph',
         :name       => 'ext-ceph-fastcgi',
         :baseurl    => "http://gitbuilder.ceph.com/mod_fastcgi-rpm-rhel#{facts[:os]['release']['major']}-x86_64-basic/ref/master",
@@ -299,7 +299,7 @@ describe 'ceph::repo' do
       end
 
       it { should contain_yumrepo("ext-epel-#{facts[:os]['release']['major']}").with(
-        :enabled    => '1',
+        :ensure     => 'present',
         :descr      => "External EPEL #{facts[:os]['release']['major']}",
         :name       => "ext-epel-#{facts[:os]['release']['major']}",
         :baseurl    => 'absent',
@@ -311,7 +311,7 @@ describe 'ceph::repo' do
       )}
 
       it { should contain_yumrepo('ext-ceph').with(
-        :enabled    => '1',
+        :ensure     => 'present',
         :descr      => 'External Ceph nautilus',
         :name       => 'ext-ceph-nautilus',
         :baseurl    => "http://download.ceph.com/rpm-nautilus/el#{facts[:os]['release']['major']}/$basearch",
@@ -322,7 +322,7 @@ describe 'ceph::repo' do
       )}
 
       it { should contain_yumrepo('ext-ceph-noarch').with(
-        :enabled    => '1',
+        :ensure     => 'present',
         :descr      => 'External Ceph noarch',
         :name       => 'ext-ceph-nautilus-noarch',
         :baseurl    => "http://download.ceph.com/rpm-nautilus/el#{facts[:os]['release']['major']}/noarch",
@@ -333,7 +333,7 @@ describe 'ceph::repo' do
       )}
 
       it { should contain_yumrepo('ext-ceph-fastcgi').with(
-        :enabled    => '1',
+        :ensure     => 'present',
         :descr      => 'FastCGI basearch packages for Ceph',
         :name       => 'ext-ceph-fastcgi',
         :baseurl    => "http://gitbuilder.ceph.com/mod_fastcgi-rpm-rhel#{facts[:os]['release']['major']}-x86_64-basic/ref/master",
@@ -348,7 +348,7 @@ describe 'ceph::repo' do
   shared_examples 'ceph::repo on CentOS' do
     context 'with default params' do
       it { should contain_yumrepo("ext-epel-#{facts[:os]['release']['major']}").with(
-        :enabled    => '1',
+        :ensure     => 'present',
         :descr      => "External EPEL #{facts[:os]['release']['major']}",
         :name       => "ext-epel-#{facts[:os]['release']['major']}",
         :baseurl    => 'absent',
@@ -360,7 +360,7 @@ describe 'ceph::repo' do
       )}
 
       it { should contain_yumrepo('ext-ceph').with(
-        :enabled    => '1',
+        :ensure     => 'present',
         :descr      => 'External Ceph nautilus',
         :name       => 'ext-ceph-nautilus',
         :baseurl    => "http://download.ceph.com/rpm-nautilus/el#{facts[:os]['release']['major']}/$basearch",
@@ -371,7 +371,7 @@ describe 'ceph::repo' do
       )}
 
       it { should contain_yumrepo('ext-ceph-noarch').with(
-        :enabled    => '1',
+        :ensure     => 'present',
         :descr      => 'External Ceph noarch',
         :name       => 'ext-ceph-nautilus-noarch',
         :baseurl    => "http://download.ceph.com/rpm-nautilus/el#{facts[:os]['release']['major']}/noarch",
@@ -390,7 +390,7 @@ describe 'ceph::repo' do
       end
 
       it { should contain_yumrepo("ext-epel-#{facts[:os]['release']['major']}").with(
-        :enabled    => '1',
+        :ensure     => 'present',
         :descr      => "External EPEL #{facts[:os]['release']['major']}",
         :name       => "ext-epel-#{facts[:os]['release']['major']}",
         :baseurl    => 'absent',
@@ -402,7 +402,7 @@ describe 'ceph::repo' do
       )}
 
       it { should contain_yumrepo('ext-ceph').with(
-        :enabled    => '1',
+        :ensure     => 'present',
         :descr      => 'External Ceph firefly',
         :name       => 'ext-ceph-firefly',
         :baseurl    => "http://download.ceph.com/rpm-firefly/el#{facts[:os]['release']['major']}/$basearch",
@@ -413,7 +413,7 @@ describe 'ceph::repo' do
       )}
 
       it { should contain_yumrepo('ext-ceph-noarch').with(
-        :enabled    => '1',
+        :ensure     => 'present',
         :descr      => 'External Ceph noarch',
         :name       => 'ext-ceph-firefly-noarch',
         :baseurl    => "http://download.ceph.com/rpm-firefly/el#{facts[:os]['release']['major']}/noarch",
@@ -434,7 +434,6 @@ describe 'ceph::repo' do
       it { should_not contain_yumrepo("ext-epel-#{facts[:os]['release']['major']}") }
       it { should_not contain_yumrepo('ext-ceph') }
       it { should_not contain_yumrepo('ext-ceph-noarch') }
-      it { should contain_yumrepo('ceph-luminous-sig').with_ensure('absent') }
 
       it { should contain_yumrepo('ceph-storage-sig').with(
         :baseurl => "http://mirror.centos.org/centos/#{facts[:os]['release']['major']}/storage/x86_64/ceph-nautilus/",
@@ -452,7 +451,6 @@ describe 'ceph::repo' do
       it { should_not contain_yumrepo("ext-epel-#{facts[:os]['release']['major']}") }
       it { should_not contain_yumrepo('ext-ceph') }
       it { should_not contain_yumrepo('ext-ceph-noarch') }
-      it { should contain_yumrepo('ceph-luminous-sig').with_ensure('absent') }
 
       it { should contain_yumrepo('ceph-storage-sig').with(
         :baseurl => 'https://mymirror/luminous/',
@@ -468,7 +466,7 @@ describe 'ceph::repo' do
       end
 
       it { should contain_yumrepo("ext-epel-#{facts[:os]['release']['major']}").with(
-        :enabled    => '0',
+        :ensure     => 'absent',
         :descr      => "External EPEL #{facts[:os]['release']['major']}",
         :name       => "ext-epel-#{facts[:os]['release']['major']}",
         :baseurl    => 'absent',
@@ -480,7 +478,7 @@ describe 'ceph::repo' do
       )}
 
       it { should contain_yumrepo('ext-ceph').with(
-        :enabled    => '0',
+        :ensure     => 'absent',
         :descr      => 'External Ceph nautilus',
         :name       => 'ext-ceph-nautilus',
         :baseurl    => "http://download.ceph.com/rpm-nautilus/el#{facts[:os]['release']['major']}/$basearch",
@@ -491,7 +489,7 @@ describe 'ceph::repo' do
       )}
 
       it { should contain_yumrepo('ext-ceph-noarch').with(
-        :enabled    => '0',
+        :ensure     => 'absent',
         :descr      => 'External Ceph noarch',
         :name       => 'ext-ceph-nautilus-noarch',
         :baseurl    => "http://download.ceph.com/rpm-nautilus/el#{facts[:os]['release']['major']}/noarch",
@@ -502,7 +500,7 @@ describe 'ceph::repo' do
       )}
 
       it { should contain_yumrepo('ext-ceph-fastcgi').with(
-        :enabled    => '0',
+        :ensure     => 'absent',
         :descr      => 'FastCGI basearch packages for Ceph',
         :name       => 'ext-ceph-fastcgi',
         :baseurl    => "http://gitbuilder.ceph.com/mod_fastcgi-rpm-rhel#{facts[:os]['release']['major']}-x86_64-basic/ref/master",
@@ -521,7 +519,7 @@ describe 'ceph::repo' do
       end
 
       it { should contain_yumrepo("ext-epel-#{facts[:os]['release']['major']}").with(
-        :enabled    => '1',
+        :ensure     => 'present',
         :descr      => "External EPEL #{facts[:os]['release']['major']}",
         :name       => "ext-epel-#{facts[:os]['release']['major']}",
         :baseurl    => 'absent',
@@ -533,7 +531,7 @@ describe 'ceph::repo' do
       )}
 
       it { should contain_yumrepo('ext-ceph').with(
-        :enabled    => '1',
+        :ensure     => 'present',
         :descr      => 'External Ceph nautilus',
         :name       => 'ext-ceph-nautilus',
         :baseurl    => "http://download.ceph.com/rpm-nautilus/el#{facts[:os]['release']['major']}/$basearch",
@@ -544,7 +542,7 @@ describe 'ceph::repo' do
       )}
 
       it { should contain_yumrepo('ext-ceph-noarch').with(
-        :enabled    => '1',
+        :ensure     => 'present',
         :descr      => 'External Ceph noarch',
         :name       => 'ext-ceph-nautilus-noarch',
         :baseurl    => "http://download.ceph.com/rpm-nautilus/el#{facts[:os]['release']['major']}/noarch",
@@ -555,7 +553,7 @@ describe 'ceph::repo' do
       )}
 
       it { should contain_yumrepo('ext-ceph-fastcgi').with(
-        :enabled    => '1',
+        :ensure     => 'present',
         :descr      => 'FastCGI basearch packages for Ceph',
         :name       => 'ext-ceph-fastcgi',
         :baseurl    => "http://gitbuilder.ceph.com/mod_fastcgi-rpm-rhel#{facts[:os]['release']['major']}-x86_64-basic/ref/master",
@@ -579,8 +577,6 @@ describe 'ceph::repo' do
           :stream     => true,
         }
       end
-
-      it { should contain_yumrepo('ceph-luminous-sig').with_ensure('absent') }
 
       it { should contain_yumrepo('ceph-storage-sig').with(
         :baseurl => 'http://mirror.centos.org/centos/8-stream/storage/x86_64/ceph-nautilus/',

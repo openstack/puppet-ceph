@@ -119,8 +119,6 @@ class ceph::repo (
     }
 
     'RedHat': {
-      $enabled = $ensure ? { 'present' => '1', 'absent' => '0', default => absent, }
-
       # If you want to deploy Ceph using packages provided by CentOS SIG
       # https://wiki.centos.org/SpecialInterestGroup/Storage/
       if $enable_sig {
@@ -143,18 +141,15 @@ not on ${facts['os']['name']}, which can lead to packaging issues.")
             $ceph_mirror_real = "http://mirror.centos.org/centos/${facts['os']['release']['major']}/storage/x86_64/ceph-${release}/"
           }
         }
-        yumrepo { 'ceph-luminous-sig':
-          ensure => 'absent',
-        }
         yumrepo { 'ceph-storage-sig':
-          enabled    => '1',
+          ensure     => $ensure,
           baseurl    => $ceph_mirror_real,
           descr      => 'Ceph Storage SIG',
           mirrorlist => 'absent',
           gpgcheck   => '0',
         }
         # Make sure we install the repo before any Package resource
-        Yumrepo['ceph-luminous-sig'] -> Yumrepo['ceph-storage-sig'] -> Package<| tag == 'ceph' |>
+        Yumrepo['ceph-storage-sig'] -> Package<| tag == 'ceph' |>
       } else {
         # If you want to deploy Ceph using packages provided by ceph.com repositories.
         $el = $facts['os']['release']['major']
@@ -167,40 +162,38 @@ not on ${facts['os']['name']}, which can lead to packaging issues.")
 
 
         yumrepo { 'ext-ceph':
-          # puppet versions prior to 3.5 do not support ensure, use enabled instead
-          enabled    => $enabled,
+          ensure     => $ensure,
           descr      => "External Ceph ${release}",
           name       => "ext-ceph-${release}",
           baseurl    => "http://download.ceph.com/rpm-${release}/el${el}/\$basearch",
           gpgcheck   => '1',
           gpgkey     => 'https://download.ceph.com/keys/release.asc',
-          mirrorlist => absent,
+          mirrorlist => 'absent',
           priority   => '10', # prefer ceph repos over EPEL
           tag        => 'ceph',
         }
 
         yumrepo { 'ext-ceph-noarch':
-          # puppet versions prior to 3.5 do not support ensure, use enabled instead
-          enabled    => $enabled,
+          ensure     => $ensure,
           descr      => 'External Ceph noarch',
           name       => "ext-ceph-${release}-noarch",
           baseurl    => "http://download.ceph.com/rpm-${release}/el${el}/noarch",
           gpgcheck   => '1',
           gpgkey     => 'https://download.ceph.com/keys/release.asc',
-          mirrorlist => absent,
+          mirrorlist => 'absent',
           priority   => '10', # prefer ceph repos over EPEL
           tag        => 'ceph',
         }
 
         if $fastcgi {
           yumrepo { 'ext-ceph-fastcgi':
-            enabled    => $enabled,
+            ensure     => $ensure,
             descr      => 'FastCGI basearch packages for Ceph',
             name       => 'ext-ceph-fastcgi',
             baseurl    => "http://gitbuilder.ceph.com/mod_fastcgi-rpm-rhel${el}-x86_64-basic/ref/master",
             gpgcheck   => '1',
             gpgkey     => 'https://download.ceph.com/keys/autobuild.asc',
-            mirrorlist => absent,
+            mirrorlist => 'absent',
             priority   => '20', # prefer ceph repos over EPEL
             tag        => 'ceph',
           }
@@ -214,8 +207,7 @@ not on ${facts['os']['name']}, which can lead to packaging issues.")
 
       if $enable_epel {
         yumrepo { "ext-epel-${el}":
-          # puppet versions prior to 3.5 do not support ensure, use enabled instead
-          enabled    => $enabled,
+          ensure     => $ensure,
           descr      => "External EPEL ${el}",
           name       => "ext-epel-${el}",
           baseurl    => absent,
