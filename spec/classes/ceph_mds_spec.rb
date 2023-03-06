@@ -65,7 +65,9 @@ describe 'ceph::mds' do
     end
   end
 
-  on_supported_os.each do |os,facts|
+  on_supported_os({
+    :supported_os => OSDefaults.get_supported_os
+  }).each do |os,facts|
     context "on #{os}" do
       let (:facts) do
         facts.merge!(OSDefaults.get_facts())

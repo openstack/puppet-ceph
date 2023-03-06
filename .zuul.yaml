@@ -7,17 +7,29 @@
       - release-notes-jobs-python3
     check:
       jobs:
-        - puppet-ceph-unit-5.5-centos-8-stream
+        - puppet-ceph-unit-5.5-centos-8-stream-train
+        - puppet-ceph-unit-6.21-ubuntu-focal-yoga
     gate:
       jobs:
-        - puppet-ceph-unit-5.5-centos-8-stream
+        - puppet-ceph-unit-5.5-centos-8-stream-train
+        - puppet-ceph-unit-6.21-ubuntu-focal-yoga
+
+# NOTE(tkajinam): stable/train supports CentOS 7, Ubuntu 18.04 and Puppet 5
 - job:
-    name: puppet-ceph-unit-5.5-centos-8-stream
+    name: puppet-ceph-unit-5.5-centos-8-stream-train
     parent: puppet-openstack-unit-base
     nodeset: centos-8-stream
-    voting: false
-    # stable/ussuri is the last release with Puppet 5.x support
-    override-checkout: stable/ussuri
+    override-checkout: stable/train
     vars:
       puppet_gem_version: 5.5.0
+      rspec_puppet_version: '~> 2.3.0'
+
+# NOTE(tkajinam): stable/yoga supports CentOS 8, Ubuntu 20.04 and Puppet 6
+- job:
+    name: puppet-ceph-unit-6.21-ubuntu-focal-yoga
+    parent: puppet-openstack-unit-base
+    nodeset: ubuntu-focal
+    override-checkout: stable/yoga
+    vars:
+      puppet_gem_version: 6.21.1
       rspec_puppet_version: '= 2.9.0'
