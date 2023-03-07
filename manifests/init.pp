@@ -81,6 +81,9 @@
 #   individually through ceph::mon.
 #   Optional. String like e.g. 'a, b, c'.
 #
+# [*ms_bind_ipv4*] Enables Ceph daemons to bind to IPv4 addresses.
+#   Optional. Boolean. Default provided by Ceph.
+#
 # [*ms_bind_ipv6*] Enables Ceph daemons to bind to IPv6 addresses.
 #   Optional. Boolean. Default provided by Ceph.
 #
@@ -155,6 +158,7 @@ class ceph (
   $mon_osd_nearfull_ratio        = undef,
   $mon_initial_members           = undef,
   $mon_host                      = undef,
+  $ms_bind_ipv4                  = undef,
   $ms_bind_ipv6                  = undef,
   $require_signatures            = undef,
   $cluster_require_signatures    = undef,
@@ -205,6 +209,7 @@ this module to assign values and will be removed in a future release.')
       'global/mon_osd_nearfull_ratio':       value => $mon_osd_nearfull_ratio;
       'global/mon_initial_members':          value => $mon_initial_members;
       'global/mon_host':                     value => $mon_host;
+      'global/ms_bind_ipv4':                 value => $ms_bind_ipv4;
       'global/ms_bind_ipv6':                 value => $ms_bind_ipv6;
       'global/require_signatures':           value => $require_signatures;
       'global/cluster_require_signatures':   value => $cluster_require_signatures;

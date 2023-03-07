@@ -1,0 +1,4 @@
+---
+features:
+  - |
+    Support for the ``[global] ms_bind_ipv4`` option has been added.

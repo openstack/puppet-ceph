@@ -42,6 +42,7 @@ describe 'ceph' do
       it { should_not contain_ceph_config('global/mon_osd_nearfull_ratio').with_value('85') }
       it { should_not contain_ceph_config('global/mon_initial_members').with_value('mon.01') }
       it { should_not contain_ceph_config('global/mon_host').with_value('mon01.ceph, mon02.ceph') }
+      it { should_not contain_ceph_config('global/ms_bind_ipv4').with_value('true') }
       it { should_not contain_ceph_config('global/ms_bind_ipv6').with_value('false') }
       it { should_not contain_ceph_config('global/require_signatures').with_value('false') }
       it { should_not contain_ceph_config('global/cluster_require_signatures').with_value('false') }
@@ -81,6 +82,7 @@ describe 'ceph' do
           :mon_osd_nearfull_ratio        => '90',
           :mon_initial_members           => 'mon.01',
           :mon_host                      => 'mon01.ceph, mon02.ceph',
+          :ms_bind_ipv4                  => 'false',
           :ms_bind_ipv6                  => 'true',
           :require_signatures            => 'true',
           :cluster_require_signatures    => 'true',
@@ -118,6 +120,7 @@ describe 'ceph' do
       it { should contain_ceph_config('global/mon_osd_nearfull_ratio').with_value('90') }
       it { should contain_ceph_config('global/mon_initial_members').with_value('mon.01') }
       it { should contain_ceph_config('global/mon_host').with_value('mon01.ceph, mon02.ceph') }
+      it { should contain_ceph_config('global/ms_bind_ipv4').with_value('false') }
       it { should contain_ceph_config('global/ms_bind_ipv6').with_value('true') }
       it { should contain_ceph_config('global/require_signatures').with_value('true') }
       it { should contain_ceph_config('global/cluster_require_signatures').with_value('true') }
