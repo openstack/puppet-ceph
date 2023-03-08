@@ -19,10 +19,10 @@
 #
 # == Define: ceph::rgw::beast
 # [*rgw_frontends*] Arguments to the rgw frontend
-#   Optional. Default is 'beast port=7480'
+#   Optional. Default is ['beast', 'port=7480']
 #
 define ceph::rgw::beast (
-  $rgw_frontends = 'beast port=7480',
+  $rgw_frontends = ['beast', 'port=7480'],
 ) {
 
   unless $name =~ /^radosgw\..+/ {
@@ -30,6 +30,6 @@ define ceph::rgw::beast (
   }
 
   ceph_config {
-    "client.${name}/rgw_frontends": value => $rgw_frontends;
+    "client.${name}/rgw_frontends": value => join(any2array($rgw_frontends), ' ');
   }
 }

@@ -19,10 +19,10 @@
 #
 # == Define: ceph::rgw::civetweb
 # [*rgw_frontends*] Arguments to the rgw frontend
-#   Optional. Default is 'civetweb port=7480'
+#   Optional. Default is ['civetweb', 'port=7480']
 #
 define ceph::rgw::civetweb (
-  $rgw_frontends = 'civetweb port=7480',
+  $rgw_frontends = ['civetweb', 'port=7480'],
 ) {
 
   unless $name =~ /^radosgw\..+/ {
@@ -30,6 +30,6 @@ define ceph::rgw::civetweb (
   }
 
   ceph_config {
-    "client.${name}/rgw_frontends": value => $rgw_frontends;
+    "client.${name}/rgw_frontends": value => join(any2array($rgw_frontends), ' ');
   }
 }
