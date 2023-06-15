@@ -205,7 +205,7 @@ class ceph::profile::params (
   $mon_key = undef,
   $mgr_key = undef,
   $mon_keyring = undef,
-  $client_keys = {},
+  Hash $client_keys = {},
   $osds = undef,
   $manage_repo = true,
   $rgw_name = undef,
@@ -232,8 +232,6 @@ class ceph::profile::params (
   # DEPRECATED PARAMS
   $pid_max = undef,
 ) {
-
-  validate_legacy(Hash, 'validate_hash', $client_keys)
 
   if $pid_max != undef {
     warning('pid_max parameter is deprecated and has no effect.')
