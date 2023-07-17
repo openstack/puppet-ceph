@@ -40,7 +40,7 @@ if ! test -b \$disk ; then
     # Since nautilus, only block devices or lvm logical volumes can be used for OSDs
     exit 1
 fi
-ceph-volume lvm prepare  --cluster ceph  --data vg_test/lv_test 
+ceph-volume lvm prepare --cluster ceph --data vg_test/lv_test
 ",
         'unless'    => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
@@ -178,7 +178,7 @@ if ! test -b \$disk ; then
     # Since nautilus, only block devices or lvm logical volumes can be used for OSDs
     exit 1
 fi
-ceph-volume lvm prepare  --cluster ceph --dmcrypt --dmcrypt-key-dir '/etc/ceph/dmcrypt-keys'  --data /dev/sdc 
+ceph-volume lvm prepare --cluster ceph --dmcrypt --dmcrypt-key-dir '/etc/ceph/dmcrypt-keys' --data /dev/sdc
 ",
         'unless'    => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
@@ -239,7 +239,7 @@ if ! test -b \$disk ; then
     # Since nautilus, only block devices or lvm logical volumes can be used for OSDs
     exit 1
 fi
-ceph-volume lvm prepare  --cluster ceph --dmcrypt --dmcrypt-key-dir '/srv/ceph/keys'  --data /dev/sdc 
+ceph-volume lvm prepare --cluster ceph --dmcrypt --dmcrypt-key-dir '/srv/ceph/keys' --data /dev/sdc
 ",
         'unless'    => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
@@ -369,7 +369,7 @@ if ! test -b \$disk ; then
     # Since nautilus, only block devices or lvm logical volumes can be used for OSDs
     exit 1
 fi
-ceph-volume lvm prepare  --cluster ceph  --data /dev/nvme0n1 
+ceph-volume lvm prepare --cluster ceph --data /dev/nvme0n1
 ",
         'unless'    => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
@@ -423,7 +423,7 @@ if ! test -b \$disk ; then
     # Since nautilus, only block devices or lvm logical volumes can be used for OSDs
     exit 1
 fi
-ceph-volume lvm prepare  --cluster ceph  --data /dev/cciss/c0d0 
+ceph-volume lvm prepare --cluster ceph --data /dev/cciss/c0d0
 ",
         'unless'    => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex

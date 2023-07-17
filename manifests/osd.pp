@@ -92,7 +92,7 @@ define ceph::osd (
     $cluster_option = "--cluster ${cluster_name}"
 
     if $store_type {
-      $osd_type = "--${store_type}"
+      $osd_type = " --${store_type}"
     } else {
       $osd_type = ''
     }
@@ -100,14 +100,18 @@ define ceph::osd (
     if ($bluestore_wal) or ($bluestore_db) {
       if $bluestore_wal {
         $wal_opts = "--block.wal ${bluestore_wal}"
+      } else {
+        $wal_opts = undef
       }
+
       if $bluestore_db {
         $block_opts = "--block.db ${bluestore_db}"
+      } else {
+        $block_opts = undef
       }
-      $journal_opts = "${wal_opts} ${block_opts}"
-
+      $journal_opts = join(delete_undef_values(['', $wal_opts, $block_opts]), ' ')
     } elsif $journal {
-      $journal_opts = "--journal ${journal}"
+      $journal_opts = " --journal ${journal}"
     } else {
       $journal_opts = ''
     }
@@ -131,7 +135,7 @@ define ceph::osd (
       Exec<| tag == 'prepare' |> -> Exec<| tag == 'activate' |>
 
       if $fsid {
-        $fsid_option = "--cluster-fsid ${fsid}"
+        $fsid_option = " --cluster-fsid ${fsid}"
         $ceph_check_fsid_mismatch = "ceph-osd-check-fsid-mismatch-${name}"
         Exec[$ceph_check_fsid_mismatch] -> Exec[$ceph_prepare]
         # return error if $(readlink -f ${data}) has fsid differing from ${fsid}, unless there is no fsid
@@ -150,6 +154,8 @@ test ${fsid} = $(ceph-volume lvm list ${data} |grep 'cluster fsid' | awk -F'fsid
           logoutput => true,
           timeout   => $exec_timeout,
         }
+      } else {
+        $fsid_option = ''
       }
 
       #name of the bootstrap osd keyring
@@ -176,7 +182,7 @@ if ! test -b \$disk ; then
     # Since nautilus, only block devices or lvm logical volumes can be used for OSDs
     exit 1
 fi
-ceph-volume lvm prepare ${osd_type} ${cluster_option}${dmcrypt_options} ${fsid_option} --data ${data} ${journal_opts}
+ceph-volume lvm prepare${osd_type} ${cluster_option}${dmcrypt_options}${fsid_option} --data ${data}${journal_opts}
 ",
         unless    => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
