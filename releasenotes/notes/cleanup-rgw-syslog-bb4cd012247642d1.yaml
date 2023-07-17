@@ -1,0 +1,4 @@
+---
+upgrade:
+  - |
+    The ``ceph::rgw::syslog`` parameter has been removed.

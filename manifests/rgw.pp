@@ -87,11 +87,6 @@
 #   secure.
 #   Optional. Default is false
 #
-# Deprecated Parameters:
-#
-# [*syslog*] Whether or not to log to syslog.
-#   Optional. Default is true.
-#
 define ceph::rgw (
   $pkg_radosgw                  = $ceph::params::pkg_radosgw,
   $rgw_ensure                   = 'running',
@@ -112,13 +107,7 @@ define ceph::rgw (
   $rgw_swift_account_in_url     = false,
   $rgw_swift_versioning_enabled = false,
   $rgw_trust_forwarded_https    = false,
-  $syslog                       = undef,
 ) {
-
-  if $syslog
-  {
-    warning( 'The syslog parameter is unused and deprecated. It will be removed in a future release.' )
-  }
 
   unless $name =~ /^radosgw\..+/ {
     fail("Define name must be started with 'radosgw.'")
