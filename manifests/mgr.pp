@@ -50,7 +50,7 @@ define ceph::mgr (
   $cluster             = 'ceph',
   $authentication_type = 'cephx',
   $key                 = undef,
-  $inject_key          = false,
+  Boolean $inject_key  = false,
 ) {
   file { '/var/lib/ceph/mgr':
     ensure  => directory,

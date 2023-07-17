@@ -76,7 +76,7 @@ define ceph::osd (
   $exec_timeout = $ceph::params::exec_timeout,
   $selinux_file_context = 'ceph_var_lib_t',
   $fsid = $ceph::profile::params::fsid,
-  $dmcrypt = false,
+  Boolean $dmcrypt = false,
   $dmcrypt_key_dir = '/etc/ceph/dmcrypt-keys',
   ) {
 

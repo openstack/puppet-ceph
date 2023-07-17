@@ -207,7 +207,7 @@ class ceph::profile::params (
   $mon_keyring = undef,
   Hash $client_keys = {},
   $osds = undef,
-  $manage_repo = true,
+  Boolean $manage_repo = true,
   $rgw_name = undef,
   $rgw_user = undef,
   $rgw_print_continue = undef,

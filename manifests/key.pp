@@ -85,7 +85,7 @@ define ceph::key (
   $user = 'root',
   $group = 'root',
   $mode = '0600',
-  $inject = false,
+  Boolean $inject = false,
   $inject_as_id = undef,
   $inject_keyring = undef,
 ) {
