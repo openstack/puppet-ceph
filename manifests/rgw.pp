@@ -115,8 +115,6 @@ define ceph::rgw (
   $syslog                       = undef,
 ) {
 
-  include stdlib
-
   if $syslog
   {
     warning( 'The syslog parameter is unused and deprecated. It will be removed in a future release.' )

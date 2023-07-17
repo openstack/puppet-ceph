@@ -36,8 +36,6 @@ define ceph::mirror (
   $rbd_mirror_enable = true,
 ) {
 
-  include stdlib
-
   ensure_resource( 'package',
     $pkg_mirror,
     {

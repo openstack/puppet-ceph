@@ -68,8 +68,6 @@ define ceph::mon (
   $exec_timeout = $ceph::params::exec_timeout,
   ) {
 
-    include stdlib
-
     # a puppet name translates into a ceph id, the meaning is different
     $id = $name
 
