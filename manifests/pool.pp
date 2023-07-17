@@ -51,7 +51,7 @@
 #   Optional. Defaults to $ceph::params::exec_timeout
 #
 define ceph::pool (
-  $ensure = present,
+  Enum['present', 'absent'] $ensure = present,
   $pg_num = 64,
   $pgp_num = undef,
   $size = undef,
@@ -125,7 +125,7 @@ ceph osd pool application get ${name} ${tag}",
       }
     }
 
-  } elsif $ensure == absent {
+  } else {
 
     exec { "delete-${name}":
       command => "/bin/true # comment to satisfy puppet syntax requirements
@@ -136,10 +136,6 @@ set -ex
 ceph osd pool ls | grep -w '${name}'",
       timeout => $exec_timeout,
     } -> Ceph::Mon<| ensure == absent |>
-
-  } else {
-
-    fail("*ensure* must be either present or absent - was '${ensure}'")
 
   }
 

@@ -58,7 +58,7 @@
 #   Optional. Defaults to $ceph::params::exec_timeout
 #
 define ceph::mon (
-  $ensure = present,
+  Enum['present', 'absent'] $ensure = present,
   $mon_enable = true,
   $public_addr = undef,
   $cluster = undef,
@@ -204,7 +204,7 @@ test ! -e ${keyring_path}
         }
       }
 
-    } elsif $ensure == absent {
+    } else {
       service { $mon_service:
         ensure => stopped,
         enable => $mon_enable,
@@ -228,7 +228,5 @@ test ! -d \$mon_data
       -> ceph_config {
         "mon.${id}/public_addr": ensure => absent;
       } -> Package<| tag == 'ceph' |>
-    } else {
-      fail('Ensure on MON must be either present or absent')
     }
   }

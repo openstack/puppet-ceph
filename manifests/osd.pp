@@ -67,7 +67,7 @@
 #   Optional. Defaults to '/etc/ceph/dmcrypt-keys'.
 #
 define ceph::osd (
-  $ensure = present,
+  Enum['present', 'absent'] $ensure = present,
   $journal = undef,
   $cluster = undef,
   $bluestore_wal = undef,
@@ -235,7 +235,7 @@ ps -fCceph-osd|grep \"\\--id \$id \"
         tag       => 'activate',
       }
 
-    } elsif $ensure == absent {
+    } else {
 
       # ceph-disk: support osd removal http://tracker.ceph.com/issues/7454
       exec { "remove-osd-${name}":
@@ -268,7 +268,5 @@ fi
         logoutput => true,
         timeout   => $exec_timeout,
       } -> Ceph::Mon<| ensure == absent |>
-    } else {
-      fail('Ensure on OSD must be either present or absent')
     }
 }

@@ -511,7 +511,7 @@ fi
         }
       end
 
-      it { should raise_error(Puppet::Error, /Ensure on OSD must be either present or absent/) }
+      it { should raise_error(Puppet::PreformattedError) }
     end
   end
 

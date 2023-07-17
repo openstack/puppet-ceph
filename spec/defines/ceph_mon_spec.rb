@@ -259,7 +259,7 @@ test ! -d \$mon_data
         }
       end
 
-      it { should raise_error(Puppet::Error, /Ensure on MON must be either present or absent/) }
+      it { should raise_error(Puppet::PreformattedError) }
     end
   end
 
