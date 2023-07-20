@@ -166,7 +166,9 @@ ceph auth get client.bootstrap-osd > ${bootstrap_osd_keyring}
 ",
         creates => "${bootstrap_osd_keyring}",
       }
-      Exec["extract-bootstrap-osd-keyring-${name}"] -> Exec[$ceph_prepare]
+      Ceph::Key<||>
+      -> Exec["extract-bootstrap-osd-keyring-${name}"]
+      -> Exec[$ceph_prepare]
 
       exec { $ceph_prepare:
         command   => "/bin/true # comment to satisfy puppet syntax requirements

@@ -90,6 +90,8 @@ define ceph::key (
   $inject_keyring = undef,
 ) {
 
+  include ceph::params
+
   if $cluster {
     $cluster_option = "--cluster ${cluster}"
   } else
@@ -129,8 +131,8 @@ define ceph::key (
       group                   => $group,
       mode                    => $mode,
       selinux_ignore_defaults => true,
-      require                 => Package[$ceph::params::packages],
     }
+    Package<| tag == 'ceph' |> -> File[$keyring_path]
   }
 
   # ceph-authtool --add-key is idempotent, will just update pre-existing keys
