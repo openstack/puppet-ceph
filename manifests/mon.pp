@@ -65,8 +65,13 @@ define ceph::mon (
   Enum['cephx', 'none'] $authentication_type = 'cephx',
   $key = undef,
   $keyring  = undef,
-  $exec_timeout = $ceph::params::exec_timeout,
+  $exec_timeout = undef
   ) {
+    include ceph::params
+    $exec_timeout_real = $exec_timeout ? {
+      undef   => $ceph::params::exec_timeout,
+      default => $exec_timeout,
+    }
 
     # a puppet name translates into a ceph id, the meaning is different
     $id = $name
@@ -178,7 +183,7 @@ mon_data=\$(ceph-mon ${cluster_option} --id ${id} --show-config-value mon_data)
 test -d  \$mon_data
 ",
         logoutput => true,
-        timeout   => $exec_timeout,
+        timeout   => $exec_timeout_real,
       }
       -> service { $mon_service:
         ensure => running,
@@ -223,7 +228,7 @@ mon_data=\$(ceph-mon ${cluster_option} --id ${id} --show-config-value mon_data)
 test ! -d \$mon_data
 ",
         logoutput => true,
-        timeout   => $exec_timeout,
+        timeout   => $exec_timeout_real,
       }
       -> ceph_config {
         "mon.${id}/public_addr": ensure => absent;

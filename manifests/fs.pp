@@ -39,8 +39,15 @@
 define ceph::fs (
   $metadata_pool,
   $data_pool,
-  $exec_timeout = $ceph::params::exec_timeout,
+  $exec_timeout = undef,
 ) {
+
+  include ceph::params
+  $exec_timeout_real = $exec_timeout ? {
+    undef   => $ceph::params::exec_timeout,
+    default => $exec_timeout,
+  }
+
   Ceph_config<||> -> Exec["create-fs-${name}"]
   Ceph::Pool<||> -> Exec["create-fs-${name}"]
 
@@ -51,6 +58,6 @@ ceph fs new ${name} ${metadata_pool} ${data_pool}",
     unless  => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 ceph fs ls | grep 'name: ${name},'",
-    timeout => $exec_timeout,
+    timeout => $exec_timeout_real,
   }
 }

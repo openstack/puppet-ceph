@@ -73,7 +73,7 @@ define ceph::osd (
   $bluestore_wal = undef,
   $bluestore_db = undef,
   Optional[Enum['filestore', 'bluestore']] $store_type = undef,
-  $exec_timeout = $ceph::params::exec_timeout,
+  $exec_timeout = undef,
   $selinux_file_context = 'ceph_var_lib_t',
   $fsid = $ceph::profile::params::fsid,
   Boolean $dmcrypt = false,
@@ -81,6 +81,10 @@ define ceph::osd (
   ) {
 
     include ceph::params
+    $exec_timeout_real = $exec_timeout ? {
+      undef   => $ceph::params::exec_timeout,
+      default => $exec_timeout,
+    }
 
     $data = $name
 
@@ -152,7 +156,7 @@ fi
 test ${fsid} = $(ceph-volume lvm list ${data} |grep 'cluster fsid' | awk -F'fsid' '{print \$2}'|tr -d  ' ')
 ",
           logoutput => true,
-          timeout   => $exec_timeout,
+          timeout   => $exec_timeout_real,
         }
       } else {
         $fsid_option = ''
@@ -191,7 +195,7 @@ set -ex
 ceph-volume lvm list ${data}
 ",
         logoutput => true,
-        timeout   => $exec_timeout,
+        timeout   => $exec_timeout_real,
         tag       => 'prepare',
       }
       if (str2bool($facts['os']['selinux']['enabled']) == true) {
@@ -266,7 +270,7 @@ else
 fi
 ",
         logoutput => true,
-        timeout   => $exec_timeout,
+        timeout   => $exec_timeout_real,
       } -> Ceph::Mon<| ensure == absent |>
     }
 }

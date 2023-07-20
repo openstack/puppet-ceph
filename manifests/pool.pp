@@ -56,8 +56,14 @@ define ceph::pool (
   $pgp_num = undef,
   $size = undef,
   $tag = undef,
-  $exec_timeout = $ceph::params::exec_timeout,
+  $exec_timeout = undef,
 ) {
+
+  include ceph::params
+  $exec_timeout_real = $exec_timeout ? {
+    undef   => $ceph::params::exec_timeout,
+    default => $exec_timeout,
+  }
 
   if $ensure == present {
 
@@ -72,7 +78,7 @@ ceph osd pool create ${name} ${pg_num}",
       unless  => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 ceph osd pool ls | grep -w '${name}'",
-      timeout => $exec_timeout,
+      timeout => $exec_timeout_real,
     }
 
     exec { "set-${name}-pg_num":
@@ -83,7 +89,7 @@ ceph osd pool set ${name} pg_num ${pg_num}",
 set -ex
 test $(ceph osd pool get ${name} pg_num | sed 's/.*:\s*//g') -ge ${pg_num}",
       require => Exec["create-${name}"],
-      timeout => $exec_timeout,
+      timeout => $exec_timeout_real,
     }
 
     if $pgp_num {
@@ -95,7 +101,7 @@ ceph osd pool set ${name} pgp_num ${pgp_num}",
 set -ex
 test $(ceph osd pool get ${name} pgp_num | sed 's/.*:\s*//g') -ge ${pgp_num}",
         require => [Exec["create-${name}"], Exec["set-${name}-pg_num"]],
-        timeout => $exec_timeout,
+        timeout => $exec_timeout_real,
       }
     }
 
@@ -108,7 +114,7 @@ ceph osd pool set ${name} size ${size}",
 set -ex
 test $(ceph osd pool get ${name} size | sed 's/.*:\s*//g') -eq ${size}",
         require => Exec["create-${name}"],
-        timeout => $exec_timeout,
+        timeout => $exec_timeout_real,
       }
     }
 
@@ -121,7 +127,7 @@ ceph osd pool application enable ${name} ${tag}",
 set -ex
 ceph osd pool application get ${name} ${tag}",
         require => Exec["create-${name}"],
-        timeout => $exec_timeout,
+        timeout => $exec_timeout_real,
       }
     }
 
@@ -134,7 +140,7 @@ ceph osd pool delete ${name} ${name} --yes-i-really-really-mean-it",
       onlyif  => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 ceph osd pool ls | grep -w '${name}'",
-      timeout => $exec_timeout,
+      timeout => $exec_timeout_real,
     } -> Ceph::Mon<| ensure == absent |>
 
   }
