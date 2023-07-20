@@ -185,7 +185,7 @@
 class ceph::profile::params (
   $fsid = undef,
   $release = undef,
-  $authentication_type = undef,
+  Optional[Enum['cephx', 'none']] $authentication_type = undef,
   $mon_initial_members = undef,
   $mon_host = undef,
   $ms_bind_ipv4 = undef,

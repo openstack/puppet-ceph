@@ -79,7 +79,7 @@ describe 'ceph::profile::client' do
     context 'without cephx and client_keys' do
       let :pre_condition do
         "class { 'ceph::profile::params':
-          authentication_type => 'undef',
+          authentication_type => 'none',
           client_keys         => {}
         }"
       end

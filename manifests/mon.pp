@@ -62,7 +62,7 @@ define ceph::mon (
   $mon_enable = true,
   $public_addr = undef,
   $cluster = undef,
-  $authentication_type = 'cephx',
+  Enum['cephx', 'none'] $authentication_type = 'cephx',
   $key = undef,
   $keyring  = undef,
   $exec_timeout = $ceph::params::exec_timeout,

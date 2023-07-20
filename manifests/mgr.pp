@@ -45,12 +45,12 @@
 #   Optional. Defaults to false
 #
 define ceph::mgr (
-  $enable              = true,
-  $ensure              = running,
-  $cluster             = 'ceph',
-  $authentication_type = 'cephx',
-  $key                 = undef,
-  Boolean $inject_key  = false,
+  $enable                                    = true,
+  $ensure                                    = running,
+  $cluster                                   = 'ceph',
+  Enum['cephx', 'none'] $authentication_type = 'cephx',
+  $key                                       = undef,
+  Boolean $inject_key                        = false,
 ) {
   file { '/var/lib/ceph/mgr':
     ensure  => directory,
