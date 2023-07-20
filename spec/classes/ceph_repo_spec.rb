@@ -427,7 +427,8 @@ describe 'ceph::repo' do
     context 'when using CentOS SIG repository' do
       let :params do
         {
-          :enable_sig => true,
+          :enable_sig  => true,
+          :enable_epel => false,
         }
       end
 
@@ -444,6 +445,7 @@ describe 'ceph::repo' do
       let :params do
         {
           :enable_sig  => true,
+          :enable_epel => false,
           :ceph_mirror => 'https://mymirror/luminous/',
         }
       end
