@@ -31,6 +31,7 @@ describe 'ceph::osds' do
         },
         :defaults => {
           'cluster' => 'CLUSTER',
+          'fsid'    => 'f39ace04-f967-4c3d-9fd2-32af2d2d2cd5',
         },
       }
     end
@@ -39,10 +40,12 @@ describe 'ceph::osds' do
       should contain_ceph__osd('/dev/sdb').with(
         :ensure  => 'present',
         :journal => '/srv/journal',
-        :cluster => 'CLUSTER')
+        :cluster => 'CLUSTER',
+        :fsid    => 'f39ace04-f967-4c3d-9fd2-32af2d2d2cd5')
       should contain_ceph__osd('/srv/data').with(
         :ensure  => 'present',
-        :cluster => 'CLUSTER')
+        :cluster => 'CLUSTER',
+        :fsid    => 'f39ace04-f967-4c3d-9fd2-32af2d2d2cd5')
     }
   end
 
