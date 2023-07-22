@@ -22,11 +22,14 @@
 # === Parameters:
 #
 # [*args*] A Ceph config hash.
-#   Optional.
+#   Optional. Defaults to an empty hash
 #
 # [*defaults*] A config hash
-#   Optional. Defaults to a empty hash
+#   Optional. Defaults to an empty hash
 #
-class ceph::conf($args = {}, $defaults = {}) {
+class ceph::conf(
+  Hash $args     = {},
+  Hash $defaults = {}
+) {
   ensure_resources(ceph_config, $args, $defaults)
 }
