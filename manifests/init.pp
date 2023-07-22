@@ -134,12 +134,6 @@
 # [*rbd_default_features*] Set RBD features configuration.
 #   Optional. String. Defaults to undef.
 #
-# DEPRECATED PARAMETERS
-#
-# [*set_osd_params*] disables setting osd params using this module by default as people
-#   calling ceph_config from in-house modules will get dup-declaration errors.
-#   Boolean.  Default false.
-#
 class ceph (
   $fsid,
   $ensure                                    = present,
@@ -174,16 +168,9 @@ class ceph (
   $osd_max_scrubs                            = undef,
   $osd_op_threads                            = undef,
   $rbd_default_features                      = undef,
-  # DEPRECATED PARAMETERS
-  $set_osd_params                            = false,
 ) {
 
   include ceph::params
-
-  if $set_osd_params {
-    warning('set_osd_params is deprecated. It is here to allow a transition to using \
-this module to assign values and will be removed in a future release.')
-  }
 
   package { $ceph::params::packages :
     ensure => $ensure,
@@ -219,6 +206,12 @@ this module to assign values and will be removed in a future release.')
       'global/public_network':               value => $public_network;
       'global/public_addr':                  value => $public_addr;
       'osd/osd_journal_size':                value => $osd_journal_size;
+      'osd/osd_max_backfills':               value => $osd_max_backfills;
+      'osd/osd_recovery_max_active':         value => $osd_recovery_max_active;
+      'osd/osd_recovery_op_priority':        value => $osd_recovery_op_priority;
+      'osd/osd_recovery_max_single_start':   value => $osd_recovery_max_single_start;
+      'osd/osd_max_scrubs':                  value => $osd_max_scrubs;
+      'osd/osd_op_threads':                  value => $osd_op_threads;
       'client/rbd_default_features':         value => $rbd_default_features;
     }
 
@@ -235,18 +228,6 @@ this module to assign values and will be removed in a future release.')
         'global/auth_service_required': value => 'none';
         'global/auth_client_required':  value => 'none';
         'global/auth_supported':        value => 'none';
-      }
-    }
-
-# This section will be moved up with the rest of the non-auth settings in the next release and the set_osd_params flag will be removed
-    if $set_osd_params {
-      ceph_config {
-        'osd/osd_max_backfills':             value => $osd_max_backfills;
-        'osd/osd_recovery_max_active':       value => $osd_recovery_max_active;
-        'osd/osd_recovery_op_priority':      value => $osd_recovery_op_priority;
-        'osd/osd_recovery_max_single_start': value => $osd_recovery_max_single_start;
-        'osd/osd_max_scrubs':                value => $osd_max_scrubs;
-        'osd/osd_op_threads':                value => $osd_op_threads;
       }
     }
   }

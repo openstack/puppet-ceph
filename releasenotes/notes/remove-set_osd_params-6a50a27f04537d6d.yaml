@@ -1,0 +1,5 @@
+---
+upgrade:
+  - |
+    The ``ceph::set_osd_params`` parameter has been removed. Now the ``ceph``
+    class manages ods options.

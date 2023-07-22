@@ -27,8 +27,9 @@ describe 'ceph' do
       end
 
       it { should contain_package('ceph').with(
-      'name'   => 'ceph',
-      'ensure' => 'present') }
+        'name'   => 'ceph',
+        'ensure' => 'present'
+      )}
 
       it { should contain_ceph_config('global/fsid').with_value('d5252e7d-75bc-4083-85ed-fe51fa83f62b') }
       it { should_not contain_ceph_config('global/keyring').with_value('/etc/ceph/keyring') }
@@ -52,7 +53,13 @@ describe 'ceph' do
       it { should_not contain_ceph_config('global/public_network').with_value('192.168.0.0/24') }
       it { should_not contain_ceph_config('global/public_addr').with_value('192.168.0.2') }
       it { should_not contain_ceph_config('osd/osd_journal_size').with_value('4096') }
-      it { should_not contain_ceph_config('client/rbd_default_features').with_value('15') }
+      it { should_not contain_ceph_config('osd/osd_max_backfills').with_value('2') }
+      it { should_not contain_ceph_config('osd/osd_recovery_max_active').with_value('2') }
+      it { should_not contain_ceph_config('osd/osd_recovery_op_priority').with_value('2') }
+      it { should_not contain_ceph_config('osd/osd_recovery_max_single_start').with_value('2') }
+      it { should_not contain_ceph_config('osd/osd_max_scrubs').with_value('2') }
+      it { should_not contain_ceph_config('osd/osd_op_threads').with_value('4') }
+      it { should_not contain_ceph_config('client/rbd_default_features').with_value('12') }
       it { should contain_ceph_config('global/auth_cluster_required').with_value('cephx') }
       it { should contain_ceph_config('global/auth_service_required').with_value('cephx') }
       it { should contain_ceph_config('global/auth_client_required').with_value('cephx') }
@@ -91,13 +98,12 @@ describe 'ceph' do
           :cluster_network               => '10.0.0.0/24',
           :public_network                => '192.168.0.0/24',
           :public_addr                   => '192.168.0.2',
-          :set_osd_params                => 'true',
-          :osd_max_backfills             => '1',
-          :osd_recovery_max_active       => '1',
-          :osd_recovery_op_priority      => '1',
-          :osd_recovery_max_single_start => '1',
-          :osd_max_scrubs                => '1',
-          :osd_op_threads                => '2',
+          :osd_max_backfills             => '2',
+          :osd_recovery_max_active       => '2',
+          :osd_recovery_op_priority      => '2',
+          :osd_recovery_max_single_start => '2',
+          :osd_max_scrubs                => '2',
+          :osd_op_threads                => '4',
           :rbd_default_features          => '12',
         }
       end
@@ -139,12 +145,12 @@ describe 'ceph' do
       it { should contain_ceph_config('global/auth_service_required').with_value('none') }
       it { should contain_ceph_config('global/auth_client_required').with_value('none') }
       it { should contain_ceph_config('global/auth_supported').with_value('none') }
-      it { should contain_ceph_config('osd/osd_max_backfills').with_value('1') }
-      it { should contain_ceph_config('osd/osd_recovery_max_active').with_value('1') }
-      it { should contain_ceph_config('osd/osd_recovery_op_priority').with_value('1') }
-      it { should contain_ceph_config('osd/osd_recovery_max_single_start').with_value('1') }
-      it { should contain_ceph_config('osd/osd_max_scrubs').with_value('1') }
-      it { should contain_ceph_config('osd/osd_op_threads').with_value('2') }
+      it { should contain_ceph_config('osd/osd_max_backfills').with_value('2') }
+      it { should contain_ceph_config('osd/osd_recovery_max_active').with_value('2') }
+      it { should contain_ceph_config('osd/osd_recovery_op_priority').with_value('2') }
+      it { should contain_ceph_config('osd/osd_recovery_max_single_start').with_value('2') }
+      it { should contain_ceph_config('osd/osd_max_scrubs').with_value('2') }
+      it { should contain_ceph_config('osd/osd_op_threads').with_value('4') }
     end
   end
 
