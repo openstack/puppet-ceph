@@ -55,12 +55,14 @@ describe 'ceph::mds' do
     describe "not activated" do
       let :params do
         {
+          :mds_id       => 'mymds',
           :mds_activate => false
         }
       end
 
       it { should contain_ceph_config('mds/mds_data').with_ensure('absent') }
       it { should contain_ceph_config('mds/keyring').with_ensure('absent') }
+      it { should contain_ceph_config('mds.mymds/public_addr').with_ensure('absent') }
 
     end
   end
