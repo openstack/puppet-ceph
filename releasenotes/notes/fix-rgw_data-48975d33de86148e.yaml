@@ -1,0 +1,6 @@
+---
+fixes:
+  - |
+    The ``ceph::rgw::rgw_data`` parameter now controls the ``rgw_data`` option
+    in ceph.conf so that the given directoriy path is actually used to store
+    data.
