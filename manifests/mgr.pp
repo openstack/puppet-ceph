@@ -52,13 +52,7 @@ define ceph::mgr (
   $key                 = undef,
   Boolean $inject_key  = false,
 ) {
-  file { '/var/lib/ceph/mgr':
-    ensure  => directory,
-    owner   => 'ceph',
-    group   => 'ceph',
-    seltype => 'ceph_var_lib_t',
-    tag     => 'ceph-mgr',
-  } -> file { "/var/lib/ceph/mgr/${cluster}-${name}":
+  file { "/var/lib/ceph/mgr/${cluster}-${name}":
     ensure  => directory,
     owner   => 'ceph',
     group   => 'ceph',

@@ -38,12 +38,6 @@ describe 'ceph::mgr' do
         }
       end
 
-      it { should contain_file('/var/lib/ceph/mgr').with(
-        :ensure => 'directory',
-        :owner  => 'ceph',
-        :group  => 'ceph'
-      )}
-
       it { should contain_file('/var/lib/ceph/mgr/ceph-foo').with(
         :ensure => 'directory',
         :owner  => 'ceph',
