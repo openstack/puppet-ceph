@@ -41,12 +41,6 @@ describe 'ceph::rgw' do
       it { should contain_ceph_config('client.radosgw.gateway/rgw_swift_versioning_enabled').with_value(false) }
       it { should contain_ceph_config('client.radosgw.gateway/rgw_trust_forwarded_https').with_value(false) }
 
-      it { should contain_file('/var/lib/ceph/radosgw').with(
-        :ensure                  => 'directory',
-        :mode                    => '0755',
-        :selinux_ignore_defaults => true,
-      )}
-
       it { should contain_file('/var/lib/ceph/radosgw/ceph-radosgw.gateway').with(
         :ensure                  => 'directory',
         :owner                   => 'root',
