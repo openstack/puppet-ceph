@@ -109,11 +109,19 @@ class ceph::mds (
       ceph_config {
         "mds.${mds_id}/public_addr": value => $public_addr;
       }
+    } else {
+      ceph_config {
+        "mds.${mds_id}/public_addr": ensure => absent;
+      }
     }
   } else {
     ceph_config {
       'mds/mds_data': ensure => absent;
       'mds/keyring':  ensure => absent;
+    }
+
+    ceph_config {
+      "mds.${mds_id}/public_addr": ensure => absent;
     }
   }
 }
