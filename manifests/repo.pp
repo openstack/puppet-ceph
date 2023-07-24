@@ -119,6 +119,8 @@ class ceph::repo (
     }
 
     'RedHat': {
+      $el = $facts['os']['release']['major']
+
       # If you want to deploy Ceph using packages provided by CentOS SIG
       # https://wiki.centos.org/SpecialInterestGroup/Storage/
       if $enable_sig {
@@ -131,14 +133,14 @@ not on ${facts['os']['name']}, which can lead to packaging issues.")
         } else {
           # NOTE(tobias-urdin): mirror.centos.org doesnt have https support
           if $stream {
-            if versioncmp($facts['os']['release']['major'], '9') >= 0 {
+            if versioncmp($el, '9') >= 0 {
               $centos_mirror = 'mirror.stream.centos.org/SIGs'
             } else {
               $centos_mirror = 'mirror.centos.org/centos'
             }
-            $ceph_mirror_real = "http://${centos_mirror}/${facts['os']['release']['major']}-stream/storage/x86_64/ceph-${release}/"
+            $ceph_mirror_real = "http://${centos_mirror}/${el}-stream/storage/x86_64/ceph-${release}/"
           } else {
-            $ceph_mirror_real = "http://mirror.centos.org/centos/${facts['os']['release']['major']}/storage/x86_64/ceph-${release}/"
+            $ceph_mirror_real = "http://mirror.centos.org/centos/${el}/storage/x86_64/ceph-${release}/"
           }
         }
         yumrepo { 'ceph-storage-sig':
@@ -152,8 +154,6 @@ not on ${facts['os']['name']}, which can lead to packaging issues.")
         Yumrepo['ceph-storage-sig'] -> Package<| tag == 'ceph' |>
       } else {
         # If you want to deploy Ceph using packages provided by ceph.com repositories.
-        $el = $facts['os']['release']['major']
-
         Yumrepo {
           proxy          => $proxy,
           proxy_username => $proxy_username,
