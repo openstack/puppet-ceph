@@ -83,27 +83,12 @@ ps -fCceph-osd|grep \"\\--id \$id \"
         {
           :cluster       => 'testcluster',
           :journal       => '/srv/journal',
-          :fsid          => 'f39ace04-f967-4c3d-9fd2-32af2d2d2cd5',
           :store_type    => 'bluestore',
           :bluestore_wal => 'vg_test/lv_wal',
           :bluestore_db  => 'vg_test/lv_db',
         }
       end
 
-      it { should contain_exec('ceph-osd-check-fsid-mismatch-vg_test/lv_test').with(
-        'command'   => "/bin/true # comment to satisfy puppet syntax requirements
-set -ex
-exit 1
-",
-        'unless'    => "/bin/true # comment to satisfy puppet syntax requirements
-set -ex
-if [ -z $(ceph-volume lvm list vg_test/lv_test |grep 'cluster fsid' | awk -F'fsid' '{print \$2}'|tr -d  ' ') ]; then
-    exit 0
-fi
-test f39ace04-f967-4c3d-9fd2-32af2d2d2cd5 = $(ceph-volume lvm list vg_test/lv_test |grep 'cluster fsid' | awk -F'fsid' '{print \$2}'|tr -d  ' ')
-",
-        'logoutput' => true
-      ) }
       it { should contain_exec('ceph-osd-prepare-vg_test/lv_test').with(
         'command'   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
@@ -118,7 +103,7 @@ if ! test -b \$disk ; then
     # Since nautilus, only block devices or lvm logical volumes can be used for OSDs
     exit 1
 fi
-ceph-volume lvm prepare --bluestore --cluster testcluster --cluster-fsid f39ace04-f967-4c3d-9fd2-32af2d2d2cd5 --data vg_test/lv_test --block.wal vg_test/lv_wal --block.db vg_test/lv_db
+ceph-volume lvm prepare --bluestore --cluster testcluster --data vg_test/lv_test --block.wal vg_test/lv_wal --block.db vg_test/lv_db
 ",
         'unless'    => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
