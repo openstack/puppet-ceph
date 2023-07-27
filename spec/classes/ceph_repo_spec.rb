@@ -596,7 +596,7 @@ describe 'ceph::repo' do
       end
 
       it { should contain_yumrepo('ceph-storage-sig').with(
-        :baseurl => 'http://mirror.stream.centos.org/SIGs/9-stream/storage/x86_64/ceph-nautilus/',
+        :baseurl => 'https://mirror.stream.centos.org/SIGs/9-stream/storage/x86_64/ceph-nautilus/',
       )}
     end
   end
