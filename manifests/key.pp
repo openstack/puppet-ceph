@@ -77,7 +77,7 @@
 define ceph::key (
   $secret,
   $cluster = undef,
-  $keyring_path = "/etc/ceph/ceph.${name}.keyring",
+  Stdlib::Absolutepath $keyring_path = "/etc/ceph/ceph.${name}.keyring",
   $cap_mon = undef,
   $cap_osd = undef,
   $cap_mds = undef,

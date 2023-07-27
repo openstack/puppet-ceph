@@ -51,16 +51,16 @@
 #   Optional. Default to 'ceph'.
 #
 class ceph::mds (
-  $public_addr          = undef,
-  $pkg_mds              = $ceph::params::pkg_mds,
-  $pkg_mds_ensure       = present,
-  Boolean $mds_activate = true,
-  $mds_data             = undef,
-  $mds_enable           = true,
-  $mds_ensure           = 'running',
-  $mds_id               = $facts['networking']['hostname'],
-  $keyring              = undef,
-  $cluster              = 'ceph',
+  $public_addr                             = undef,
+  $pkg_mds                                 = $ceph::params::pkg_mds,
+  $pkg_mds_ensure                          = present,
+  Boolean $mds_activate                    = true,
+  Optional[Stdlib::Absolutepath] $mds_data = undef,
+  $mds_enable                              = true,
+  $mds_ensure                              = 'running',
+  $mds_id                                  = $facts['networking']['hostname'],
+  $keyring                                 = undef,
+  $cluster                                 = 'ceph',
 ) inherits ceph::params {
   if $mds_data {
     $mds_data_real = $mds_data
