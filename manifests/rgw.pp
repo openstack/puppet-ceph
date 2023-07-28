@@ -169,11 +169,6 @@ define ceph::rgw (
   }
 
   # Data directory for radosgw
-  file { '/var/lib/ceph/radosgw': # missing in redhat pkg
-    ensure                  => directory,
-    mode                    => '0755',
-    selinux_ignore_defaults => true,
-  }
   file { $rgw_data:
     ensure                  => directory,
     owner                   => 'root',
@@ -202,11 +197,7 @@ define ceph::rgw (
   }
 
   Ceph_config<||> ~> Service<| tag == 'ceph-radosgw' |>
-  Package<| tag == 'ceph' |> -> File['/var/lib/ceph/radosgw']
-  Package<| tag == 'ceph' |> -> File[$log_file]
-  File['/var/lib/ceph/radosgw']
-  -> File[$rgw_data]
-  -> Service<| tag == 'ceph-radosgw' |>
-  File[$log_file] -> Service<| tag == 'ceph-radosgw' |>
+  Package<| tag == 'ceph' |> -> File[$log_file] -> Service<| tag == 'ceph-radosgw' |>
+  Package<| tag == 'ceph' |> -> File[$rgw_data] -> Service<| tag == 'ceph-radosgw' |>
   Ceph::Pool<||> -> Service<| tag == 'ceph-radosgw' |>
 }
