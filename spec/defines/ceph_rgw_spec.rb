@@ -34,6 +34,7 @@ describe 'ceph::rgw' do
       it { should contain_ceph_config('client.radosgw.gateway/host').with_value('foo') }
       it { should contain_ceph_config('client.radosgw.gateway/keyring').with_value('/etc/ceph/ceph.client.radosgw.gateway.keyring') }
       it { should contain_ceph_config('client.radosgw.gateway/log_file').with_value('/var/log/ceph/radosgw.log') }
+      it { should contain_ceph_config('client.radosgw.gateway/rgw_data').with_value('/var/lib/ceph/radosgw/ceph-radosgw.gateway') }
       it { should contain_ceph_config('client.radosgw.gateway/rgw_dns_name').with_value('foo.example.com') }
       it { should contain_ceph_config('client.radosgw.gateway/rgw_swift_url').with_value('http://foo.example.com:7480') }
       it { should contain_ceph_config('client.radosgw.gateway/rgw_swift_url_prefix').with_value('swift') }
@@ -82,6 +83,7 @@ describe 'ceph::rgw' do
       it { should contain_ceph_config('client.radosgw.custom/host').with_value('foo') }
       it { should contain_ceph_config('client.radosgw.custom/keyring').with_value('/etc/ceph/ceph.radosgw.custom.keyring') }
       it { should contain_ceph_config('client.radosgw.custom/log_file').with_value('/var/log/ceph/mylogfile.log') }
+      it { should contain_ceph_config('client.radosgw.custom/rgw_data').with_value('/var/lib/ceph/radosgw/ceph-radosgw.custom') }
       it { should contain_ceph_config('client.radosgw.custom/rgw_dns_name').with_value('mydns.hostname') }
       it { should contain_ceph_config('client.radosgw.custom/rgw_swift_url').with_value('https://mydns.hostname:443') }
       it { should contain_ceph_config('client.radosgw.custom/rgw_swift_url_prefix').with_value('/') }

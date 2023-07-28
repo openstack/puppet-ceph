@@ -38,13 +38,13 @@
 #   Optional. Default is undef.
 #
 # [*rgw_data*] The path where the radosgw data should be stored.
-#   Optional. Default is '/var/lib/ceph/radosgw/${cluster}-${name}.
+#   Optional. Default is '/var/lib/ceph/radosgw/ceph-${name}.
 #
 # [*user*] User running the web frontend.
 #   Optional. Default is 'www-data'.
 #
 # [*keyring_path*] Location of keyring.
-#   Optional. Default is '/etc/ceph/${name}.keyring'.
+#   Optional. Default is '/etc/ceph/ceph.client.${name}.keyring'.
 #
 # [*log_file*] Log file to write to.
 #   Optional. Default is '/var/log/ceph/radosgw.log'.
@@ -124,6 +124,7 @@ define ceph::rgw (
     "client.${name}/keyring":                      value => $keyring_path;
     "client.${name}/log_file":                     value => $log_file;
     "client.${name}/user":                         value => $user;
+    "client.${name}/rgw_data":                     value => $rgw_data;
     "client.${name}/rgw_dns_name":                 value => $rgw_dns_name;
     "client.${name}/rgw_swift_url":                value => $rgw_swift_url;
     "client.${name}/rgw_swift_account_in_url":     value => $rgw_swift_account_in_url;
