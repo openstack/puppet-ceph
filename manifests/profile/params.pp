@@ -115,10 +115,13 @@
 #  Optional.
 #
 # [*frontend_type*] What type of frontend to use
-#   Optional. Options are apache-fastcgi, apache-proxy-fcgi or civetweb
+#   Optional. Options are civetweb, beast, apache-proxy-fcgi or apache-fastcgi.
 #
 # [*rgw_frontends*] Arguments to the rgw frontend
 #   Optional. Example: "civetweb port=7480"
+#
+# [*rgw_swift_url*] The URL for the Ceph Object Gateway Swift API.
+#   Optional.
 #
 # [*osd_max_backfills*] The maximum number of backfills allowed to or from a single OSD.
 #   Optional. Default provided by Ceph
@@ -140,25 +143,32 @@
 #   Set to 0 to disable it.
 #   Optional. Default provided by Ceph
 #
-# [*rgw_keystone_version*] The api version for keystone.
-#   Possible values 'v2.0', 'v3'
-#   Optional. Default is 'v2.0'
+# [*rgw_keystone_integration*] Enables RGW integration with OpenStack Keystone
+#   Optional. Default is false
 #
-# [*rgw_keystone_admin_domain*] The name of OpenStack domain with admin
-#   privilege when using OpenStack Identity API v3
+# [*rgw_keystone_url*] The internal or admin url for keystone.
 #   Optional. Default is undef
 #
-# [*rgw_keystone_admin_project*] The name of OpenStack project with admin
-#   privilege when using OpenStack Identity API v3
+# [*rgw_keystone_admin_domain*] The name of OpenStack domain with admin privilege.
 #   Optional. Default is undef
 #
-# [*rgw_keystone_admin_user*] The user name of OpenStack tenant with admin
-#   privilege (Service Tenant)
-#   Required if is 'v3'.
+# [*rgw_keystone_admin_project*] The name of OpenStack project with admin privilege.
+#   Required when RGW integration with Keystone is enabled.
+#
+# [*rgw_keystone_admin_user*] The user name of OpenStack tenant with admin privilege.
+#   Required when RGW integration with Keystone is enabled.
 #
 # [*rgw_keystone_admin_password*] The password for OpenStack admin user
-#   Required if is 'v3'.
-# 
+#   Required when RGW integration with Keystone is enabled.
+#
+# [*rgw_swift_public_url*] The public URL of Swift API. Optional.
+#
+# [*rgw_swift_admin_url*] The admin URL of Swift API. Optional.
+#
+# [*rgw_swift_internal_url*] The internal URL of Swift API. Optional.
+#
+# [*rgw_swift_region*] The region for Swift API. Optional
+#
 # [*rbd_mirror_client_name*] Name of the cephx client key used for rbd mirroring
 #   Optional. Default is undef
 #
@@ -173,7 +183,7 @@
 #
 # [*rbd_default_features*] Set RBD features configuration.
 #   Optional. String. Defaults to undef.
-# 
+#
 # **DEPRECATED PARAMS**
 #
 # [*pid_max*] Value for pid_max. Defaults to undef. Optional.
@@ -213,17 +223,23 @@ class ceph::profile::params (
   $rgw_print_continue = undef,
   $frontend_type = undef,
   $rgw_frontends = undef,
+  $rgw_swift_url = undef,
   $osd_max_backfills = undef,
   $osd_recovery_max_active = undef,
   $osd_recovery_op_priority = undef,
   $osd_recovery_max_single_start = undef,
   $osd_max_scrubs = undef,
   $osd_op_threads = undef,
-  $rgw_keystone_version = 'v2.0',
+  Boolean $rgw_keystone_integration = false,
+  $rgw_keystone_url = undef,
   $rgw_keystone_admin_domain = undef,
   $rgw_keystone_admin_project = undef,
   $rgw_keystone_admin_user = undef,
   $rgw_keystone_admin_password = undef,
+  $rgw_swift_public_url = undef,
+  $rgw_swift_admin_url = undef,
+  $rgw_swift_internal_url = undef,
+  $rgw_swift_region = undef,
   $rbd_mirror_client_name = undef,
   $fs_metadata_pool = undef,
   $fs_data_pool = undef,

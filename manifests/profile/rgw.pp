@@ -30,5 +30,26 @@ class ceph::profile::rgw {
     rgw_print_continue => $ceph::profile::params::rgw_print_continue,
     frontend_type      => $ceph::profile::params::frontend_type,
     rgw_frontends      => $ceph::profile::params::rgw_frontends,
+    rgw_swift_url      => $ceph::profile::params::rgw_swift_url,
+  }
+
+  if $ceph::profile::params::rgw_keystone_integration {
+    ceph::rgw::keystone { $rgw_name:
+      rgw_keystone_admin_domain   => $ceph::profile::params::rgw_keystone_admin_domain,
+      rgw_keystone_admin_project  => $ceph::profile::params::rgw_keystone_admin_project,
+      rgw_keystone_admin_user     => $ceph::profile::params::rgw_keystone_admin_user,
+      rgw_keystone_admin_password => $ceph::profile::params::rgw_keystone_admin_password,
+      rgw_keystone_url            => $ceph::profile::params::rgw_keystone_url,
+    }
+
+    class { 'ceph::rgw::keystone::auth':
+      password     => $ceph::profile::params::rgw_keystone_admin_password,
+      user         => $ceph::profile::params::rgw_keystone_admin_user,
+      tenant       => $ceph::profile::params::rgw_keystone_admin_project,
+      public_url   => $ceph::profile::params::rgw_swift_public_url,
+      admin_url    => $ceph::profile::params::rgw_swift_admin_url,
+      internal_url => $ceph::profile::params::rgw_swift_internal_url,
+      region       => $ceph::profile::params::rgw_swift_region,
+    }
   }
 }

@@ -5,12 +5,13 @@
 # === Parameters
 #
 # [*password*]
-#  Password for the RGW user. 
-#  Defaults to ceph::profile::params::rgw_keystone_admin_password
+#   Password for the RGW user. Required.
 #
 # [*user*]
-#   Username for the RGW user. Optional.
-#   Defaults to ceph::profile::params::rgw_keystone_admin_use
+#   Username for the RGW user. Required.
+#
+# [*tenant*]
+#   Tenant for user. Required.
 #
 # [*email*]
 #   Email for the RGW user. Optional.
@@ -36,10 +37,6 @@
 #   Region for endpoint. Optional.
 #   Defaults to 'RegionOne'
 #
-# [*tenant*]
-#   Tenant for user. Optional.
-#   Defaults to ceph::profile::params::rgw_keystone_admin_project
-#
 # [*service_description*]
 #   (Optional) Description of the service.
 #   Default to 'Ceph RGW Service'
@@ -59,15 +56,15 @@
 #   Defaults to undef
 #
 class ceph::rgw::keystone::auth (
-  $password            = $ceph::profile::params::rgw_keystone_admin_password,
-  $user                = $ceph::profile::params::rgw_keystone_admin_user,
+  $password,
+  $user,
+  $tenant,
   $email               = 'rgwuser@localhost',
   $roles               = ['admin'],
   $public_url          = 'http://127.0.0.1:8080/swift/v1',
   $admin_url           = 'http://127.0.0.1:8080/swift/v1',
   $internal_url        = 'http://127.0.0.1:8080/swift/v1',
   $region              = 'RegionOne',
-  $tenant              = $ceph::profile::params::rgw_keystone_admin_project,
   $service_description = 'Ceph RGW Service',
   $service_name        = 'swift',
   $service_type        = 'object-store',
