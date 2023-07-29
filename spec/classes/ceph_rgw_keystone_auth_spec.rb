@@ -31,12 +31,9 @@ describe 'ceph::rgw::keystone::auth' do
       should contain_keystone_role('admin').with(
         :ensure => 'present',
       )
-      should contain_keystone_role('Member').with(
-        :ensure => 'present',
-      )
       should contain_keystone_user_role('rgw_user@services').with(
         :ensure => 'present',
-        :roles  => ['admin', 'Member'],
+        :roles  => ['admin'],
       )
     }
   end
