@@ -1,0 +1,18 @@
+---
+features:
+  - |
+    The following parameters have been added to
+    the ``ceph::rgw::keystone::auth`` class
+
+    - ``service_description``
+    - ``service_name``
+    - ``service_type``
+
+fixes:
+  - |
+    Fixed the ignored ``ceph::rgw::keystone::auth::rgw_service`` parameter.
+
+deprecations:
+  - |
+    The ``ceph::rgw::keystone::auth::rgw_service`` parameter has been
+    deprecated in favor of the new service parameters.
