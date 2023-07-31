@@ -1,0 +1,11 @@
+---
+features:
+  - |
+    The new ``ceph::profile::params::rgw_keystone_integration`` parameter has
+    been added. This allows enabling Ceph RADOS Gateway integration with
+    OpenStack Keystone.
+
+upgrade:
+  - |
+    The ``ceph::profile::params::rgw_keystone_version`` parameter has been
+    removed.
