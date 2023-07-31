@@ -1,0 +1,7 @@
+---
+upgrade:
+  - |
+    The default value of the  ``ceph::keystone::auth::roles`` parameter has
+    been updated and the new default does not contain the ``Member`` role,
+    because in OpenStack the ``member`` role is more commonly used, which is
+    now implied by the ``admin`` role.

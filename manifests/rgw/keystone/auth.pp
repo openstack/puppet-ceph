@@ -18,7 +18,7 @@
 #
 # [*roles*]
 #   Accepted RGW roles. Optional.
-#   Defaults to ['admin', 'Member']
+#   Defaults to ['admin']
 #
 # [*public_url*]
 #   The public URL. Optional.
@@ -62,7 +62,7 @@ class ceph::rgw::keystone::auth (
   $password            = $ceph::profile::params::rgw_keystone_admin_password,
   $user                = $ceph::profile::params::rgw_keystone_admin_user,
   $email               = 'rgwuser@localhost',
-  $roles               = ['admin', 'Member'],
+  $roles               = ['admin'],
   $public_url          = 'http://127.0.0.1:8080/swift/v1',
   $admin_url           = 'http://127.0.0.1:8080/swift/v1',
   $internal_url        = 'http://127.0.0.1:8080/swift/v1',
