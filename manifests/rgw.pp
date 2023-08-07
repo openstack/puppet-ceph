@@ -88,16 +88,16 @@
 #   Optional. Default is false
 #
 define ceph::rgw (
-  $pkg_radosgw                          = $ceph::params::pkg_radosgw,
+  $pkg_radosgw                          = undef,
   $rgw_ensure                           = 'running',
   $rgw_enable                           = true,
   $rgw_enable_apis                      = undef,
   Stdlib::Absolutepath $rgw_data        = "/var/lib/ceph/radosgw/ceph-${name}",
-  $user                                 = $ceph::params::user_radosgw,
+  $user                                 = undef,
   Stdlib::Absolutepath $keyring_path    = "/etc/ceph/ceph.client.${name}.keyring",
   Stdlib::Absolutepath $log_file        = '/var/log/ceph/radosgw.log',
   $rgw_dns_name                         = $facts['networking']['fqdn'],
-  $rgw_socket_path                      = $ceph::params::rgw_socket_path,
+  $rgw_socket_path                      = undef,
   $rgw_print_continue                   = false,
   $rgw_port                             = undef,
   $frontend_type                        = 'civetweb',
@@ -113,6 +113,11 @@ define ceph::rgw (
     fail("Define name must be started with 'radosgw.'")
   }
 
+  include ceph::params
+  $pkg_radosgw_real = pick($pkg_radosgw, $ceph::params::pkg_radosgw)
+  $user_real = pick($user, $ceph::params::user_radosgw)
+  $rgw_socket_path_real = pick($rgw_socket_path, $ceph::params::rgw_socket_path)
+
   if $rgw_enable_apis == undef {
     ceph_config { "client.${name}/rgw_enable_apis": ensure => absent }
   } else {
@@ -123,7 +128,7 @@ define ceph::rgw (
     "client.${name}/host":                         value => $facts['networking']['hostname'];
     "client.${name}/keyring":                      value => $keyring_path;
     "client.${name}/log_file":                     value => $log_file;
-    "client.${name}/user":                         value => $user;
+    "client.${name}/user":                         value => $user_real;
     "client.${name}/rgw_data":                     value => $rgw_data;
     "client.${name}/rgw_dns_name":                 value => $rgw_dns_name;
     "client.${name}/rgw_swift_url":                value => $rgw_swift_url;
@@ -148,7 +153,7 @@ define ceph::rgw (
       ceph_config {
         "client.${name}/rgw_port":           value => $rgw_port;
         "client.${name}/rgw_print_continue": value => $rgw_print_continue;
-        "client.${name}/rgw_socket_path":    value => $rgw_socket_path;
+        "client.${name}/rgw_socket_path":    value => $rgw_socket_path_real;
       }
     }
     'apache-proxy-fcgi': {
@@ -156,7 +161,7 @@ define ceph::rgw (
       ceph_config {
         "client.${name}/rgw_frontends":      value => $rgw_frontends_real;
         "client.${name}/rgw_print_continue": value => $rgw_print_continue;
-        "client.${name}/rgw_socket_path":    value => $rgw_socket_path;
+        "client.${name}/rgw_socket_path":    value => $rgw_socket_path_real;
       }
     }
     default: {
@@ -164,7 +169,7 @@ define ceph::rgw (
     }
   }
 
-  package { $pkg_radosgw:
+  package { $pkg_radosgw_real:
     ensure => installed,
     tag    => 'ceph',
   }
@@ -181,7 +186,7 @@ define ceph::rgw (
   # Log file for radosgw (ownership)
   file { $log_file:
     ensure                  => present,
-    owner                   => $user,
+    owner                   => $user_real,
     mode                    => '0640',
     selinux_ignore_defaults => true,
   }

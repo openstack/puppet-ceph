@@ -18,10 +18,6 @@
 require 'spec_helper'
 
 describe 'ceph::rgw' do
-  let :pre_condition do
-    'include ceph::params'
-  end
-
   shared_examples 'ceph::rgw' do
     context 'activated with default params' do
       let :title do
