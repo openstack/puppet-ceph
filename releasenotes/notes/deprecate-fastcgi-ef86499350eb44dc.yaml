@@ -1,0 +1,6 @@
+---
+deprecations:
+  - |
+    The support for deploying fastcgi is deprecated and will be removed in
+    a future release. when CentOS 7 support is removed. The `mod_fastcgi`
+    package is no longer provided for recent operating system versions.

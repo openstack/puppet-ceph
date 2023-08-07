@@ -36,9 +36,6 @@
 # [*release*] The name of the Ceph release to install
 #   Optional. Default to 'nautilus' in ceph::params.
 #
-# [*fastcgi*] Install Ceph fastcgi apache module for Ceph
-#   Optional. Defaults to 'false'
-#
 # [*proxy*] Proxy URL to be used for the yum repository, useful if you're behind a corporate firewall
 #   Optional. Defaults to 'undef'
 #
@@ -62,10 +59,14 @@
 # [*ceph_mirror*] Ceph mirror used to download packages.
 #   Optional. Defaults to undef.
 #
+# DEPRECATED PARAMETERS
+#
+# [*fastcgi*] Install Ceph fastcgi apache module for Ceph
+#   Optional. Defaults to 'false'
+#
 class ceph::repo (
   $ensure              = present,
   String[1] $release   = $ceph::params::release,
-  Boolean $fastcgi     = false,
   $proxy               = undef,
   $proxy_username      = undef,
   $proxy_password      = undef,
@@ -73,7 +74,14 @@ class ceph::repo (
   Boolean $enable_sig  = $ceph::params::enable_sig,
   Boolean $stream      = false,
   $ceph_mirror         = undef,
+  # DEPRECATED PARAMETERS
+  Boolean $fastcgi     = false,
 ) inherits ceph::params {
+
+  if $fastcgi and !$ceph::params::fastcgi_available {
+    warning('The mod_fastcgi package is not available for this operating system version')
+  }
+
   case $facts['os']['family'] {
     'Debian': {
       include apt
@@ -98,7 +106,6 @@ class ceph::repo (
       }
 
       if $fastcgi {
-
         apt::key { 'ceph-gitbuilder':
           ensure => $ensure,
           id     => 'FCC5CB2ED8E6F6FB79D5B3316EAEAE2203C3951A',
