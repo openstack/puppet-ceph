@@ -49,6 +49,7 @@ describe 'ceph::rgw::keystone' do
       it { should contain_ceph_config('client.radosgw.gateway/rgw_keystone_admin_password').with_value('123456').with_secret(true) }
       it { should contain_ceph_config('client.radosgw.gateway/rgw_keystone_url').with_value('http://127.0.0.1:5000') }
       it { should contain_ceph_config('client.radosgw.gateway/rgw_keystone_accepted_roles').with_value('member') }
+      it { should contain_ceph_config('client.radosgw.gateway/rgw_keystone_accepted_admin_roles').with_value('admin') }
       it { should contain_ceph_config('client.radosgw.gateway/rgw_keystone_token_cache_size').with_value(500) }
       it { should contain_ceph_config('client.radosgw.gateway/rgw_s3_auth_use_keystone').with_value(true) }
       it { should contain_ceph_config('client.radosgw.gateway/rgw_keystone_implicit_tenants').with_value(true) }
@@ -68,15 +69,16 @@ describe 'ceph::rgw::keystone' do
 
       let :params do
         {
-          :rgw_keystone_admin_domain     => 'default',
-          :rgw_keystone_admin_project    => 'openstack',
-          :rgw_keystone_admin_user       => 'rgwuser',
-          :rgw_keystone_admin_password   => '123456',
-          :rgw_keystone_url              => 'http://keystone.custom:5000',
-          :rgw_keystone_accepted_roles   => '_role1_,role2',
-          :rgw_keystone_token_cache_size => 100,
-          :rgw_s3_auth_use_keystone      => false,
-          :rgw_keystone_implicit_tenants => false,
+          :rgw_keystone_admin_domain         => 'default',
+          :rgw_keystone_admin_project        => 'openstack',
+          :rgw_keystone_admin_user           => 'rgwuser',
+          :rgw_keystone_admin_password       => '123456',
+          :rgw_keystone_url                  => 'http://keystone.custom:5000',
+          :rgw_keystone_accepted_roles       => ['member', 'admin'],
+          :rgw_keystone_accepted_admin_roles => ['ResellerAdmin', 'admin'],
+          :rgw_keystone_token_cache_size     => 100,
+          :rgw_s3_auth_use_keystone          => false,
+          :rgw_keystone_implicit_tenants     => false,
         }
       end
 
@@ -86,7 +88,8 @@ describe 'ceph::rgw::keystone' do
       it { should contain_ceph_config('client.radosgw.custom/rgw_keystone_admin_user').with_value('rgwuser') }
       it { should contain_ceph_config('client.radosgw.custom/rgw_keystone_admin_password').with_value('123456').with_secret(true) }
       it { should contain_ceph_config('client.radosgw.custom/rgw_keystone_url').with_value('http://keystone.custom:5000') }
-      it { should contain_ceph_config('client.radosgw.custom/rgw_keystone_accepted_roles').with_value('_role1_,role2') }
+      it { should contain_ceph_config('client.radosgw.custom/rgw_keystone_accepted_roles').with_value('member,admin') }
+      it { should contain_ceph_config('client.radosgw.custom/rgw_keystone_accepted_admin_roles').with_value('ResellerAdmin,admin') }
       it { should contain_ceph_config('client.radosgw.custom/rgw_keystone_token_cache_size').with_value(100) }
       it { should contain_ceph_config('client.radosgw.custom/rgw_s3_auth_use_keystone').with_value(false) }
       it { should contain_ceph_config('client.radosgw.custom/rgw_keystone_implicit_tenants').with_value(false) }

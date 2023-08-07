@@ -49,6 +49,10 @@
 #   Comma separated list of roles.
 #   Defaults to 'member'
 #
+# [*rgw_keystone_accepted_admin_roles*]
+#   (Optional) List of roles allowing user to gain admin privileges.
+#   Defaults to 'admin'
+#
 # [*rgw_keystone_token_cache_size*]
 #   (Optional) How many tokens to keep cached.
 #   Defaults to 500
@@ -66,11 +70,12 @@ define ceph::rgw::keystone (
   $rgw_keystone_admin_project,
   $rgw_keystone_admin_user,
   $rgw_keystone_admin_password,
-  $rgw_keystone_url                 = 'http://127.0.0.1:5000',
-  $rgw_keystone_accepted_roles      = 'member',
-  $rgw_keystone_token_cache_size    = 500,
-  $rgw_s3_auth_use_keystone         = true,
-  $rgw_keystone_implicit_tenants    = true,
+  $rgw_keystone_url                  = 'http://127.0.0.1:5000',
+  $rgw_keystone_accepted_roles       = 'member',
+  $rgw_keystone_accepted_admin_roles = 'admin',
+  $rgw_keystone_token_cache_size     = 500,
+  $rgw_s3_auth_use_keystone          = true,
+  $rgw_keystone_implicit_tenants     = true,
 ) {
 
   unless $name =~ /^radosgw\..+/ {
@@ -78,11 +83,12 @@ define ceph::rgw::keystone (
   }
 
   ceph_config {
-    "client.${name}/rgw_keystone_url":              value => $rgw_keystone_url;
-    "client.${name}/rgw_keystone_accepted_roles":   value => join(any2array($rgw_keystone_accepted_roles), ',');
-    "client.${name}/rgw_keystone_token_cache_size": value => $rgw_keystone_token_cache_size;
-    "client.${name}/rgw_s3_auth_use_keystone":      value => $rgw_s3_auth_use_keystone;
-    "client.${name}/rgw_keystone_implicit_tenants": value => $rgw_keystone_implicit_tenants;
+    "client.${name}/rgw_keystone_url":                  value => $rgw_keystone_url;
+    "client.${name}/rgw_keystone_accepted_roles":       value => join(any2array($rgw_keystone_accepted_roles), ',');
+    "client.${name}/rgw_keystone_accepted_admin_roles": value => join(any2array($rgw_keystone_accepted_admin_roles), ',');
+    "client.${name}/rgw_keystone_token_cache_size":     value => $rgw_keystone_token_cache_size;
+    "client.${name}/rgw_s3_auth_use_keystone":          value => $rgw_s3_auth_use_keystone;
+    "client.${name}/rgw_keystone_implicit_tenants":     value => $rgw_keystone_implicit_tenants;
   }
 
   ceph_config {
