@@ -17,7 +17,9 @@
         {
             "operatingsystem": "Debian",
             "operatingsystemrelease": [
-                "9"
+                "9",
+                "10",
+                "11"
             ]
         },
         {
@@ -41,7 +43,8 @@
             "operatingsystemrelease": [
                 "18.04",
                 "22.04",
-                "20.04"
+                "20.04",
+                "22.04"
             ]
         }
     ],
