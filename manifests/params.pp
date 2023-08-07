@@ -55,6 +55,7 @@ class ceph::params (
       $user_radosgw        = 'www-data'
       $pkg_fastcgi         = 'libapache2-mod-fastcgi'
       $pkg_policycoreutils = 'policycoreutils'
+      $fastcgi_available   = false
     }
 
     'RedHat': {
@@ -63,8 +64,10 @@ class ceph::params (
       $pkg_fastcgi         = 'mod_fastcgi'
       if (Integer.new($facts['os']['release']['major']) > 7) {
         $pkg_policycoreutils = 'policycoreutils-python-utils'
+        $fastcgi_available   = false
       } else {
         $pkg_policycoreutils = 'policycoreutils-python'
+        $fastcgi_available   = false
       }
     }
 
