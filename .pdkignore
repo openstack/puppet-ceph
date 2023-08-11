@@ -45,6 +45,7 @@
 # OpenStack-specific files
 /bindep.txt
 /.gitreview
+/releasenotes/
 /setup.cfg
 /setup.py
 /tox.ini
