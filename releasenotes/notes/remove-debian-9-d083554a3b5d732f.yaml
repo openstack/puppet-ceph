@@ -1,0 +1,4 @@
+---
+upgrade:
+  - |
+    Debian 9 support has been removed.
