@@ -1,0 +1,8 @@
+---
+upgrade:
+  - |
+    Ubuntu 18.04 is no longer supported.
+
+  - |
+    Puppet 5 support has been removed. Now this module supports only Puppet 6
+    or later.
