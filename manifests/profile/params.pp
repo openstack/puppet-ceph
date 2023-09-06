@@ -115,7 +115,7 @@
 #  Optional.
 #
 # [*frontend_type*] What type of frontend to use
-#   Optional. Options are civetweb, beast, apache-proxy-fcgi or apache-fastcgi.
+#   Optional. Options are civetweb, beast and apache-proxy-fcgi
 #
 # [*rgw_frontends*] Arguments to the rgw frontend
 #   Optional. Example: "civetweb port=7480"

@@ -62,8 +62,8 @@
 #   Optional. Default is undef.
 #
 # [*frontend_type*] What type of frontend to use
-#   Optional. Default is civetweb, Other options are beast, apache-proxy-fcgi
-#   or apache-fastcgi.
+#   Optional. Default is civetweb, The other options are beast and
+#   apache-proxy-fcgi.
 #
 # [*rgw_frontends*] Arguments to the rgw frontend
 #   Optional. Default is undef.
@@ -149,20 +149,7 @@ define ceph::rgw (
         rgw_frontends => $rgw_frontends,
       }
     }
-    'apache-fastcgi': {
-      if $ceph::params::fastcgi_available {
-        warning('The mod_fastcgi package is not available for this operating system version')
-      }
-      ceph_config {
-        "client.${name}/rgw_port":           value => $rgw_port;
-        "client.${name}/rgw_print_continue": value => $rgw_print_continue;
-        "client.${name}/rgw_socket_path":    value => $rgw_socket_path_real;
-      }
-    }
     'apache-proxy-fcgi': {
-      if $ceph::params::fastcgi_available {
-        warning('The mod_fastcgi package is not available for this operating system version')
-      }
       $rgw_frontends_real = pick($rgw_frontends, 'fastcgi socket_port=9000 socket_host=127.0.0.1');
       ceph_config {
         "client.${name}/rgw_frontends":      value => $rgw_frontends_real;

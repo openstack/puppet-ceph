@@ -53,22 +53,13 @@ class ceph::params (
     'Debian': {
       $pkg_radosgw         = 'radosgw'
       $user_radosgw        = 'www-data'
-      $pkg_fastcgi         = 'libapache2-mod-fastcgi'
       $pkg_policycoreutils = 'policycoreutils'
-      $fastcgi_available   = false
     }
 
     'RedHat': {
       $pkg_radosgw         = 'ceph-radosgw'
       $user_radosgw        = 'apache'
-      $pkg_fastcgi         = 'mod_fastcgi'
-      if (Integer.new($facts['os']['release']['major']) > 7) {
-        $pkg_policycoreutils = 'policycoreutils-python-utils'
-        $fastcgi_available   = false
-      } else {
-        $pkg_policycoreutils = 'policycoreutils-python'
-        $fastcgi_available   = false
-      }
+      $pkg_policycoreutils = 'policycoreutils-python-utils'
     }
 
     default: {

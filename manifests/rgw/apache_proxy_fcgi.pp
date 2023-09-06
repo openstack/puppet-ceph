@@ -81,9 +81,6 @@ define ceph::rgw::apache_proxy_fcgi (
 ) {
 
   include ceph::params
-  if $ceph::params::fastcgi_available {
-    warning('The mod_fastcgi package is not available for this operating system version')
-  }
 
   class { 'apache':
     default_mods    => $apache_mods,

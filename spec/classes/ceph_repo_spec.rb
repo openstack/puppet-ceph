@@ -47,36 +47,10 @@ describe 'ceph::repo' do
       )}
     end
 
-    context 'when wanting fast-cgi' do
-      let :params do
-        {
-          :fastcgi => true
-        }
-      end
-
-      it { should contain_apt__key('ceph-gitbuilder').with(
-        :id     => 'FCC5CB2ED8E6F6FB79D5B3316EAEAE2203C3951A',
-        :server => 'keyserver.ubuntu.com',
-      )}
-
-      it { should contain_apt__source('ceph').with(
-        :location => 'http://download.ceph.com/debian-nautilus/',
-        :release  => facts[:os]['distro']['codename'],
-      )}
-
-      it { should contain_apt__source('ceph-fastcgi').with(
-        :ensure   => 'present',
-        :location => "http://gitbuilder.ceph.com/libapache-mod-fastcgi-deb-#{facts[:os]['distro']['codename']}-x86_64-basic/ref/master",
-        :release  => facts[:os]['distro']['codename'],
-        :require  => 'Apt::Key[ceph-gitbuilder]'
-      )}
-    end
-
     context 'with ensure => absent to disable' do
       let :params do
         {
           :ensure  => 'absent',
-          :fastcgi => true
         }
       end
 
@@ -84,13 +58,6 @@ describe 'ceph::repo' do
         :ensure   => 'absent',
         :location => 'http://download.ceph.com/debian-nautilus/',
         :release  => facts[:os]['distro']['codename'],
-      )}
-
-      it { should contain_apt__source('ceph-fastcgi').with(
-        :ensure   => 'absent',
-        :location => "http://gitbuilder.ceph.com/libapache-mod-fastcgi-deb-#{facts[:os]['distro']['codename']}-x86_64-basic/ref/master",
-        :release  => facts[:os]['distro']['codename'],
-        :require  => 'Apt::Key[ceph-gitbuilder]'
       )}
     end
   end
@@ -241,7 +208,6 @@ describe 'ceph::repo' do
       let :params do
         {
           :ensure  => 'absent',
-          :fastcgi => true
         }
       end
 
@@ -277,70 +243,6 @@ describe 'ceph::repo' do
         :gpgkey     => 'https://download.ceph.com/keys/release.asc',
         :mirrorlist => 'absent',
         :priority   => '10'
-      )}
-
-      it { should contain_yumrepo('ext-ceph-fastcgi').with(
-        :ensure     => 'absent',
-        :descr      => 'FastCGI basearch packages for Ceph',
-        :name       => 'ext-ceph-fastcgi',
-        :baseurl    => "http://gitbuilder.ceph.com/mod_fastcgi-rpm-rhel#{facts[:os]['release']['major']}-x86_64-basic/ref/master",
-        :gpgcheck   => '1',
-        :gpgkey     => 'https://download.ceph.com/keys/autobuild.asc',
-        :mirrorlist => 'absent',
-        :priority   => '20'
-      )}
-    end
-
-    context 'with ceph fast-cgi' do
-      let :params do
-        {
-          :fastcgi => true
-        }
-      end
-
-      it { should contain_yumrepo("ext-epel-#{facts[:os]['release']['major']}").with(
-        :ensure     => 'present',
-        :descr      => "External EPEL #{facts[:os]['release']['major']}",
-        :name       => "ext-epel-#{facts[:os]['release']['major']}",
-        :baseurl    => 'absent',
-        :gpgcheck   => '1',
-        :gpgkey     => "https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-#{facts[:os]['release']['major']}",
-        :mirrorlist => "http://mirrors.fedoraproject.org/metalink?repo=epel-#{facts[:os]['release']['major']}&arch=$basearch",
-        :priority   => '20',
-        :exclude    => 'python-ceph-compat python-rbd python-rados python-cephfs',
-      )}
-
-      it { should contain_yumrepo('ext-ceph').with(
-        :ensure     => 'present',
-        :descr      => 'External Ceph nautilus',
-        :name       => 'ext-ceph-nautilus',
-        :baseurl    => "http://download.ceph.com/rpm-nautilus/el#{facts[:os]['release']['major']}/$basearch",
-        :gpgcheck   => '1',
-        :gpgkey     => 'https://download.ceph.com/keys/release.asc',
-        :mirrorlist => 'absent',
-        :priority   => '10'
-      )}
-
-      it { should contain_yumrepo('ext-ceph-noarch').with(
-        :ensure     => 'present',
-        :descr      => 'External Ceph noarch',
-        :name       => 'ext-ceph-nautilus-noarch',
-        :baseurl    => "http://download.ceph.com/rpm-nautilus/el#{facts[:os]['release']['major']}/noarch",
-        :gpgcheck   => '1',
-        :gpgkey     => 'https://download.ceph.com/keys/release.asc',
-        :mirrorlist => 'absent',
-        :priority   => '10'
-      )}
-
-      it { should contain_yumrepo('ext-ceph-fastcgi').with(
-        :ensure     => 'present',
-        :descr      => 'FastCGI basearch packages for Ceph',
-        :name       => 'ext-ceph-fastcgi',
-        :baseurl    => "http://gitbuilder.ceph.com/mod_fastcgi-rpm-rhel#{facts[:os]['release']['major']}-x86_64-basic/ref/master",
-        :gpgcheck   => '1',
-        :gpgkey     => 'https://download.ceph.com/keys/autobuild.asc',
-        :mirrorlist => 'absent',
-        :priority   => '20'
       )}
     end
   end
@@ -463,7 +365,6 @@ describe 'ceph::repo' do
       let :params do
         {
           :ensure  => 'absent',
-          :fastcgi => true
         }
       end
 
@@ -500,75 +401,7 @@ describe 'ceph::repo' do
         :mirrorlist => 'absent',
         :priority   => '10'
       )}
-
-      it { should contain_yumrepo('ext-ceph-fastcgi').with(
-        :ensure     => 'absent',
-        :descr      => 'FastCGI basearch packages for Ceph',
-        :name       => 'ext-ceph-fastcgi',
-        :baseurl    => "http://gitbuilder.ceph.com/mod_fastcgi-rpm-rhel#{facts[:os]['release']['major']}-x86_64-basic/ref/master",
-        :gpgcheck   => '1',
-        :gpgkey     => 'https://download.ceph.com/keys/autobuild.asc',
-        :mirrorlist => 'absent',
-        :priority   => '20'
-      )}
     end
-
-    context 'with ceph fast-cgi' do
-      let :params do
-        {
-          :fastcgi => true
-        }
-      end
-
-      it { should contain_yumrepo("ext-epel-#{facts[:os]['release']['major']}").with(
-        :ensure     => 'present',
-        :descr      => "External EPEL #{facts[:os]['release']['major']}",
-        :name       => "ext-epel-#{facts[:os]['release']['major']}",
-        :baseurl    => 'absent',
-        :gpgcheck   => '1',
-        :gpgkey     => "https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-#{facts[:os]['release']['major']}",
-        :mirrorlist => "http://mirrors.fedoraproject.org/metalink?repo=epel-#{facts[:os]['release']['major']}&arch=$basearch",
-        :priority   => '20',
-        :exclude    => 'python-ceph-compat python-rbd python-rados python-cephfs',
-      )}
-
-      it { should contain_yumrepo('ext-ceph').with(
-        :ensure     => 'present',
-        :descr      => 'External Ceph nautilus',
-        :name       => 'ext-ceph-nautilus',
-        :baseurl    => "http://download.ceph.com/rpm-nautilus/el#{facts[:os]['release']['major']}/$basearch",
-        :gpgcheck   => '1',
-        :gpgkey     => 'https://download.ceph.com/keys/release.asc',
-        :mirrorlist => 'absent',
-        :priority   => '10'
-      )}
-
-      it { should contain_yumrepo('ext-ceph-noarch').with(
-        :ensure     => 'present',
-        :descr      => 'External Ceph noarch',
-        :name       => 'ext-ceph-nautilus-noarch',
-        :baseurl    => "http://download.ceph.com/rpm-nautilus/el#{facts[:os]['release']['major']}/noarch",
-        :gpgcheck   => '1',
-        :gpgkey     => 'https://download.ceph.com/keys/release.asc',
-        :mirrorlist => 'absent',
-        :priority   => '10'
-      )}
-
-      it { should contain_yumrepo('ext-ceph-fastcgi').with(
-        :ensure     => 'present',
-        :descr      => 'FastCGI basearch packages for Ceph',
-        :name       => 'ext-ceph-fastcgi',
-        :baseurl    => "http://gitbuilder.ceph.com/mod_fastcgi-rpm-rhel#{facts[:os]['release']['major']}-x86_64-basic/ref/master",
-        :gpgcheck   => '1',
-        :gpgkey     => 'https://download.ceph.com/keys/autobuild.asc',
-        :mirrorlist => 'absent',
-        :priority   => '20'
-      )}
-    end
-  end
-
-  shared_examples 'ceph::repo on CentOS Stream 7' do
-    # No specific test cases
   end
 
   shared_examples 'ceph::repo on CentOS Stream 8' do

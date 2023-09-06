@@ -59,11 +59,6 @@
 # [*ceph_mirror*] Ceph mirror used to download packages.
 #   Optional. Defaults to undef.
 #
-# DEPRECATED PARAMETERS
-#
-# [*fastcgi*] Install Ceph fastcgi apache module for Ceph
-#   Optional. Defaults to 'false'
-#
 class ceph::repo (
   $ensure              = present,
   String[1] $release   = $ceph::params::release,
@@ -74,13 +69,7 @@ class ceph::repo (
   Boolean $enable_sig  = $ceph::params::enable_sig,
   Boolean $stream      = false,
   $ceph_mirror         = undef,
-  # DEPRECATED PARAMETERS
-  Boolean $fastcgi     = false,
 ) inherits ceph::params {
-
-  if $fastcgi and !$ceph::params::fastcgi_available {
-    warning('The mod_fastcgi package is not available for this operating system version')
-  }
 
   case $facts['os']['family'] {
     'Debian': {
@@ -103,22 +92,6 @@ class ceph::repo (
         location => $ceph_mirror_real,
         release  => $facts['os']['distro']['codename'],
         tag      => 'ceph',
-      }
-
-      if $fastcgi {
-        apt::key { 'ceph-gitbuilder':
-          ensure => $ensure,
-          id     => 'FCC5CB2ED8E6F6FB79D5B3316EAEAE2203C3951A',
-          server => 'keyserver.ubuntu.com',
-        }
-
-        apt::source { 'ceph-fastcgi':
-          ensure   => $ensure,
-          location => "http://gitbuilder.ceph.com/libapache-mod-fastcgi-deb-${facts['os']['distro']['codename']}-${facts['os']['hardware']}-basic/ref/master",
-          release  => $facts['os']['distro']['codename'],
-          require  => Apt::Key['ceph-gitbuilder'],
-        }
-
       }
 
       Apt::Source<| tag == 'ceph' |> -> Package<| tag == 'ceph' |>
@@ -190,20 +163,6 @@ not on ${facts['os']['name']}, which can lead to packaging issues.")
           mirrorlist => 'absent',
           priority   => '10', # prefer ceph repos over EPEL
           tag        => 'ceph',
-        }
-
-        if $fastcgi {
-          yumrepo { 'ext-ceph-fastcgi':
-            ensure     => $ensure,
-            descr      => 'FastCGI basearch packages for Ceph',
-            name       => 'ext-ceph-fastcgi',
-            baseurl    => "http://gitbuilder.ceph.com/mod_fastcgi-rpm-rhel${el}-x86_64-basic/ref/master",
-            gpgcheck   => '1',
-            gpgkey     => 'https://download.ceph.com/keys/autobuild.asc',
-            mirrorlist => 'absent',
-            priority   => '20', # prefer ceph repos over EPEL
-            tag        => 'ceph',
-          }
         }
 
         # prefer ceph.com repos over EPEL

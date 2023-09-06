@@ -1,0 +1,15 @@
+---
+upgrade:
+  - |
+    This module no longer supports CentOS 7 and RHEL 7.
+
+  - |
+    The support for fastcgi has been removed. Previously Cent OS 7 and RHEL 7
+    were only platform supporting fastcgi but these operating system versions
+    are no longer supported.
+
+fixes:
+  - |
+    The wrong warning about rgw deployment with mod_proxy_fcgi has been
+    removed. This deployment architecture is still valid in recent operating
+    systems.
