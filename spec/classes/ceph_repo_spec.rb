@@ -338,8 +338,9 @@ describe 'ceph::repo' do
       it { should_not contain_yumrepo('ext-ceph') }
       it { should_not contain_yumrepo('ext-ceph-noarch') }
 
+
       it { should contain_yumrepo('ceph-storage-sig').with(
-        :baseurl => "http://mirror.centos.org/centos/#{facts[:os]['release']['major']}/storage/x86_64/ceph-nautilus/",
+        :baseurl => "#{platform_params[:centos_mirror]}/#{facts[:os]['release']['major']}-stream/storage/x86_64/ceph-nautilus/",
       )}
     end
 
@@ -404,36 +405,6 @@ describe 'ceph::repo' do
     end
   end
 
-  shared_examples 'ceph::repo on CentOS Stream 8' do
-    context 'when using CentOS SIG repository and CentOS Stream 8' do
-      let :params do
-        {
-          :enable_sig => true,
-          :stream     => true,
-        }
-      end
-
-      it { should contain_yumrepo('ceph-storage-sig').with(
-        :baseurl => 'http://mirror.centos.org/centos/8-stream/storage/x86_64/ceph-nautilus/',
-      )}
-    end
-  end
-
-  shared_examples 'ceph::repo on CentOS Stream 9' do
-    context 'when using CentOS SIG repository and CentOS Stream 9' do
-      let :params do
-        {
-          :enable_sig => true,
-          :stream     => true,
-        }
-      end
-
-      it { should contain_yumrepo('ceph-storage-sig').with(
-        :baseurl => 'https://mirror.stream.centos.org/SIGs/9-stream/storage/x86_64/ceph-nautilus/',
-      )}
-    end
-  end
-
   on_supported_os({
     :supported_os => OSDefaults.get_supported_os
   }).each do |os,facts|
@@ -445,8 +416,14 @@ describe 'ceph::repo' do
       it_behaves_like "ceph::repo on #{facts[:os]['family']}"
 
       if facts[:os]['name'] == 'CentOS'
+        let (:platform_params) do
+          if facts[:os]['release']['major'].to_i >= 9
+            { :centos_mirror => 'https://mirror.stream.centos.org/SIGs' }
+          else
+            { :centos_mirror => 'http://mirror.centos.org/centos' }
+          end
+        end
         it_behaves_like 'ceph::repo on CentOS'
-        it_behaves_like "ceph::repo on CentOS Stream #{facts[:os]['release']['major']}"
       end
     end
   end
