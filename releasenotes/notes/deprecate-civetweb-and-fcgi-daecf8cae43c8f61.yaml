@@ -1,0 +1,7 @@
+---
+deprecations:
+  - |
+    Support for RADOS Gateway deployment with fastcgi frontend or civetweb
+    frontend has been deprecated. These fronends have been removed in Quincy
+    release. The support may be removed when the minimum tested ceph version
+    is bumped to Quincy or later.
