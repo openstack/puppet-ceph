@@ -104,7 +104,7 @@ define ceph::rgw::apache_proxy_fcgi (
   include apache::mod::mime
   include apache::mod::rewrite
   include apache::mod::proxy
-  apache::mod { 'proxy_fcgi': }
+  include apache::mod::proxy_fcgi
 
   apache::vhost { "${rgw_dns_name}-radosgw":
     servername   => $rgw_dns_name,
