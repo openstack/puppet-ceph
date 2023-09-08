@@ -49,6 +49,7 @@ describe 'ceph::rgw::apache_proxy_fcgi' do
       it { should contain_class('apache::mod::auth_basic') }
       it { should contain_class('apache::mod::env') }
       it { should contain_class('apache::mod::proxy') }
+      it { should contain_class('apache::mod::proxy_fcgi') }
       it { should contain_class('apache::mod::mime') }
       it { should contain_class('apache::mod::rewrite') }
     end
@@ -96,6 +97,7 @@ describe 'ceph::rgw::apache_proxy_fcgi' do
 
       it { should contain_class('apache::mod::alias') }
       it { should contain_class('apache::mod::proxy') }
+      it { should contain_class('apache::mod::proxy_fcgi') }
       it { should contain_class('apache::mod::mime') }
       it { should contain_class('apache::mod::rewrite') }
     end
