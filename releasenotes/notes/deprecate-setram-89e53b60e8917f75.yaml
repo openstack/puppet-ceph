@@ -1,0 +1,8 @@
+---
+deprecations:
+  - |
+    The ``ceph::repo::stream`` parameter has been deprecated and has no effect.
+
+upgrades:
+  - |
+    This module no longer supports CentOS 8. Use CentOS 8 Stream instead.
