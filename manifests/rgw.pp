@@ -145,11 +145,13 @@ define ceph::rgw (
       }
     }
     'civetweb': {
+      warning('civetweb frontend has been removed in quincy release.')
       ceph::rgw::civetweb { $name:
         rgw_frontends => $rgw_frontends,
       }
     }
     'apache-proxy-fcgi': {
+      warning('fastcgi frontend has been removed in quincy release.')
       $rgw_frontends_real = pick($rgw_frontends, 'fastcgi socket_port=9000 socket_host=127.0.0.1');
       ceph_config {
         "client.${name}/rgw_frontends":      value => $rgw_frontends_real;
