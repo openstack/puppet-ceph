@@ -12,7 +12,6 @@ RSpec.configure do |c|
 
   c.hiera_config = File.join(fixture_path, 'hieradata/hiera.yaml')
   c.module_path = File.join(fixture_path, 'modules')
-  c.manifest_dir = File.join(fixture_path, 'manifests')
 
   c.before(:all) do
     data = YAML.load_file(c.hiera_config)
