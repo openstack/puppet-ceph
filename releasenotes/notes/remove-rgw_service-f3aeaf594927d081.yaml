@@ -1,0 +1,4 @@
+---
+upgrade:
+  - |
+    The ``ceph::rgw::keystone::auth::rgw_service`` parameter has been removed.

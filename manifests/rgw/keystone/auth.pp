@@ -49,12 +49,6 @@
 #   (Optional) Type of service.
 #   Defaults to 'object-store'.
 #
-# DEPRECATED PARAMETERS
-#
-# [*rgw_service*]
-#   Name of the keystone service used by RGW
-#   Defaults to undef
-#
 class ceph::rgw::keystone::auth (
   $password,
   $user,
@@ -68,25 +62,16 @@ class ceph::rgw::keystone::auth (
   $service_description = 'Ceph RGW Service',
   $service_name        = 'swift',
   $service_type        = 'object-store',
-  # DEPRECATED PARAMETERS
-  $rgw_service         = undef,
 ) {
 
   include openstacklib::openstackclient
 
-  if $rgw_service {
-    warning('The rgw_service parameter is deprecated')
-    $rgw_service_real = $rgw_service
-  } else {
-    $rgw_service_real = "${service_name}::${service_type}"
-  }
-
-  ensure_resource('keystone_service', $rgw_service_real, {
+  ensure_resource('keystone_service', "${service_name}::${service_type}", {
     'ensure'      => 'present',
     'description' => $service_description,
   } )
 
-  ensure_resource('keystone_endpoint', "${region}/${rgw_service_real}", {
+  ensure_resource('keystone_endpoint', "${region}/${service_name}::${service_type}", {
     'ensure'       => 'present',
     'public_url'   => $public_url,
     'admin_url'    => $admin_url,
