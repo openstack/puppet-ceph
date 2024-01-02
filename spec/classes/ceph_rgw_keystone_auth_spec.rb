@@ -13,27 +13,22 @@ describe 'ceph::rgw::keystone::auth' do
 
     it {
       should contain_class('openstacklib::openstackclient')
-      should contain_keystone_service('swift::object-store').with(
-        :ensure      => 'present',
-        :description => 'Ceph RGW Service',
-      )
-      should contain_keystone_endpoint('RegionOne/swift::object-store').with(
-        :ensure       => 'present',
-        :public_url   => 'http://127.0.0.1:8080/swift/v1',
-        :admin_url    => 'http://127.0.0.1:8080/swift/v1',
-        :internal_url => 'http://127.0.0.1:8080/swift/v1',
-      )
-      should contain_keystone_user('rgw_user').with(
-        :ensure   => 'present',
-        :password => 'rgw_password',
-        :email    => 'rgwuser@localhost',
-      )
-      should contain_keystone_role('admin').with(
-        :ensure => 'present',
-      )
-      should contain_keystone_user_role('rgw_user@services').with(
-        :ensure => 'present',
-        :roles  => ['admin'],
+      should contain_keystone__resource__service_identity('rgw').with(
+        :configure_user      => true,
+        :configure_endpoint  => true,
+        :configure_user_role => true,
+        :service_name        => 'swift',
+        :service_type        => 'object-store',
+        :service_description => 'Ceph RGW Service',
+        :region              => 'RegionOne',
+        :auth_name           => 'rgw_user',
+        :password            => 'rgw_password',
+        :email               => 'rgwuser@localhost',
+        :tenant              => 'services',
+        :roles               => ['admin'],
+        :public_url          => 'http://127.0.0.1:8080/swift/v1',
+        :admin_url           => 'http://127.0.0.1:8080/swift/v1',
+        :internal_url        => 'http://127.0.0.1:8080/swift/v1',
       )
     }
   end
