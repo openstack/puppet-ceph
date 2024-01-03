@@ -48,7 +48,7 @@
 #   should be either filestore or bluestore.
 #
 # [*cluster*] The ceph cluster
-#   Optional. Same default as ceph.
+#   Optional. Defaults to ceph.
 #
 # [*exec_timeout*] The default exec resource timeout, in seconds
 #   Optional. Defaults to $ceph::params::exec_timeout
@@ -69,7 +69,7 @@
 define ceph::osd (
   Enum['present', 'absent'] $ensure = present,
   $journal = undef,
-  $cluster = undef,
+  String[1] $cluster = 'ceph',
   $bluestore_wal = undef,
   $bluestore_db = undef,
   Optional[Enum['filestore', 'bluestore']] $store_type = undef,
@@ -78,104 +78,99 @@ define ceph::osd (
   $fsid = undef,
   Boolean $dmcrypt = false,
   $dmcrypt_key_dir = '/etc/ceph/dmcrypt-keys',
-  ) {
+) {
 
-    include ceph::params
-    $exec_timeout_real = $exec_timeout ? {
-      undef   => $ceph::params::exec_timeout,
-      default => $exec_timeout,
-    }
+  include ceph::params
+  $exec_timeout_real = $exec_timeout ? {
+    undef   => $ceph::params::exec_timeout,
+    default => $exec_timeout,
+  }
 
-    $data = $name
+  $data = $name
 
-    if $cluster {
-      $cluster_name = $cluster
+  $cluster_option = "--cluster ${cluster}"
+
+  if $store_type {
+    $osd_type = " --${store_type}"
+  } else {
+    $osd_type = ''
+  }
+
+  if ($bluestore_wal) or ($bluestore_db) {
+    if $bluestore_wal {
+      $wal_opts = "--block.wal ${bluestore_wal}"
     } else {
-      $cluster_name = 'ceph'
+      $wal_opts = undef
     }
-    $cluster_option = "--cluster ${cluster_name}"
 
-    if $store_type {
-      $osd_type = " --${store_type}"
+    if $bluestore_db {
+      $block_opts = "--block.db ${bluestore_db}"
     } else {
-      $osd_type = ''
+      $block_opts = undef
     }
+    $journal_opts = join(delete_undef_values(['', $wal_opts, $block_opts]), ' ')
+  } elsif $journal {
+    $journal_opts = " --journal ${journal}"
+  } else {
+    $journal_opts = ''
+  }
 
-    if ($bluestore_wal) or ($bluestore_db) {
-      if $bluestore_wal {
-        $wal_opts = "--block.wal ${bluestore_wal}"
-      } else {
-        $wal_opts = undef
-      }
+  if $dmcrypt {
+    $dmcrypt_options = " --dmcrypt --dmcrypt-key-dir '${dmcrypt_key_dir}'"
+  } else {
+    $dmcrypt_options = ''
+  }
 
-      if $bluestore_db {
-        $block_opts = "--block.db ${bluestore_db}"
-      } else {
-        $block_opts = undef
-      }
-      $journal_opts = join(delete_undef_values(['', $wal_opts, $block_opts]), ' ')
-    } elsif $journal {
-      $journal_opts = " --journal ${journal}"
-    } else {
-      $journal_opts = ''
-    }
+  if $ensure == present {
 
-    if $dmcrypt {
-      $dmcrypt_options = " --dmcrypt --dmcrypt-key-dir '${dmcrypt_key_dir}'"
-    } else {
-      $dmcrypt_options = ''
-    }
+    $ceph_prepare = "ceph-osd-prepare-${name}"
+    $ceph_activate = "ceph-osd-activate-${name}"
 
-    if $ensure == present {
+    Ceph_config<||> -> Exec[$ceph_prepare]
+    Ceph::Mon<||> -> Exec[$ceph_prepare]
+    Ceph::Key<||> -> Exec[$ceph_prepare]
 
-      $ceph_prepare = "ceph-osd-prepare-${name}"
-      $ceph_activate = "ceph-osd-activate-${name}"
+    # Ensure none is activated before prepare is finished for all
+    Exec<| tag == 'prepare' |> -> Exec<| tag == 'activate' |>
 
-      Ceph_config<||> -> Exec[$ceph_prepare]
-      Ceph::Mon<||> -> Exec[$ceph_prepare]
-      Ceph::Key<||> -> Exec[$ceph_prepare]
-
-      # Ensure none is activated before prepare is finished for all
-      Exec<| tag == 'prepare' |> -> Exec<| tag == 'activate' |>
-
-      if $fsid {
-        $fsid_option = " --cluster-fsid ${fsid}"
-        $ceph_check_fsid_mismatch = "ceph-osd-check-fsid-mismatch-${name}"
-        Exec[$ceph_check_fsid_mismatch] -> Exec[$ceph_prepare]
-        # return error if $(readlink -f ${data}) has fsid differing from ${fsid}, unless there is no fsid
-        exec { $ceph_check_fsid_mismatch:
-          command   => "/bin/true # comment to satisfy puppet syntax requirements
+    if $fsid {
+      $fsid_option = " --cluster-fsid ${fsid}"
+      $ceph_check_fsid_mismatch = "ceph-osd-check-fsid-mismatch-${name}"
+      Exec[$ceph_check_fsid_mismatch] -> Exec[$ceph_prepare]
+      # return error if $(readlink -f ${data}) has fsid differing from ${fsid}, unless there is no fsid
+      exec { $ceph_check_fsid_mismatch:
+        command   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 exit 1
 ",
-          unless    => "/bin/true # comment to satisfy puppet syntax requirements
+        unless    => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 if [ -z $(ceph-volume lvm list ${data} |grep 'cluster fsid' | awk -F'fsid' '{print \$2}'|tr -d  ' ') ]; then
     exit 0
 fi
 test ${fsid} = $(ceph-volume lvm list ${data} |grep 'cluster fsid' | awk -F'fsid' '{print \$2}'|tr -d  ' ')
 ",
-          logoutput => true,
-          timeout   => $exec_timeout_real,
-        }
-      } else {
-        $fsid_option = ''
+        logoutput => true,
+        timeout   => $exec_timeout_real,
       }
+    } else {
+      $fsid_option = ''
+    }
 
-      #name of the bootstrap osd keyring
-      $bootstrap_osd_keyring = "/var/lib/ceph/bootstrap-osd/${cluster_name}.keyring"
-      exec { "extract-bootstrap-osd-keyring-${name}":
-        command => "/bin/true # comment to satisfy puppet syntax requirements
+    #name of the bootstrap osd keyring
+    $bootstrap_osd_keyring = "/var/lib/ceph/bootstrap-osd/${cluster}.keyring"
+    exec { "extract-bootstrap-osd-keyring-${name}":
+      command => "/bin/true # comment to satisfy puppet syntax requirements
 ceph auth get client.bootstrap-osd > ${bootstrap_osd_keyring}
 ",
-        creates => "${bootstrap_osd_keyring}",
-      }
-      Ceph::Key<||>
-      -> Exec["extract-bootstrap-osd-keyring-${name}"]
-      -> Exec[$ceph_prepare]
+      creates => "${bootstrap_osd_keyring}",
+    }
+    Ceph::Key<||>
+    -> Exec["extract-bootstrap-osd-keyring-${name}"]
+    -> Exec[$ceph_prepare]
 
-      exec { $ceph_prepare:
-        command   => "/bin/true # comment to satisfy puppet syntax requirements
+    exec { $ceph_prepare:
+      command   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 
 if [ $(echo ${data}|cut -c 1) = '/' ]; then
@@ -190,31 +185,31 @@ if ! test -b \$disk ; then
 fi
 ceph-volume lvm prepare${osd_type} ${cluster_option}${dmcrypt_options}${fsid_option} --data ${data}${journal_opts}
 ",
-        unless    => "/bin/true # comment to satisfy puppet syntax requirements
+      unless    => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 ceph-volume lvm list ${data}
 ",
-        logoutput => true,
-        timeout   => $exec_timeout_real,
-        tag       => 'prepare',
-      }
-      if (str2bool($facts['os']['selinux']['enabled']) == true) {
-        ensure_packages($ceph::params::pkg_policycoreutils, {'ensure' => 'present'})
-        exec { "fcontext_${name}":
-          command => "/bin/true # comment to satisfy puppet syntax requirements
+      logoutput => true,
+      timeout   => $exec_timeout_real,
+      tag       => 'prepare',
+    }
+    if (str2bool($facts['os']['selinux']['enabled']) == true) {
+      ensure_packages($ceph::params::pkg_policycoreutils, {'ensure' => 'present'})
+      exec { "fcontext_${name}":
+        command => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 semanage fcontext -a -t ${selinux_file_context} \"$(readlink -f ${data})(/.*)?\"
 restorecon -R $(readlink -f ${data})
 ",
-          require => [Package[$ceph::params::pkg_policycoreutils],Exec[$ceph_prepare]],
-          before  => Exec[$ceph_activate],
-          unless  => "/usr/bin/test -b $(readlink -f ${data}) || (semanage fcontext -l | grep $(readlink -f ${data}))",
-        }
+        require => [Package[$ceph::params::pkg_policycoreutils],Exec[$ceph_prepare]],
+        before  => Exec[$ceph_activate],
+        unless  => "/usr/bin/test -b $(readlink -f ${data}) || (semanage fcontext -l | grep $(readlink -f ${data}))",
       }
+    }
 
-      Exec[$ceph_prepare] -> Exec[$ceph_activate]
-      exec { $ceph_activate:
-        command   => "/bin/true # comment to satisfy puppet syntax requirements
+    Exec[$ceph_prepare] -> Exec[$ceph_activate]
+    exec { $ceph_activate:
+      command   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 if [ $(echo ${data}|cut -c 1) = '/' ]; then
     disk=${data}
@@ -230,37 +225,37 @@ id=$(ceph-volume lvm list ${data} | grep 'osd id'|awk -F 'osd id' '{print \$2}'|
 fsid=$(ceph-volume lvm list ${data} | grep 'osd fsid'|awk -F 'osd fsid' '{print \$2}'|tr -d ' ')
 ceph-volume lvm activate \$id \$fsid
 ",
-        unless    => "/bin/true # comment to satisfy puppet syntax requirements
+      unless    => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 id=$(ceph-volume lvm list ${data} | grep 'osd id'|awk -F 'osd id' '{print \$2}'|tr -d ' ')
 ps -fCceph-osd|grep \"\\--id \$id \"
 ",
-        logoutput => true,
-        tag       => 'activate',
-      }
+      logoutput => true,
+      tag       => 'activate',
+    }
 
-    } else {
+  } else {
 
-      # ceph-disk: support osd removal http://tracker.ceph.com/issues/7454
-      exec { "remove-osd-${name}":
-        command   => "/bin/true # comment to satisfy puppet syntax requirements
+    # ceph-disk: support osd removal http://tracker.ceph.com/issues/7454
+    exec { "remove-osd-${name}":
+      command   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 id=$(ceph-volume lvm list ${data} | grep 'osd id'|awk -F 'osd id' '{print \$2}'|tr -d ' ')
 if [ \"\$id\" ] ; then
   ceph ${cluster_option} osd out osd.\$id
-  stop ceph-osd cluster=${cluster_name} id=\$id || true
+  stop ceph-osd cluster=${cluster} id=\$id || true
   service ceph stop osd.\$id || true
   systemctl stop ceph-osd@\$id || true
   ceph ${cluster_option} osd crush remove osd.\$id
   ceph ${cluster_option} auth del osd.\$id
   ceph ${cluster_option} osd rm \$id
-  rm -fr /var/lib/ceph/osd/${cluster_name}-\$id/*
-  umount /var/lib/ceph/osd/${cluster_name}-\$id || true
-  rm -fr /var/lib/ceph/osd/${cluster_name}-\$id
+  rm -fr /var/lib/ceph/osd/${cluster}-\$id/*
+  umount /var/lib/ceph/osd/${cluster}-\$id || true
+  rm -fr /var/lib/ceph/osd/${cluster}-\$id
   ceph-volume lvm zap ${data}
 fi
 ",
-        unless    => "/bin/true # comment to satisfy puppet syntax requirements
+      unless    => "/bin/true # comment to satisfy puppet syntax requirements
 set -x
 ceph-volume lvm list ${data}
 if [ \$? -eq 0 ]; then
@@ -269,8 +264,8 @@ else
     exit 0
 fi
 ",
-        logoutput => true,
-        timeout   => $exec_timeout_real,
-      } -> Ceph::Mon<| ensure == absent |>
-    }
+      logoutput => true,
+      timeout   => $exec_timeout_real,
+    } -> Ceph::Mon<| ensure == absent |>
+  }
 }
