@@ -56,7 +56,7 @@ define ceph::pool (
   $pgp_num = undef,
   $size = undef,
   $tag = undef,
-  $exec_timeout = undef,
+  Optional[Float[0]] $exec_timeout = undef,
 ) {
 
   include ceph::params

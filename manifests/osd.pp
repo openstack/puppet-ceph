@@ -73,7 +73,7 @@ define ceph::osd (
   $bluestore_wal = undef,
   $bluestore_db = undef,
   Optional[Enum['filestore', 'bluestore']] $store_type = undef,
-  $exec_timeout = undef,
+  Optional[Float[0]] $exec_timeout = undef,
   $selinux_file_context = 'ceph_var_lib_t',
   $fsid = undef,
   Boolean $dmcrypt = false,

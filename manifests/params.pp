@@ -41,11 +41,11 @@
 #
 
 class ceph::params (
-  $exec_timeout    = 600,
-  $packages        = ['ceph'], # just provide the minimum per default
-  $rgw_socket_path = '/tmp/radosgw.sock',
-  $enable_sig      = false,
-  $release         = 'nautilus',
+  Optional[Float[0]] $exec_timeout = undef,
+  $packages                          = ['ceph'], # just provide the minimum per default
+  $rgw_socket_path                   = '/tmp/radosgw.sock',
+  $enable_sig                        = false,
+  $release                           = 'nautilus',
 ) {
   $pkg_mds = 'ceph-mds'
 
