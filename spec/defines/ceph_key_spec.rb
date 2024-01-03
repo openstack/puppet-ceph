@@ -43,16 +43,16 @@ describe 'ceph::key' do
 
       it {
         should contain_exec('ceph-key-client.admin').with(
-          'command' => "/bin/true # comment to satisfy puppet syntax requirements\nset -ex\nceph-authtool /etc/ceph/ceph.client.admin.keyring --name 'client.admin' --add-key 'supersecret' --cap mon 'allow *' --cap osd 'allow rw' --cap mgr 'allow *' "
+          :command => "/bin/true # comment to satisfy puppet syntax requirements\nset -ex\nceph-authtool /etc/ceph/ceph.client.admin.keyring --name 'client.admin' --add-key 'supersecret' --cap mon 'allow *' --cap osd 'allow rw' --cap mgr 'allow *'"
         )
         should contain_file('/etc/ceph/ceph.client.admin.keyring').with(
-          'owner'                   => 'nobody',
-          'group'                   => 'nogroup',
-          'mode'                    => '0600',
-          'selinux_ignore_defaults' => true,
+          :owner                   => 'nobody',
+          :group                   => 'nogroup',
+          :mode                    => '0600',
+          :selinux_ignore_defaults => true,
         )
         should contain_exec('ceph-injectkey-client.admin').with(
-           'command' => "/bin/true # comment to satisfy puppet syntax requirements\nset -ex\nceph    auth import -i /etc/ceph/ceph.client.admin.keyring"
+          :command => "/bin/true # comment to satisfy puppet syntax requirements\nset -ex\nceph auth import -i /etc/ceph/ceph.client.admin.keyring"
         )
       }
     end
