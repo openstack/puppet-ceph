@@ -92,35 +92,29 @@ define ceph::key (
 
   include ceph::params
 
-  if $cluster {
-    $cluster_option = "--cluster ${cluster}"
-  } else
-  {
-    $cluster_option = ''
+  $cluster_option = $cluster ? {
+    undef   => '',
+    default => " --cluster ${cluster}",
   }
 
-  if $cap_mon {
-    $mon_caps = "--cap mon '${cap_mon}' "
-  } else {
-    $mon_caps = ''
+  $mon_caps = $cap_mon ? {
+    undef   => '',
+    default => " --cap mon '${cap_mon}'"
   }
-  if $cap_osd {
-    $osd_caps = "--cap osd '${cap_osd}' "
-  } else {
-    $osd_caps = ''
+  $osd_caps = $cap_osd ? {
+    undef   => '',
+    default => " --cap osd '${cap_osd}'",
   }
-  if $cap_mds {
-    $mds_caps = "--cap mds '${cap_mds}' "
-  } else {
-    $mds_caps = ''
+  $mds_caps = $cap_mds ? {
+    undef   => '',
+    default => " --cap mds '${cap_mds}'",
   }
-  if $cap_mgr {
-    $mgr_caps = "--cap mgr '${cap_mgr}' "
-  } else {
-    $mgr_caps = ''
+  $mgr_caps = $cap_mgr ? {
+    undef   => '',
+    default => " --cap mgr '${cap_mgr}'"
   }
 
-  $caps = "${mon_caps}${osd_caps}${mds_caps}${mgr_caps}"
+  $caps = join([$mon_caps, $osd_caps, $mds_caps, $mgr_caps], '')
 
   # this allows multiple defines for the same 'keyring file',
   # which is supported by ceph-authtool
@@ -139,11 +133,11 @@ define ceph::key (
   exec { "ceph-key-${name}":
     command   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-ceph-authtool ${keyring_path} --name '${name}' --add-key '${secret}' ${caps}",
+ceph-authtool ${keyring_path} --name '${name}' --add-key '${secret}'${caps}",
     unless    => "/bin/true # comment to satisfy puppet syntax requirements
 set -x
 NEW_KEYRING=\$(mktemp)
-ceph-authtool \$NEW_KEYRING --name '${name}' --add-key '${secret}' ${caps}
+ceph-authtool \$NEW_KEYRING --name '${name}' --add-key '${secret}'${caps}
 diff -N \$NEW_KEYRING ${keyring_path}
 rv=\$?
 rm \$NEW_KEYRING
@@ -154,18 +148,14 @@ exit \$rv",
 
   if $inject {
 
-    if $inject_as_id {
-      $inject_id_option = " --name '${inject_as_id}' "
-    }
-    else {
-      $inject_id_option = ''
+    $inject_id_option = $inject_as_id ? {
+      undef   => '',
+      default => " --name '${inject_as_id}'"
     }
 
-    if $inject_keyring {
-      $inject_keyring_option = " --keyring '${inject_keyring}' "
-    }
-    else {
-      $inject_keyring_option = ''
+    $inject_keyring_option = $inject_keyring ? {
+      undef   => '',
+      default => " --keyring '${inject_keyring}'",
     }
 
     Ceph_config<||> -> Exec["ceph-injectkey-${name}"]
@@ -174,13 +164,13 @@ exit \$rv",
     exec { "ceph-injectkey-${name}":
       command   => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-ceph ${cluster_option} ${inject_id_option} ${inject_keyring_option} auth import -i ${keyring_path}",
+ceph${cluster_option}${inject_id_option}${inject_keyring_option} auth import -i ${keyring_path}",
       unless    => "/bin/true # comment to satisfy puppet syntax requirements
 set -x
 OLD_KEYRING=\$(mktemp)
 TMP_KEYRING=\$(mktemp)
 cat ${keyring_path} | sed -e 's/\\\\//g' > \$TMP_KEYRING
-ceph ${cluster_option} ${inject_id_option} ${inject_keyring_option} auth get ${name} -o \$OLD_KEYRING || true
+ceph${cluster_option}${inject_id_option}${inject_keyring_option} auth get ${name} -o \$OLD_KEYRING || true
 diff -N \$OLD_KEYRING \$TMP_KEYRING
 rv=$?
 rm \$OLD_KEYRING
