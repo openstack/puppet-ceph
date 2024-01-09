@@ -72,34 +72,25 @@ define ceph::pool (
     Ceph::Key<||> -> Exec["create-${name}"]
     Ceph::Osd<||> -> Exec["create-${name}"]
     exec { "create-${name}":
-      command => "/bin/true # comment to satisfy puppet syntax requirements
-set -ex
-ceph osd pool create ${name} ${pg_num}",
-      unless  => "/bin/true # comment to satisfy puppet syntax requirements
-set -ex
-ceph osd pool ls | grep -w '${name}'",
+      command => "ceph osd pool create ${name} ${pg_num}",
+      unless  => "ceph osd pool ls | grep -w '${name}'",
+      path    => ['/bin', '/usr/bin'],
       timeout => $exec_timeout_real,
     }
 
     exec { "set-${name}-pg_num":
-      command => "/bin/true # comment to satisfy puppet syntax requirements
-set -ex
-ceph osd pool set ${name} pg_num ${pg_num}",
-      unless  => "/bin/true # comment to satisfy puppet syntax requirements
-set -ex
-test $(ceph osd pool get ${name} pg_num | sed 's/.*:\s*//g') -ge ${pg_num}",
+      command => "ceph osd pool set ${name} pg_num ${pg_num}",
+      unless  => "test $(ceph osd pool get ${name} pg_num | sed 's/.*:\s*//g') -ge ${pg_num}",
+      path    => ['/bin', '/usr/bin'],
       require => Exec["create-${name}"],
       timeout => $exec_timeout_real,
     }
 
     if $pgp_num {
       exec { "set-${name}-pgp_num":
-        command => "/bin/true # comment to satisfy puppet syntax requirements
-set -ex
-ceph osd pool set ${name} pgp_num ${pgp_num}",
-        unless  => "/bin/true # comment to satisfy puppet syntax requirements
-set -ex
-test $(ceph osd pool get ${name} pgp_num | sed 's/.*:\s*//g') -ge ${pgp_num}",
+        command => "ceph osd pool set ${name} pgp_num ${pgp_num}",
+        unless  => "test $(ceph osd pool get ${name} pgp_num | sed 's/.*:\s*//g') -ge ${pgp_num}",
+        path    => ['/bin', '/usr/bin'],
         require => [Exec["create-${name}"], Exec["set-${name}-pg_num"]],
         timeout => $exec_timeout_real,
       }
@@ -107,12 +98,9 @@ test $(ceph osd pool get ${name} pgp_num | sed 's/.*:\s*//g') -ge ${pgp_num}",
 
     if $size {
       exec { "set-${name}-size":
-        command => "/bin/true # comment to satisfy puppet syntax requirements
-set -ex
-ceph osd pool set ${name} size ${size}",
-        unless  => "/bin/true # comment to satisfy puppet syntax requirements
-set -ex
-test $(ceph osd pool get ${name} size | sed 's/.*:\s*//g') -eq ${size}",
+        command => "ceph osd pool set ${name} size ${size}",
+        unless  => "test $(ceph osd pool get ${name} size | sed 's/.*:\s*//g') -eq ${size}",
+        path    => ['/bin', '/usr/bin'],
         require => Exec["create-${name}"],
         timeout => $exec_timeout_real,
       }
@@ -120,12 +108,9 @@ test $(ceph osd pool get ${name} size | sed 's/.*:\s*//g') -eq ${size}",
 
     if $tag {
       exec { "set-${name}-tag":
-        command => "/bin/true # comment to satisfy puppet syntax requirements
-set -ex
-ceph osd pool application enable ${name} ${tag}",
-        unless  => "/bin/true # comment to satisfy puppet syntax requirements
-set -ex
-ceph osd pool application get ${name} ${tag}",
+        command => "ceph osd pool application enable ${name} ${tag}",
+        unless  => "ceph osd pool application get ${name} ${tag}",
+        path    => ['/bin', '/usr/bin'],
         require => Exec["create-${name}"],
         timeout => $exec_timeout_real,
       }
@@ -134,12 +119,9 @@ ceph osd pool application get ${name} ${tag}",
   } else {
 
     exec { "delete-${name}":
-      command => "/bin/true # comment to satisfy puppet syntax requirements
-set -ex
-ceph osd pool delete ${name} ${name} --yes-i-really-really-mean-it",
-      onlyif  => "/bin/true # comment to satisfy puppet syntax requirements
-set -ex
-ceph osd pool ls | grep -w '${name}'",
+      command => "ceph osd pool delete ${name} ${name} --yes-i-really-really-mean-it",
+      onlyif  => "ceph osd pool ls | grep -w '${name}'",
+      path    => ['/bin', '/usr/bin'],
       timeout => $exec_timeout_real,
     } -> Ceph::Mon<| ensure == absent |>
 

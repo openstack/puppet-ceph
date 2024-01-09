@@ -30,8 +30,9 @@ describe 'ceph::fs' do
       end
 
       it { should contain_exec('create-fs-fsa').with(
-          :command =>  "/bin/true # comment to satisfy puppet syntax requirements\nset -ex\nceph fs new fsa metadata_pool data_pool",
-          :unless  => "/bin/true # comment to satisfy puppet syntax requirements\nset -ex\nceph fs ls | grep 'name: fsa,'"
+        :command => "ceph fs new fsa metadata_pool data_pool",
+        :unless  => "ceph fs ls | grep 'name: fsa,'",
+        :path    => ['/bin', '/usr/bin'],
       )}
     end
   end

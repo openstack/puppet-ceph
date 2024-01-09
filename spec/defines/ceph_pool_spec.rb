@@ -37,19 +37,24 @@ describe 'ceph::pool' do
 
       it {
         should contain_exec('create-volumes').with(
-          'command' => "/bin/true # comment to satisfy puppet syntax requirements\nset -ex\nceph osd pool create volumes 3"
+          :command => 'ceph osd pool create volumes 3',
+          :path    => ['/bin', '/usr/bin'],
         )
         should contain_exec('set-volumes-pg_num').with(
-          'command' => "/bin/true # comment to satisfy puppet syntax requirements\nset -ex\nceph osd pool set volumes pg_num 3"
+          :command => 'ceph osd pool set volumes pg_num 3',
+          :path    => ['/bin', '/usr/bin'],
         )
         should contain_exec('set-volumes-pgp_num').with(
-          'command' => "/bin/true # comment to satisfy puppet syntax requirements\nset -ex\nceph osd pool set volumes pgp_num 4"
+          :command => 'ceph osd pool set volumes pgp_num 4',
+          :path    => ['/bin', '/usr/bin'],
         ).that_requires('Exec[set-volumes-pg_num]')
         should contain_exec('set-volumes-size').with(
-          'command' => "/bin/true # comment to satisfy puppet syntax requirements\nset -ex\nceph osd pool set volumes size 2"
+          :command => 'ceph osd pool set volumes size 2',
+          :path    => ['/bin', '/usr/bin'],
         )
         should contain_exec('set-volumes-tag').with(
-          'command' => "/bin/true # comment to satisfy puppet syntax requirements\nset -ex\nceph osd pool application enable volumes rbd"
+          :command => 'ceph osd pool application enable volumes rbd',
+          :path    => ['/bin', '/usr/bin'],
         )
         should_not contain_exec('delete-volumes')
       }
@@ -69,7 +74,8 @@ describe 'ceph::pool' do
       it {
         should_not contain_exec('create-volumes')
         should contain_exec('delete-volumes').with(
-          'command' => "/bin/true # comment to satisfy puppet syntax requirements\nset -ex\nceph osd pool delete volumes volumes --yes-i-really-really-mean-it"
+          :command => 'ceph osd pool delete volumes volumes --yes-i-really-really-mean-it',
+          :path    => ['/bin', '/usr/bin'],
         )
       }
     end

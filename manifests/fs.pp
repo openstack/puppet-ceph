@@ -52,12 +52,9 @@ define ceph::fs (
   Ceph::Pool<||> -> Exec["create-fs-${name}"]
 
   exec { "create-fs-${name}":
-    command => "/bin/true # comment to satisfy puppet syntax requirements
-set -ex
-ceph fs new ${name} ${metadata_pool} ${data_pool}",
-    unless  => "/bin/true # comment to satisfy puppet syntax requirements
-set -ex
-ceph fs ls | grep 'name: ${name},'",
+    command => "ceph fs new ${name} ${metadata_pool} ${data_pool}",
+    unless  => "ceph fs ls | grep 'name: ${name},'",
+    path    => ['/bin', '/usr/bin'],
     timeout => $exec_timeout_real,
   }
 }
