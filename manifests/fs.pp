@@ -39,7 +39,7 @@
 define ceph::fs (
   $metadata_pool,
   $data_pool,
-  $exec_timeout = undef,
+  Optional[Float[0]] $exec_timeout = undef,
 ) {
 
   include ceph::params
