@@ -66,31 +66,24 @@ class ceph::rgw::keystone::auth (
 
   include openstacklib::openstackclient
 
-  ensure_resource('keystone_service', "${service_name}::${service_type}", {
-    'ensure'      => 'present',
-    'description' => $service_description,
-  } )
+  Keystone::Resource::Service_identity['rgw'] -> Service<| tag == 'ceph-radosgw' |>
 
-  ensure_resource('keystone_endpoint', "${region}/${service_name}::${service_type}", {
-    'ensure'       => 'present',
-    'public_url'   => $public_url,
-    'admin_url'    => $admin_url,
-    'internal_url' => $internal_url,
-  } )
-
-  keystone_user { $user:
-    ensure   => present,
-    password => $password,
-    email    => $email,
-  }
-
-  ensure_resource('keystone_role', $roles, {
-    'ensure' => 'present'
-  } )
-
-  keystone_user_role { "${user}@${tenant}":
-    ensure => present,
-    roles  => $roles,
+  keystone::resource::service_identity { 'rgw':
+    configure_user      => true,
+    configure_user_role => true,
+    configure_endpoint  => true,
+    service_name        => $service_name,
+    service_type        => $service_type,
+    service_description => $service_description,
+    region              => $region,
+    auth_name           => $user,
+    password            => $password,
+    email               => $email,
+    tenant              => $tenant,
+    roles               => $roles,
+    public_url          => $public_url,
+    internal_url        => $internal_url,
+    admin_url           => $admin_url,
   }
 }
 
