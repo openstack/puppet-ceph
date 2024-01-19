@@ -1,0 +1,5 @@
+---
+deprecations:
+  - |
+    The ``file_path`` property of the ``ceph_config`` resource type has been
+    deprecated.

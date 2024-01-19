@@ -29,9 +29,11 @@ Puppet::Type.newtype(:ceph_config) do
   # Note: purge will not work on over-ridden file_path
   # lifted from ini_file
   newparam(:path) do
-    desc 'A file path to over ride the default file path if necessary'
+    desc 'A file path to over ride the default file path if necessary (DEPRECATED)'
     validate do |value|
-      unless (Puppet.features.posix? and value =~ /^\//) or (Puppet.features.microsoft_windows? and (value =~ /^.:\// or value =~ /^\/\/[^\/]+\/[^\/]+/))
+      warning('The path property is deprecated and will be removed in a future release')
+
+      unless value =~ /^\//
         raise(Puppet::Error, "File paths must be fully qualified, not '#{value}'")
       end
     end
