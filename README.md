@@ -29,7 +29,7 @@ The ceph module is intended to leverage all [Ceph](http://ceph.com/) has to offe
 Module Description
 ------------------
 
-The ceph module deploys a [Ceph](http://ceph.com/) cluster ( MON, OSD ), the [Cephfs](http://docs.ceph.com/docs/master/cephfs/) file system and the [RadosGW](http://docs.ceph.com/docs/firefly/radosgw/) object store. It provides integration with various environments ( OpenStack ... ) and components to be used by third party puppet modules that depend on a Ceph cluster.
+The ceph module deploys a [Ceph](http://ceph.com/) cluster ( MON, OSD ), the [Cephfs](http://docs.ceph.com/docs/master/cephfs/) file system and the [RadosGW](https://docs.ceph.com/docs/master/radosgw/) object store. It provides integration with various environments ( OpenStack ... ) and components to be used by third party puppet modules that depend on a Ceph cluster.
 
 Setup
 -----
@@ -72,8 +72,8 @@ The developer documentation of the puppet-openstack project is the reference:
 
 Mailing lists:
 
-* [puppet-openstack](https://groups.google.com/a/puppetlabs.com/forum/#!forum/puppet-openstack)
-* [ceph-devel](http://ceph.com/resources/mailing-list-irc/)
+* [openstack-discuss](https://lists.openstack.org/pipermail/openstack-discuss/)
+* [ceph-devel](https://ceph.com/en/community/connect/)
 
 IRC channels:
 
