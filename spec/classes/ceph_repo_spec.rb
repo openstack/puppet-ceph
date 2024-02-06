@@ -417,11 +417,7 @@ describe 'ceph::repo' do
 
       if facts[:os]['name'] == 'CentOS'
         let (:platform_params) do
-          if facts[:os]['release']['major'].to_i >= 9
-            { :centos_mirror => 'https://mirror.stream.centos.org/SIGs' }
-          else
-            { :centos_mirror => 'http://mirror.centos.org/centos' }
-          end
+          { :centos_mirror => 'https://mirror.stream.centos.org/SIGs' }
         end
         it_behaves_like 'ceph::repo on CentOS'
       end

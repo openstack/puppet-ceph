@@ -118,12 +118,7 @@ not on ${facts['os']['name']}, which can lead to packaging issues.")
         if $ceph_mirror {
           $ceph_mirror_real = $ceph_mirror
         } else {
-          # NOTE(tobias-urdin): mirror.centos.org doesnt have https support
-          if versioncmp($el, '9') >= 0 {
-            $centos_mirror = 'https://mirror.stream.centos.org/SIGs'
-          } else {
-            $centos_mirror = 'http://mirror.centos.org/centos'
-          }
+          $centos_mirror = 'https://mirror.stream.centos.org/SIGs'
           $ceph_mirror_real = "${centos_mirror}/${el}-stream/storage/x86_64/ceph-${release}/"
         }
         yumrepo { 'ceph-storage-sig':

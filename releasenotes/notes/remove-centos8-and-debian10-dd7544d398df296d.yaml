@@ -1,0 +1,4 @@
+---
+upgrade:
+  - |
+    CentOS 8, RHEL 8 and Debian 10 are no longer supported.
