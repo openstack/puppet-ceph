@@ -7,17 +7,17 @@
       - release-notes-jobs-python3
     check:
       jobs:
-        - puppet-ceph-unit-6.21-ubuntu-focal-yoga
+        - puppet-ceph-unit-6.28-ubuntu-focal-zed
     gate:
       jobs:
-        - puppet-ceph-unit-6.21-ubuntu-focal-yoga
+        - puppet-ceph-unit-6.28-ubuntu-focal-zed
 
-# NOTE(tkajinam): stable/yoga supports CentOS 8, Ubuntu 20.04 and Puppet 6
+# NOTE(tkajinam): stable/zed supports Ubuntu 20.04 and Puppet 6
 - job:
-    name: puppet-ceph-unit-6.21-ubuntu-focal-yoga
+    name: puppet-ceph-unit-6.28-ubuntu-focal-zed
     parent: puppet-openstack-unit-base
     nodeset: ubuntu-focal
-    override-checkout: stable/yoga
+    override-checkout: stable/zed
     vars:
-      puppet_gem_version: 6.21.1
+      puppet_gem_version: 6.28.0
       rspec_puppet_version: '= 2.9.0'
