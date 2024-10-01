@@ -84,7 +84,7 @@ define ceph::key (
   $cap_mgr = undef,
   $user = 'root',
   $group = 'root',
-  $mode = '0600',
+  Stdlib::Filemode $mode = '0600',
   Boolean $inject = false,
   $inject_as_id = undef,
   $inject_keyring = undef,
