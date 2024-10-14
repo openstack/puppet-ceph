@@ -20,51 +20,33 @@ require 'spec_helper'
 
 describe 'ceph::pool' do
   shared_examples 'ceph pool' do
-    describe "create with custom params" do
-      let :title do
-        'volumes'
-      end
+    let :title do
+      'volumes'
+    end
 
+    describe "create with custom params" do
       let :params do
         {
           :ensure  => 'present',
-          :pg_num  => 3,
-          :pgp_num => 4,
+          :pg_num  => 4,
+          :pgp_num => 3,
           :size    => 2,
           :tag     => 'rbd',
         }
       end
 
       it {
-        should contain_exec('create-volumes').with(
-          :command => 'ceph osd pool create volumes 3',
-          :path    => ['/bin', '/usr/bin'],
+        should contain_ceph_pool('volumes').with(
+          :ensure      => 'present',
+          :pg_num      => 4,
+          :pgp_num     => 3,
+          :size        => 2,
+          :application => 'rbd',
         )
-        should contain_exec('set-volumes-pg_num').with(
-          :command => 'ceph osd pool set volumes pg_num 3',
-          :path    => ['/bin', '/usr/bin'],
-        )
-        should contain_exec('set-volumes-pgp_num').with(
-          :command => 'ceph osd pool set volumes pgp_num 4',
-          :path    => ['/bin', '/usr/bin'],
-        ).that_requires('Exec[set-volumes-pg_num]')
-        should contain_exec('set-volumes-size').with(
-          :command => 'ceph osd pool set volumes size 2',
-          :path    => ['/bin', '/usr/bin'],
-        )
-        should contain_exec('set-volumes-tag').with(
-          :command => 'ceph osd pool application enable volumes rbd',
-          :path    => ['/bin', '/usr/bin'],
-        )
-        should_not contain_exec('delete-volumes')
       }
     end
 
     describe "delete with custom params" do
-      let :title do
-        'volumes'
-      end
-
       let :params do
         {
           :ensure => 'absent',
@@ -72,10 +54,8 @@ describe 'ceph::pool' do
       end
 
       it {
-        should_not contain_exec('create-volumes')
-        should contain_exec('delete-volumes').with(
-          :command => 'ceph osd pool delete volumes volumes --yes-i-really-really-mean-it',
-          :path    => ['/bin', '/usr/bin'],
+        should contain_ceph_pool('volumes').with(
+          :ensure => 'absent'
         )
       }
     end
