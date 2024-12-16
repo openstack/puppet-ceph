@@ -56,11 +56,6 @@
 # [*ceph_mirror*] Ceph mirror used to download packages.
 #   Optional. Defaults to undef.
 #
-# DEPRECATED PARAMETERS
-#
-# [*stream*] Whether this is CentOS Stream or not. This parameter is used in CentOS only.
-#   Optional. Defaults to undef
-#
 class ceph::repo (
   $ensure              = present,
   String[1] $release   = $ceph::params::release,
@@ -70,13 +65,7 @@ class ceph::repo (
   Boolean $enable_epel = true,
   Boolean $enable_sig  = $ceph::params::enable_sig,
   $ceph_mirror         = undef,
-  # DEPRECATED PARAMETERS
-  $stream              = undef,
 ) inherits ceph::params {
-
-  if $stream != undef {
-    warning('The stream parameter has been deprecated and has no effect.')
-  }
 
   case $facts['os']['family'] {
     'Debian': {

@@ -1,0 +1,4 @@
+---
+upgrade:
+  - |
+    The ``ceph::repo::stream`` parameter has been removed.
