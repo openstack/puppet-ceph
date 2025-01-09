@@ -30,6 +30,9 @@
 #   Optional. Defaults to present.
 #   If set to absent, it will drop the pool and all its data.
 #
+# [*cluster*] The ceph cluster
+#   Optional. Defaults to ceph.
+#
 # [*pg_num*] Number of PGs for the pool.
 #   Optional. Default is 64 ( but you probably want to pass a value here ).
 #   Number of Placement Groups (PGs) for a pool, if the pool already
@@ -47,84 +50,43 @@
 #   Optional. Default is undef.
 #   cephfs,rbd,rgw or freeform for custom application.
 #
+# DEPRECATED PARAMETERS
+#
 # [*exec_timeout*] The default exec resource timeout, in seconds
 #   Optional. Defaults to $ceph::params::exec_timeout
 #
 define ceph::pool (
   Enum['present', 'absent'] $ensure = present,
-  $pg_num = 64,
-  $pgp_num = undef,
-  $size = undef,
-  $tag = undef,
+  String[1] $cluster = 'ceph',
+  Integer[0] $pg_num = 64,
+  Optional[Integer[0]] $pgp_num = undef,
+  Optional[Integer[0]] $size = undef,
+  Optional[String[1]] $tag = undef,
+  # DEPRECATED PARAMETERS
   Optional[Float[0]] $exec_timeout = undef,
 ) {
 
   include ceph::params
-  $exec_timeout_real = $exec_timeout ? {
-    undef   => $ceph::params::exec_timeout,
-    default => $exec_timeout,
+
+  if $exec_timeout {
+    warning('The exec_timeout parameter is deprecated and has no effect')
   }
 
-  if $ensure == present {
-
-    Ceph_config<||> -> Exec["create-${name}"]
-    Ceph::Mon<||> -> Exec["create-${name}"]
-    Ceph::Key<||> -> Exec["create-${name}"]
-    Ceph::Osd<||> -> Exec["create-${name}"]
-    exec { "create-${name}":
-      command => "ceph osd pool create ${name} ${pg_num}",
-      unless  => "ceph osd pool ls | grep -w '${name}'",
-      path    => ['/bin', '/usr/bin'],
-      timeout => $exec_timeout_real,
-    }
-
-    exec { "set-${name}-pg_num":
-      command => "ceph osd pool set ${name} pg_num ${pg_num}",
-      unless  => "test $(ceph osd pool get ${name} pg_num | sed 's/.*:\s*//g') -ge ${pg_num}",
-      path    => ['/bin', '/usr/bin'],
-      require => Exec["create-${name}"],
-      timeout => $exec_timeout_real,
-    }
-
-    if $pgp_num {
-      exec { "set-${name}-pgp_num":
-        command => "ceph osd pool set ${name} pgp_num ${pgp_num}",
-        unless  => "test $(ceph osd pool get ${name} pgp_num | sed 's/.*:\s*//g') -ge ${pgp_num}",
-        path    => ['/bin', '/usr/bin'],
-        require => [Exec["create-${name}"], Exec["set-${name}-pg_num"]],
-        timeout => $exec_timeout_real,
-      }
-    }
-
-    if $size {
-      exec { "set-${name}-size":
-        command => "ceph osd pool set ${name} size ${size}",
-        unless  => "test $(ceph osd pool get ${name} size | sed 's/.*:\s*//g') -eq ${size}",
-        path    => ['/bin', '/usr/bin'],
-        require => Exec["create-${name}"],
-        timeout => $exec_timeout_real,
-      }
-    }
-
-    if $tag {
-      exec { "set-${name}-tag":
-        command => "ceph osd pool application enable ${name} ${tag}",
-        unless  => "ceph osd pool application get ${name} ${tag}",
-        path    => ['/bin', '/usr/bin'],
-        require => Exec["create-${name}"],
-        timeout => $exec_timeout_real,
-      }
-    }
-
-  } else {
-
-    exec { "delete-${name}":
-      command => "ceph osd pool delete ${name} ${name} --yes-i-really-really-mean-it",
-      onlyif  => "ceph osd pool ls | grep -w '${name}'",
-      path    => ['/bin', '/usr/bin'],
-      timeout => $exec_timeout_real,
-    } -> Ceph::Mon<| ensure == absent |>
-
+  if $pgp_num and ($pgp_num > $pg_num) {
+    fail('pgp_num should not exceed pg_num')
   }
 
+  Ceph_config<||> -> Ceph_pool[$name]
+  Ceph::Mon<||> -> Ceph_pool[$name]
+  Ceph::Key<||> -> Ceph_pool[$name]
+  Ceph::Osd<||> -> Ceph_pool[$name]
+
+  ceph_pool { $name:
+    ensure      => $ensure,
+    pg_num      => $pg_num,
+    pgp_num     => $pgp_num,
+    size        => $size,
+    cluster     => $cluster,
+    application => $tag,
+  }
 }

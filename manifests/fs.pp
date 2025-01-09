@@ -33,28 +33,38 @@
 # [*data_pool*] Name of a pool used for storing data.
 #   Mandatory. Get one with `ceph osd pool ls`
 #
+# [*ensure*] Creates ( present ) or removes ( absent ) a file system.
+#   Optional. Defaults to present.
+#   If set to absent, it will drop the fs.
+#
+# [*cluster*] The ceph cluster
+#   Optional. Defaults to ceph.
+#
+# DEPRECATED PARAMETERS
+#
 # [*exec_timeout*] The default exec resource timeout, in seconds
 #   Optional. Defaults to $ceph::params::exec_timeout
 #
 define ceph::fs (
-  $metadata_pool,
-  $data_pool,
+  String[1] $metadata_pool,
+  String[1] $data_pool,
+  Enum['present', 'absent'] $ensure = present,
+  String[1] $cluster = 'ceph',
+  # DEPRECATED PARAMETERS
   Optional[Float[0]] $exec_timeout = undef,
 ) {
 
-  include ceph::params
-  $exec_timeout_real = $exec_timeout ? {
-    undef   => $ceph::params::exec_timeout,
-    default => $exec_timeout,
+  if $exec_timeout {
+    warning('The exec_timeout parameter is deprecated and has no effect')
   }
 
-  Ceph_config<||> -> Exec["create-fs-${name}"]
-  Ceph::Pool<||> -> Exec["create-fs-${name}"]
+  Ceph_config<||> -> Ceph_fs[$name]
+  Ceph::Pool<||> -> Ceph_fs[$name]
 
-  exec { "create-fs-${name}":
-    command => "ceph fs new ${name} ${metadata_pool} ${data_pool}",
-    unless  => "ceph fs ls | grep 'name: ${name},'",
-    path    => ['/bin', '/usr/bin'],
-    timeout => $exec_timeout_real,
+  ceph_fs { $name:
+    ensure             => $ensure,
+    metadata_pool_name => $metadata_pool,
+    data_pool_name     => $data_pool,
+    cluster            => $cluster,
   }
 }

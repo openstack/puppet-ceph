@@ -24,15 +24,15 @@ describe 'ceph::fs' do
 
       let :params do
         {
-          :metadata_pool => 'metadata_pool',
-          :data_pool     => 'data_pool'
+          :metadata_pool => 'metadata',
+          :data_pool     => 'data'
         }
       end
 
-      it { should contain_exec('create-fs-fsa').with(
-        :command => "ceph fs new fsa metadata_pool data_pool",
-        :unless  => "ceph fs ls | grep 'name: fsa,'",
-        :path    => ['/bin', '/usr/bin'],
+      it { should contain_ceph_fs('fsa').with(
+        :ensure             => 'present',
+        :metadata_pool_name => 'metadata',
+        :data_pool_name     => 'data',
       )}
     end
   end
