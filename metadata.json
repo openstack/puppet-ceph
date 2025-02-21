@@ -1,6 +1,6 @@
 {
     "name": "openstack-ceph",
-    "version": "6.0.0",
+    "version": "7.0.0",
     "author": "Puppet Ceph community and OpenStack Contributors",
     "summary": "Community Developed Ceph Module",
     "license": "Apache-2.0",
