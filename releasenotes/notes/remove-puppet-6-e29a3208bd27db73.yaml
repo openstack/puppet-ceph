@@ -1,0 +1,4 @@
+---
+upgrade:
+  - |
+    Puppet 6 support was formally removed.
