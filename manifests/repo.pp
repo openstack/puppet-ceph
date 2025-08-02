@@ -151,11 +151,6 @@ not on ${facts['os']['name']}, which can lead to packaging issues.")
           priority   => '10', # prefer ceph repos over EPEL
           tag        => 'ceph',
         }
-
-        # prefer ceph.com repos over EPEL
-        package { 'yum-plugin-priorities':
-          ensure => present,
-        }
       }
 
       if $enable_epel {
