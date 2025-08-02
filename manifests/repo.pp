@@ -164,7 +164,7 @@ not on ${facts['os']['name']}, which can lead to packaging issues.")
           mirrorlist => "http://mirrors.fedoraproject.org/metalink?repo=epel-${el}&arch=\$basearch",
           priority   => '20', # prefer ceph repos over EPEL
           tag        => 'ceph',
-          exclude    => 'python-ceph-compat python-rbd python-rados python-cephfs',
+          exclude    => 'python3-rbd python3-rados python3-cephfs',
         }
       }
 

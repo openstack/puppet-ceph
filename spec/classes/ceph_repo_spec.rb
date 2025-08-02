@@ -73,7 +73,7 @@ describe 'ceph::repo' do
         :gpgkey     => "https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-#{facts[:os]['release']['major']}",
         :mirrorlist => "http://mirrors.fedoraproject.org/metalink?repo=epel-#{facts[:os]['release']['major']}&arch=$basearch",
         :priority   => '20',
-        :exclude    => 'python-ceph-compat python-rbd python-rados python-cephfs',
+        :exclude    => 'python3-rbd python3-rados python3-cephfs',
       )}
 
       it { should contain_yumrepo('ext-ceph').with(
@@ -115,7 +115,7 @@ describe 'ceph::repo' do
         :gpgkey     => "https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-#{facts[:os]['release']['major']}",
         :mirrorlist => "http://mirrors.fedoraproject.org/metalink?repo=epel-#{facts[:os]['release']['major']}&arch=$basearch",
         :priority   => '20',
-        :exclude    => 'python-ceph-compat python-rbd python-rados python-cephfs',
+        :exclude    => 'python3-rbd python3-rados python3-cephfs',
       )}
 
       it { should contain_yumrepo('ext-ceph').with(
@@ -169,7 +169,7 @@ describe 'ceph::repo' do
         :gpgkey         => "https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-#{facts[:os]['release']['major']}",
         :mirrorlist     => "http://mirrors.fedoraproject.org/metalink?repo=epel-#{facts[:os]['release']['major']}&arch=$basearch",
         :priority       => '20',
-        :exclude        => 'python-ceph-compat python-rbd python-rados python-cephfs',
+        :exclude        => 'python3-rbd python3-rados python3-cephfs',
         :proxy          => 'http://someproxy.com:8080/',
         :proxy_username => 'proxyuser',
         :proxy_password => 'proxypassword',
@@ -220,7 +220,7 @@ describe 'ceph::repo' do
         :gpgkey     => "https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-#{facts[:os]['release']['major']}",
         :mirrorlist => "http://mirrors.fedoraproject.org/metalink?repo=epel-#{facts[:os]['release']['major']}&arch=$basearch",
         :priority   => '20',
-        :exclude    => 'python-ceph-compat python-rbd python-rados python-cephfs',
+        :exclude    => 'python3-rbd python3-rados python3-cephfs',
       )}
 
       it { should contain_yumrepo('ext-ceph').with(
@@ -258,7 +258,7 @@ describe 'ceph::repo' do
         :gpgkey     => "https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-#{facts[:os]['release']['major']}",
         :mirrorlist => "http://mirrors.fedoraproject.org/metalink?repo=epel-#{facts[:os]['release']['major']}&arch=$basearch",
         :priority   => '20',
-        :exclude    => 'python-ceph-compat python-rbd python-rados python-cephfs',
+        :exclude    => 'python3-rbd python3-rados python3-cephfs',
       )}
 
       it { should contain_yumrepo('ext-ceph').with(
@@ -300,7 +300,7 @@ describe 'ceph::repo' do
         :gpgkey     => "https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-#{facts[:os]['release']['major']}",
         :mirrorlist => "http://mirrors.fedoraproject.org/metalink?repo=epel-#{facts[:os]['release']['major']}&arch=$basearch",
         :priority   => '20',
-        :exclude    => 'python-ceph-compat python-rbd python-rados python-cephfs',
+        :exclude    => 'python3-rbd python3-rados python3-cephfs',
       )}
 
       it { should contain_yumrepo('ext-ceph').with(
@@ -378,7 +378,7 @@ describe 'ceph::repo' do
         :gpgkey     => "https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-#{facts[:os]['release']['major']}",
         :mirrorlist => "http://mirrors.fedoraproject.org/metalink?repo=epel-#{facts[:os]['release']['major']}&arch=$basearch",
         :priority   => '20',
-        :exclude    => 'python-ceph-compat python-rbd python-rados python-cephfs',
+        :exclude    => 'python3-rbd python3-rados python3-cephfs',
       )}
 
       it { should contain_yumrepo('ext-ceph').with(
