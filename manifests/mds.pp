@@ -84,7 +84,7 @@ class ceph::mds (
   service { $mds_service_name:
     ensure => $mds_ensure,
     enable => $mds_enable,
-    tag    => ['ceph-mds']
+    tag    => ['ceph-mds'],
   }
 
   package { $pkg_mds:

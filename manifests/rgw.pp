@@ -180,7 +180,7 @@ define ceph::rgw (
 
   # Log file for radosgw (ownership)
   file { $log_file:
-    ensure                  => present,
+    ensure                  => file,
     owner                   => $user_real,
     mode                    => '0640',
     selinux_ignore_defaults => true,
@@ -194,7 +194,7 @@ define ceph::rgw (
     ensure => $rgw_ensure,
     enable => $rgw_enable,
     name   => "ceph-radosgw@${name}",
-    tag    => ['ceph-radosgw']
+    tag    => ['ceph-radosgw'],
   }
 
   Ceph_config<||> ~> Service<| tag == 'ceph-radosgw' |>

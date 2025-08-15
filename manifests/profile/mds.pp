@@ -35,7 +35,7 @@ class ceph::profile::mds {
       keyring_path => "/var/lib/ceph/mds/ceph-${facts['networking']['hostname']}/keyring",
       secret       => $ceph::profile::params::mds_key,
       user         => 'ceph',
-      group        => 'ceph'
+      group        => 'ceph',
     } -> Service<| tag == 'ceph-mds' |>
   }
 }

@@ -28,7 +28,7 @@ class ceph::profile::client {
   if ! defined(Class['ceph::keys']) {
     if !empty($ceph::profile::params::client_keys) {
       class { 'ceph::keys':
-        args => $ceph::profile::params::client_keys
+        args => $ceph::profile::params::client_keys,
       }
     }
   }

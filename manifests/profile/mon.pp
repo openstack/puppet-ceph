@@ -39,7 +39,7 @@ class ceph::profile::mon {
   if !empty($ceph::profile::params::client_keys) {
     class { 'ceph::keys':
       args     => $ceph::profile::params::client_keys,
-      defaults => $defaults
+      defaults => $defaults,
     }
   }
 }

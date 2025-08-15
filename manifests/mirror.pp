@@ -50,7 +50,7 @@ define ceph::mirror (
     ensure => $rbd_mirror_ensure,
     enable => $rbd_mirror_enable,
     name   => $service_name,
-    tag    => ['ceph-rbd-mirror']
+    tag    => ['ceph-rbd-mirror'],
   }
 
   Ceph_config<||> ~> Service<| tag == 'ceph-rbd-mirror' |>

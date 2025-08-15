@@ -174,7 +174,7 @@ class ceph (
 
   package { $ceph::params::packages :
     ensure => $ensure,
-    tag    => 'ceph'
+    tag    => 'ceph',
   }
 
   if $ensure !~ /(absent|purged)/ {
