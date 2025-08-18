@@ -194,7 +194,7 @@ ceph-volume lvm list ${data}
       tag       => 'prepare',
     }
     if (str2bool($facts['os']['selinux']['enabled']) == true) {
-      ensure_packages($ceph::params::pkg_policycoreutils, {'ensure' => 'present'})
+      stdlib::ensure_packages($ceph::params::pkg_policycoreutils, {'ensure' => 'present'})
       exec { "fcontext_${name}":
         command => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
