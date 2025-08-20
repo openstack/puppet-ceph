@@ -65,7 +65,6 @@ define ceph::pool (
   # DEPRECATED PARAMETERS
   Optional[Float[0]] $exec_timeout = undef,
 ) {
-
   include ceph::params
 
   if $exec_timeout {

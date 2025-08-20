@@ -35,12 +35,11 @@ define ceph::mirror (
   $rbd_mirror_ensure = 'running',
   $rbd_mirror_enable = true,
 ) {
-
   ensure_resource( 'package',
     $pkg_mirror,
     {
       ensure => present,
-      tag    => [ 'ceph' ],
+      tag    => ['ceph'],
     }
   )
 

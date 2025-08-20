@@ -53,7 +53,6 @@ define ceph::fs (
   # DEPRECATED PARAMETERS
   Optional[Float[0]] $exec_timeout = undef,
 ) {
-
   if $exec_timeout {
     warning('The exec_timeout parameter is deprecated and has no effect')
   }

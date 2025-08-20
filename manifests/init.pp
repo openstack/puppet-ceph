@@ -169,7 +169,6 @@ class ceph (
   $osd_op_threads                            = undef,
   $rbd_default_features                      = undef,
 ) {
-
   include ceph::params
 
   package { $ceph::params::packages :

@@ -27,7 +27,7 @@
 # [*defaults*] A config hash
 #   Optional. Defaults to an empty hash
 #
-class ceph::conf(
+class ceph::conf (
   Hash $args     = {},
   Hash $defaults = {}
 ) {

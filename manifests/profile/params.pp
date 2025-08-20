@@ -248,7 +248,6 @@ class ceph::profile::params (
   # DEPRECATED PARAMS
   $pid_max = undef,
 ) {
-
   if $pid_max != undef {
     warning('pid_max parameter is deprecated and has no effect.')
   }

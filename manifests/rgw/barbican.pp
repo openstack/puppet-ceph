@@ -51,7 +51,6 @@ define ceph::rgw::barbican (
   $rgw_keystone_barbican_password,
   $rgw_barbican_url               = 'http://127.0.0.1:9311',
 ) {
-
   unless $name =~ /^radosgw\..+/ {
     fail("Define name must be started with 'radosgw.'")
   }

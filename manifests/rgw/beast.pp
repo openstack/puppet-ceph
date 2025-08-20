@@ -24,7 +24,6 @@
 define ceph::rgw::beast (
   $rgw_frontends = ['beast', 'port=7480'],
 ) {
-
   unless $name =~ /^radosgw\..+/ {
     fail("Define name must be started with 'radosgw.'")
   }

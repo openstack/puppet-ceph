@@ -63,7 +63,6 @@ class ceph::rgw::keystone::auth (
   $service_name        = 'swift',
   $service_type        = 'object-store',
 ) {
-
   include openstacklib::openstackclient
 
   Keystone::Resource::Service_identity['rgw'] -> Service<| tag == 'ceph-radosgw' |>
@@ -86,4 +85,3 @@ class ceph::rgw::keystone::auth (
     admin_url           => $admin_url,
   }
 }
-

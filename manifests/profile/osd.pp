@@ -24,7 +24,7 @@ class ceph::profile::osd {
   require ceph::profile::client
 
   if $ceph::profile::params::fsid {
-    $osd_defaults = {'fsid' => $ceph::profile::params::fsid}
+    $osd_defaults = { 'fsid' => $ceph::profile::params::fsid }
   } else {
     $osd_defaults = {}
   }

@@ -66,7 +66,6 @@ class ceph::repo (
   Boolean $enable_sig  = $ceph::params::enable_sig,
   $ceph_mirror         = undef,
 ) inherits ceph::params {
-
   case $facts['os']['family'] {
     'Debian': {
       include apt
@@ -126,7 +125,6 @@ not on ${facts['os']['name']}, which can lead to packaging issues.")
           proxy_username => $proxy_username,
           proxy_password => $proxy_password,
         }
-
 
         yumrepo { 'ext-ceph':
           ensure     => $ensure,

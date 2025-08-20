@@ -108,7 +108,6 @@ define ceph::rgw (
   $rgw_swift_versioning_enabled         = false,
   $rgw_trust_forwarded_https            = false,
 ) {
-
   unless $name =~ /^radosgw\..+/ {
     fail("Define name must be started with 'radosgw.'")
   }
@@ -121,7 +120,7 @@ define ceph::rgw (
   if $rgw_enable_apis == undef {
     ceph_config { "client.${name}/rgw_enable_apis": ensure => absent }
   } else {
-    ceph_config { "client.${name}/rgw_enable_apis": value => join(any2array($rgw_enable_apis), ',')}
+    ceph_config { "client.${name}/rgw_enable_apis": value => join(any2array($rgw_enable_apis), ',') }
   }
 
   ceph_config {

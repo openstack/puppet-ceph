@@ -77,7 +77,6 @@ define ceph::rgw::keystone (
   $rgw_s3_auth_use_keystone          = true,
   $rgw_keystone_implicit_tenants     = true,
 ) {
-
   unless $name =~ /^radosgw\..+/ {
     fail("Define name must be started with 'radosgw.'")
   }

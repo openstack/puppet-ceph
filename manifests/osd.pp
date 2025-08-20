@@ -79,7 +79,6 @@ define ceph::osd (
   Boolean $dmcrypt = false,
   $dmcrypt_key_dir = '/etc/ceph/dmcrypt-keys',
 ) {
-
   include ceph::params
   $exec_timeout_real = $exec_timeout ? {
     undef   => $ceph::params::exec_timeout,
@@ -122,7 +121,6 @@ define ceph::osd (
   }
 
   if $ensure == present {
-
     $ceph_prepare = "ceph-osd-prepare-${name}"
     $ceph_activate = "ceph-osd-activate-${name}"
 
@@ -193,8 +191,9 @@ ceph-volume lvm list ${data}
       timeout   => $exec_timeout_real,
       tag       => 'prepare',
     }
-    if (str2bool($facts['os']['selinux']['enabled']) == true) {
-      stdlib::ensure_packages($ceph::params::pkg_policycoreutils, {'ensure' => 'present'})
+
+    if str2bool($facts['os']['selinux']['enabled']) == true {
+      stdlib::ensure_packages($ceph::params::pkg_policycoreutils, { 'ensure' => 'present' })
       exec { "fcontext_${name}":
         command => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
@@ -233,9 +232,7 @@ ps -fCceph-osd|grep \"\\--id \$id \"
       logoutput => true,
       tag       => 'activate',
     }
-
   } else {
-
     # ceph-disk: support osd removal http://tracker.ceph.com/issues/7454
     exec { "remove-osd-${name}":
       command   => "/bin/true # comment to satisfy puppet syntax requirements

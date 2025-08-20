@@ -89,7 +89,6 @@ define ceph::key (
   $inject_as_id = undef,
   $inject_keyring = undef,
 ) {
-
   include ceph::params
 
   $cluster_option = $cluster ? {
@@ -142,12 +141,11 @@ diff -N \$NEW_KEYRING ${keyring_path}
 rv=\$?
 rm \$NEW_KEYRING
 exit \$rv",
-    require   => [ File[$keyring_path], ],
+    require   => [File[$keyring_path]],
     logoutput => true,
   }
 
   if $inject {
-
     $inject_id_option = $inject_as_id ? {
       undef   => '',
       default => " --name '${inject_as_id}'"
@@ -176,9 +174,8 @@ rv=$?
 rm \$OLD_KEYRING
 rm \$TMP_KEYRING
 exit \$rv",
-      require   => [ Class['ceph'], Exec["ceph-key-${name}"], ],
+      require   => [Class['ceph'], Exec["ceph-key-${name}"]],
       logoutput => true,
     }
-
   }
 }

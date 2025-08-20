@@ -71,7 +71,7 @@ define ceph::rgw::apache_proxy_fcgi (
   $rgw_port             = 80,
   $rewrite_rule         = '.* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization},L]',
   $setenv               = 'proxy-nokeepalive 1',
-  $proxy_pass           = {'path' => '/', 'url' => 'fcgi://127.0.0.1:9000/'},
+  $proxy_pass           = { 'path' => '/', 'url' => 'fcgi://127.0.0.1:9000/' },
   $syslog               = true,
   $apache_mods          = false,
   $apache_vhost         = false,
@@ -79,7 +79,6 @@ define ceph::rgw::apache_proxy_fcgi (
   $apache_purge_vhost   = true,
   $custom_apache_ports  = undef,
 ) {
-
   include ceph::params
 
   class { 'apache':

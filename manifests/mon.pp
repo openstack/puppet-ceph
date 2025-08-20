@@ -88,7 +88,6 @@ define ceph::mon (
   $mon_service = "ceph-mon-${id}"
 
   if $ensure == present {
-
     $ceph_mkfs = "ceph-mon-mkfs-${id}"
 
     if $authentication_type == 'cephx' {
@@ -120,13 +119,10 @@ mon_data=\$(ceph-mon ${cluster_option} --id ${id} --show-config-value mon_data) 
 test -e \$mon_data/done
 ",
         }
-
         Exec["create-keyring-${id}"] -> Exec[$ceph_mkfs]
-
       } else {
         $keyring_path = $keyring
       }
-
     } else {
       $keyring_path = '/dev/null'
     }
@@ -208,7 +204,6 @@ test ! -e ${keyring_path}
         }
       }
     }
-
   } else {
     service { $mon_service:
       ensure => stopped,

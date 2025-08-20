@@ -35,13 +35,12 @@
 #   recovery. The recommended value is the absolute max for pid_max: 4194303
 #   http://docs.ceph.com/docs/nautilus/rados/troubleshooting/troubleshooting-osd/
 #
-class ceph::osds(
+class ceph::osds (
   $args     = {},
   $defaults = {},
   # DEPRECATED PARAMS
   $pid_max  = undef,
 ) {
-
   if $pid_max != undef {
     warning('pid_max parameter is deprecated and has no effect.')
   }
