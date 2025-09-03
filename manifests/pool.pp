@@ -46,9 +46,9 @@
 #   Optional. Default is undef.
 #   Increase or decrease the replica level of a pool.
 #
-# [*tag*] Pool tag.
+# [*application*] Application the pool is associated with.
 #   Optional. Default is undef.
-#   cephfs,rbd,rgw or freeform for custom application.
+#   cephfs, rbd, rgw or freeform for custom application.
 #
 # DEPRECATED PARAMETERS
 #
@@ -61,7 +61,7 @@ define ceph::pool (
   Integer[0] $pg_num = 64,
   Optional[Integer[0]] $pgp_num = undef,
   Optional[Integer[0]] $size = undef,
-  Optional[String[1]] $tag = undef,
+  Optional[String[1]] $application = undef,
   # DEPRECATED PARAMETERS
   Optional[Float[0]] $exec_timeout = undef,
 ) {
@@ -86,6 +86,6 @@ define ceph::pool (
     pgp_num     => $pgp_num,
     size        => $size,
     cluster     => $cluster,
-    application => $tag,
+    application => $application,
   }
 }

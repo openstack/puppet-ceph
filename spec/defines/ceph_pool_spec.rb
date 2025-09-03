@@ -27,11 +27,11 @@ describe 'ceph::pool' do
     describe "create with custom params" do
       let :params do
         {
-          :ensure  => 'present',
-          :pg_num  => 4,
-          :pgp_num => 3,
-          :size    => 2,
-          :tag     => 'rbd',
+          :ensure      => 'present',
+          :pg_num      => 4,
+          :pgp_num     => 3,
+          :size        => 2,
+          :application => 'rbd',
         }
       end
 

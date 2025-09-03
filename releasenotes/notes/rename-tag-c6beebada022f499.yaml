@@ -1,0 +1,5 @@
+---
+upgrade:
+  - |
+    The ``ceph::pool::tag`` parameter has been renamed to the ``application``
+    parameter, due to conflict with metaparameters.
