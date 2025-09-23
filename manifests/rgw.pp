@@ -163,10 +163,10 @@ define ceph::rgw (
     }
   }
 
-  package { $pkg_radosgw_real:
+  stdlib::ensure_packages( $pkg_radosgw_real, {
     ensure => installed,
     tag    => 'ceph',
-  }
+  })
 
   # Data directory for radosgw
   file { $rgw_data:
