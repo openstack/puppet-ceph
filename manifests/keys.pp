@@ -28,8 +28,8 @@
 #   Optional. Defaults to a empty hash.
 #
 class ceph::keys (
-  $args     = {},
-  $defaults = {},
+  Hash $args     = {},
+  Hash $defaults = {},
 ) {
   create_resources(ceph::key, $args, $defaults)
 }

@@ -28,6 +28,9 @@
 # [*pkg_radosgw*] Package name for the ceph radosgw.
 #   Optional. Default is osfamily dependent (check ceph::params).
 #
+# [*pkg_radosgw_ensure*] Ensure status for the ceph radosgw package resources
+#   Optional. Defaults to present.
+#
 # [*rgw_ensure*] Whether to start radosgw service.
 #   Optional. Default is running.
 #
@@ -88,25 +91,26 @@
 #   Optional. Default is false
 #
 define ceph::rgw (
-  $pkg_radosgw                          = undef,
-  $rgw_ensure                           = 'running',
-  $rgw_enable                           = true,
-  $rgw_enable_apis                      = undef,
-  Stdlib::Absolutepath $rgw_data        = "/var/lib/ceph/radosgw/ceph-${name}",
-  $user                                 = undef,
-  Stdlib::Absolutepath $keyring_path    = "/etc/ceph/ceph.client.${name}.keyring",
-  Stdlib::Absolutepath $log_file        = '/var/log/ceph/radosgw.log',
-  $rgw_dns_name                         = $facts['networking']['fqdn'],
-  $rgw_socket_path                      = undef,
-  $rgw_print_continue                   = false,
-  $rgw_port                             = undef,
-  $frontend_type                        = 'civetweb',
-  $rgw_frontends                        = undef,
-  $rgw_swift_url                        = "http://${facts['networking']['fqdn']}:7480",
-  $rgw_swift_url_prefix                 = 'swift',
-  $rgw_swift_account_in_url             = false,
-  $rgw_swift_versioning_enabled         = false,
-  $rgw_trust_forwarded_https            = false,
+  Optional[String[1]] $pkg_radosgw                              = undef,
+  Stdlib::Ensure::Package $pkg_radosgw_ensure                   = present,
+  Stdlib::Ensure::Service $rgw_ensure                           = 'running',
+  Boolean $rgw_enable                                           = true,
+  $rgw_enable_apis                                              = undef,
+  Stdlib::Absolutepath $rgw_data                                = "/var/lib/ceph/radosgw/ceph-${name}",
+  $user                                                         = undef,
+  Stdlib::Absolutepath $keyring_path                            = "/etc/ceph/ceph.client.${name}.keyring",
+  Stdlib::Absolutepath $log_file                                = '/var/log/ceph/radosgw.log',
+  $rgw_dns_name                                                 = $facts['networking']['fqdn'],
+  $rgw_socket_path                                              = undef,
+  Boolean $rgw_print_continue                                   = false,
+  $rgw_port                                                     = undef,
+  Enum['beast', 'civetweb', 'apache-proxy-fcgi'] $frontend_type = 'civetweb',
+  $rgw_frontends                                                = undef,
+  Stdlib::HTTPUrl $rgw_swift_url                                = "http://${facts['networking']['fqdn']}:7480",
+  String $rgw_swift_url_prefix                                  = 'swift',
+  Boolean $rgw_swift_account_in_url                             = false,
+  Boolean $rgw_swift_versioning_enabled                         = false,
+  Boolean $rgw_trust_forwarded_https                            = false,
 ) {
   unless $name =~ /^radosgw\..+/ {
     fail("Define name must be started with 'radosgw.'")
@@ -138,11 +142,6 @@ define ceph::rgw (
   }
 
   case $frontend_type {
-    'beast': {
-      ceph::rgw::beast { $name:
-        rgw_frontends => $rgw_frontends,
-      }
-    }
     'civetweb': {
       warning('civetweb frontend has been removed in quincy release.')
       ceph::rgw::civetweb { $name:
@@ -159,12 +158,15 @@ define ceph::rgw (
       }
     }
     default: {
-      fail("Unsupported frontend_type: ${frontend_type}")
+      # beast
+      ceph::rgw::beast { $name:
+        rgw_frontends => $rgw_frontends,
+      }
     }
   }
 
   stdlib::ensure_packages( $pkg_radosgw_real, {
-    ensure => installed,
+    ensure => $pkg_radosgw_ensure,
     tag    => 'ceph',
   })
 

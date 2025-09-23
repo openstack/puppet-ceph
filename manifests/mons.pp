@@ -28,8 +28,8 @@
 #   Optional. Defaults to a empty hash
 #
 class ceph::mons (
-  $args     = {},
-  $defaults = {},
+  Hash $args     = {},
+  Hash $defaults = {},
 ) {
   create_resources(ceph::mon, $args, $defaults)
 }

@@ -68,16 +68,16 @@
 #
 define ceph::osd (
   Enum['present', 'absent'] $ensure = present,
-  $journal = undef,
+  Optional[String[1]] $journal = undef,
   String[1] $cluster = 'ceph',
-  $bluestore_wal = undef,
-  $bluestore_db = undef,
+  Optional[String[1]] $bluestore_wal = undef,
+  Optional[String[1]] $bluestore_db = undef,
   Optional[Enum['filestore', 'bluestore']] $store_type = undef,
   Optional[Float[0]] $exec_timeout = undef,
-  $selinux_file_context = 'ceph_var_lib_t',
-  $fsid = undef,
+  String[1] $selinux_file_context = 'ceph_var_lib_t',
+  Optional[String[1]] $fsid = undef,
   Boolean $dmcrypt = false,
-  $dmcrypt_key_dir = '/etc/ceph/dmcrypt-keys',
+  Stdlib::Absolutepath $dmcrypt_key_dir = '/etc/ceph/dmcrypt-keys',
 ) {
   include ceph::params
   $exec_timeout_real = $exec_timeout ? {

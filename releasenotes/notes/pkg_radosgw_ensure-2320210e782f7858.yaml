@@ -1,0 +1,4 @@
+---
+features:
+  - |
+    The new ``ceph::rgw::pkg_radosgw_ensure`` parameter has been added.

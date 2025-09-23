@@ -57,14 +57,14 @@
 #   Optional. Defaults to undef.
 #
 class ceph::repo (
-  $ensure              = present,
-  String[1] $release   = $ceph::params::release,
-  $proxy               = undef,
-  $proxy_username      = undef,
-  $proxy_password      = undef,
-  Boolean $enable_epel = true,
-  Boolean $enable_sig  = $ceph::params::enable_sig,
-  $ceph_mirror         = undef,
+  Enum['present', 'absent'] $ensure = present,
+  String[1] $release                = $ceph::params::release,
+  $proxy                            = undef,
+  $proxy_username                   = undef,
+  $proxy_password                   = undef,
+  Boolean $enable_epel              = true,
+  Boolean $enable_sig               = $ceph::params::enable_sig,
+  $ceph_mirror                      = undef,
 ) inherits ceph::params {
   case $facts['os']['family'] {
     'Debian': {

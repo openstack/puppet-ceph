@@ -45,11 +45,11 @@
 #   Optional. Defaults to false
 #
 define ceph::mgr (
-  $enable                                    = true,
-  $ensure                                    = running,
-  $cluster                                   = 'ceph',
+  Boolean $enable                            = true,
+  Stdlib::Ensure::Service $ensure            = running,
+  String[1] $cluster                         = 'ceph',
   Enum['cephx', 'none'] $authentication_type = 'cephx',
-  $key                                       = undef,
+  Optional[String[1]] $key                   = undef,
   Boolean $inject_key                        = false,
 ) {
   file { "/var/lib/ceph/mgr/${cluster}-${name}":

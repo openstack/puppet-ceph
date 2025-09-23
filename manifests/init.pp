@@ -135,8 +135,8 @@
 #   Optional. String. Defaults to undef.
 #
 class ceph (
-  $fsid,
-  $ensure                                    = present,
+  String[1] $fsid,
+  Stdlib::Ensure::Package $ensure            = present,
   Enum['cephx', 'none'] $authentication_type = 'cephx',
   $keyring                                   = undef,
   $osd_journal_size                          = undef,

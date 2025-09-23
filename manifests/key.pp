@@ -75,8 +75,8 @@
 #   inferred from the client name. Default to undef.
 #
 define ceph::key (
-  $secret,
-  $cluster = undef,
+  String[1] $secret,
+  Optional[String[1]] $cluster = undef,
   Stdlib::Absolutepath $keyring_path = "/etc/ceph/ceph.${name}.keyring",
   $cap_mon = undef,
   $cap_osd = undef,

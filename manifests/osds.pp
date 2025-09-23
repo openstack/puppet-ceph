@@ -36,10 +36,10 @@
 #   http://docs.ceph.com/docs/nautilus/rados/troubleshooting/troubleshooting-osd/
 #
 class ceph::osds (
-  $args     = {},
-  $defaults = {},
+  Hash $args     = {},
+  Hash $defaults = {},
   # DEPRECATED PARAMS
-  $pid_max  = undef,
+  $pid_max       = undef,
 ) {
   if $pid_max != undef {
     warning('pid_max parameter is deprecated and has no effect.')

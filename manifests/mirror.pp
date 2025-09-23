@@ -31,9 +31,9 @@
 #   Optional. Default is true
 
 define ceph::mirror (
-  $pkg_mirror        = 'rbd-mirror',
-  $rbd_mirror_ensure = 'running',
-  $rbd_mirror_enable = true,
+  String[1] $pkg_mirror                      = 'rbd-mirror',
+  Stdlib::Ensure::Service $rbd_mirror_ensure = 'running',
+  Boolean $rbd_mirror_enable                 = true,
 ) {
   ensure_resource( 'package',
     $pkg_mirror,

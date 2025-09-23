@@ -59,12 +59,12 @@
 #
 define ceph::mon (
   Enum['present', 'absent'] $ensure = present,
-  $mon_enable = true,
-  $public_addr = undef,
-  $cluster = undef,
+  Boolean $mon_enable = true,
+  Optional[Stdlib::IP::Address] $public_addr = undef,
+  Optional[String[1]] $cluster = undef,
   Enum['cephx', 'none'] $authentication_type = 'cephx',
-  $key = undef,
-  $keyring  = undef,
+  Optional[String[1]] $key = undef,
+  Optional[Stdlib::Absolutepath] $keyring  = undef,
   Optional[Float[0]] $exec_timeout = undef,
 ) {
   include ceph::params
