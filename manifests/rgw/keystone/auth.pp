@@ -6,6 +6,9 @@
 #
 # [*password*]
 #   Password for the RGW user. Required.
+#   The value may be wrapped in Sensitive. Note that the password is passed
+#   on to keystone::resource::service_identity as a plain string because
+#   that resource does not accept a Sensitive value.
 #
 # [*user*]
 #   Username for the RGW user. Required.
@@ -50,7 +53,7 @@
 #   Defaults to 'object-store'.
 #
 class ceph::rgw::keystone::auth (
-  $password,
+  Variant[String[1], Sensitive[String[1]]] $password,
   $user,
   $tenant,
   $email               = 'rgwuser@localhost',
@@ -67,6 +70,12 @@ class ceph::rgw::keystone::auth (
 
   Keystone::Resource::Service_identity['rgw'] -> Service<| tag == 'ceph-radosgw' |>
 
+  # keystone::resource::service_identity expects a plain string for the
+  # password, so unwrap the value here. Sensitive() returns the value as-is
+  # when it is already a Sensitive, so this works for both plain and
+  # Sensitive values.
+  $password_unwrapped = Sensitive($password).unwrap
+
   keystone::resource::service_identity { 'rgw':
     configure_user      => true,
     configure_user_role => true,
@@ -76,7 +85,7 @@ class ceph::rgw::keystone::auth (
     service_description => $service_description,
     region              => $region,
     auth_name           => $user,
-    password            => $password,
+    password            => $password_unwrapped,
     email               => $email,
     tenant              => $tenant,
     roles               => $roles,

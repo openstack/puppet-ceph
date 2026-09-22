@@ -23,9 +23,13 @@ describe 'ceph::profile::mon' do
 
     it { should contain_ceph__mon('foo').with(
       :authentication_type => 'cephx',
-      :key                 => 'AQATGHJTUCBqIBAA7M2yafV1xctn1pgr3GcKPg==',
+      :key                 => sensitive('AQATGHJTUCBqIBAA7M2yafV1xctn1pgr3GcKPg=='),
       :public_addr         => '10.11.12.2')
     }
+    it { should contain_ceph__key('client.admin').with(
+      :secret => sensitive('AQBMGHJTkC8HKhAAJ7NH255wYypgm1oVuV41MA=='),
+      :inject => true,
+    )}
     it { should contain_class('ceph::keys').with(
       'args' => {
         'client.admin' => {

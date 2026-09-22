@@ -23,12 +23,38 @@ describe 'ceph::key' do
     "class { 'ceph': fsid => 'foo' }"
   end
 
-  shared_examples 'ceph key' do
-    describe "with custom params" do
-      let :title do
-        'client.admin'
-      end
+  shared_examples 'ceph key with secret' do
+    it 'should embed the secret in the commands as a sensitive value' do
+      should contain_exec('ceph-key-client.admin').with(
+        :command   => sensitive("/bin/true # comment to satisfy puppet syntax requirements\nset -ex\nceph-authtool /etc/ceph/ceph.client.admin.keyring --name 'client.admin' --add-key 'supersecret' --cap mon 'allow *' --cap osd 'allow rw' --cap mgr 'allow *'"),
+        :unless    => sensitive("/bin/true # comment to satisfy puppet syntax requirements\nset -x\nNEW_KEYRING=$(mktemp)\nceph-authtool $NEW_KEYRING --name 'client.admin' --add-key 'supersecret' --cap mon 'allow *' --cap osd 'allow rw' --cap mgr 'allow *'\ndiff -N $NEW_KEYRING /etc/ceph/ceph.client.admin.keyring\nrv=$?\nrm $NEW_KEYRING\nexit $rv"),
+        :require   => ['File[/etc/ceph/ceph.client.admin.keyring]'],
+        :logoutput => true,
+      )
+    end
 
+    it {
+      should contain_file('/etc/ceph/ceph.client.admin.keyring').with(
+        :owner                   => 'nobody',
+        :group                   => 'nogroup',
+        :mode                    => '0600',
+        :selinux_ignore_defaults => true,
+      )
+    }
+
+    it {
+      should contain_exec('ceph-injectkey-client.admin').with(
+        :command => "/bin/true # comment to satisfy puppet syntax requirements\nset -ex\nceph auth import -i /etc/ceph/ceph.client.admin.keyring"
+      )
+    }
+  end
+
+  shared_examples 'ceph key' do
+    let :title do
+      'client.admin'
+    end
+
+    describe "with custom params" do
       let :params do
         {
           :secret  => 'supersecret',
@@ -41,20 +67,33 @@ describe 'ceph::key' do
         }
       end
 
-      it {
-        should contain_exec('ceph-key-client.admin').with(
-          :command => "/bin/true # comment to satisfy puppet syntax requirements\nset -ex\nceph-authtool /etc/ceph/ceph.client.admin.keyring --name 'client.admin' --add-key 'supersecret' --cap mon 'allow *' --cap osd 'allow rw' --cap mgr 'allow *'"
-        )
-        should contain_file('/etc/ceph/ceph.client.admin.keyring').with(
-          :owner                   => 'nobody',
-          :group                   => 'nogroup',
-          :mode                    => '0600',
-          :selinux_ignore_defaults => true,
-        )
-        should contain_exec('ceph-injectkey-client.admin').with(
-          :command => "/bin/true # comment to satisfy puppet syntax requirements\nset -ex\nceph auth import -i /etc/ceph/ceph.client.admin.keyring"
-        )
-      }
+      it_behaves_like 'ceph key with secret'
+    end
+
+    describe "with a sensitive secret" do
+      let :params do
+        {
+          :secret  => sensitive('supersecret'),
+          :user    => 'nobody',
+          :group   => 'nogroup',
+          :cap_mon => 'allow *',
+          :cap_osd => 'allow rw',
+          :cap_mgr => 'allow *',
+          :inject  => true,
+        }
+      end
+
+      it_behaves_like 'ceph key with secret'
+    end
+
+    describe "with an empty secret" do
+      let :params do
+        {
+          :secret => '',
+        }
+      end
+
+      it { should raise_error(Puppet::Error) }
     end
   end
 

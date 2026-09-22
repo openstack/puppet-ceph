@@ -43,8 +43,9 @@ describe 'ceph::mon' do
 
       it { should contain_service('ceph-mon-A').with('ensure' => 'running') }
 
-      it { should contain_exec('create-keyring-A').with(
-        :command => '/bin/true # comment to satisfy puppet syntax requirements
+      it 'should embed the key in the command as a sensitive value' do
+        should contain_exec('create-keyring-A').with(
+          :command => sensitive('/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 cat > /tmp/ceph-mon-keyring-A << EOF
 [mon.]
@@ -53,13 +54,14 @@ cat > /tmp/ceph-mon-keyring-A << EOF
 EOF
 
 chmod 0444 /tmp/ceph-mon-keyring-A
-',
-        :unless  => '/bin/true # comment to satisfy puppet syntax requirements
+'),
+          :unless  => '/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 mon_data=$(ceph-mon --cluster ceph --id A --show-config-value mon_data) || exit 1
 # if ceph-mon fails then the mon is probably not configured yet
 test -e $mon_data/done
-')}
+')
+      end
 
       it { should contain_exec('ceph-mon-ceph.client.admin.keyring-A').with(
         :command => '/bin/true # comment to satisfy puppet syntax requirements
@@ -108,6 +110,62 @@ fi
 set -ex
 test ! -e /tmp/ceph-mon-keyring-A
 ')}
+    end
+
+    context 'with sensitive key' do
+      let :title do
+        'A'
+      end
+
+      let :params do
+        {
+          :key => sensitive('AQATGHJTUCBqIBAA7M2yafV1xctn1pgr3GcKPg=='),
+        }
+      end
+
+      it { should contain_service('ceph-mon-A').with('ensure' => 'running') }
+
+      it 'should embed the key in the command as a sensitive value' do
+        should contain_exec('create-keyring-A').with(
+          :command => sensitive('/bin/true # comment to satisfy puppet syntax requirements
+set -ex
+cat > /tmp/ceph-mon-keyring-A << EOF
+[mon.]
+    key = AQATGHJTUCBqIBAA7M2yafV1xctn1pgr3GcKPg==
+    caps mon = "allow *"
+EOF
+
+chmod 0444 /tmp/ceph-mon-keyring-A
+'),
+          :unless  => '/bin/true # comment to satisfy puppet syntax requirements
+set -ex
+mon_data=$(ceph-mon --cluster ceph --id A --show-config-value mon_data) || exit 1
+# if ceph-mon fails then the mon is probably not configured yet
+test -e $mon_data/done
+')
+      end
+
+      it { should contain_exec('rm-keyring-A').with(
+          :command => '/bin/rm /tmp/ceph-mon-keyring-A',
+      )}
+    end
+
+    context 'with key and keyring' do
+      let :title do
+        'A'
+      end
+
+      let :params do
+        {
+          :key     => 'AQATGHJTUCBqIBAA7M2yafV1xctn1pgr3GcKPg==',
+          :keyring => '/etc/ceph/ceph.mon.keyring',
+        }
+      end
+
+      it 'should fail without exposing the key' do
+        should raise_error(Puppet::Error, /key and keyring \(set to \/etc\/ceph\/ceph.mon.keyring\) are mutually exclusive/)
+        should raise_error(Puppet::Error) { |e| expect(e.message).not_to include('AQATGHJTUCBqIBAA7M2yafV1xctn1pgr3GcKPg==') }
+      end
     end
 
     context 'with keyring' do

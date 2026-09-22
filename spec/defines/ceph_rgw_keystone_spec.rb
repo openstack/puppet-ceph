@@ -46,7 +46,7 @@ describe 'ceph::rgw::keystone' do
       it { should contain_ceph_config('client.radosgw.gateway/rgw_keystone_admin_domain').with_value('default') }
       it { should contain_ceph_config('client.radosgw.gateway/rgw_keystone_admin_project').with_value('openstack') }
       it { should contain_ceph_config('client.radosgw.gateway/rgw_keystone_admin_user').with_value('rgwuser') }
-      it { should contain_ceph_config('client.radosgw.gateway/rgw_keystone_admin_password').with_value('123456').with_secret(true) }
+      it { should contain_ceph_config('client.radosgw.gateway/rgw_keystone_admin_password').with_value(sensitive('123456')).with_secret(true) }
       it { should contain_ceph_config('client.radosgw.gateway/rgw_keystone_url').with_value('http://127.0.0.1:5000') }
       it { should contain_ceph_config('client.radosgw.gateway/rgw_keystone_accepted_roles').with_value('member') }
       it { should contain_ceph_config('client.radosgw.gateway/rgw_keystone_accepted_admin_roles').with_value('admin') }
@@ -86,13 +86,38 @@ describe 'ceph::rgw::keystone' do
       it { should contain_ceph_config('client.radosgw.custom/rgw_keystone_admin_domain').with_value('default') }
       it { should contain_ceph_config('client.radosgw.custom/rgw_keystone_admin_project').with_value('openstack') }
       it { should contain_ceph_config('client.radosgw.custom/rgw_keystone_admin_user').with_value('rgwuser') }
-      it { should contain_ceph_config('client.radosgw.custom/rgw_keystone_admin_password').with_value('123456').with_secret(true) }
+      it { should contain_ceph_config('client.radosgw.custom/rgw_keystone_admin_password').with_value(sensitive('123456')).with_secret(true) }
       it { should contain_ceph_config('client.radosgw.custom/rgw_keystone_url').with_value('http://keystone.custom:5000') }
       it { should contain_ceph_config('client.radosgw.custom/rgw_keystone_accepted_roles').with_value('member,admin') }
       it { should contain_ceph_config('client.radosgw.custom/rgw_keystone_accepted_admin_roles').with_value('ResellerAdmin,admin') }
       it { should contain_ceph_config('client.radosgw.custom/rgw_keystone_token_cache_size').with_value(100) }
       it { should contain_ceph_config('client.radosgw.custom/rgw_s3_auth_use_keystone').with_value(false) }
       it { should contain_ceph_config('client.radosgw.custom/rgw_keystone_implicit_tenants').with_value(false) }
+    end
+
+    context 'create with a sensitive password' do
+      let :pre_condition do
+        "include ceph::params
+         class { 'ceph': fsid => 'd5252e7d-75bc-4083-85ed-fe51fa83f62b' }
+         class { 'ceph::repo': }
+         include ceph
+         ceph::rgw { 'radosgw.gateway': }"
+      end
+
+      let :title do
+        'radosgw.gateway'
+      end
+
+      let :params do
+        {
+          :rgw_keystone_admin_domain   => 'default',
+          :rgw_keystone_admin_project  => 'openstack',
+          :rgw_keystone_admin_user     => 'rgwuser',
+          :rgw_keystone_admin_password => sensitive('123456'),
+        }
+      end
+
+      it { should contain_ceph_config('client.radosgw.gateway/rgw_keystone_admin_password').with_value(sensitive('123456')).with_secret(true) }
     end
   end
 

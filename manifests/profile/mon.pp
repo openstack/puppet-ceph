@@ -23,9 +23,13 @@
 class ceph::profile::mon {
   require ceph::profile::base
 
+  # Wrap the key in Sensitive so that it is redacted in the catalog, reports
+  # and logs. then() leaves the key undef when it is not set.
+  $mon_key = $ceph::profile::params::mon_key.then |$key| { Sensitive($key) }
+
   ceph::mon { $facts['networking']['hostname']:
     authentication_type => $ceph::profile::params::authentication_type,
-    key                 => $ceph::profile::params::mon_key,
+    key                 => $mon_key,
     keyring             => $ceph::profile::params::mon_keyring,
     public_addr         => $ceph::profile::params::public_addr,
   }

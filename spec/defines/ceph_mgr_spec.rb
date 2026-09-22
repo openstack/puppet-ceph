@@ -19,6 +19,33 @@ require 'spec_helper'
 describe 'ceph::mgr' do
   let (:title) { 'foo' }
 
+  shared_examples 'ceph::mgr with key' do
+    it { should contain_file('/var/lib/ceph/mgr/ceph-foo').with(
+      :ensure => 'directory',
+      :owner  => 'ceph',
+      :group  => 'ceph'
+    )}
+
+    it 'should pass the key on as a sensitive value' do
+      should contain_ceph__key('mgr.foo').with(
+        :secret       => sensitive('AQATGHJTUCBqIBAA7M2yafV1xctn1pgr3GcKPg=='),
+        :cluster      => 'ceph',
+        :keyring_path => '/var/lib/ceph/mgr/ceph-foo/keyring',
+        :cap_mon      => 'allow profile mgr',
+        :cap_osd      => 'allow *',
+        :cap_mds      => 'allow *',
+        :user         => 'ceph',
+        :group        => 'ceph',
+        :inject       => false,
+      )
+    end
+
+    it { should contain_service('ceph-mgr@foo').with(
+      :ensure => 'running',
+      :enable => true,
+    )}
+  end
+
   shared_examples 'ceph::mgr' do
     context 'with cephx configured but no key specified' do
       let :params do
@@ -38,28 +65,18 @@ describe 'ceph::mgr' do
         }
       end
 
-      it { should contain_file('/var/lib/ceph/mgr/ceph-foo').with(
-        :ensure => 'directory',
-        :owner  => 'ceph',
-        :group  => 'ceph'
-      )}
+      it_behaves_like 'ceph::mgr with key'
+    end
 
-      it { should contain_ceph__key('mgr.foo').with(
-        :secret       => 'AQATGHJTUCBqIBAA7M2yafV1xctn1pgr3GcKPg==',
-        :cluster      => 'ceph',
-        :keyring_path => '/var/lib/ceph/mgr/ceph-foo/keyring',
-        :cap_mon      => 'allow profile mgr',
-        :cap_osd      => 'allow *',
-        :cap_mds      => 'allow *',
-        :user         => 'ceph',
-        :group        => 'ceph',
-        :inject       => false,
-      )}
+    context 'cephx authentication_type with a sensitive key' do
+      let :params do
+        {
+          :authentication_type => 'cephx',
+          :key                 => sensitive('AQATGHJTUCBqIBAA7M2yafV1xctn1pgr3GcKPg=='),
+        }
+      end
 
-      it { should contain_service('ceph-mgr@foo').with(
-        :ensure => 'running',
-        :enable => true,
-      )}
+      it_behaves_like 'ceph::mgr with key'
     end
   end
 

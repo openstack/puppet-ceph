@@ -30,7 +30,7 @@ describe 'ceph::profile::mds' do
       :cap_mds      => 'allow',
       :inject       => true,
       :keyring_path => "/var/lib/ceph/mds/ceph-foo/keyring",
-      :secret       => 'AQDLOh1VgEp6FRAAFzT7Zw+Y9V6JJExQAsRnRQ==',
+      :secret       => sensitive('AQDLOh1VgEp6FRAAFzT7Zw+Y9V6JJExQAsRnRQ=='),
       :user         => 'ceph',
       :group        => 'ceph'
     )}

@@ -39,6 +39,9 @@
 #
 # [*rgw_keystone_admin_password*]
 #   (Required) The password for OpenStack admin user.
+#   The password is always written as a Sensitive value so that it is
+#   redacted in logs and reports. Wrap the value in Sensitive to also redact
+#   this parameter in the catalog.
 #
 # [*rgw_keystone_url*]
 #   (Optional) The internal or admin url for keystone.
@@ -69,7 +72,7 @@ define ceph::rgw::keystone (
   $rgw_keystone_admin_domain,
   $rgw_keystone_admin_project,
   $rgw_keystone_admin_user,
-  $rgw_keystone_admin_password,
+  Variant[String[1], Sensitive[String[1]]] $rgw_keystone_admin_password,
   $rgw_keystone_url                  = 'http://127.0.0.1:5000',
   $rgw_keystone_accepted_roles       = 'member',
   $rgw_keystone_accepted_admin_roles = 'admin',
@@ -90,11 +93,14 @@ define ceph::rgw::keystone (
     "client.${name}/rgw_keystone_implicit_tenants":     value => $rgw_keystone_implicit_tenants;
   }
 
+  # Wrap the password in Sensitive so that it is redacted in the catalog,
+  # reports and logs. Sensitive() returns the value as-is when it is already
+  # a Sensitive.
   ceph_config {
     "client.${name}/rgw_keystone_api_version":    value => 3;
     "client.${name}/rgw_keystone_admin_domain":   value => $rgw_keystone_admin_domain;
     "client.${name}/rgw_keystone_admin_project":  value => $rgw_keystone_admin_project;
     "client.${name}/rgw_keystone_admin_user":     value => $rgw_keystone_admin_user;
-    "client.${name}/rgw_keystone_admin_password": value => $rgw_keystone_admin_password, secret => true;
+    "client.${name}/rgw_keystone_admin_password": value => Sensitive($rgw_keystone_admin_password), secret => true;
   }
 }

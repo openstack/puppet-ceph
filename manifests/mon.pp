@@ -50,6 +50,9 @@
 #
 # [*key*] Authentication key for [mon.]
 #   Optional. $key and $keyring are mutually exclusive.
+#   The key is always embedded in the commands as a Sensitive value so that
+#   it is redacted in logs and reports. Wrap the value in Sensitive to also
+#   redact this parameter in the catalog.
 #
 # [*keyring*] Path of the [mon.] keyring file
 #   Optional. $key and $keyring are mutually exclusive.
@@ -63,7 +66,7 @@ define ceph::mon (
   Optional[Stdlib::IP::Address] $public_addr = undef,
   Optional[String[1]] $cluster = undef,
   Enum['cephx', 'none'] $authentication_type = 'cephx',
-  Optional[String[1]] $key = undef,
+  Optional[Variant[String[1], Sensitive[String[1]]]] $key = undef,
   Optional[Stdlib::Absolutepath] $keyring  = undef,
   Optional[Float[0]] $exec_timeout = undef,
 ) {
@@ -95,23 +98,30 @@ define ceph::mon (
         fail("authentication_type ${authentication_type} requires either key or keyring to be set but both are undef")
       }
       if $key and $keyring {
-        fail("key (set to ${key}) and keyring (set to ${keyring}) are mutually exclusive")
+        fail("key and keyring (set to ${keyring}) are mutually exclusive")
       }
       if $key {
         $keyring_path = "/tmp/ceph-mon-keyring-${id}"
 
+        # The key has to be embedded in the command below, so unwrap it here.
+        # The command itself is wrapped in Sensitive so that the key is
+        # redacted in the catalog, reports and logs. Sensitive() returns the
+        # value as-is when it is already a Sensitive, so this works for both
+        # plain and Sensitive values.
+        $key_unwrapped = Sensitive($key).unwrap
+
         Ceph_config<||>
         -> exec { "create-keyring-${id}":
-          command => "/bin/true # comment to satisfy puppet syntax requirements
+          command => Sensitive("/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 cat > ${keyring_path} << EOF
 [mon.]
-    key = ${key}
+    key = ${key_unwrapped}
     caps mon = \"allow *\"
 EOF
 
 chmod 0444 ${keyring_path}
-",
+"),
           unless  => "/bin/true # comment to satisfy puppet syntax requirements
 set -ex
 mon_data=\$(ceph-mon ${cluster_option} --id ${id} --show-config-value mon_data) || exit 1

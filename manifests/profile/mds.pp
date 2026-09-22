@@ -26,14 +26,16 @@ class ceph::profile::mds {
     public_addr => $ceph::profile::params::public_addr,
   }
 
-  if !empty($ceph::profile::params::mds_key) {
+  if $ceph::profile::params::mds_key != undef {
+    # Wrap the key in Sensitive so that it is redacted in the catalog,
+    # reports and logs.
     ceph::key { "mds.${facts['networking']['hostname']}":
       cap_mon      => 'allow profile mds',
       cap_osd      => 'allow rwx',
       cap_mds      => 'allow',
       inject       => true,
       keyring_path => "/var/lib/ceph/mds/ceph-${facts['networking']['hostname']}/keyring",
-      secret       => $ceph::profile::params::mds_key,
+      secret       => Sensitive($ceph::profile::params::mds_key),
       user         => 'ceph',
       group        => 'ceph',
     } -> Service<| tag == 'ceph-mds' |>

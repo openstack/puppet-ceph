@@ -39,6 +39,9 @@
 #
 # [*rgw_keystone_barbican_password*]
 #   (Required) The password associated with the Barbican user.
+#   The password is always written as a Sensitive value so that it is
+#   redacted in logs and reports. Wrap the value in Sensitive to also redact
+#   this parameter in the catalog.
 #
 # [*rgw_barbican_url*]
 #   (Optional) URL for the Barbican server.
@@ -48,18 +51,21 @@ define ceph::rgw::barbican (
   $rgw_keystone_barbican_domain,
   $rgw_keystone_barbican_project,
   $rgw_keystone_barbican_user,
-  $rgw_keystone_barbican_password,
+  Variant[String[1], Sensitive[String[1]]] $rgw_keystone_barbican_password,
   $rgw_barbican_url               = 'http://127.0.0.1:9311',
 ) {
   unless $name =~ /^radosgw\..+/ {
     fail("Define name must be started with 'radosgw.'")
   }
 
+  # Wrap the password in Sensitive so that it is redacted in the catalog,
+  # reports and logs. Sensitive() returns the value as-is when it is already
+  # a Sensitive.
   ceph_config {
     "client.${name}/rgw_keystone_barbican_domain":   value => $rgw_keystone_barbican_domain;
     "client.${name}/rgw_keystone_barbican_project":  value => $rgw_keystone_barbican_project;
     "client.${name}/rgw_keystone_barbican_user":     value => $rgw_keystone_barbican_user;
-    "client.${name}/rgw_keystone_barbican_password": value => $rgw_keystone_barbican_password, secret => true;
+    "client.${name}/rgw_keystone_barbican_password": value => Sensitive($rgw_keystone_barbican_password), secret => true;
     "client.${name}/rgw_barbican_url":               value => $rgw_barbican_url;
   }
 }

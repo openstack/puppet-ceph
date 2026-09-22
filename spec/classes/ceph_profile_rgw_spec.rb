@@ -14,11 +14,11 @@ describe 'ceph::profile::rgw' do
       :rgw_keystone_admin_domain   => 'Default',
       :rgw_keystone_admin_project  => 'services',
       :rgw_keystone_admin_user     => 'rgwuser',
-      :rgw_keystone_admin_password => 'secret',
+      :rgw_keystone_admin_password => sensitive('secret'),
       :rgw_keystone_url            => 'http://127.0.0.1:5000'
     ) }
     it { should contain_class('ceph::rgw::keystone::auth').with(
-      :password     => 'secret',
+      :password     => sensitive('secret'),
       :user         => 'rgwuser',
       :tenant       => 'services',
       :public_url   => 'http://127.0.0.1:8080/swift/v1',

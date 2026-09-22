@@ -40,6 +40,9 @@
 #
 # [*key*] Authentication key for ceph-mgr
 #   Required if authentication_type is set to cephx
+#   The key is always passed on to ceph::key as a Sensitive value so that it
+#   is redacted in logs and reports. Wrap the value in Sensitive to also
+#   redact this parameter in the catalog.
 #
 # [*inject_key*] Inject the key to the Ceph cluster
 #   Optional. Defaults to false
@@ -49,7 +52,7 @@ define ceph::mgr (
   Stdlib::Ensure::Service $ensure            = running,
   String[1] $cluster                         = 'ceph',
   Enum['cephx', 'none'] $authentication_type = 'cephx',
-  Optional[String[1]] $key                   = undef,
+  Optional[Variant[String[1], Sensitive[String[1]]]] $key = undef,
   Boolean $inject_key                        = false,
 ) {
   file { "/var/lib/ceph/mgr/${cluster}-${name}":
@@ -65,8 +68,10 @@ define ceph::mgr (
       fail('cephx requires a specified key for the manager daemon')
     }
 
+    # Wrap the key in Sensitive so that it is redacted in the catalog,
+    # reports and logs.
     ceph::key { "mgr.${name}":
-      secret       => $key,
+      secret       => Sensitive($key),
       cluster      => $cluster,
       keyring_path => "/var/lib/ceph/mgr/${cluster}-${name}/keyring",
       cap_mon      => 'allow profile mgr',

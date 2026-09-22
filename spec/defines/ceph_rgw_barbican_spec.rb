@@ -45,8 +45,33 @@ describe 'ceph::rgw::barbican' do
       it { should contain_ceph_config('client.radosgw.gateway/rgw_keystone_barbican_domain').with_value('default') }
       it { should contain_ceph_config('client.radosgw.gateway/rgw_keystone_barbican_project').with_value('openstack') }
       it { should contain_ceph_config('client.radosgw.gateway/rgw_keystone_barbican_user').with_value('rgwuser') }
-      it { should contain_ceph_config('client.radosgw.gateway/rgw_keystone_barbican_password').with_value('123456').with_secret(true) }
+      it { should contain_ceph_config('client.radosgw.gateway/rgw_keystone_barbican_password').with_value(sensitive('123456')).with_secret(true) }
       it { should contain_ceph_config('client.radosgw.gateway/rgw_barbican_url').with_value('http://127.0.0.1:9311') }
+    end
+
+    context 'create with a sensitive password' do
+      let :pre_condition do
+        "include ceph::params
+         class { 'ceph': fsid => 'd5252e7d-75bc-4083-85ed-fe51fa83f62b' }
+         class { 'ceph::repo': }
+         include ceph
+         ceph::rgw { 'radosgw.gateway': }"
+      end
+
+      let :title do
+        'radosgw.gateway'
+      end
+
+      let :params do
+        {
+          :rgw_keystone_barbican_domain   => 'default',
+          :rgw_keystone_barbican_project  => 'openstack',
+          :rgw_keystone_barbican_user     => 'rgwuser',
+          :rgw_keystone_barbican_password => sensitive('123456'),
+        }
+      end
+
+      it { should contain_ceph_config('client.radosgw.gateway/rgw_keystone_barbican_password').with_value(sensitive('123456')).with_secret(true) }
     end
 
     context 'create with custom params' do
@@ -74,7 +99,7 @@ describe 'ceph::rgw::barbican' do
       it { should contain_ceph_config('client.radosgw.custom/rgw_keystone_barbican_domain').with_value('default') }
       it { should contain_ceph_config('client.radosgw.custom/rgw_keystone_barbican_project').with_value('openstack') }
       it { should contain_ceph_config('client.radosgw.custom/rgw_keystone_barbican_user').with_value('rgwuser') }
-      it { should contain_ceph_config('client.radosgw.custom/rgw_keystone_barbican_password').with_value('123456').with_secret(true) }
+      it { should contain_ceph_config('client.radosgw.custom/rgw_keystone_barbican_password').with_value(sensitive('123456')).with_secret(true) }
       it { should contain_ceph_config('client.radosgw.custom/rgw_barbican_url').with_value('http://barbican.custom:9311') }
     end
   end

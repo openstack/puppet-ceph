@@ -27,6 +27,9 @@
 #
 # [*secret*] Key secret.
 #   Mandatory. Can be created with ceph-authtool --gen-print-key.
+#   The secret is always embedded in the commands as a Sensitive value so
+#   that it is redacted in logs and reports. Wrap the value in Sensitive to
+#   also redact this parameter in the catalog.
 #
 # [*cluster*] The ceph cluster
 #   Optional. Same default as ceph.
@@ -75,7 +78,7 @@
 #   inferred from the client name. Default to undef.
 #
 define ceph::key (
-  String[1] $secret,
+  Variant[String[1], Sensitive[String[1]]] $secret,
   Optional[String[1]] $cluster = undef,
   Stdlib::Absolutepath $keyring_path = "/etc/ceph/ceph.${name}.keyring",
   $cap_mon = undef,
@@ -115,6 +118,13 @@ define ceph::key (
 
   $caps = join([$mon_caps, $osd_caps, $mds_caps, $mgr_caps], '')
 
+  # The secret has to be embedded in the commands below, so unwrap it here.
+  # The commands themselves are wrapped in Sensitive so that the secret is
+  # redacted in the catalog, reports and logs. Sensitive() returns the value
+  # as-is when it is already a Sensitive, so this works for both plain and
+  # Sensitive values.
+  $secret_unwrapped = Sensitive($secret).unwrap
+
   # this allows multiple defines for the same 'keyring file',
   # which is supported by ceph-authtool
   if ! defined(File[$keyring_path]) {
@@ -130,17 +140,17 @@ define ceph::key (
 
   # ceph-authtool --add-key is idempotent, will just update pre-existing keys
   exec { "ceph-key-${name}":
-    command   => "/bin/true # comment to satisfy puppet syntax requirements
+    command   => Sensitive("/bin/true # comment to satisfy puppet syntax requirements
 set -ex
-ceph-authtool ${keyring_path} --name '${name}' --add-key '${secret}'${caps}",
-    unless    => "/bin/true # comment to satisfy puppet syntax requirements
+ceph-authtool ${keyring_path} --name '${name}' --add-key '${secret_unwrapped}'${caps}"),
+    unless    => Sensitive("/bin/true # comment to satisfy puppet syntax requirements
 set -x
 NEW_KEYRING=\$(mktemp)
-ceph-authtool \$NEW_KEYRING --name '${name}' --add-key '${secret}'${caps}
+ceph-authtool \$NEW_KEYRING --name '${name}' --add-key '${secret_unwrapped}'${caps}
 diff -N \$NEW_KEYRING ${keyring_path}
 rv=\$?
 rm \$NEW_KEYRING
-exit \$rv",
+exit \$rv"),
     require   => [File[$keyring_path]],
     logoutput => true,
   }

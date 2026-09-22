@@ -22,7 +22,8 @@
 # === Parameters:
 #
 # [*args*] A Ceph keys config hash
-#   Optional.
+#   Optional. The secret of each key is always passed on to ceph::key as a
+#   Sensitive value so that it is redacted in the catalog, reports and logs.
 #
 # [*defaults*] A keys config hash
 #   Optional. Defaults to a empty hash.
@@ -31,5 +32,16 @@ class ceph::keys (
   Hash $args     = {},
   Hash $defaults = {},
 ) {
-  create_resources(ceph::key, $args, $defaults)
+  # Wrap the secret of each key in Sensitive so that it is redacted in the
+  # catalog, reports and logs. Sensitive() returns the value as-is when it is
+  # already a Sensitive.
+  $args_real = Hash($args.map |$key_name, $key_args| {
+    if $key_args =~ Hash and 'secret' in $key_args {
+      [$key_name, $key_args + { 'secret' => Sensitive($key_args['secret']) }]
+    } else {
+      [$key_name, $key_args]
+    }
+  })
+
+  create_resources(ceph::key, $args_real, $defaults)
 }

@@ -22,9 +22,13 @@
 class ceph::profile::mgr {
   require ceph::profile::base
 
+  # Wrap the key in Sensitive so that it is redacted in the catalog, reports
+  # and logs. then() leaves the key undef when it is not set.
+  $mgr_key = $ceph::profile::params::mgr_key.then |$key| { Sensitive($key) }
+
   ceph::mgr { $facts['networking']['hostname']:
     authentication_type => $ceph::profile::params::authentication_type,
-    key                 => $ceph::profile::params::mgr_key,
+    key                 => $mgr_key,
     inject_key          => true,
   }
 }

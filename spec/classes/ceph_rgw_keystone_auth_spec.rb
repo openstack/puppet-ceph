@@ -2,15 +2,7 @@ require 'spec_helper'
 
 describe 'ceph::rgw::keystone::auth' do
 
-  shared_examples 'ceph::rgw::keystone::auth' do
-    let :params do
-      {
-        :password => 'rgw_password',
-        :user     => 'rgw_user',
-        :tenant   => 'services'
-      }
-    end
-
+  shared_examples 'ceph::rgw::keystone::auth service identity' do
     it {
       should contain_class('openstacklib::openstackclient')
       should contain_keystone__resource__service_identity('rgw').with(
@@ -31,6 +23,34 @@ describe 'ceph::rgw::keystone::auth' do
         :internal_url        => 'http://127.0.0.1:8080/swift/v1',
       )
     }
+  end
+
+  shared_examples 'ceph::rgw::keystone::auth' do
+    context 'with required parameters' do
+      let :params do
+        {
+          :password => 'rgw_password',
+          :user     => 'rgw_user',
+          :tenant   => 'services'
+        }
+      end
+
+      it_behaves_like 'ceph::rgw::keystone::auth service identity'
+    end
+
+    context 'with a sensitive password' do
+      let :params do
+        {
+          :password => sensitive('rgw_password'),
+          :user     => 'rgw_user',
+          :tenant   => 'services'
+        }
+      end
+
+      # keystone::resource::service_identity does not accept a Sensitive
+      # password, so the value is unwrapped before it is passed on.
+      it_behaves_like 'ceph::rgw::keystone::auth service identity'
+    end
   end
 
   on_supported_os({

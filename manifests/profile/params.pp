@@ -82,19 +82,29 @@
 #
 # [*mds_key*] The mds secret key.
 #   Optional but required when using cephx.
+#   The key is always passed on as a Sensitive value so that it is redacted
+#   in logs and reports. Wrap the value in Sensitive to also redact this
+#   parameter in the catalog.
 #
 # [*mon_key*] The mon secret key.
 #   Optional. Either mon_key or mon_keyring need to be set when using cephx.
+#   The key is always passed on as a Sensitive value so that it is redacted
+#   in logs and reports. Wrap the value in Sensitive to also redact this
+#   parameter in the catalog.
 #
 # [*mgr_key*] The mgr secret key.
 #   Optional. Either mgr_key or mgr_keyring need to be set when using cephx.
+#   The key is always passed on as a Sensitive value so that it is redacted
+#   in logs and reports. Wrap the value in Sensitive to also redact this
+#   parameter in the catalog.
 #
 # [*mon_keyring*] The location of the keyring retrieved by default
 #   Optional. Either mon_key or mon_keyring need to be set when using cephx
 #
 # [*client_keys*] A hash of client keys that will be passed to ceph::keys.
 #   Optional but required when using cephx.
-#   See ceph::key for hash parameters andstructure.
+#   See ceph::key for hash parameters andstructure. The secret of each key
+#   is always passed on to ceph::key as a Sensitive value.
 #
 # [*osds*] A Ceph osd hash
 #   Optional.
@@ -160,6 +170,9 @@
 #
 # [*rgw_keystone_admin_password*] The password for OpenStack admin user
 #   Required when RGW integration with Keystone is enabled.
+#   The password is always passed on as a Sensitive value so that it is
+#   redacted in logs and reports. Wrap the value in Sensitive to also redact
+#   this parameter in the catalog.
 #
 # [*rgw_swift_public_url*] The public URL of Swift API. Optional.
 #
@@ -211,9 +224,9 @@ class ceph::profile::params (
   $cluster_network = undef,
   $public_network = undef,
   $public_addr = undef,
-  $mds_key = undef,
-  $mon_key = undef,
-  $mgr_key = undef,
+  Optional[Variant[String[1], Sensitive[String[1]]]] $mds_key = undef,
+  Optional[Variant[String[1], Sensitive[String[1]]]] $mon_key = undef,
+  Optional[Variant[String[1], Sensitive[String[1]]]] $mgr_key = undef,
   $mon_keyring = undef,
   Hash $client_keys = {},
   $osds = undef,
@@ -235,7 +248,7 @@ class ceph::profile::params (
   $rgw_keystone_admin_domain = undef,
   $rgw_keystone_admin_project = undef,
   $rgw_keystone_admin_user = undef,
-  $rgw_keystone_admin_password = undef,
+  Optional[Variant[String[1], Sensitive[String[1]]]] $rgw_keystone_admin_password = undef,
   $rgw_swift_public_url = undef,
   $rgw_swift_admin_url = undef,
   $rgw_swift_internal_url = undef,

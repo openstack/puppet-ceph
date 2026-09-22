@@ -34,16 +34,22 @@ class ceph::profile::rgw {
   }
 
   if $ceph::profile::params::rgw_keystone_integration {
+    # Wrap the password in Sensitive so that it is redacted in the catalog,
+    # reports and logs. then() leaves the password undef when it is not set.
+    $rgw_keystone_admin_password = $ceph::profile::params::rgw_keystone_admin_password.then |$password| {
+      Sensitive($password)
+    }
+
     ceph::rgw::keystone { $rgw_name:
       rgw_keystone_admin_domain   => $ceph::profile::params::rgw_keystone_admin_domain,
       rgw_keystone_admin_project  => $ceph::profile::params::rgw_keystone_admin_project,
       rgw_keystone_admin_user     => $ceph::profile::params::rgw_keystone_admin_user,
-      rgw_keystone_admin_password => $ceph::profile::params::rgw_keystone_admin_password,
+      rgw_keystone_admin_password => $rgw_keystone_admin_password,
       rgw_keystone_url            => $ceph::profile::params::rgw_keystone_url,
     }
 
     class { 'ceph::rgw::keystone::auth':
-      password     => $ceph::profile::params::rgw_keystone_admin_password,
+      password     => $rgw_keystone_admin_password,
       user         => $ceph::profile::params::rgw_keystone_admin_user,
       tenant       => $ceph::profile::params::rgw_keystone_admin_project,
       public_url   => $ceph::profile::params::rgw_swift_public_url,

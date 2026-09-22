@@ -22,7 +22,7 @@ describe 'ceph::profile::mgr' do
   shared_examples 'ceph profile mgr' do
     it { should contain_ceph__mgr('foo').with(
       :authentication_type => 'cephx',
-      :key                 => 'AQASGFDFUHBHDG9SDdsyffV1xgsn1pgr3GcKPg==',
+      :key                 => sensitive('AQASGFDFUHBHDG9SDdsyffV1xgsn1pgr3GcKPg=='),
       :inject_key          => true)
     }
   end
